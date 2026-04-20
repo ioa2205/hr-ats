@@ -11,6 +11,7 @@ import {
 } from "@/components/ui";
 import { useOperatorChrome } from "./operator-chrome-context";
 import { useTranslation } from "@/lib/i18n/provider";
+import { signOut } from "@/lib/actions/auth";
 
 interface Props {
   email: string;
@@ -56,16 +57,14 @@ export function OperatorAvatarMenu({ email, fullName }: Props) {
           </a>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <form action="/api/auth/logout" method="POST" className="w-full">
-            <button
-              type="submit"
-              className="flex w-full items-center gap-2 text-left text-[var(--color-ink)]"
-            >
-              <LogOut className="h-3.5 w-3.5" />
-              {t("auth.sign_out")}
-            </button>
-          </form>
+        <DropdownMenuItem
+          onSelect={(event) => {
+            event.preventDefault();
+            void signOut();
+          }}
+        >
+          <LogOut className="h-3.5 w-3.5" />
+          <span>{t("auth.sign_out")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
