@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { env } from "@/lib/env";
 import { logger } from "@/lib/logger";
+import { rateLimit } from "@/lib/rate-limit";
 import {
   signInSchema,
   signUpSchema,
@@ -159,4 +160,54 @@ export async function signOut(): Promise<void> {
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/auth/login");
+}
+
+export async function resendVerification(
+  _prev: AuthState,
+  formData: FormData,
+): Promise<AuthState> {
+  const parsed = requestPasswordResetSchema.safeParse({
+    email: formData.get("email"),
+  });
+  if (!parsed.success) {
+    return { error: "invalid_email" };
+  }
+
+  const emailLower = parsed.data.email.toLowerCase();
+
+  const minute = await rateLimit({
+    key: `verify-resend-min:${emailLower}`,
+    limit: 1,
+    windowSeconds: 60,
+  });
+  if (!minute.allowed) {
+    return { error: "cooldown" };
+  }
+
+  const hour = await rateLimit({
+    key: `verify-resend-hour:${emailLower}`,
+    limit: 5,
+    windowSeconds: 3600,
+  });
+  if (!hour.allowed) {
+    return { error: "rate_limit" };
+  }
+
+  const supabase = await createClient();
+  const origin = await getOrigin();
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email: parsed.data.email,
+    options: { emailRedirectTo: `${origin}/auth/callback?next=/onboarding` },
+  });
+
+  if (error) {
+    logger.warn(
+      { err: error.message, context: "verify-resend" },
+      "[auth] resend verification failed",
+    );
+    return { error: "resend_failed" };
+  }
+
+  return { ok: true };
 }

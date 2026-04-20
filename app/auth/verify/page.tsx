@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { AuthPanel } from "@/components/auth/auth-panel";
+import { ResendVerificationButton } from "@/components/auth/resend-verification-button";
 import { getLocale, t } from "@/lib/i18n";
 
 export const metadata: Metadata = {
@@ -32,6 +33,8 @@ export default async function VerifyPage({
         </span>
         <p className="text-ink-3 text-[13px] leading-[1.55]">{t("auth.verify_help", locale)}</p>
       </div>
+
+      <ResendVerificationButton email={email} />
 
       <Link
         href="/auth/login"
