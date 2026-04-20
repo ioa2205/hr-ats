@@ -1,0 +1,314 @@
+.tezhr-landing {
+  --paper: #efe8db;
+  --paper-2: #e6dfd0;
+  --paper-3: #f7f2e6;
+  --ink: #141210;
+  --ink-2: #302b25;
+  --ink-3: #5a5147;
+  --ink-4: #8b8275;
+  --rule: #2a241e;
+
+  --persimmon: #e55934;
+  --persimmon-2: #c1440e;
+  --ikat: #0b6e6e;
+  --ikat-2: #114e51;
+  --saffron: #f2b232;
+  --grape: #6b2c5f;
+  --leaf: #5a7a3a;
+
+  --night: #141210;
+  --night-2: #1f1b17;
+
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.tezhr-landing * {
+  box-sizing: border-box;
+}
+
+.tezhr-landing a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.tezhr-landing button {
+  font-family: inherit;
+}
+
+.tezhr-landing .serif {
+  font-family: var(--font-instrument-serif), "Times New Roman", serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.tezhr-landing .mono {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.tezhr-landing ::selection {
+  background: var(--persimmon);
+  color: var(--paper);
+}
+
+.tezhr-landing .paper-grain {
+  position: relative;
+}
+
+.tezhr-landing .paper-grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.42;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08  0 0 0 0 0.07  0 0 0 0 0.06  0 0 0 0.35 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.tezhr-landing .paper-grain > * {
+  position: relative;
+  z-index: 1;
+}
+
+.tezhr-landing .night-grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 0.95  0 0 0 0 0.85  0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.tezhr-landing .rule {
+  height: 1px;
+  background: var(--rule);
+}
+
+.tezhr-landing .rule-thick {
+  height: 2px;
+  background: var(--ink);
+}
+
+.tezhr-landing .sticker {
+  display: inline-block;
+  padding: 4px 10px;
+  background: var(--persimmon);
+  color: var(--paper-3);
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transform: rotate(-2deg);
+  font-weight: 500;
+}
+
+.tezhr-landing .margin-note {
+  font-family: var(--font-instrument-serif), serif;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--ink-3);
+  line-height: 1.35;
+}
+
+@keyframes tezhr-ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.tezhr-landing .ticker-band {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.tezhr-landing .ticker-track {
+  display: inline-flex;
+  gap: 44px;
+  animation: tezhr-ticker-scroll 40s linear infinite;
+  padding-left: 0;
+}
+
+.tezhr-landing .ikat-bg {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'><g fill='%230B6E6E' opacity='0.08'><path d='M30 0 L34 10 L44 10 L36 17 L40 27 L30 22 L20 27 L24 17 L16 10 L26 10 Z'/><circle cx='10' cy='50' r='3'/><circle cx='50' cy='50' r='3'/></g></svg>");
+}
+
+@keyframes tezhr-spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.tezhr-landing .spin-seal {
+  animation: tezhr-spin-slow 18s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+@keyframes tezhr-pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(0.88);
+  }
+}
+
+.tezhr-landing .pulse-dot {
+  animation: tezhr-pulse-soft 1.6s ease-in-out infinite;
+}
+
+/* Reduced motion: disable every decorative animation on the landing surface. */
+@media (prefers-reduced-motion: reduce) {
+  .tezhr-landing *,
+  .tezhr-landing *::before,
+  .tezhr-landing *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .tezhr-landing .ticker-track {
+    animation: none !important;
+    transform: none !important;
+  }
+  .tezhr-landing .spin-seal {
+    animation: none !important;
+  }
+  .tezhr-landing .pulse-dot {
+    animation: none !important;
+  }
+}
+
+/* Ensure the landing scroll anchor offset doesn't hide behind sticky nav. */
+.tezhr-landing :target {
+  scroll-margin-top: 80px;
+}
+
+/* Focus ring: persimmon outline matching the editorial palette. */
+.tezhr-landing :focus-visible {
+  outline: 2px solid var(--persimmon);
+  outline-offset: 2px;
+}
+
+.tezhr-landing .pen-circle {
+  position: relative;
+  display: inline-block;
+}
+
+.tezhr-landing .pen-circle::before {
+  content: "";
+  position: absolute;
+  inset: -10px -14px;
+  border: 2.5px solid var(--persimmon);
+  border-radius: 54% 46% 52% 48% / 48% 52% 48% 52%;
+  transform: rotate(-3deg);
+  pointer-events: none;
+}
+
+.tezhr-landing .wob {
+  background: linear-gradient(
+    180deg,
+    transparent 82%,
+    var(--saffron) 82%,
+    var(--saffron) 98%,
+    transparent 98%
+  );
+  padding: 0 2px;
+}
+
+.tezhr-landing .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
+  background: var(--ink);
+  color: var(--paper-3);
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  font-family: var(--font-manrope), sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  position: relative;
+  box-shadow: 4px 4px 0 var(--persimmon);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+  text-decoration: none;
+}
+
+.tezhr-landing .btn-primary:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--persimmon);
+}
+
+.tezhr-landing .btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  border-radius: 0;
+  cursor: pointer;
+  font-family: var(--font-manrope), sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.tezhr-landing .stamp {
+  display: grid;
+  place-items: center;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 1.5px solid var(--persimmon-2);
+  color: var(--persimmon-2);
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-align: center;
+  line-height: 1.1;
+  transform: rotate(-8deg);
+  opacity: 0.9;
+}
+
+.tezhr-landing .big-number {
+  font-family: var(--font-instrument-serif), serif;
+  font-weight: 400;
+  font-size: 180px;
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+}
+
+.tezhr-landing .hand-arrow {
+  display: inline-block;
+  transform: translateY(2px);
+}
+
+.tezhr-landing .chip-ink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--ink);
+  background: var(--paper-3);
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
