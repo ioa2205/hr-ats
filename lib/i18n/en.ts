@@ -383,6 +383,8 @@ export const en: Translations = {
   "notifications.email.subject_quota_warning": "Quota warning: {title}",
   "notifications.email.open_cta": "Open in TezHR",
   "notifications.email.footer": "You're receiving this because notifications are on for your account.",
+  "applicants.analysis.rate_limited_heading": "AI is busy",
+  "applicants.analysis.rate_limited_body": "Gemini is rate-limited right now. We'll retry this candidate automatically within a few minutes — no action needed.",
   "auth.phone_change_number": "Change number",
   "auth.phone_email_hint": "Required for account recovery and billing.",
   "auth.phone_digit_hint": "+998 followed by 9 digits.",

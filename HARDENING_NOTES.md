@@ -89,6 +89,21 @@ The hardening spec the human wrote was a point-in-time snapshot. Re-verification
 - [x] PR 9 — P2-17 PII redaction
 - [x] PR 10 — P2-15 candidate_latest_ai_cost view
 - [x] PR 11 — P0-1 notification pipeline (deliveries table + dispatch refactor + Resend webhook). **Deferred**: Edge Function `dispatch-notification-retries` to back the pg_cron retry job (cron job is scheduled but the function endpoint is a 404 until deployed); Playwright for new_application + interview_booked email assertions (requires mailpit in supabase local config).
+- [x] PR 12 — P0-2a Click billing (schema + checkout + webhook + UpgradeButton redirect). Placeholder credentials ship; real merchant IDs injected via Railway env before GA.
+- [x] PR 13 — P1-12 Supabase auth email templates (trilingual source in `supabase/templates/` + manual upload checklist in DEPLOYMENT.md §11)
+- [x] PR 14 — P2-18 banner (rate_limited distinct from analysis_failed in HR candidate tab). **Handed off to landing session**: P3-22 (book-a-demo CTA), P3-23 (candidate path in landing nav), P3-24 (sub-page meta-description length + BreadcrumbList JSON-LD + canonicals). These all touch `app/components/landing/*` or `app/(product|about|contact|for-candidates)/*` which the landing rebuild session owns (see MEMORY.md). Not touching them from this session per the spec's "do not touch landing" rule.
+
+---
+
+## Handoff to landing session (for when that session reopens)
+
+- **P3-22 Book-a-demo CTA.** Add a dialog + server action that inserts into `contact_messages` with `source='demo_request'` (no schema change — the existing `source` column covers it) and forwards to the existing Telegram bot helper. Suggested location: the landing hero or nav CTA slot.
+- **P3-23 Candidate path visibility.** Landing top nav currently features HR signup; add a distinct "Apply for a job" link to `/for-candidates`. I18n keys for the label already exist via the English dictionary; extend ru/uz if needed.
+- **P3-24 SEO polish.**
+  - Extend meta descriptions to 120–160 chars in `generateMetadata` for `/about`, `/contact`, `/product/*`, `/for-candidates`.
+  - Add a `lib/seo/breadcrumbs.ts` helper that emits `BreadcrumbList` JSON-LD; include it in sub-pages.
+  - Set `alternates.canonical` explicitly (the root layout's canonical doesn't cover sub-pages).
+- **P3-21 Legal copy.** Still blocked on legal counsel text. Do not ship hollow pages rendering translation keys.
 - [ ] PR 4 — P0-4 interview slot double-booking
 - [ ] PR 5 — P1-9 verify resend + P1-10 reset Playwright
 - [ ] PR 6 — P1-11 PDF validation

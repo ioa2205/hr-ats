@@ -449,9 +449,14 @@ Deno.serve(async (req) => {
 
     if (isRateLimited) {
       log(candidateId, "info", "Rate limited — returning to pending_analysis");
+      // Keep status pending so the retry cron picks it up, but tag ai_error
+      // with the 'rate_limited' marker so the HR UI can surface a distinct
+      // "AI is busy, we'll retry automatically" banner instead of the generic
+      // analysis_failed state. ai_error gets cleared on the next successful
+      // attempt (see line 400).
       await supabase
         .from("candidates")
-        .update({ status: "pending_analysis" })
+        .update({ status: "pending_analysis", ai_error: "rate_limited" })
         .eq("id", candidateId);
       await supabase.from("ai_processing_attempts").insert({
         candidate_id: candidateId,

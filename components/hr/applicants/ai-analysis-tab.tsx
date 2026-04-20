@@ -76,8 +76,23 @@ export function AiAnalysisTab({ candidate, jobTitle, appUrl, onUpdate }: AiAnaly
 
   // ── Pending / Analyzing skeleton ──────────────────────────────
   if (candidate.status === "pending_analysis" || candidate.status === "analyzing") {
+    const isRateLimited =
+      candidate.status === "pending_analysis" && candidate.ai_error === "rate_limited";
     return (
       <div className="space-y-6">
+        {isRateLimited && (
+          <div className="border-warning/40 bg-warning-container/30 flex items-start gap-3 rounded-[var(--radius-lg)] border p-4">
+            <AlertTriangle className="text-warning mt-0.5 h-5 w-5 shrink-0" />
+            <div className="space-y-1">
+              <p className="text-on-surface text-sm font-medium">
+                {t("applicants.analysis.rate_limited_heading")}
+              </p>
+              <p className="text-on-surface-variant text-xs">
+                {t("applicants.analysis.rate_limited_body")}
+              </p>
+            </div>
+          </div>
+        )}
         <div className="flex justify-center">
           <Skeleton variant="circle" width={120} height={120} />
         </div>

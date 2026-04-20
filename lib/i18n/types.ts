@@ -386,6 +386,8 @@ export type TranslationKey =
   | "notifications.email.subject_quota_warning"
   | "notifications.email.open_cta"
   | "notifications.email.footer"
+  | "applicants.analysis.rate_limited_heading"
+  | "applicants.analysis.rate_limited_body"
   | "auth.phone_change_number"
   | "auth.phone_email_hint"
   | "auth.phone_digit_hint"

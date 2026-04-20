@@ -384,6 +384,8 @@ export const ru: Translations = {
   "notifications.email.subject_quota_warning": "Предупреждение о лимите: {title}",
   "notifications.email.open_cta": "Открыть в TezHR",
   "notifications.email.footer": "Вы получили это письмо, потому что уведомления включены для вашего аккаунта.",
+  "applicants.analysis.rate_limited_heading": "AI занят",
+  "applicants.analysis.rate_limited_body": "Gemini временно ограничен. Мы повторим анализ автоматически в течение нескольких минут — действия не требуются.",
   "auth.phone_change_number": "Изменить номер",
   "auth.phone_email_hint": "Нужен для восстановления доступа и биллинга.",
   "auth.phone_digit_hint": "+998, затем 9 цифр.",

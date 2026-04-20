@@ -386,6 +386,8 @@ export const uz: Translations = {
   "notifications.email.subject_quota_warning": "Limit ogohlantirishi: {title}",
   "notifications.email.open_cta": "TezHR da ochish",
   "notifications.email.footer": "Akkauntingizda bildirishnomalar yoqilgan, shuning uchun bu xatni oldingiz.",
+  "applicants.analysis.rate_limited_heading": "AI band",
+  "applicants.analysis.rate_limited_body": "Gemini hozir limitlangan. Biz tahlilni bir necha daqiqa ichida avtomatik takrorlaymiz — sizdan hech narsa talab etilmaydi.",
   "auth.phone_change_number": "Raqamni o'zgartirish",
   "auth.phone_email_hint": "Akkauntni tiklash va billing uchun zarur.",
   "auth.phone_digit_hint": "+998 va keyin 9 ta raqam.",
