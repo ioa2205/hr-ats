@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { env } from "@/lib/env";
 import { requireCompanyAccess } from "@/lib/auth/guards";
 import { canWrite as canWriteQuota } from "@/lib/companies/quota";
 import { getLocale } from "@/lib/i18n";
@@ -50,7 +51,7 @@ export default async function JobsPage({
 
   const postings = (jobsResult.data ?? []) as unknown as JobWithCounts[];
 
-  const appUrl = process.env.APP_URL ?? "http://localhost:3000";
+  const appUrl = env.APP_URL;
 
   return (
     <JobsListClient

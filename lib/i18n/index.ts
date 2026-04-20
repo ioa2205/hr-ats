@@ -69,13 +69,18 @@ export async function getApplyLocale(companyDefaultLocale?: string): Promise<Loc
 /**
  * Return the full resolved message dictionary for a locale.
  * Used by route-group layouts to hydrate the client-side TranslationsProvider.
+ *
+ * English is merged as the base so any locale-specific gaps fall back to
+ * English rather than the raw key. This matches the server-side `t()`
+ * fallback chain (locale → en → key).
  */
 export function getMessages(locale: Locale): Record<TranslationKey, string> {
-  return translations[locale];
+  if (locale === "en") return translations.en;
+  return { ...translations.en, ...translations[locale] };
 }
 
 export function t(key: TranslationKey, locale: Locale, vars?: Record<string, string>): string {
-  let value = translations[locale][key] ?? translations[DEFAULT_LOCALE][key] ?? key;
+  let value = translations[locale][key] ?? translations.en[key] ?? key;
 
   if (vars) {
     for (const [k, v] of Object.entries(vars)) {

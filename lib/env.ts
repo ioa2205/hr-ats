@@ -13,9 +13,17 @@ const envSchema = z.object({
   ESKIZ_API_URL: z.url().optional(),
   ESKIZ_SENDER_NAME: z.string().min(1).optional(),
   RESEND_API_KEY: z.string().min(1).optional(),
+  RESEND_WEBHOOK_SECRET: z.string().min(1).optional(),
   EMAIL_FROM: z.string().min(1).default("HR ATS <noreply@resend.dev>"),
   TELEGRAM_BOT_TOKEN: z.string().min(1).optional(),
   TELEGRAM_INBOX_CHAT_ID: z.string().min(1).optional(),
+  // Click billing — placeholders allowed in dev. instrumentation.ts logs a
+  // WARN when the merchant_id is left as the placeholder string in production.
+  CLICK_MERCHANT_ID: z.string().min(1).default("CHANGE_ME_CLICK_MERCHANT_ID"),
+  CLICK_SERVICE_ID: z.string().min(1).default("CHANGE_ME_CLICK_SERVICE_ID"),
+  CLICK_MERCHANT_USER_ID: z.string().min(1).default("CHANGE_ME_CLICK_MERCHANT_USER_ID"),
+  CLICK_SECRET_KEY: z.string().min(1).default("CHANGE_ME_CLICK_SECRET_KEY"),
+  CLICK_ENV: z.enum(["sandbox", "prod"]).default("sandbox"),
 });
 
 type Env = z.infer<typeof envSchema>;

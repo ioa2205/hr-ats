@@ -31,44 +31,8 @@ async function currentActor() {
   };
 }
 
-export async function requestUpgrade(): Promise<BillingActionResult> {
-  const actor = await currentActor();
-
-  const h = await headers();
-  const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
-  const rl = await rateLimit({
-    key: `billing-upgrade:${actor.userId}:${ip}`,
-    limit: 5,
-    windowSeconds: 3600,
-  });
-  if (!rl.allowed) return { ok: false, error: "too_many" };
-
-  const admin = createAdminClient();
-  const { error } = await admin.from("contact_messages").insert({
-    name: actor.fullName,
-    email: actor.email,
-    company: actor.companyName,
-    message: `[billing-upgrade] workspace "${actor.companyName}" requests a Pro plan upgrade.`,
-    locale: actor.locale,
-    source: "billing-upgrade",
-  });
-  if (error) {
-    logger.error({ err: error, userId: actor.userId }, "[billing] upgrade request insert failed");
-    return { ok: false, error: "generic" };
-  }
-
-  await admin.from("audit_log").insert({
-    company_id: actor.companyId,
-    actor: "hr",
-    actor_user_id: actor.userId,
-    action: "settings.billing.request_upgrade",
-    entity_type: "contact_messages",
-    entity_id: null,
-    metadata: { company_name: actor.companyName },
-  });
-
-  return { ok: true };
-}
+// requestUpgrade() removed in pre-GA hardening (P1-8). The Upgrade button now
+// redirects to the Click hosted checkout page via /api/billing/checkout.
 
 export async function requestCancel(input: unknown): Promise<BillingActionResult> {
   const parsed = cancelSchema.safeParse(input);

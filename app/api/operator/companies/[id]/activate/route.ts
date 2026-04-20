@@ -2,8 +2,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireOperatorApi } from "@/lib/auth/guards";
 import { logger } from "@/lib/logger";
+import { extractRequestContext, writeOperatorAudit } from "@/lib/operator/audit-log";
 
-export async function POST(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const auth = await requireOperatorApi();
     if (!auth.ok) {
@@ -37,14 +38,14 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
       return NextResponse.json({ error: "Update failed" }, { status: 500 });
     }
 
-    await admin.from("audit_log").insert({
-      actor_user_id: auth.user.id,
-      company_id: id,
-      actor: auth.user.email ?? "operator",
-      action: "company.activated",
-      entity_type: "company",
-      entity_id: id,
-      metadata: { company_name: company.name, operator_id: auth.user.id },
+    const { ip, userAgent } = extractRequestContext(request.headers);
+    await writeOperatorAudit({
+      actorUserId: auth.user.id,
+      action: "operator.company.resume",
+      targetCompanyId: id,
+      metadata: { company_name: company.name },
+      ip,
+      userAgent,
     });
 
     logger.info(

@@ -5,6 +5,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { incrementCvQuota } from "@/lib/companies/quota";
 import { dispatchNotification } from "@/lib/notifications/dispatch";
 import { logger } from "@/lib/logger";
+import { validatePdfBuffer } from "@/lib/pdf/validate";
 import type { HardRequirement } from "@/types";
 
 export const runtime = "nodejs";
@@ -12,7 +13,6 @@ export const maxDuration = 30;
 
 const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const MAX_CV_SIZE = 5 * 1024 * 1024; // 5MB
-const PDF_MAGIC = "%PDF-";
 
 function getClientIp(req: NextRequest): string {
   return (
@@ -159,17 +159,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "invalid_file" }, { status: 400 });
     }
 
-    // Magic bytes check
-    const headerBytes = await cv.slice(0, 5).text();
-    if (headerBytes !== PDF_MAGIC) {
+    // 9. Structural PDF validation (magic + %%EOF + /Root trailer reference).
+    // Rejects polyglots disguised as PDFs.
+    const cvBuffer = Buffer.from(await cv.arrayBuffer());
+    const pdfCheck = validatePdfBuffer(cvBuffer);
+    if (!pdfCheck.ok) {
+      logger.info(
+        { context: "apply", ip, reason: pdfCheck.reason },
+        "Rejected non-PDF upload",
+      );
       return NextResponse.json({ error: "invalid_file" }, { status: 400 });
     }
 
-    // 9. Generate candidate and upload CV (path includes company_id for tenant isolation)
+    // 10. Generate candidate and upload CV (path includes company_id for tenant isolation)
     const candidateId = crypto.randomUUID();
     const cvPath = `${posting.company_id}/${posting.id}/${candidateId}/cv.pdf`;
-
-    const cvBuffer = Buffer.from(await cv.arrayBuffer());
     const { error: uploadError } = await supabase.storage.from("cvs").upload(cvPath, cvBuffer, {
       contentType: "application/pdf",
       upsert: true,

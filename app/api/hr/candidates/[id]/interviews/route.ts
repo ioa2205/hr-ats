@@ -2,12 +2,20 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireCompanyAccessApi } from "@/lib/auth/guards";
-import { unwrapEmbed } from "@/lib/supabase/embed";
-import { canScheduleInterview } from "@/lib/companies/quota";
 import { logger } from "@/lib/logger";
 import { CreateInterviewRequestSchema } from "@/lib/interviews/validators";
 
 export const runtime = "nodejs";
+
+interface BookInterviewResult {
+  ok: boolean;
+  id?: string;
+  public_token?: string;
+  expires_at?: string;
+  error?: string;
+  used?: number;
+  limit?: number;
+}
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id: candidateId } = await params;
@@ -28,68 +36,68 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     }
 
     const admin = createAdminClient();
-    const { data: candidate } = await admin
+
+    // Look up the candidate's job to pass job_posting_id into the RPC. The RPC
+    // also validates company ownership; this lookup just gives us a nice 404.
+    const { data: candidateJoin } = await admin
       .from("candidates")
-      .select("id, full_name, status, job_postings!inner(id, company_id)")
+      .select("id, job_postings!inner(id, company_id)")
       .eq("id", candidateId)
       .maybeSingle();
 
-    if (!candidate) {
+    const jobRaw = (candidateJoin?.job_postings ?? null) as
+      | { id: string; company_id: string }
+      | { id: string; company_id: string }[]
+      | null;
+    const job = Array.isArray(jobRaw) ? (jobRaw[0] ?? null) : jobRaw;
+
+    if (!candidateJoin || !job || job.company_id !== access.companyId) {
       return NextResponse.json({ error: "not_found" }, { status: 404 });
     }
-    const job = unwrapEmbed<{ id: string; company_id: string }>(candidate.job_postings);
-    if (!job || job.company_id !== access.companyId) {
-      return NextResponse.json({ error: "not_found" }, { status: 404 });
-    }
 
-    const quota = await canScheduleInterview(access.companyId);
-    if (!quota.allowed) {
-      return NextResponse.json(
-        { error: quota.reason ?? "quota_exceeded", used: quota.used, limit: quota.limit },
-        { status: 402 },
-      );
-    }
-
-    const { data: created, error: createErr } = await admin
-      .from("interview_requests")
-      .insert({
-        company_id: access.companyId,
-        candidate_id: candidateId,
-        job_posting_id: job.id,
-        created_by: access.user.id,
-        duration_minutes: parsed.data.duration_minutes,
-        location_kind: parsed.data.location_kind,
-        location_detail: parsed.data.location_detail ?? null,
-        hr_message: parsed.data.hr_message ?? null,
-      })
-      .select("id, public_token, expires_at")
-      .single();
-
-    if (createErr || !created) {
-      logger.error(
-        { context: "interview-create", err: createErr, candidateId },
-        "Failed to create interview request",
-      );
-      return NextResponse.json({ error: "create_failed" }, { status: 500 });
-    }
-
-    const slotsRows = parsed.data.slot_start_ats
+    const slotsSorted = parsed.data.slot_start_ats
       .slice()
-      .sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
-      .map((iso, idx) => ({
-        request_id: created.id,
-        start_at: iso,
-        position: idx,
-      }));
+      .sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
-    const { error: slotsErr } = await admin.from("interview_slots").insert(slotsRows);
-    if (slotsErr) {
-      await admin.from("interview_requests").delete().eq("id", created.id);
+    const { data: rpcData, error: rpcErr } = await admin.rpc("book_interview_request", {
+      p_company_id: access.companyId,
+      p_candidate_id: candidateId,
+      p_job_posting_id: job.id,
+      p_created_by: access.user.id,
+      p_duration_minutes: parsed.data.duration_minutes,
+      p_location_kind: parsed.data.location_kind,
+      p_location_detail: parsed.data.location_detail ?? null,
+      p_hr_message: parsed.data.hr_message ?? null,
+      p_slot_start_ats: slotsSorted,
+    });
+
+    if (rpcErr) {
       logger.error(
-        { context: "interview-create", err: slotsErr, candidateId },
-        "Failed to create interview slots; rolled back",
+        { context: "interview-create", err: rpcErr, candidateId },
+        "book_interview_request RPC failed",
       );
       return NextResponse.json({ error: "create_failed" }, { status: 500 });
+    }
+
+    const result = rpcData as BookInterviewResult | null;
+    if (!result) {
+      return NextResponse.json({ error: "create_failed" }, { status: 500 });
+    }
+
+    if (!result.ok) {
+      const errorCode = result.error ?? "unknown";
+      const status =
+        errorCode === "candidate_not_found" || errorCode === "job_not_found"
+          ? 404
+          : errorCode === "no_subscription" ||
+              errorCode === "subscription_inactive" ||
+              errorCode === "scheduling_quota_exceeded"
+            ? 402
+            : 400;
+      return NextResponse.json(
+        { error: errorCode, used: result.used, limit: result.limit },
+        { status },
+      );
     }
 
     await admin.from("audit_log").insert({
@@ -98,18 +106,18 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       actor: "hr",
       action: "interview.requested",
       entity_type: "interview_request",
-      entity_id: created.id,
+      entity_id: result.id,
       metadata: {
         candidate_id: candidateId,
-        slots: parsed.data.slot_start_ats.length,
+        slots: slotsSorted.length,
       },
     });
 
     return NextResponse.json({
       ok: true,
-      id: created.id,
-      public_token: created.public_token,
-      expires_at: created.expires_at,
+      id: result.id,
+      public_token: result.public_token,
+      expires_at: result.expires_at,
     });
   } catch (err) {
     logger.error(

@@ -1,9 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { env } from "@/lib/env";
 import { logger } from "@/lib/logger";
+import { extractRequestContext, writeOperatorAudit } from "@/lib/operator/audit-log";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const {
@@ -52,7 +54,7 @@ export async function POST() {
       });
 
       if (!linkError && linkData) {
-        const verifyUrl = new URL("/auth/callback", process.env.APP_URL ?? "http://localhost:3000");
+        const verifyUrl = new URL("/auth/callback", env.APP_URL);
         verifyUrl.searchParams.set("token_hash", linkData.properties.hashed_token);
         verifyUrl.searchParams.set("type", "magiclink");
         verifyUrl.searchParams.set("next", "/operator");
@@ -60,18 +62,14 @@ export async function POST() {
       }
     }
 
-    // Audit log — both operator and target captured
-    await admin.from("audit_log").insert({
-      actor_user_id: session.operator_id,
-      actor: operatorProfile?.email ?? "operator",
-      action: "impersonation.ended",
-      entity_type: "user",
-      entity_id: session.target_user_id,
-      metadata: {
-        operator_id: session.operator_id,
-        target_user_id: session.target_user_id,
-        session_id: session.id,
-      },
+    const { ip, userAgent } = extractRequestContext(request.headers);
+    await writeOperatorAudit({
+      actorUserId: session.operator_id,
+      action: "operator.impersonate.end",
+      targetUserId: session.target_user_id,
+      metadata: { session_id: session.id },
+      ip,
+      userAgent,
     });
 
     logger.info(

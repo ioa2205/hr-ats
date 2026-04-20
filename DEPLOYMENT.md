@@ -263,3 +263,117 @@ supabase db push
 - **Production:** `<fill after go-live>`
 
 (These are intentionally left blank until the deploy happens — update both lines as part of the go-live checklist.)
+
+---
+
+## 11. Supabase auth email templates (manual upload)
+
+Source HTML lives in [`supabase/templates/`](supabase/templates/). Supabase's Management API doesn't expose template writes, so this is a **manual dashboard step** per environment (staging and prod both).
+
+Per-environment checklist:
+
+- [ ] Dashboard → Authentication → Email Templates → **Confirm signup**: paste `signup-confirm.<locale>.html`, subject from the `<!-- subject: -->` comment
+- [ ] Dashboard → **Reset password**: paste `reset-password.<locale>.html`, subject likewise
+- [ ] Dashboard → **Magic link**: paste `magic-link.<locale>.html`, subject likewise
+- [ ] Dashboard → **Invite user**: paste `invite.<locale>.html`, subject likewise
+- [ ] Project Settings → Auth → **Sender name**: `TezHR`
+- [ ] Project Settings → Auth → **Reply-to**: `support@tezhr.uz`
+- [ ] Send a test from each template; confirm the action link resolves to `{APP_URL}/auth/callback`
+
+Supabase doesn't natively pick per-user locales for its built-in email sender. Configure Russian (primary market locale) and rely on our Resend pipeline for every other transactional email. Keep the ru/uz/en variants in-repo as reference for future per-locale rollouts.
+
+Any template edit here must be re-pasted into the dashboard — there is no automation.
+
+---
+
+## 12. Click payments (billing)
+
+Click is the primary Uzbek payment rail. The integration is a hosted-page redirect + webhook, so no SDK is required — `lib/billing/click.ts` handles URL construction and MD5 signature verification per Click's merchant spec.
+
+### Required env vars
+
+Set these in Railway **before** going live. Defaults are `CHANGE_ME_*` placeholders that fail the `/api/billing/checkout` route early with `click_not_configured` rather than letting users hit a broken Click page.
+
+| Variable                 | Source (Click merchant cabinet)                     |
+| ------------------------ | --------------------------------------------------- |
+| `CLICK_MERCHANT_ID`      | Merchant → Settings → ID                            |
+| `CLICK_SERVICE_ID`       | Merchant → Services → target service ID             |
+| `CLICK_MERCHANT_USER_ID` | Merchant → Integrations → Merchant User ID          |
+| `CLICK_SECRET_KEY`       | Merchant → Integrations → Secret key                |
+| `CLICK_ENV`              | `sandbox` or `prod` (defaults to `sandbox`)         |
+
+### Webhook
+
+Configure the webhook URL in Click merchant cabinet as:
+```
+https://<your-domain>/api/webhooks/click
+```
+
+The endpoint handles both `action=0` (Prepare) and `action=1` (Complete) events. Idempotent on `click_trans_id` — Click's retries on the same transaction return the cached response without double-crediting.
+
+### Flow
+
+1. HR user clicks **Upgrade** in `/hr/settings/billing`.
+2. Client POSTs `/api/billing/checkout` with `plan_code`. The route inserts a `pending` row in `subscription_invoices` and returns the Click hosted-page URL.
+3. Browser redirects to Click. User completes payment.
+4. Click POSTs the webhook twice (prepare, then complete). On `complete + error=0`:
+   - `subscription_invoices.status` → `paid`
+   - `subscriptions.status` → `active`, `plan_id` set, `current_period_end = now + 1 month`
+5. User is redirected back to `/hr/settings/billing?invoice=<id>`.
+
+### Deferred (P0-2b, out of scope for this round)
+
+Payme integration, prorated upgrades mid-period, annual billing discount, and emailed receipts (the notification pipeline from P0-1 can carry the receipt but a trilingual receipt template is not yet committed).
+
+---
+
+## 13. Operator bootstrap and audit
+
+### Initial operator seed
+
+The first operator on a fresh environment is seeded via `scripts/grant-operator.ts`, not through the normal two-operator approval flow (which requires at least one existing operator).
+
+```bash
+# Source the env first (so NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY are set)
+set -a; source .env.local; set +a
+
+pnpm tsx scripts/grant-operator.ts --email=founder@tezhr.uz --reason="initial seed"
+```
+
+What it does:
+- Upserts `pending_operators(email, reason)` so any future signup with that email auto-elevates.
+- If a profile for that email already exists, flips `is_operator=true` immediately. The user must log out and back in to refresh their JWT `is_operator` claim.
+- Writes an `operator_audit_log` entry with `action='operator.grant.bootstrap'`.
+
+After the initial seed, all further operator grants go through `/operator/users/{id}/promote` which requires a second operator to approve in the Inbox.
+
+### Audit log separation
+
+Operator actions (impersonation, suspend, resume, promotion approve/reject, bootstrap grant) write to `operator_audit_log` — separate from the company-scoped `audit_log`. `operator_audit_log` captures IP + user-agent on every write and is append-only (UPDATE/DELETE raise via trigger). Only operators can `SELECT` it; inserts are service-role only.
+
+---
+
+## 14. Migration idempotency convention
+
+Adopted 2026-04-20 during the pre-GA hardening pass (see `HARDENING_NOTES.md`).
+
+Every new migration under `supabase/migrations/` MUST use idempotent DDL so a partial re-apply or repeated `supabase db push` against the same state succeeds:
+
+- `create table if not exists …`
+- `create index if not exists …`
+- `drop trigger if exists … on <table>;` then `create trigger …`
+- `drop policy if exists … on <table>;` then `create policy …`
+- `create or replace function …` (already idempotent)
+- `create or replace view …`
+
+`CREATE POLICY IF NOT EXISTS` is **not** supported by Postgres — always pair with `DROP POLICY IF EXISTS`.
+
+**Do not edit applied migrations** to retrofit these guards. Migration `20260420000210_idempotency_guard.sql` re-declares the key triggers and asserts the existence of tenant-critical policies from migrations 019 / 020 as a belt-and-braces check. The original migrations stay untouched.
+
+Verification after any migration change:
+
+```bash
+supabase db reset          # apply all migrations from scratch
+supabase db push           # apply new migrations (no-op on a fresh reset)
+supabase db reset          # run again — must still be clean
+```

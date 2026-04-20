@@ -12,6 +12,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { env } from "@/lib/env";
 import { requireCompanyAccess } from "@/lib/auth/guards";
 import { canWrite as canWriteQuota } from "@/lib/companies/quota";
 import {
@@ -61,8 +62,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   if (!job) notFound();
 
   const writable = await canWriteQuota(companyId);
-  const appUrl = process.env.APP_URL ?? "http://localhost:3000";
-  const publicUrl = `${appUrl}/apply/${job.public_token}`;
+  const publicUrl = `${env.APP_URL}/apply/${job.public_token}`;
   const requirements = (job.hard_requirements ?? []) as HardRequirement[];
 
   // Resolve title + description to the viewer's locale (fallback to legacy column).
