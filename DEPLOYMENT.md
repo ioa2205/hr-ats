@@ -266,7 +266,48 @@ supabase db push
 
 ---
 
-## 11. Operator bootstrap and audit
+## 11. Click payments (billing)
+
+Click is the primary Uzbek payment rail. The integration is a hosted-page redirect + webhook, so no SDK is required — `lib/billing/click.ts` handles URL construction and MD5 signature verification per Click's merchant spec.
+
+### Required env vars
+
+Set these in Railway **before** going live. Defaults are `CHANGE_ME_*` placeholders that fail the `/api/billing/checkout` route early with `click_not_configured` rather than letting users hit a broken Click page.
+
+| Variable                 | Source (Click merchant cabinet)                     |
+| ------------------------ | --------------------------------------------------- |
+| `CLICK_MERCHANT_ID`      | Merchant → Settings → ID                            |
+| `CLICK_SERVICE_ID`       | Merchant → Services → target service ID             |
+| `CLICK_MERCHANT_USER_ID` | Merchant → Integrations → Merchant User ID          |
+| `CLICK_SECRET_KEY`       | Merchant → Integrations → Secret key                |
+| `CLICK_ENV`              | `sandbox` or `prod` (defaults to `sandbox`)         |
+
+### Webhook
+
+Configure the webhook URL in Click merchant cabinet as:
+```
+https://<your-domain>/api/webhooks/click
+```
+
+The endpoint handles both `action=0` (Prepare) and `action=1` (Complete) events. Idempotent on `click_trans_id` — Click's retries on the same transaction return the cached response without double-crediting.
+
+### Flow
+
+1. HR user clicks **Upgrade** in `/hr/settings/billing`.
+2. Client POSTs `/api/billing/checkout` with `plan_code`. The route inserts a `pending` row in `subscription_invoices` and returns the Click hosted-page URL.
+3. Browser redirects to Click. User completes payment.
+4. Click POSTs the webhook twice (prepare, then complete). On `complete + error=0`:
+   - `subscription_invoices.status` → `paid`
+   - `subscriptions.status` → `active`, `plan_id` set, `current_period_end = now + 1 month`
+5. User is redirected back to `/hr/settings/billing?invoice=<id>`.
+
+### Deferred (P0-2b, out of scope for this round)
+
+Payme integration, prorated upgrades mid-period, annual billing discount, and emailed receipts (the notification pipeline from P0-1 can carry the receipt but a trilingual receipt template is not yet committed).
+
+---
+
+## 12. Operator bootstrap and audit
 
 ### Initial operator seed
 
@@ -292,7 +333,7 @@ Operator actions (impersonation, suspend, resume, promotion approve/reject, boot
 
 ---
 
-## 12. Migration idempotency convention
+## 13. Migration idempotency convention
 
 Adopted 2026-04-20 during the pre-GA hardening pass (see `HARDENING_NOTES.md`).
 
