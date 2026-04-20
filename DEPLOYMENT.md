@@ -263,3 +263,30 @@ supabase db push
 - **Production:** `<fill after go-live>`
 
 (These are intentionally left blank until the deploy happens — update both lines as part of the go-live checklist.)
+
+---
+
+## 11. Migration idempotency convention
+
+Adopted 2026-04-20 during the pre-GA hardening pass (see `HARDENING_NOTES.md`).
+
+Every new migration under `supabase/migrations/` MUST use idempotent DDL so a partial re-apply or repeated `supabase db push` against the same state succeeds:
+
+- `create table if not exists …`
+- `create index if not exists …`
+- `drop trigger if exists … on <table>;` then `create trigger …`
+- `drop policy if exists … on <table>;` then `create policy …`
+- `create or replace function …` (already idempotent)
+- `create or replace view …`
+
+`CREATE POLICY IF NOT EXISTS` is **not** supported by Postgres — always pair with `DROP POLICY IF EXISTS`.
+
+**Do not edit applied migrations** to retrofit these guards. Migration `20260420000210_idempotency_guard.sql` re-declares the key triggers and asserts the existence of tenant-critical policies from migrations 019 / 020 as a belt-and-braces check. The original migrations stay untouched.
+
+Verification after any migration change:
+
+```bash
+supabase db reset          # apply all migrations from scratch
+supabase db push           # apply new migrations (no-op on a fresh reset)
+supabase db reset          # run again — must still be clean
+```
