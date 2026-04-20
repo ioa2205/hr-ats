@@ -266,7 +266,27 @@ supabase db push
 
 ---
 
-## 11. Click payments (billing)
+## 11. Supabase auth email templates (manual upload)
+
+Source HTML lives in [`supabase/templates/`](supabase/templates/). Supabase's Management API doesn't expose template writes, so this is a **manual dashboard step** per environment (staging and prod both).
+
+Per-environment checklist:
+
+- [ ] Dashboard → Authentication → Email Templates → **Confirm signup**: paste `signup-confirm.<locale>.html`, subject from the `<!-- subject: -->` comment
+- [ ] Dashboard → **Reset password**: paste `reset-password.<locale>.html`, subject likewise
+- [ ] Dashboard → **Magic link**: paste `magic-link.<locale>.html`, subject likewise
+- [ ] Dashboard → **Invite user**: paste `invite.<locale>.html`, subject likewise
+- [ ] Project Settings → Auth → **Sender name**: `TezHR`
+- [ ] Project Settings → Auth → **Reply-to**: `support@tezhr.uz`
+- [ ] Send a test from each template; confirm the action link resolves to `{APP_URL}/auth/callback`
+
+Supabase doesn't natively pick per-user locales for its built-in email sender. Configure Russian (primary market locale) and rely on our Resend pipeline for every other transactional email. Keep the ru/uz/en variants in-repo as reference for future per-locale rollouts.
+
+Any template edit here must be re-pasted into the dashboard — there is no automation.
+
+---
+
+## 12. Click payments (billing)
 
 Click is the primary Uzbek payment rail. The integration is a hosted-page redirect + webhook, so no SDK is required — `lib/billing/click.ts` handles URL construction and MD5 signature verification per Click's merchant spec.
 
@@ -307,7 +327,7 @@ Payme integration, prorated upgrades mid-period, annual billing discount, and em
 
 ---
 
-## 12. Operator bootstrap and audit
+## 13. Operator bootstrap and audit
 
 ### Initial operator seed
 
@@ -333,7 +353,7 @@ Operator actions (impersonation, suspend, resume, promotion approve/reject, boot
 
 ---
 
-## 13. Migration idempotency convention
+## 14. Migration idempotency convention
 
 Adopted 2026-04-20 during the pre-GA hardening pass (see `HARDENING_NOTES.md`).
 

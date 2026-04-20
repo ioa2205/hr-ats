@@ -1,0 +1,23 @@
+<!-- subject: Sign in to TezHR -->
+<!DOCTYPE html>
+<html>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f1ea; margin: 0; padding: 24px;">
+  <div style="max-width: 480px; margin: 0 auto; background: #ffffff; border-radius: 12px; padding: 32px; border: 1px solid #e7e0d1;">
+    <div style="font-weight: 700; font-size: 15px; letter-spacing: 0.02em; color: #1c1b1f; margin-bottom: 16px;">TezHR</div>
+    <h2 style="margin: 0 0 8px; color: #1c1b1f; font-size: 20px;">Your sign-in link</h2>
+    <p style="color: #49454f; margin: 0 0 24px; font-size: 14px; line-height: 1.5;">
+      Click below to sign in to TezHR as <strong>{{ .Email }}</strong>. No password needed.
+    </p>
+    <a href="{{ .ConfirmationURL }}"
+       style="display: inline-block; background: #b54a1f; color: #ffffff; padding: 12px 24px; border-radius: 100px; text-decoration: none; font-weight: 500; font-size: 14px;">
+      Sign in
+    </a>
+    <p style="color: #79747e; font-size: 12px; margin-top: 24px; line-height: 1.4;">
+      This link is single-use and expires in 1 hour. If you didn't request it, ignore this email.
+    </p>
+    <p style="color: #79747e; font-size: 11.5px; margin-top: 28px; line-height: 1.4;">
+      TezHR · support@tezhr.uz
+    </p>
+  </div>
+</body>
+</html>
