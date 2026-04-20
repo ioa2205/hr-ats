@@ -81,6 +81,14 @@ The hardening spec the human wrote was a point-in-time snapshot. Re-verification
 - [x] PR 1 — P0-5 APP_URL hardened
 - [x] PR 2 — P0-6 migration idempotency
 - [x] PR 3 — P0-3 interview quota TOCTOU (concurrency test deferred: requires live Supabase)
+- [x] PR 4 — P0-4 interview slot partial unique index
+- [x] PR 5 — P1-9 verify resend + P1-10 reset Playwright
+- [x] PR 6 — P1-11 PDF validation
+- [x] PR 7 — P1-13 grant-operator + P1-14 operator_audit_log
+- [x] PR 8 — P2-16 i18n parity + fallback
+- [x] PR 9 — P2-17 PII redaction
+- [x] PR 10 — P2-15 candidate_latest_ai_cost view
+- [x] PR 11 — P0-1 notification pipeline (deliveries table + dispatch refactor + Resend webhook). **Deferred**: Edge Function `dispatch-notification-retries` to back the pg_cron retry job (cron job is scheduled but the function endpoint is a 404 until deployed); Playwright for new_application + interview_booked email assertions (requires mailpit in supabase local config).
 - [ ] PR 4 — P0-4 interview slot double-booking
 - [ ] PR 5 — P1-9 verify resend + P1-10 reset Playwright
 - [ ] PR 6 — P1-11 PDF validation

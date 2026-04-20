@@ -13,6 +13,7 @@ const envSchema = z.object({
   ESKIZ_API_URL: z.url().optional(),
   ESKIZ_SENDER_NAME: z.string().min(1).optional(),
   RESEND_API_KEY: z.string().min(1).optional(),
+  RESEND_WEBHOOK_SECRET: z.string().min(1).optional(),
   EMAIL_FROM: z.string().min(1).default("HR ATS <noreply@resend.dev>"),
   TELEGRAM_BOT_TOKEN: z.string().min(1).optional(),
   TELEGRAM_INBOX_CHAT_ID: z.string().min(1).optional(),
