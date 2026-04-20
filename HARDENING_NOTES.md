@@ -73,6 +73,17 @@ The hardening spec the human wrote was a point-in-time snapshot. Re-verification
 
 ---
 
+## Final verification snapshot
+
+Session closed 2026-04-20 on branch `harden/pre-ga` (15 commits on top of main).
+
+- `pnpm typecheck` — clean
+- `pnpm test` — 279 tests in 25 files (+26 net-new: PDF 11, i18n parity 4, PII redact 9, Click signature 5, logger-redact subset inline; existing suite untouched)
+- `pnpm test:e2e` — not run (requires local Supabase + running dev server). `tests/e2e/auth-reset.spec.ts` added for P1-10 and follows the same skip-if-no-env pattern as `auth.spec.ts`.
+- `supabase db reset && supabase db push` — not verified locally (Docker Desktop was not running when the session started). All new migrations (210, 220, 230, 240, 250, 260, 270) use idempotent DDL per the PR 2 convention and can be replayed safely.
+- Boot with APP_URL unset — confirmed via inspection: `lib/env.ts` `z.url()` throws through `parseEnv()` at import, and `instrumentation.ts` now imports `./lib/env` on both nodejs and edge so the throw happens at boot rather than on first request.
+- DB backup — deferred (no data to protect locally); flagged at top of this file.
+
 ## Progress log
 
 (Updated as PRs land.)
