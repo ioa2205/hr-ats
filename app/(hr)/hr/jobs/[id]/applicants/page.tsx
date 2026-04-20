@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft, Link2, Download, MoreHorizontal } from "lucide-react";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { env } from "@/lib/env";
 import { requireCompanyAccess } from "@/lib/auth/guards";
 import { StatusPill, TezButton } from "@/components/hr/design";
 import { ApplicantsClient } from "@/components/hr/applicants/applicants-client";
@@ -196,7 +197,7 @@ export default async function ApplicantsPage({
         postingId={id}
         postingTitle={shownTitle}
         companyId={companyId}
-        appUrl={process.env.APP_URL ?? "http://localhost:3000"}
+        appUrl={env.APP_URL}
         initialCandidates={(candidates ?? []) as Candidate[]}
         initialScreenedOut={
           (screenedOut ?? []) as Pick<Candidate, "id" | "full_name" | "created_at" | "status">[]

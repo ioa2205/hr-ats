@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { env } from "@/lib/env";
 import { requireOperatorApi } from "@/lib/auth/guards";
 import { logger } from "@/lib/logger";
 import { z } from "zod";
@@ -125,7 +126,7 @@ export async function POST(request: NextRequest) {
     );
 
     // The hashed_token from generateLink is used to construct the verification URL
-    const verifyUrl = new URL("/auth/callback", process.env.APP_URL ?? request.nextUrl.origin);
+    const verifyUrl = new URL("/auth/callback", env.APP_URL);
     verifyUrl.searchParams.set("token_hash", linkData.properties.hashed_token);
     verifyUrl.searchParams.set("type", "magiclink");
     verifyUrl.searchParams.set("impersonation_session", session.id);

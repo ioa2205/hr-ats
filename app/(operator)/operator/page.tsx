@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { DashboardView, type DashboardData } from "@/components/operator/dashboard/dashboard-view";
+import { env } from "@/lib/env";
 import { getLocale, t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +11,7 @@ async function fetchInitial(): Promise<DashboardData | null> {
   const cookie = h.get("cookie") ?? "";
   const host = h.get("host");
   const proto = h.get("x-forwarded-proto") ?? "http";
-  const base = host ? `${proto}://${host}` : (process.env.APP_URL ?? "http://localhost:3000");
+  const base = host ? `${proto}://${host}` : env.APP_URL;
 
   try {
     const res = await fetch(`${base}/api/operator/dashboard?range=30`, {

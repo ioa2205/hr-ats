@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { env } from "@/lib/env";
 import { getApplyLocale, t } from "@/lib/i18n";
 import { pickLocalized } from "@/lib/i18n/pick-localized";
 import type { Locale, TranslationKey } from "@/lib/i18n/types";
@@ -87,8 +88,7 @@ export async function generateMetadata({
   );
   const description = markdownToPlainText(rawDescription, 160);
 
-  const appUrl = process.env.APP_URL ?? "http://localhost:3000";
-  const url = `${appUrl}/apply/${posting.public_token}`;
+  const url = `${env.APP_URL}/apply/${posting.public_token}`;
   const fullTitle = `${title} — ${company.name} · TezHR`;
 
   return {
@@ -190,8 +190,7 @@ export default async function ApplyPage({ params }: { params: Promise<{ token: s
     company.default_locale,
   );
 
-  const appUrl = process.env.APP_URL ?? "http://localhost:3000";
-  const canonical = `${appUrl}/apply/${posting.public_token}`;
+  const canonical = `${env.APP_URL}/apply/${posting.public_token}`;
   const ogLocale = pickOgLocale(company.default_locale);
   const seoTitle = pickLocalized(
     { ru: posting.title_ru, uz: posting.title_uz, en: posting.title_en },

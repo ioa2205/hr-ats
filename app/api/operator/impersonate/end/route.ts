@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { env } from "@/lib/env";
 import { logger } from "@/lib/logger";
 
 export async function POST() {
@@ -52,7 +53,7 @@ export async function POST() {
       });
 
       if (!linkError && linkData) {
-        const verifyUrl = new URL("/auth/callback", process.env.APP_URL ?? "http://localhost:3000");
+        const verifyUrl = new URL("/auth/callback", env.APP_URL);
         verifyUrl.searchParams.set("token_hash", linkData.properties.hashed_token);
         verifyUrl.searchParams.set("type", "magiclink");
         verifyUrl.searchParams.set("next", "/operator");

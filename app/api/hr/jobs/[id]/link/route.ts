@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { env } from "@/lib/env";
 import { requireCompanyAccessApi } from "@/lib/auth/guards";
 import QRCode from "qrcode";
 import { logger } from "@/lib/logger";
@@ -25,8 +26,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    const appUrl = process.env.APP_URL ?? "http://localhost:3000";
-    const url = `${appUrl}/apply/${job.public_token}`;
+    const url = `${env.APP_URL}/apply/${job.public_token}`;
     const qrSvg = await QRCode.toString(url, { type: "svg", margin: 1, width: 200 });
 
     return NextResponse.json({ url, qr_svg: qrSvg });
