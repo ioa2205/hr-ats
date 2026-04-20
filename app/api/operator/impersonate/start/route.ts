@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { env } from "@/lib/env";
 import { requireOperatorApi } from "@/lib/auth/guards";
 import { logger } from "@/lib/logger";
+import { extractRequestContext, writeOperatorAudit } from "@/lib/operator/audit-log";
 import { z } from "zod";
 
 const bodySchema = z.object({
@@ -103,21 +104,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Failed to generate sign-in link" }, { status: 500 });
     }
 
-    // Audit log — both operator and target IDs captured
-    await admin.from("audit_log").insert({
-      actor_user_id: auth.user.id,
-      actor: auth.user.email ?? "operator",
-      action: "impersonation.started",
-      entity_type: "user",
-      entity_id: targetUserId,
+    const { ip, userAgent } = extractRequestContext(request.headers);
+
+    await writeOperatorAudit({
+      actorUserId: auth.user.id,
+      action: "operator.impersonate.start",
+      targetUserId,
       metadata: {
-        operator_id: auth.user.id,
-        target_user_id: targetUserId,
-        target_email: targetProfile.email,
-        target_name: targetProfile.full_name,
         session_id: session.id,
         reason,
+        target_email: targetProfile.email,
       },
+      ip,
+      userAgent,
     });
 
     logger.info(

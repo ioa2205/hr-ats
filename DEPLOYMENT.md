@@ -266,7 +266,33 @@ supabase db push
 
 ---
 
-## 11. Migration idempotency convention
+## 11. Operator bootstrap and audit
+
+### Initial operator seed
+
+The first operator on a fresh environment is seeded via `scripts/grant-operator.ts`, not through the normal two-operator approval flow (which requires at least one existing operator).
+
+```bash
+# Source the env first (so NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY are set)
+set -a; source .env.local; set +a
+
+pnpm tsx scripts/grant-operator.ts --email=founder@tezhr.uz --reason="initial seed"
+```
+
+What it does:
+- Upserts `pending_operators(email, reason)` so any future signup with that email auto-elevates.
+- If a profile for that email already exists, flips `is_operator=true` immediately. The user must log out and back in to refresh their JWT `is_operator` claim.
+- Writes an `operator_audit_log` entry with `action='operator.grant.bootstrap'`.
+
+After the initial seed, all further operator grants go through `/operator/users/{id}/promote` which requires a second operator to approve in the Inbox.
+
+### Audit log separation
+
+Operator actions (impersonation, suspend, resume, promotion approve/reject, bootstrap grant) write to `operator_audit_log` — separate from the company-scoped `audit_log`. `operator_audit_log` captures IP + user-agent on every write and is append-only (UPDATE/DELETE raise via trigger). Only operators can `SELECT` it; inserts are service-role only.
+
+---
+
+## 12. Migration idempotency convention
 
 Adopted 2026-04-20 during the pre-GA hardening pass (see `HARDENING_NOTES.md`).
 

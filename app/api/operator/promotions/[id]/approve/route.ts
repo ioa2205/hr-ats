@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireOperatorApi } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
+import { extractRequestContext, writeOperatorAudit } from "@/lib/operator/audit-log";
 
 const schema = z.object({ decision: z.enum(["approve", "reject"]) });
 
@@ -67,22 +68,18 @@ export async function POST(
     return NextResponse.json({ error: "update_failed" }, { status: 500 });
   }
 
-  await admin.from("audit_log").insert({
-    actor_user_id: auth.user.id,
-    actor: auth.user.email ?? "operator",
-    action: approve
-      ? promotion.kind === "promote"
-        ? "operator.promoted"
-        : "operator.demoted"
-      : "operator.promotion_rejected",
-    entity_type: "user",
-    entity_id: promotion.target_user_id as string,
+  const { ip, userAgent } = extractRequestContext(req.headers);
+  await writeOperatorAudit({
+    actorUserId: auth.user.id,
+    action: approve ? "operator.promotion.approve" : "operator.promotion.reject",
+    targetUserId: promotion.target_user_id as string,
     metadata: {
       promotion_id: promotionId,
       proposer_user_id: promotion.proposer_user_id,
-      approver_user_id: auth.user.id,
       kind: promotion.kind,
     },
+    ip,
+    userAgent,
   });
 
   return NextResponse.json({ ok: true, status: nextStatus });
