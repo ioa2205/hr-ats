@@ -78,9 +78,9 @@ The hardening spec the human wrote was a point-in-time snapshot. Re-verification
 (Updated as PRs land.)
 
 - [x] Phase 0 pre-flight: branch cut, baseline recorded, HARDENING_NOTES written.
-- [ ] PR 1 — P0-5 APP_URL hardened
-- [ ] PR 2 — P0-6 migration idempotency
-- [ ] PR 3 — P0-3 interview quota TOCTOU
+- [x] PR 1 — P0-5 APP_URL hardened
+- [x] PR 2 — P0-6 migration idempotency
+- [x] PR 3 — P0-3 interview quota TOCTOU (concurrency test deferred: requires live Supabase)
 - [ ] PR 4 — P0-4 interview slot double-booking
 - [ ] PR 5 — P1-9 verify resend + P1-10 reset Playwright
 - [ ] PR 6 — P1-11 PDF validation
