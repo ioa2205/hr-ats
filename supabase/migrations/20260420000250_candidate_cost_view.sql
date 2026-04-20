@@ -5,10 +5,12 @@
 -- recent successful attempt per candidate for use in the operator
 -- company-detail page's "recent analyses" table.
 
+-- candidates has no direct company_id column; tenancy is inherited via
+-- job_postings (see migration 009). Join through job_postings to expose it.
 create or replace view candidate_latest_ai_cost as
 select
   c.id                      as candidate_id,
-  c.company_id              as company_id,
+  j.company_id              as company_id,
   a.id                      as attempt_id,
   a.status                  as attempt_status,
   a.model                   as model,
@@ -18,6 +20,7 @@ select
   a.cost_usd                as cost_usd,
   a.created_at              as analyzed_at
 from candidates c
+join job_postings j on j.id = c.job_posting_id
 left join lateral (
   select *
     from ai_processing_attempts
