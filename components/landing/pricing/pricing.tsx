@@ -1,6 +1,6 @@
 import { getT } from "@/lib/i18n/server";
 import { formatUZS } from "@/lib/landing/format";
-import { SIGNUP_HREF } from "../shared";
+import { SIGNUP_HREF } from "../constants";
 import { ComparisonTable } from "./comparison-table";
 import { FAQ } from "./faq";
 import { PlanCard, PlanCtaLink } from "./plan-card";

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getT } from "@/lib/i18n/server";
 import { ArrowIcon, HandArrowIcon, Seal } from "../icons";
 import { RankingMockup } from "../mockups";
-import { SIGNUP_HREF } from "../shared";
+import { SIGNUP_HREF } from "../constants";
 import { LandingNav } from "../shell/nav";
 import { HeroDemoDialog } from "./hero-demo-dialog";
 import { HeroTrustStrip } from "./hero-trust-strip";

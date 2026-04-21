@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getT } from "@/lib/i18n/server";
 import { TelegramIcon, Wordmark } from "../icons";
-import { TELEGRAM_URL } from "../shared";
+import { TELEGRAM_URL } from "../constants";
 import { LocaleSwitcher } from "./locale-switcher";
 import { StatusPill } from "./status-pill";
 

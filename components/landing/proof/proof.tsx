@@ -3,7 +3,7 @@ import Image from "next/image";
 import { getT } from "@/lib/i18n/server";
 import { getLandingCustomers, getLandingCaseStudies } from "@/lib/landing/proof";
 import { ArrowIcon } from "../icons";
-import { SIGNUP_HREF } from "../shared";
+import { SIGNUP_HREF } from "../constants";
 
 export async function Proof() {
   const { locale, t } = await getT();

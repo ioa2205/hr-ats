@@ -8,10 +8,9 @@ import { setLocale as setLocaleAction } from "@/lib/i18n/actions";
 import { useTranslation } from "@/lib/i18n/provider";
 import type { Locale } from "@/lib/i18n/types";
 import { Icon, Wordmark } from "./mockups";
+import { LOGIN_HREF, SIGNUP_HREF, TELEGRAM_URL } from "./constants";
 
-export const TELEGRAM_URL = "https://t.me/ibodullo";
-export const SIGNUP_HREF = "/auth/signup";
-export const LOGIN_HREF = "/auth/login";
+export { LOGIN_HREF, SIGNUP_HREF, TELEGRAM_URL };
 
 const LOCALE_CODES: { code: Locale; label: string }[] = [
   { code: "ru", label: "RU" },

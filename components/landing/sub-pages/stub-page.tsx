@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { TranslationKey } from "@/lib/i18n/types";
 import { getT } from "@/lib/i18n/server";
 import { ArrowIcon } from "../icons";
-import { SIGNUP_HREF } from "../shared";
+import { SIGNUP_HREF } from "../constants";
 
 interface StubSection {
   titleKey: TranslationKey;

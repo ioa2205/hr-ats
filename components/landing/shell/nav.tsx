@@ -1,6 +1,6 @@
 import { getT } from "@/lib/i18n/server";
 import { Wordmark } from "../icons";
-import { LOGIN_HREF, SIGNUP_HREF } from "../shared";
+import { LOGIN_HREF, SIGNUP_HREF } from "../constants";
 import { ScrollSpyNav } from "./scroll-spy-nav";
 
 export interface NavItem {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getT } from "@/lib/i18n/server";
 import { ArrowIcon } from "../icons";
-import { SIGNUP_HREF } from "../shared";
+import { SIGNUP_HREF } from "../constants";
 import { ProContactDialog } from "../pricing/pro-contact-dialog";
 
 const FINAL_HREF = `${SIGNUP_HREF}?utm_source=landing&utm_section=final`;
