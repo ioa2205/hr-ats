@@ -14,11 +14,11 @@ export interface PlatformMetrics {
 async function fetchPlatformMetrics(): Promise<PlatformMetrics | null> {
   try {
     const supabase = createPublicClient();
+    // get_landing_metrics() is a SECURITY DEFINER wrapper over the
+    // landing_metrics materialized view. The MV itself is no longer
+    // directly selectable by anon/authenticated (see migration 280).
     const { data, error } = await supabase
-      .from("landing_metrics")
-      .select(
-        "total_companies, total_cvs_processed_lifetime, cvs_processed_today, avg_screening_seconds, refreshed_at",
-      )
+      .rpc("get_landing_metrics")
       .limit(1)
       .maybeSingle();
     if (error) {

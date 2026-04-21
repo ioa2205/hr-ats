@@ -1100,6 +1100,16 @@ export type Database = {
           total_bytes: number;
         }[];
       };
+      get_landing_metrics: {
+        Args: never;
+        Returns: {
+          total_companies: number | null;
+          total_cvs_processed_lifetime: number | null;
+          cvs_processed_today: number | null;
+          avg_screening_seconds: number | null;
+          refreshed_at: string | null;
+        }[];
+      };
       increment_cv_quota: { Args: { p_company_id: string }; Returns: undefined };
       show_limit: { Args: never; Returns: number };
       show_trgm: { Args: { "": string }; Returns: string[] };
