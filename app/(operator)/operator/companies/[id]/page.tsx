@@ -183,6 +183,8 @@ export default function CompanyDetailPage() {
 
   const { company, members, subscription, usage } = data;
   const suspended = company.status === "suspended";
+  const deleted = company.status === "deleted";
+  const inactive = suspended || deleted;
 
   return (
     <div className="space-y-6">
@@ -207,7 +209,11 @@ export default function CompanyDetailPage() {
         <div>
           <div className="flex items-center gap-3">
             <h1 className="text-on-surface text-2xl font-semibold">{company.name}</h1>
-            <Badge tone={suspended ? "danger" : "success"} variant="dot" size="sm">
+            <Badge
+              tone={deleted ? "neutral" : suspended ? "danger" : "success"}
+              variant="dot"
+              size="sm"
+            >
               {t(companyStatusKey(company.status))}
             </Badge>
           </div>
@@ -217,10 +223,12 @@ export default function CompanyDetailPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          {suspended ? (
+          {inactive ? (
             <Button onClick={handleActivate} loading={actionBusy}>
               <CheckCircle2 className="h-4 w-4" />
-              {t("operator.company_detail.activate")}
+              {deleted
+                ? t("operator.company_detail.restore")
+                : t("operator.company_detail.activate")}
             </Button>
           ) : (
             <Button variant="danger" onClick={handleSuspend} loading={actionBusy}>

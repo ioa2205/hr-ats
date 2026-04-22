@@ -22,11 +22,13 @@ export async function GET(request: NextRequest) {
       .select(
         "id, name, slug, status, default_locale, created_at, subscriptions(status, trial_ends_at, pro_started_at), company_members(count)",
       )
-      .neq("status", "deleted")
       .order("created_at", { ascending: false })
       .limit(MAX_ROWS);
 
-    if (status && ["active", "suspended"].includes(status)) {
+    if (status !== "deleted") {
+      query = query.neq("status", "deleted");
+    }
+    if (status && ["active", "suspended", "deleted"].includes(status)) {
       query = query.eq("status", status);
     }
     if (search) {

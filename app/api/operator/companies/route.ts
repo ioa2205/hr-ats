@@ -6,9 +6,11 @@ import { logger } from "@/lib/logger";
 
 const paramsSchema = z.object({
   search: z.string().trim().max(80).optional(),
-  status: z.enum(["all", "active", "suspended"]).default("all"),
+  status: z.enum(["all", "active", "suspended", "deleted"]).default("all"),
   plan: z.enum(["all", "trial", "pro"]).default("all"),
-  view: z.enum(["all", "active", "suspended", "trials_expiring", "at_risk"]).default("all"),
+  view: z
+    .enum(["all", "active", "suspended", "deleted", "trials_expiring", "at_risk"])
+    .default("all"),
   minHealth: z.coerce.number().min(0).max(100).optional(),
   maxHealth: z.coerce.number().min(0).max(100).optional(),
   page: z.coerce.number().int().min(1).default(1),
@@ -37,12 +39,17 @@ export async function GET(request: NextRequest) {
         "*, subscriptions(status, trial_ends_at, pro_started_at), company_members(count)",
         { count: "exact" },
       )
-      .neq("status", "deleted")
       .order("created_at", { ascending: false });
+
+    // Deleted companies are hidden by default — they only show up under the
+    // explicit "Deleted" view or when status=deleted is passed.
+    const wantsDeleted = q.view === "deleted" || q.status === "deleted";
+    if (!wantsDeleted) query = query.neq("status", "deleted");
 
     // Saved views (precedence over status filter)
     if (q.view === "active") query = query.eq("status", "active");
     else if (q.view === "suspended") query = query.eq("status", "suspended");
+    else if (q.view === "deleted") query = query.eq("status", "deleted");
     else if (q.view === "trials_expiring") {
       const in7 = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
       query = query.eq("status", "active").lte("subscriptions.trial_ends_at", in7);

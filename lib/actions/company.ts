@@ -179,6 +179,16 @@ export async function deleteWorkspace(input: unknown): Promise<CompanyActionResu
     return { ok: false, error: "save_failed" };
   }
 
+  // Free every member from this company so they land on onboarding instead
+  // of the /suspended dead-end on their next request.
+  const { error: detachError } = await admin
+    .from("profiles")
+    .update({ current_company_id: null })
+    .eq("current_company_id", companyId);
+  if (detachError) {
+    logger.error({ err: detachError.message }, "[company] detach members failed");
+  }
+
   await admin.from("audit_log").insert({
     company_id: companyId,
     actor: "hr",

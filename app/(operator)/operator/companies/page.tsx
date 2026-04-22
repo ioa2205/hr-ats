@@ -24,7 +24,7 @@ import {
   subscriptionStatusKey,
 } from "@/lib/operator/enum-labels";
 
-type View = "all" | "active" | "trials_expiring" | "suspended" | "at_risk";
+type View = "all" | "active" | "trials_expiring" | "suspended" | "deleted" | "at_risk";
 
 interface CompanyRow {
   id: string;
@@ -43,6 +43,7 @@ const VIEWS: Array<{ id: View; labelKey: TranslationKey }> = [
   { id: "active", labelKey: "operator.companies.view.active" },
   { id: "trials_expiring", labelKey: "operator.companies.view.trials_expiring" },
   { id: "suspended", labelKey: "operator.companies.view.suspended" },
+  { id: "deleted", labelKey: "operator.companies.view.deleted" },
   { id: "at_risk", labelKey: "operator.companies.view.at_risk" },
 ];
 
@@ -99,7 +100,9 @@ export default function OperatorCompaniesPage() {
 
   const exportHref = useMemo(() => {
     const qs = new URLSearchParams();
-    if (view === "active" || view === "suspended") qs.set("status", view);
+    if (view === "active" || view === "suspended" || view === "deleted") {
+      qs.set("status", view);
+    }
     if (search) qs.set("search", search);
     return `/api/operator/companies/export?${qs.toString()}`;
   }, [view, search]);
@@ -263,7 +266,13 @@ export default function OperatorCompaniesPage() {
                       </td>
                       <td className="px-3 py-1.5">
                         <Badge
-                          tone={c.status === "active" ? "success" : "danger"}
+                          tone={
+                            c.status === "active"
+                              ? "success"
+                              : c.status === "deleted"
+                                ? "neutral"
+                                : "danger"
+                          }
                           variant="dot"
                           size="sm"
                         >
