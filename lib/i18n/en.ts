@@ -503,7 +503,6 @@ export const en: Translations = {
   "landing.ticker.fast_local": "tez · fast",
   "landing.ticker.fast_uz": "tez · tezroq",
   "landing.ticker.faster": "720× faster than Excel",
-  "landing.ticker.training": "180,000 résumés in the training set",
   "landing.ticker.made_in": "made in Tashkent",
   "landing.ranking.live": "LIVE · 247 résumés",
   "landing.ranking.job_kicker": "Job · open 7 days",
@@ -578,9 +577,6 @@ export const en: Translations = {
   "landing.showcase.heading_b": "o‘zbekcha",
   "landing.showcase.heading_c": "русский",
   "landing.showcase.heading_d": "English",
-  "landing.showcase.subhead": "Trained on",
-  "landing.showcase.subhead_tail":
-    "résumés from the Uzbek market — it reads context, not keywords.",
   "landing.showcase.feat_score_label": "Match score",
   "landing.showcase.feat_score_desc": "An explainable score for every résumé.",
   "landing.showcase.feat_lang_label": "Strengths and gaps",
@@ -781,7 +777,7 @@ export const en: Translations = {
     "TezHR recognizes «Главбух», «1С», «Uzum Nasiya», and «Navoi FEZ» without explanation. We're not building a generic ATS — we're building a tool that knows how hiring works in Uzbekistan.",
   "landing.product.lm.sec_1_title": "Local taxonomy",
   "landing.product.lm.sec_1_body":
-    "We maintain roughly 12,000 localized role and skill synonyms: from «Главный бухгалтер» to «1С: Предприятие 8.3», from «UzCard / Humo» to «Uzbekistan PFR». This taxonomy is harvested from 180,000 real résumés and updated regularly.",
+    "We maintain roughly 12,000 localized role and skill synonyms: from «Главный бухгалтер» to «1С: Предприятие 8.3», from «UzCard / Humo» to «Uzbekistan PFR». This taxonomy is maintained for the Uzbek market and updated regularly.",
   "landing.product.lm.sec_2_title": "Local companies",
   "landing.product.lm.sec_2_body":
     "The model knows that Uzum is a marketplace, Humans is a telco, and Astrum IT Academy is a developer feeder school. That helps it score experience more accurately and filter relevant CVs.",
@@ -844,8 +840,8 @@ export const en: Translations = {
     "We won't show you logos of companies we don't have. Instead — here is what we actually have in the first week after launch. If that sounds like a good starting point, let's talk.",
   "landing.proof.empty_point_1_label": "READY TO USE",
   "landing.proof.empty_point_1_value": "A fully working ATS + AI",
-  "landing.proof.empty_point_2_label": "IN THE TRAINING SET",
-  "landing.proof.empty_point_2_value": "180,000 résumés across RU / UZ / EN",
+  "landing.proof.empty_point_2_label": "LANGUAGES",
+  "landing.proof.empty_point_2_value": "Russian · Uzbek · English",
   "landing.proof.empty_point_3_label": "SUPPORT",
   "landing.proof.empty_point_3_value": "From the team itself, not a ticket queue",
   // --- PR #6: pricing + comparison + FAQ ---

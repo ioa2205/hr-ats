@@ -507,7 +507,6 @@ export const uz: Translations = {
   "landing.ticker.fast_local": "tez · быстро",
   "landing.ticker.fast_uz": "tez · tezroq",
   "landing.ticker.faster": "Excel’dan 720× tezroq",
-  "landing.ticker.training": "180 000 rezyumeda o‘qitilgan",
   "landing.ticker.made_in": "Toshkentda yaratilgan",
   "landing.ranking.live": "JONLI · 247 rezyume",
   "landing.ranking.job_kicker": "Vakansiya · 7 kundan beri ochiq",
@@ -582,9 +581,6 @@ export const uz: Translations = {
   "landing.showcase.heading_b": "o‘zbekcha",
   "landing.showcase.heading_c": "русский",
   "landing.showcase.heading_d": "English",
-  "landing.showcase.subhead": "U",
-  "landing.showcase.subhead_tail":
-    "ta o‘zbek bozoridagi rezyumeda o‘qitilgan — kontekstni o‘qiydi, kalit so‘zlarni emas.",
   "landing.showcase.feat_score_label": "Moslik bahosi",
   "landing.showcase.feat_score_desc": "Har bir rezyume uchun tushunarli ball.",
   "landing.showcase.feat_lang_label": "Kuchli tomonlar va kamchiliklar",
@@ -786,7 +782,7 @@ export const uz: Translations = {
     "TezHR «Bosh buxgalter», «1С», «Uzum Nasiya» va «Navoiy EIZ»ni tushuntirmasdan taniydi. Biz universal ATS qurmayapmiz — O'zbekistonda qanday yollashni tushunadigan vosita quryapmiz.",
   "landing.product.lm.sec_1_title": "Mahalliy taksonomiya",
   "landing.product.lm.sec_1_body":
-    "Biz ~12 000 mahalliylashtirilgan lavozim va ko'nikma sinonimlarini qo'llaymiz: «Bosh buxgalter»dan «1С: Предприятие 8.3»gacha, «UzCard / Humo»dan «O'zbekiston PFR»gacha. Bu taksonomiya 180 000 haqiqiy rezyumelardan yig'ilgan va muntazam yangilanadi.",
+    "Biz ~12 000 mahalliylashtirilgan lavozim va ko'nikma sinonimlarini qo'llaymiz: «Bosh buxgalter»dan «1С: Предприятие 8.3»gacha, «UzCard / Humo»dan «O'zbekiston PFR»gacha. Bu taksonomiya o‘zbek bozori uchun yuritiladi va muntazam yangilanadi.",
   "landing.product.lm.sec_2_title": "Mahalliy kompaniyalar",
   "landing.product.lm.sec_2_body":
     "Model Uzum — marketpleys, Humans — aloqa operatori, Astrum IT Academy — dasturchilar kuznitsasi ekanini biladi. Bu tajribani aniqroq baholash va tegishli CVlarni filtrlash uchun yordam beradi.",
@@ -849,8 +845,8 @@ export const uz: Translations = {
     "Sizga bizda yo'q kompaniyalarning logotiplarini ko'rsatmaymiz. Buning o'rniga — ishga tushgandan keyingi birinchi haftada bizda haqiqatan nima borligini ayta olamiz. Agar bu sizga boshlash uchun yaxshi nuqta bo'lib tuyulsa — keling, gaplashaylik.",
   "landing.proof.empty_point_1_label": "ISHLASH UCHUN TAYYOR",
   "landing.proof.empty_point_1_value": "To'liq ishlaydigan ATS + AI",
-  "landing.proof.empty_point_2_label": "O'QITISH TO'PLAMIDA",
-  "landing.proof.empty_point_2_value": "180 000 rezyume RU / UZ / EN tillarida",
+  "landing.proof.empty_point_2_label": "TILLAR",
+  "landing.proof.empty_point_2_value": "Rus · O‘zbek · Ingliz",
   "landing.proof.empty_point_3_label": "YORDAM",
   "landing.proof.empty_point_3_value": "Jamoadan shaxsan, tiketsiz",
   // --- PR #6: pricing + comparison + FAQ ---

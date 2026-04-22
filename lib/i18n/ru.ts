@@ -505,7 +505,6 @@ export const ru: Translations = {
   "landing.ticker.fast_local": "tez · быстро",
   "landing.ticker.fast_uz": "tez · tezroq",
   "landing.ticker.faster": "быстрее Excel в 720×",
-  "landing.ticker.training": "180 000 резюме в обучающей выборке",
   "landing.ticker.made_in": "сделано в Ташкенте",
   "landing.ranking.live": "LIVE · 247 резюме",
   "landing.ranking.job_kicker": "Вакансия · открыта 7 дней",
@@ -580,9 +579,6 @@ export const ru: Translations = {
   "landing.showcase.heading_b": "o‘zbekcha",
   "landing.showcase.heading_c": "русский",
   "landing.showcase.heading_d": "English",
-  "landing.showcase.subhead": "Обучена на",
-  "landing.showcase.subhead_tail":
-    "резюме с узбекского рынка — она читает контекст, а не ключевые слова.",
   "landing.showcase.feat_score_label": "Оценка соответствия",
   "landing.showcase.feat_score_desc": "Объяснимый балл за каждое резюме.",
   "landing.showcase.feat_lang_label": "Сильные стороны и пробелы",
@@ -783,7 +779,7 @@ export const ru: Translations = {
     "TezHR узнаёт «Главбух», «1С», «Uzum Nasiya» и «СЭЗ Навои» без объяснений. Мы не строим универсальный ATS — мы строим инструмент, который понимает, как нанимают в Узбекистане.",
   "landing.product.lm.sec_1_title": "Локальная таксономия",
   "landing.product.lm.sec_1_body":
-    "Мы поддерживаем ~12 000 локализованных синонимов ролей и навыков: от «Главный бухгалтер» до «1С: Предприятие 8.3», от «UzCard / Humo» до «ПФР Узбекистана». Эта таксономия собрана из 180 000 реальных резюме и регулярно обновляется.",
+    "Мы поддерживаем ~12 000 локализованных синонимов ролей и навыков: от «Главный бухгалтер» до «1С: Предприятие 8.3», от «UzCard / Humo» до «ПФР Узбекистана». Эта таксономия ведётся под узбекский рынок и регулярно обновляется.",
   "landing.product.lm.sec_2_title": "Локальные компании",
   "landing.product.lm.sec_2_body":
     "Модель знает, что Uzum — это маркетплейс, Humans — оператор связи, а Astrum IT Academy — кузница разработчиков. Это помогает точнее оценивать опыт и фильтровать релевантные CV.",
@@ -846,8 +842,8 @@ export const ru: Translations = {
     "Мы не будем показывать вам логотипы компаний, которых у нас нет. Вместо этого — вот что у нас реально есть на первой неделе после запуска. Если это звучит как хорошая точка старта для вас — давайте поговорим.",
   "landing.proof.empty_point_1_label": "ГОТОВО К ИСПОЛЬЗОВАНИЮ",
   "landing.proof.empty_point_1_value": "Полностью работающий ATS + ИИ",
-  "landing.proof.empty_point_2_label": "В ОБУЧАЮЩЕЙ ВЫБОРКЕ",
-  "landing.proof.empty_point_2_value": "180 000 резюме на RU / UZ / EN",
+  "landing.proof.empty_point_2_label": "ЯЗЫКИ",
+  "landing.proof.empty_point_2_value": "Русский · Узбекский · Английский",
   "landing.proof.empty_point_3_label": "ПОДДЕРЖКА",
   "landing.proof.empty_point_3_value": "Лично от команды, не через тикеты",
   // --- PR #6: pricing + comparison + FAQ ---

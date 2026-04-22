@@ -118,30 +118,6 @@ export async function Showcase() {
               </span>
               .
             </h2>
-            <p
-              className="serif"
-              style={{
-                margin: "24px 0 0",
-                fontSize: 17,
-                fontStyle: "italic",
-                color: "#C8C0B0",
-                lineHeight: 1.5,
-                maxWidth: 440,
-              }}
-            >
-              {t("landing.showcase.subhead")}{" "}
-              <span
-                style={{
-                  color: "var(--paper-3)",
-                  background: "var(--ikat-2)",
-                  padding: "1px 6px",
-                  fontSize: 16,
-                }}
-              >
-                180 000
-              </span>{" "}
-              {t("landing.showcase.subhead_tail")}
-            </p>
 
             <div
               style={{

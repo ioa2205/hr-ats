@@ -40,8 +40,6 @@ export async function TickerBand() {
               <TickerStar />
               <span>RU · UZ · EN</span>
               <TickerStar />
-              <span>{t("landing.ticker.training")}</span>
-              <TickerStar />
               <span>{t("landing.ticker.made_in")}</span>
               <TickerStar />
             </span>
