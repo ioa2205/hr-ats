@@ -41,7 +41,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HR ATS",
+  title: "TezHR",
   description: "Applicant Tracking System",
 };
 

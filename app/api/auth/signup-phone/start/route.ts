@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
   await storeOtp(phone, code);
 
   // Send SMS
-  const result = await sendSms(phone, `HR ATS: ${code} — kod tasdiqlash uchun.`);
+  const result = await sendSms(phone, `TezHR: ${code} — kod tasdiqlash uchun.`);
 
   if (!result.ok) {
     logger.error({ phone }, "[auth] SMS send failed");
