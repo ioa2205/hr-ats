@@ -176,7 +176,10 @@ export type Database = {
           one_line_summary: string | null;
           one_line_summary_en: string | null;
           one_line_summary_uz: string | null;
+          meets_requirements: boolean | null;
           phone_number: string;
+          requirements_responses: Json | null;
+          requirements_snapshot: Json | null;
           retry_count: number;
           status: Database["public"]["Enums"]["candidate_status"];
           strengths: string[] | null;
@@ -202,7 +205,10 @@ export type Database = {
           one_line_summary?: string | null;
           one_line_summary_en?: string | null;
           one_line_summary_uz?: string | null;
+          meets_requirements?: boolean | null;
           phone_number: string;
+          requirements_responses?: Json | null;
+          requirements_snapshot?: Json | null;
           retry_count?: number;
           status?: Database["public"]["Enums"]["candidate_status"];
           strengths?: string[] | null;
@@ -228,7 +234,10 @@ export type Database = {
           one_line_summary?: string | null;
           one_line_summary_en?: string | null;
           one_line_summary_uz?: string | null;
+          meets_requirements?: boolean | null;
           phone_number?: string;
+          requirements_responses?: Json | null;
+          requirements_snapshot?: Json | null;
           retry_count?: number;
           status?: Database["public"]["Enums"]["candidate_status"];
           strengths?: string[] | null;
@@ -1134,7 +1143,8 @@ export type Database = {
         | "analysis_failed"
         | "invited"
         | "rejected"
-        | "rejected_screening";
+        | "rejected_screening"
+        | "unscored";
       company_role: "owner" | "admin" | "recruiter";
       detected_language: "uz" | "ru" | "en" | "other";
       job_status: "active" | "closed";
@@ -1295,6 +1305,7 @@ export const Constants = {
         "invited",
         "rejected",
         "rejected_screening",
+        "unscored",
       ],
       company_role: ["owner", "admin", "recruiter"],
       detected_language: ["uz", "ru", "en", "other"],

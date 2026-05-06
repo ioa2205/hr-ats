@@ -1,15 +1,20 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { CheckCircle, AlertTriangle, Globe, RotateCw } from "lucide-react";
+import { CheckCircle, AlertTriangle, Globe, RotateCw, Flag, Sparkles } from "lucide-react";
 import { Badge, Button, Card, CardContent, Skeleton } from "@/components/ui";
 import { ScoreCircle } from "./score-circle";
 import { InterviewQuestionsBlock } from "./interview-questions-block";
 import { SchedulingBlock } from "./scheduling-block";
-import type { Candidate } from "@/types";
+import type {
+  Candidate,
+  RequirementResponses,
+  RequirementSnapshot,
+} from "@/types";
 import { useTranslation } from "@/lib/i18n/provider";
 import type { TranslationKey } from "@/lib/i18n/types";
 import { pickLocalized, pickLocalizedArray } from "@/lib/i18n/pick-localized";
+import { buildRequirementsTable } from "@/lib/applicants/requirements-display";
 
 interface AiAnalysisTabProps {
   candidate: Candidate;
@@ -28,6 +33,8 @@ const languageLabelKey: Record<string, TranslationKey> = {
 export function AiAnalysisTab({ candidate, jobTitle, appUrl, onUpdate }: AiAnalysisTabProps) {
   const { t, locale } = useTranslation();
   const [retrying, setRetrying] = useState(false);
+  const [analyzingAnyway, setAnalyzingAnyway] = useState(false);
+  const [analyzeAnywayError, setAnalyzeAnywayError] = useState<string | null>(null);
 
   const localizedSummary = pickLocalized(
     {
@@ -73,6 +80,95 @@ export function AiAnalysisTab({ candidate, jobTitle, appUrl, onUpdate }: AiAnaly
       setRetrying(false);
     }
   }, [candidate.id, onUpdate]);
+
+  const handleAnalyzeAnyway = useCallback(async () => {
+    setAnalyzingAnyway(true);
+    setAnalyzeAnywayError(null);
+    try {
+      const res = await fetch(`/api/hr/candidates/${candidate.id}/analyze-anyway`, {
+        method: "POST",
+      });
+      if (res.ok) {
+        onUpdate(candidate.id, {
+          status: "pending_analysis",
+          ai_error: null,
+        });
+        return;
+      }
+      if (res.status === 429) {
+        setAnalyzeAnywayError(t("applicants.requirements.analyze_anyway_quota"));
+      } else {
+        setAnalyzeAnywayError(t("common.error"));
+      }
+    } catch {
+      setAnalyzeAnywayError(t("common.error"));
+    } finally {
+      setAnalyzingAnyway(false);
+    }
+  }, [candidate.id, onUpdate, t]);
+
+  // ── Unscored: candidate didn't meet hard requirements ────────
+  // CV is uploaded but AI was skipped to save quota. HR can review the CV
+  // and either move on or click "Analyze with AI anyway" to spend a credit.
+  if (candidate.status === "unscored") {
+    const rows = buildRequirementsTable(
+      candidate.requirements_snapshot as RequirementSnapshot | null,
+      candidate.requirements_responses as RequirementResponses | null,
+      locale,
+      t,
+    );
+    const unmet = rows.filter((r) => !r.met);
+    return (
+      <div className="border-danger/30 bg-danger-container/30 space-y-4 rounded-[var(--radius-lg)] border p-4">
+        <div className="flex items-start gap-3">
+          <Flag className="text-danger mt-0.5 h-5 w-5 shrink-0" />
+          <div className="space-y-2">
+            <p className="text-danger text-sm font-medium">
+              {t("applicants.status_line.below_requirements")}
+            </p>
+            <p className="text-on-surface-variant text-xs">
+              {t("applicants.requirements.analyze_anyway_intro")}
+            </p>
+          </div>
+        </div>
+        {unmet.length > 0 && (
+          <ul className="space-y-1.5 pl-8">
+            {unmet.map((row) => (
+              <li
+                key={row.id}
+                className="text-on-surface flex items-baseline justify-between gap-3 text-xs"
+              >
+                <span className="truncate font-medium">{row.label}</span>
+                <span className="text-on-surface-variant shrink-0">
+                  {t("applicants.requirements.required_label")}: {row.requiredText}
+                  <span className="text-danger ml-2">
+                    {t("applicants.requirements.candidate_answer")}: {row.answerText}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {analyzeAnywayError && (
+          <p className="text-danger pl-8 text-xs" role="alert">
+            {analyzeAnywayError}
+          </p>
+        )}
+        <div className="pl-8">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleAnalyzeAnyway}
+            disabled={analyzingAnyway}
+            loading={analyzingAnyway}
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            {t("applicants.requirements.analyze_anyway")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   // ── Pending / Analyzing skeleton ──────────────────────────────
   if (candidate.status === "pending_analysis" || candidate.status === "analyzing") {

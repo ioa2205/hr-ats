@@ -80,8 +80,13 @@ export function VerdictPill({
   verdict,
   labels,
 }: {
-  verdict: "recommend" | "review" | "reject";
-  labels: { recommend: string; review: string; reject: string };
+  verdict: "recommend" | "review" | "reject" | "mismatch";
+  labels: {
+    recommend: string;
+    review: string;
+    reject: string;
+    mismatch?: string;
+  };
 }) {
   if (verdict === "recommend") {
     return (
@@ -95,6 +100,14 @@ export function VerdictPill({
     return (
       <Pill tone="amber" dot>
         {labels.review}
+      </Pill>
+    );
+  }
+  if (verdict === "mismatch") {
+    return (
+      <Pill tone="danger">
+        <FlagGlyph />
+        {labels.mismatch ?? labels.reject}
       </Pill>
     );
   }
@@ -116,6 +129,24 @@ function SparklesGlyph() {
       <path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5z" />
       <path d="M19 14l.7 2.1L22 17l-2.3.9L19 20l-.7-2.1L16 17l2.3-.9z" />
       <path d="M5 16l.5 1.5L7 18l-1.5.5L5 20l-.5-1.5L3 18l1.5-.5z" />
+    </svg>
+  );
+}
+
+function FlagGlyph() {
+  return (
+    <svg
+      width="10"
+      height="10"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 22V4" />
+      <path d="M4 4h13l-2 4 2 4H4" />
     </svg>
   );
 }

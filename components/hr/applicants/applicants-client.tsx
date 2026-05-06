@@ -28,12 +28,14 @@ interface ApplicantsClientProps {
     recommend: number;
     review: number;
     reject: number;
+    mismatch: number;
   };
 }
 
-type VerdictFilter = "all" | "new" | "recommend" | "review" | "reject";
+type VerdictFilter = "all" | "new" | "recommend" | "review" | "reject" | "mismatch";
 
-function verdictOf(c: Candidate): "recommend" | "review" | "reject" | "none" {
+function verdictOf(c: Candidate): "recommend" | "review" | "reject" | "mismatch" | "none" {
+  if (c.status === "unscored") return "mismatch";
   if (c.status === "rejected_screening") return "reject";
   const s = c.match_score ?? -1;
   if (s < 0) return "none";
@@ -163,6 +165,10 @@ export function ApplicantsClient({
           if (payload.eventType === "INSERT" && payload.new) {
             const inserted = payload.new as Candidate;
             if (inserted.job_posting_id !== postingId) return;
+            // rejected_screening (quota_exceeded only, since requirements
+            // mismatches now go to status='unscored') → collapsed accordion
+            // at the bottom. Everything else, including unscored, goes into
+            // the main list so HR can give the candidate a fair look.
             if (inserted.status === "rejected_screening") {
               setScreenedOut((prev) => [
                 {
@@ -200,6 +206,7 @@ export function ApplicantsClient({
     recommend: 0,
     review: 0,
     reject: 0,
+    mismatch: 0,
   };
 
   const filterChips = (
@@ -240,6 +247,13 @@ export function ApplicantsClient({
         onClick={() => setVerdictFilter("review")}
       >
         {t("hr.applicants.chip.review")}
+      </Chip>
+      <Chip
+        active={verdictFilter === "mismatch"}
+        count={chipCounts.mismatch}
+        onClick={() => setVerdictFilter("mismatch")}
+      >
+        {t("hr.applicants.chip.below_requirements")}
       </Chip>
       <Chip
         active={verdictFilter === "reject"}

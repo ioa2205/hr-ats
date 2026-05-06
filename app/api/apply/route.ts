@@ -6,6 +6,7 @@ import { incrementCvQuota } from "@/lib/companies/quota";
 import { dispatchNotification } from "@/lib/notifications/dispatch";
 import { logger } from "@/lib/logger";
 import { validatePdfBuffer } from "@/lib/pdf/validate";
+import { evaluateRequirements } from "@/lib/validations/requirements";
 import type { HardRequirement } from "@/types";
 
 export const runtime = "nodejs";
@@ -108,7 +109,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "not_found" }, { status: 404 });
     }
 
-    // 7. Validate requirement answers server-side
+    // 7. Parse + evaluate requirements (NEVER blocks submission anymore).
+    //    A mismatch is a flag to skip auto-AI, not a rejection. The candidate
+    //    always gets through; HR sees the gap with a red flag and can choose
+    //    to "Analyze with AI anyway" later.
     const hardRequirements = (posting.hard_requirements ?? []) as HardRequirement[];
     let requirementAnswers: Record<string, string> = {};
     try {
@@ -119,32 +123,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "invalid_requirements" }, { status: 400 });
     }
 
-    let requirementsFailed = false;
-    for (const req of hardRequirements) {
-      const val = requirementAnswers[req.id];
-      if (req.type === "boolean" && val !== "true") {
-        requirementsFailed = true;
-        break;
-      }
-      if (req.type === "number") {
-        const num = Number(val);
-        if (!val || isNaN(num) || (req.min_value !== null && num < req.min_value)) {
-          requirementsFailed = true;
-          break;
-        }
-      }
-    }
-
-    if (requirementsFailed) {
-      // Insert as rejected_screening — no CV upload, no AI
-      await supabase.from("candidates").insert({
-        job_posting_id: posting.id,
-        full_name: fullName.trim(),
-        phone_number: phoneNumber,
-        status: "rejected_screening",
-      });
-      return NextResponse.json({ error: "requirements_failed" }, { status: 400 });
-    }
+    const evaluation = evaluateRequirements(hardRequirements, requirementAnswers);
+    const meetsRequirementsValue: boolean | null =
+      hardRequirements.length === 0 ? null : evaluation.meetsAll;
 
     // 8. Validate file
     if (!cv) {
@@ -171,7 +152,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "invalid_file" }, { status: 400 });
     }
 
-    // 10. Generate candidate and upload CV (path includes company_id for tenant isolation)
+    // 10. Generate candidate id and upload CV (path includes company_id for tenant isolation)
     const candidateId = crypto.randomUUID();
     const cvPath = `${posting.company_id}/${posting.id}/${candidateId}/cv.pdf`;
     const { error: uploadError } = await supabase.storage.from("cvs").upload(cvPath, cvBuffer, {
@@ -184,18 +165,63 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "upload_failed" }, { status: 500 });
     }
 
-    // 10. Quota gate — atomically reserve a CV slot. If the company is over
-    // quota or its subscription is inactive, accept the candidate but skip
-    // Gemini (cost control). The application is recorded for the HR to see.
+    const baseFields = {
+      id: candidateId,
+      job_posting_id: posting.id,
+      full_name: fullName.trim(),
+      phone_number: phoneNumber,
+      cv_storage_path: cvPath,
+      requirements_responses: evaluation.responses,
+      requirements_snapshot: hardRequirements,
+      meets_requirements: meetsRequirementsValue,
+    };
+
+    // 11a. Mismatch path — store the candidate with status=unscored, do NOT
+    //      consume CV quota, do NOT trigger AI. HR will see the red-flag row
+    //      and can opt to run AI manually via /api/hr/candidates/[id]/analyze-anyway.
+    if (meetsRequirementsValue === false) {
+      const { error: insertError } = await supabase.from("candidates").insert({
+        ...baseFields,
+        status: "unscored",
+      });
+
+      if (insertError) {
+        logger.error(
+          { context: "apply", err: insertError, ip, candidateId },
+          "Candidate insert (unscored) failed",
+        );
+        return NextResponse.json({ error: "insert_failed" }, { status: 500 });
+      }
+
+      after(async () => {
+        try {
+          await dispatchNotification({
+            companyId: posting.company_id,
+            event: "new_application",
+            title: fullName.trim(),
+            entityType: "candidate",
+            entityId: candidateId,
+            metadata: { job_posting_id: posting.id, meets_requirements: false },
+          });
+        } catch (err) {
+          logger.error(
+            { context: "apply", err, candidateId },
+            "notification dispatch failed (unscored)",
+          );
+        }
+      });
+
+      return NextResponse.json({ success: true });
+    }
+
+    // 11b. Quota gate — atomically reserve a CV slot. If the company is over
+    //      quota or its subscription is inactive, accept the candidate but
+    //      skip Gemini (cost control). The application is recorded for HR.
     const consumed = await incrementCvQuota(posting.company_id);
 
     if (!consumed) {
       const { error: insertError } = await supabase.from("candidates").insert({
-        id: candidateId,
-        job_posting_id: posting.id,
-        full_name: fullName.trim(),
-        phone_number: phoneNumber,
-        cv_storage_path: cvPath,
+        ...baseFields,
         status: "rejected_screening",
         ai_error: "quota_exceeded",
       });
@@ -216,13 +242,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
-    // 11. Insert candidate row
+    // 12. Insert candidate row — meets requirements + quota OK → AI runs
     const { error: insertError } = await supabase.from("candidates").insert({
-      id: candidateId,
-      job_posting_id: posting.id,
-      full_name: fullName.trim(),
-      phone_number: phoneNumber,
-      cv_storage_path: cvPath,
+      ...baseFields,
       status: "pending_analysis",
     });
 
@@ -231,7 +253,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "insert_failed" }, { status: 500 });
     }
 
-    // 12. Invoke Edge Function (fire-and-forget after response)
+    // 13. Invoke Edge Function (fire-and-forget after response)
     after(async () => {
       try {
         await supabase.functions.invoke("process-cv", {
@@ -255,7 +277,7 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    // 12. Success
+    // 14. Success
     return NextResponse.json({ success: true });
   } catch (err) {
     logger.error({ context: "apply", err, ip }, "Unhandled error in apply API");

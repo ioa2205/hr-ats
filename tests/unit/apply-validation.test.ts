@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { candidateSchema } from "@/lib/validations/applicant";
+import { isRequirementMet, evaluateRequirements } from "@/lib/validations/requirements";
+import type { HardRequirement } from "@/types";
 
 // === Phone regex tests ===
 describe("phone number validation", () => {
@@ -62,103 +64,147 @@ describe("phone number validation", () => {
   });
 });
 
-// === Hard requirement validation ===
-describe("hard requirement validation", () => {
-  interface HardRequirement {
-    id: string;
-    type: "boolean" | "number";
-    min_value: number | null;
-  }
-
-  function validateRequirement(req: HardRequirement, answer: string | undefined): boolean {
-    if (req.type === "boolean") {
-      return answer === "true";
-    }
-    if (req.type === "number") {
-      const num = Number(answer);
-      if (!answer || isNaN(num)) return false;
-      if (req.min_value !== null && num < req.min_value) return false;
-      return true;
-    }
-    return false;
-  }
-
+// === Hard requirement evaluation ===
+// `isRequirementMet` decides whether a single answer meets the threshold.
+// `evaluateRequirements` runs the full set and produces the responses map +
+// mismatch list. NOTE: a "false" answer here is NOT a submission gate —
+// /api/apply still accepts the candidate; the result is used to flag them
+// in the HR view and to skip auto-AI.
+describe("isRequirementMet", () => {
   describe("boolean requirements", () => {
     const boolReq: HardRequirement = {
       id: "education",
+      label_ru: "",
+      label_uz: "",
       type: "boolean",
       min_value: null,
+      order: 0,
     };
 
     it("passes when answer is 'true'", () => {
-      expect(validateRequirement(boolReq, "true")).toBe(true);
+      expect(isRequirementMet(boolReq, "true")).toBe(true);
     });
 
     it("fails when answer is 'false'", () => {
-      expect(validateRequirement(boolReq, "false")).toBe(false);
-    });
-
-    it("fails when answer is undefined", () => {
-      expect(validateRequirement(boolReq, undefined)).toBe(false);
+      expect(isRequirementMet(boolReq, "false")).toBe(false);
     });
 
     it("fails when answer is empty string", () => {
-      expect(validateRequirement(boolReq, "")).toBe(false);
+      expect(isRequirementMet(boolReq, "")).toBe(false);
     });
   });
 
   describe("number requirements", () => {
     const numReq: HardRequirement = {
       id: "experience",
+      label_ru: "",
+      label_uz: "",
       type: "number",
       min_value: 3,
+      order: 0,
     };
 
     it("passes when value meets minimum", () => {
-      expect(validateRequirement(numReq, "3")).toBe(true);
+      expect(isRequirementMet(numReq, "3")).toBe(true);
     });
 
     it("passes when value exceeds minimum", () => {
-      expect(validateRequirement(numReq, "10")).toBe(true);
+      expect(isRequirementMet(numReq, "10")).toBe(true);
     });
 
     it("fails when value is below minimum", () => {
-      expect(validateRequirement(numReq, "2")).toBe(false);
+      expect(isRequirementMet(numReq, "2")).toBe(false);
     });
 
     it("fails when value is 0 and minimum is 3", () => {
-      expect(validateRequirement(numReq, "0")).toBe(false);
+      expect(isRequirementMet(numReq, "0")).toBe(false);
     });
 
     it("fails for non-numeric input", () => {
-      expect(validateRequirement(numReq, "abc")).toBe(false);
+      expect(isRequirementMet(numReq, "abc")).toBe(false);
     });
 
     it("fails for empty string", () => {
-      expect(validateRequirement(numReq, "")).toBe(false);
-    });
-
-    it("fails for undefined", () => {
-      expect(validateRequirement(numReq, undefined)).toBe(false);
+      expect(isRequirementMet(numReq, "")).toBe(false);
     });
 
     it("passes for number requirement with null min_value (any number accepted)", () => {
       const noMin: HardRequirement = {
+        ...numReq,
         id: "age",
-        type: "number",
         min_value: null,
       };
-      expect(validateRequirement(noMin, "0")).toBe(true);
-      expect(validateRequirement(noMin, "100")).toBe(true);
+      expect(isRequirementMet(noMin, "0")).toBe(true);
+      expect(isRequirementMet(noMin, "100")).toBe(true);
     });
 
     it("handles negative values correctly", () => {
-      expect(validateRequirement(numReq, "-1")).toBe(false);
+      expect(isRequirementMet(numReq, "-1")).toBe(false);
     });
 
     it("handles float values", () => {
-      expect(validateRequirement(numReq, "3.5")).toBe(true);
+      expect(isRequirementMet(numReq, "3.5")).toBe(true);
     });
+  });
+});
+
+describe("evaluateRequirements", () => {
+  const reqs: HardRequirement[] = [
+    {
+      id: "exp",
+      label_ru: "Опыт",
+      label_uz: "Tajriba",
+      type: "number",
+      min_value: 3,
+      order: 0,
+    },
+    {
+      id: "license",
+      label_ru: "Права",
+      label_uz: "Guvohnoma",
+      type: "boolean",
+      min_value: null,
+      order: 1,
+    },
+  ];
+
+  it("flags meetsAll=true when every answer satisfies the threshold", () => {
+    const result = evaluateRequirements(reqs, { exp: "5", license: "true" });
+    expect(result.meetsAll).toBe(true);
+    expect(result.mismatchedIds).toEqual([]);
+    expect(result.responses).toEqual({ exp: "5", license: "true" });
+  });
+
+  it("flags meetsAll=false and lists every mismatched requirement", () => {
+    const result = evaluateRequirements(reqs, { exp: "1", license: "false" });
+    expect(result.meetsAll).toBe(false);
+    expect(result.mismatchedIds.sort()).toEqual(["exp", "license"]);
+    // Submission still proceeds — responses are persisted as-is for HR.
+    expect(result.responses).toEqual({ exp: "1", license: "false" });
+  });
+
+  it("treats missing answers as mismatches (never crashes)", () => {
+    const result = evaluateRequirements(reqs, {});
+    expect(result.meetsAll).toBe(false);
+    expect(result.mismatchedIds.sort()).toEqual(["exp", "license"]);
+    expect(result.responses).toEqual({ exp: "", license: "" });
+  });
+
+  it("returns meetsAll=true vacuously when there are no requirements", () => {
+    const result = evaluateRequirements([], { whatever: "yes" });
+    expect(result.meetsAll).toBe(true);
+    expect(result.mismatchedIds).toEqual([]);
+    expect(result.responses).toEqual({});
+  });
+
+  it("coerces non-string values to strings without throwing", () => {
+    const result = evaluateRequirements(reqs, {
+      exp: 5 as unknown as string,
+      license: true as unknown as string,
+    });
+    expect(result.responses.exp).toBe("5");
+    expect(result.responses.license).toBe("true");
+    expect(result.meetsAll).toBe(true);
   });
 });
 

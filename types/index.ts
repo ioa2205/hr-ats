@@ -45,6 +45,12 @@ export interface HardRequirement {
   order: number;
 }
 
+/** Persisted shape of `candidates.requirements_responses` — req.id → raw answer string. */
+export type RequirementResponses = Record<string, string>;
+
+/** Persisted shape of `candidates.requirements_snapshot` — frozen copy of the job's requirements at submission time. */
+export type RequirementSnapshot = HardRequirement[];
+
 export type UserRole = "hr" | "admin";
 
 export interface AppUser {

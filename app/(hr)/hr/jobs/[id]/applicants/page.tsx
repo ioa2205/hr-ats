@@ -58,6 +58,7 @@ export default async function ApplicantsPage({
     recommend: 0,
     review: 0,
     reject: 0,
+    mismatch: 0,
     analyzed: 0,
     pending: 0,
     failed: 0,
@@ -76,12 +77,14 @@ export default async function ApplicantsPage({
     if (c.status === "invited") counts.invited++;
 
     const s = c.match_score ?? -1;
-    if (c.status !== "rejected_screening") {
+    if (c.status === "unscored") {
+      counts.mismatch++;
+    } else if (c.status === "rejected_screening") {
+      counts.reject++;
+    } else {
       if (s >= 80 && (c.status === "analyzed" || c.status === "invited")) counts.recommend++;
       else if (s >= 60 && s < 80) counts.review++;
       else if (s >= 0 && s < 60 && c.status === "analyzed") counts.reject++;
-    } else {
-      counts.reject++;
     }
   }
 
@@ -213,6 +216,7 @@ export default async function ApplicantsPage({
           recommend: counts.recommend,
           review: counts.review,
           reject: counts.reject,
+          mismatch: counts.mismatch,
         }}
       />
     </div>

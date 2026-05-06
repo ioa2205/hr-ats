@@ -120,7 +120,6 @@ export function ApplyForm({
     watch,
     formState: { errors },
     setError,
-    clearErrors,
   } = useForm<FormValues>({
     defaultValues: { requirements: {}, full_name: "", phone_number: "" },
   });
@@ -210,41 +209,15 @@ export function ApplyForm({
     return () => clearTimeout(timer);
   }, [retryCountdown]);
 
-  function validateRequirements(): boolean {
-    let valid = true;
-    for (const req of sortedRequirements) {
-      const val = requirementValues[req.id];
-      if (req.type === "boolean") {
-        if (val !== "true") {
-          setError(`requirements.${req.id}`, {
-            message: t("apply.requirement_failed"),
-          });
-          valid = false;
-        }
-      } else if (req.type === "number") {
-        const num = Number(val);
-        if (!val || isNaN(num) || (req.min_value !== null && num < req.min_value)) {
-          setError(`requirements.${req.id}`, {
-            message: t("apply.requirement_failed"),
-          });
-          valid = false;
-        }
-      }
-    }
-    return valid;
-  }
-
+  // Requirement answers are NEVER a gate. We collect them as honest signals
+  // and the server evaluates them. A mismatch means HR sees a red flag and AI
+  // is skipped — but the candidate's submission still goes through, so we
+  // don't show them any error styling for "wrong" answers here.
   function handleRequirementsCheck() {
-    for (const req of sortedRequirements) {
-      clearErrors(`requirements.${req.id}`);
-    }
-    if (validateRequirements()) {
-      setSection2Visible(true);
-      // Smooth scroll into view so the candidate sees the new section appear
-      requestAnimationFrame(() => {
-        section2Ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      });
-    }
+    setSection2Visible(true);
+    requestAnimationFrame(() => {
+      section2Ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
   }
 
   function executeTurnstile(): Promise<string | null> {
@@ -276,8 +249,6 @@ export function ApplyForm({
 
   async function onSubmit(data: FormValues) {
     setApiError(null);
-
-    if (!validateRequirements()) return;
 
     if (!/^\+998\d{9}$/.test(data.phone_number)) {
       setError("phone_number", { message: t("apply.phone_hint") });
@@ -342,16 +313,6 @@ export function ApplyForm({
     return <SuccessState locale={locale} t={t} />;
   }
 
-  const requirementErrors = sortedRequirements
-    .map((req) => {
-      const e = errors.requirements?.[req.id];
-      if (!e) return null;
-      if (locale === "uz") return req.label_uz;
-      if (locale === "en") return req.label_en || req.label_ru;
-      return req.label_ru;
-    })
-    .filter(Boolean);
-
   const hasDescription = posting.description.trim().length > 0;
 
   return (
@@ -406,22 +367,14 @@ export function ApplyForm({
         </Panel>
       )}
 
-      {/* Top-level banner */}
-      {(apiError || requirementErrors.length > 0) && (
+      {/* Top-level banner — only generic API errors now; requirement answers
+          never block submission, so they never appear here. */}
+      {apiError && (
         <div
           className="border-persimmon bg-persimmon-tint rounded-[5px] border px-4 py-3"
           role="alert"
         >
-          <p className="text-persimmon-2 text-[13.5px] font-semibold">
-            {apiError || t("apply.validation_failed")}
-          </p>
-          {requirementErrors.length > 0 && (
-            <ul className="text-persimmon-2 mt-1.5 list-disc pl-5 text-[12.5px] leading-relaxed">
-              {requirementErrors.map((label) => (
-                <li key={label as string}>{label}</li>
-              ))}
-            </ul>
-          )}
+          <p className="text-persimmon-2 text-[13.5px] font-semibold">{apiError}</p>
         </div>
       )}
 
@@ -451,8 +404,9 @@ export function ApplyForm({
                       : locale === "en"
                         ? req.label_en || req.label_ru
                         : req.label_ru;
-                  const fieldError = errors.requirements?.[req.id]?.message;
 
+                  // No "wrong answer" styling — answers never block submission.
+                  // The candidate's threshold (min_value) is intentionally hidden.
                   if (req.type === "boolean") {
                     return (
                       <div key={req.id} className="space-y-2">
@@ -470,9 +424,6 @@ export function ApplyForm({
                                   selected
                                     ? "border-ink bg-ink text-paper"
                                     : "border-rule bg-paper text-ink-3 hover:border-ink-6 hover:text-ink",
-                                  fieldError &&
-                                    !selected &&
-                                    "border-persimmon text-persimmon",
                                 )}
                               >
                                 <input
@@ -486,11 +437,6 @@ export function ApplyForm({
                             );
                           })}
                         </div>
-                        {fieldError && (
-                          <p className="text-persimmon text-[12.5px]" role="alert">
-                            {fieldError}
-                          </p>
-                        )}
                       </div>
                     );
                   }
@@ -499,12 +445,6 @@ export function ApplyForm({
                     <TezField
                       key={req.id}
                       label={label}
-                      helper={
-                        req.min_value !== null
-                          ? t("apply.min_value_short").replace("{value}", String(req.min_value))
-                          : undefined
-                      }
-                      error={fieldError}
                       inputMode="numeric"
                       pattern="[0-9]*"
                       {...register(`requirements.${req.id}`)}

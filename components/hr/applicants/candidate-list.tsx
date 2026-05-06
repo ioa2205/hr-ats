@@ -7,10 +7,15 @@ import { Avatar, ScoreMini, VerdictPill, TezButton } from "@/components/hr/desig
 import { cn } from "@/lib/utils";
 import { relativeDate } from "@/lib/time";
 import { ScreenedOutAccordion } from "./screened-out-accordion";
-import type { Candidate } from "@/types";
+import type {
+  Candidate,
+  RequirementResponses,
+  RequirementSnapshot,
+} from "@/types";
 import { useTranslation } from "@/lib/i18n/provider";
 import type { Locale, TranslationKey } from "@/lib/i18n/types";
 import { pickLocalized } from "@/lib/i18n/pick-localized";
+import { buildMismatchSummary } from "@/lib/applicants/requirements-display";
 
 interface CandidateListProps {
   candidates: Candidate[];
@@ -26,7 +31,8 @@ interface CandidateListProps {
   onRetryAll: () => void;
 }
 
-function verdictOf(c: Candidate): "recommend" | "review" | "reject" | "none" {
+function verdictOf(c: Candidate): "recommend" | "review" | "reject" | "mismatch" | "none" {
+  if (c.status === "unscored") return "mismatch";
   if (c.status === "rejected_screening") return "reject";
   const s = c.match_score ?? -1;
   if (s < 0) return "none";
@@ -69,6 +75,20 @@ function getStatusLine(
         }),
         tone: "ok",
       };
+    case "unscored": {
+      // Show the specific gaps inline so HR can scan the list without opening
+      // the detail panel. Falls back to a generic label when we can't compute.
+      const summary = buildMismatchSummary(
+        c.requirements_snapshot as RequirementSnapshot | null,
+        c.requirements_responses as RequirementResponses | null,
+        locale,
+        t,
+      );
+      return {
+        text: summary ?? t("applicants.status_line.below_requirements"),
+        tone: "danger",
+      };
+    }
     case "rejected":
       return { text: t("applicants.status.rejected"), tone: "muted" };
     default:
@@ -178,10 +198,11 @@ export function CandidateList({
                 recommend: t("hr.applicants.verdict.recommend"),
                 review: t("hr.applicants.verdict.review"),
                 reject: t("hr.applicants.verdict.reject"),
+                mismatch: t("hr.applicants.verdict.mismatch"),
               }}
             />
           )}
-          {c.match_score !== null && (
+          {c.match_score !== null && c.status !== "unscored" && (
             <ScoreMini score={c.match_score} persimmon={v === "recommend"} />
           )}
         </div>

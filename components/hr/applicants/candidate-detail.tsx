@@ -37,6 +37,7 @@ function statusBadge(
     invited: { tone: "info", labelKey: "applicants.status.invited" },
     rejected: { tone: "neutral", labelKey: "applicants.status.rejected" },
     rejected_screening: { tone: "neutral", labelKey: "applicants.status.screened_out" },
+    unscored: { tone: "danger", labelKey: "applicants.status.unscored" },
   };
   const s = map[candidate.status];
   const label = s ? t(s.labelKey) : candidate.status;
