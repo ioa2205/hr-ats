@@ -1661,8 +1661,6 @@ export const en: Translations = {
   "applicants.questions.sub":
     "AI drafts a tailored short list grounded in this CV and the job posting.",
   "applicants.questions.generate_cta": "Generate questions",
-  "applicants.questions.generate_cost_hint":
-    "Uses Gemini Pro — about $0.02 per candidate.",
   "applicants.questions.generating": "Drafting questions…",
   "applicants.questions.regenerate": "Regenerate",
   "applicants.questions.regenerate_warning":

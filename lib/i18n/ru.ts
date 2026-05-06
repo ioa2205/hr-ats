@@ -1667,8 +1667,6 @@ export const ru: Translations = {
   "applicants.questions.sub":
     "ИИ готовит короткий список вопросов, опираясь на CV кандидата и вакансию.",
   "applicants.questions.generate_cta": "Сгенерировать вопросы",
-  "applicants.questions.generate_cost_hint":
-    "Использует Gemini Pro — около $0.02 на кандидата.",
   "applicants.questions.generating": "Готовим вопросы…",
   "applicants.questions.regenerate": "Перегенерировать",
   "applicants.questions.regenerate_warning":

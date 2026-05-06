@@ -221,12 +221,6 @@ export function InterviewQuestionsBlock({
           >
             {t("applicants.questions.generate_cta")}
           </TezButton>
-          <span
-            className="text-ink-5 text-[10.5px] uppercase tracking-[0.08em]"
-            style={{ fontFamily: "var(--font-tez-mono)" }}
-          >
-            {t("applicants.questions.generate_cost_hint")}
-          </span>
         </div>
       )}
 

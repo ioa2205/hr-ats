@@ -1671,8 +1671,6 @@ export const uz: Translations = {
   "applicants.questions.sub":
     "AI nomzodning CV tahlili va vakansiya asosida qisqa savollar to‘plamini tayyorlaydi.",
   "applicants.questions.generate_cta": "Savollar tayyorlash",
-  "applicants.questions.generate_cost_hint":
-    "Gemini Pro ishlatadi — har nomzod uchun taxminan $0.02.",
   "applicants.questions.generating": "Savollar tayyorlanmoqda…",
   "applicants.questions.regenerate": "Qayta tayyorlash",
   "applicants.questions.regenerate_warning":

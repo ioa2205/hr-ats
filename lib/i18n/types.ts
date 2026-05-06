@@ -1526,7 +1526,6 @@ export type TranslationKey =
   | "applicants.questions.heading"
   | "applicants.questions.sub"
   | "applicants.questions.generate_cta"
-  | "applicants.questions.generate_cost_hint"
   | "applicants.questions.generating"
   | "applicants.questions.regenerate"
   | "applicants.questions.regenerate_warning"
