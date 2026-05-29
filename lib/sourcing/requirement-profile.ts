@@ -9,6 +9,7 @@ import type { RequirementProfile, RequirementProfileExtraction } from "./types";
 
 export interface PostingSeed {
   title: string;
+  description: string;
   required_skills: string[];
   hard_requirements: HardRequirement[];
 }

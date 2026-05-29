@@ -93,7 +93,12 @@ function makeDeps(config: FakeConfig): FunnelDeps {
   };
 }
 
-const posting = { title: "Driver", required_skills: [], hard_requirements: REQS };
+const posting = {
+  title: "Driver",
+  description: "We need a driver in Tashkent.",
+  required_skills: [],
+  hard_requirements: REQS,
+};
 
 describe("runFunnel — accuracy guarantee end-to-end", () => {
   it("excludes a candidate who misses exactly one hard requirement, however strong otherwise", async () => {

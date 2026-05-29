@@ -26,6 +26,7 @@ describe("seedRequirementProfile", () => {
   it("passes the hard requirements through verbatim and defaults location to null", () => {
     const seed = seedRequirementProfile({
       title: "Frontend Dev",
+      description: "Build the web app.",
       required_skills: ["React"],
       hard_requirements: reqs,
     });
@@ -38,7 +39,7 @@ describe("seedRequirementProfile", () => {
 describe("buildRequirementProfile", () => {
   it("merges seed + extraction and keeps the gate untouched", () => {
     const profile = buildRequirementProfile(
-      { title: "Frontend Dev", required_skills: ["React"], hard_requirements: reqs },
+      { title: "Frontend Dev", description: "Build the web app.", required_skills: ["React"], hard_requirements: reqs },
       extraction,
     );
     expect(profile.hard_requirements).toEqual(reqs);
@@ -49,7 +50,7 @@ describe("buildRequirementProfile", () => {
 
   it("maps an empty seniority to null (no guessing)", () => {
     const profile = buildRequirementProfile(
-      { title: "X", required_skills: [], hard_requirements: [] },
+      { title: "X", description: "Y", required_skills: [], hard_requirements: [] },
       { ...extraction, seniority: "   " },
     );
     expect(profile.seniority).toBeNull();
