@@ -13,11 +13,11 @@
  * dominant cost, so the recorded total tracks real spend closely.
  */
 import {
-  INPUT_USD_PER_MTOK,
-  OUTPUT_USD_PER_MTOK,
-  INPUT_USD_PER_MTOK_FLASH,
-  OUTPUT_USD_PER_MTOK_FLASH,
-} from "@/lib/gemini/client";
+  PRO_INPUT_USD_PER_MTOK,
+  PRO_OUTPUT_USD_PER_MTOK,
+  FLASH_INPUT_USD_PER_MTOK,
+  FLASH_OUTPUT_USD_PER_MTOK,
+} from "./pricing";
 
 export type GeminiTier = "pro" | "flash";
 
@@ -40,8 +40,8 @@ export function calcCostForTier(
   promptTokens: number,
   outputTokens: number,
 ): number {
-  const inputRate = tier === "pro" ? INPUT_USD_PER_MTOK : INPUT_USD_PER_MTOK_FLASH;
-  const outputRate = tier === "pro" ? OUTPUT_USD_PER_MTOK : OUTPUT_USD_PER_MTOK_FLASH;
+  const inputRate = tier === "pro" ? PRO_INPUT_USD_PER_MTOK : FLASH_INPUT_USD_PER_MTOK;
+  const outputRate = tier === "pro" ? PRO_OUTPUT_USD_PER_MTOK : FLASH_OUTPUT_USD_PER_MTOK;
   return (promptTokens * inputRate + outputTokens * outputRate) / 1_000_000;
 }
 

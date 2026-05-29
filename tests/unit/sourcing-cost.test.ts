@@ -5,8 +5,23 @@ import {
   INPUT_USD_PER_MTOK_FLASH,
   OUTPUT_USD_PER_MTOK_FLASH,
 } from "@/lib/gemini/client";
+import {
+  PRO_INPUT_USD_PER_MTOK,
+  PRO_OUTPUT_USD_PER_MTOK,
+  FLASH_INPUT_USD_PER_MTOK,
+  FLASH_OUTPUT_USD_PER_MTOK,
+} from "@/lib/sourcing/pricing";
 import { ZERO_COST, addUsage, calcCostForTier } from "@/lib/sourcing/cost";
 import { rankAndShortlist } from "@/lib/sourcing/rank";
+
+describe("sourcing pricing stays in sync with lib/gemini/client (drift guard)", () => {
+  it("Pro + Flash rates match the canonical Gemini client constants", () => {
+    expect(PRO_INPUT_USD_PER_MTOK).toBe(INPUT_USD_PER_MTOK);
+    expect(PRO_OUTPUT_USD_PER_MTOK).toBe(OUTPUT_USD_PER_MTOK);
+    expect(FLASH_INPUT_USD_PER_MTOK).toBe(INPUT_USD_PER_MTOK_FLASH);
+    expect(FLASH_OUTPUT_USD_PER_MTOK).toBe(OUTPUT_USD_PER_MTOK_FLASH);
+  });
+});
 
 describe("calcCostForTier", () => {
   it("prices Pro using Pro rates", () => {
