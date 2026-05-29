@@ -122,12 +122,13 @@ export interface RequiredLanguage {
 /**
  * AI-extracted half of the requirement profile (Appendix A response). The gate
  * (hard_requirements) is deliberately NOT part of this — it is seeded
- * deterministically and never produced by the model.
+ * deterministically and never produced by the model. `seniority` is the raw
+ * model string ("" when unstated); it is mapped to null on merge.
  */
 export interface RequirementProfileExtraction {
   must_haves: WeightedItem[];
   nice_to_haves: WeightedItem[];
-  seniority: string | null;
+  seniority: string;
   required_languages: RequiredLanguage[];
   search_keywords: string[];
 }
@@ -137,12 +138,18 @@ export interface RequirementProfileExtraction {
  * (hard_requirements / title / location / required_skills) merged with the
  * AI extraction.
  */
-export interface RequirementProfile extends RequirementProfileExtraction {
+export interface RequirementProfile {
   /** the NON-NEGOTIABLE gate, copied verbatim from the posting. */
   hard_requirements: HardRequirement[];
   title: string;
   location: string | null;
   required_skills: string[];
+  must_haves: WeightedItem[];
+  nice_to_haves: WeightedItem[];
+  /** null when the posting did not state a seniority. */
+  seniority: string | null;
+  required_languages: RequiredLanguage[];
+  search_keywords: string[];
 }
 
 // ===================================================================
