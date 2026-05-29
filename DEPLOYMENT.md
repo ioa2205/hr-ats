@@ -61,12 +61,28 @@ Dashboard → Authentication → Providers:
 
 Dashboard → Database → Extensions: confirm `pg_cron` and `pg_net` are enabled. Migration `20260420000021_cron.sql` schedules:
 
-| Schedule                 | Job                     | Purpose                                             |
-| ------------------------ | ----------------------- | --------------------------------------------------- |
-| every 2 min              | `retry-pending-cvs`     | Retries `pending_analysis` rows (max 3 attempts)    |
-| hourly (`0 * * * *`)     | `refresh-storage-usage` | Refreshes the `storage_usage` materialized view     |
-| daily 03:00 (`0 3 * * *`) | `orphan-cv-cleanup`     | Deletes storage objects with no matching candidate  |
-| hourly (`30 * * * *`)    | `cleanup-rate-limits`   | Removes expired rate limit entries                  |
+| Schedule                 | Job                       | Purpose                                                        |
+| ------------------------ | ------------------------- | -------------------------------------------------------------- |
+| every 2 min              | `retry-pending-cvs`       | Retries `pending_analysis` rows (max 3 attempts)               |
+| hourly (`0 * * * *`)     | `refresh-storage-usage`   | Refreshes the `storage_usage` materialized view                |
+| daily 03:00 (`0 3 * * *`) | `orphan-cv-cleanup`       | Deletes storage objects with no matching candidate             |
+| hourly (`30 * * * *`)    | `cleanup-rate-limits`     | Removes expired rate limit entries                             |
+| every 2 min              | `source-candidates-pickup` | Picks up queued / stale-running sourcing searches (migration `…000310`) → POSTs the worker route |
+| daily 03:45 (`45 3 * * *`) | `purge-expired-sourcing`  | TTL-purges unpromoted `sourced_candidates` past `expires_at` + `sourcing_searches` > 90 days |
+
+#### Required Postgres GUCs for the HTTP cron jobs
+
+The `net.http_post` cron jobs (`retry-pending-cvs`, `dispatch-notification-retries`, `source-candidates-pickup`) read connection settings from database GUCs that **no migration sets** — provision them once per environment (Dashboard → SQL editor):
+
+```sql
+alter database postgres set app.settings.supabase_url    = 'https://<project-ref>.supabase.co';
+alter database postgres set app.settings.service_role_key = '<service_role_key>';
+-- NEW for active sourcing: the worker is a Next.js route on Railway, so the
+-- pickup cron needs the app's public URL (no trailing slash).
+alter database postgres set app.settings.app_url          = 'https://<your-app-host>';
+```
+
+Reconnect (or `select pg_reload_conf();`) after setting. If `app.settings.app_url` is unset, sourcing searches enqueue but the cron pickup silently no-ops (the immediate trigger kick still runs; only crash-recovery/backstop is affected).
 
 ### Seed the first operator
 
@@ -377,3 +393,45 @@ supabase db reset          # apply all migrations from scratch
 supabase db push           # apply new migrations (no-op on a fresh reset)
 supabase db reset          # run again — must still be clean
 ```
+
+---
+
+## 15. Active sourcing (outbound candidate search)
+
+Migrations `20260420000310_active_sourcing.sql` (engine) and `20260420000320_sourcing_notifications.sql` (events). The funnel runs in a **Next.js background worker route** on Railway (not a Supabase Edge Function — it reuses `lib/gemini`, `lib/notifications`, and the tested `lib/sourcing` funnel directly; see `SOURCING_NOTES.md` for the rationale).
+
+### Worker route
+
+- `POST /api/internal/sourcing/run` — `runtime = "nodejs"`, `maxDuration = 300`. Runs the funnel in `after()` so the caller gets a fast `202`.
+- **Auth:** the `Authorization: Bearer <SUPABASE_SERVICE_ROLE_KEY>` header (the same key Railway already has as `SUPABASE_SERVICE_ROLE_KEY`). No new secret.
+- Invoked by the trigger's immediate kick (`/api/hr/jobs/[id]/source`) and, as a backstop / crash-recovery, by the `source-candidates-pickup` cron. The atomic `claim_sourcing_search` RPC ensures exactly one worker processes a search; a crashed run is re-claimed (stale > 10 min) and either resumes or, past 3 attempts, fails loudly with a quota refund + `sourcing_failed` notification.
+
+### Quota config
+
+Per-search metering (1 unit / "Find candidates" run):
+
+```sql
+-- Trial cap (default 2). Per company on the subscriptions row.
+update subscriptions set sourcing_quota_limit = 2 where company_id = '<id>';
+-- Pro monthly allotment (seeded 50). Runtime hard-enforces the trial counter
+-- only today; the plan column is the source for monthly enforcement later.
+update subscription_plans set sourcing_quota_monthly = 50 where code = 'pro_monthly_flat';
+```
+
+`try_consume_sourcing_quota(company, units)` (atomic, `FOR UPDATE`) is the gate; `refund_sourcing_quota` returns a unit on terminal failure.
+
+### TTL purge
+
+`purge_expired_sourcing()` (cron `purge-expired-sourcing`, daily 03:45) deletes unpromoted `sourced_candidates` past `expires_at` (default 30 days) and `sourcing_searches` older than 90 days, logging counts via `raise notice`. Promoted rows (`promoted_candidate_id` set) are never purged.
+
+### Notifications
+
+`sourcing_complete` / `sourcing_failed` fan out via `lib/notifications/dispatch.ts` (in-app + email; Telegram is a future channel — `dispatch` does not currently send Telegram). The email CTA deep-links to `/hr/jobs/<id>/sourcing/<searchId>`. Per-event toggles live in `notification_preferences` (`email_/inapp_sourcing_*`).
+
+### Connectors & future env vars (Phases 2–4, not yet wired)
+
+Phase 1 ships the `internal_pool` connector only (the company's own past candidates — no external creds, no extra env). The pluggable `SourceConnector` interface (`lib/sourcing/types.ts`) is in place for:
+
+- **hh.uz (Phase 2):** `HH_CLIENT_ID`, `HH_CLIENT_SECRET`, employer OAuth token flow. Do not run against prod hh until billing is confirmed.
+- **Telegram (Phase 3):** `TELEGRAM_BOT_TOKEN` + an explicit allow-list of job channels to ingest.
+- **LinkedIn (Phase 4):** URL/paste only — no automated crawling, no creds.

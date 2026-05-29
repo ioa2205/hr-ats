@@ -313,4 +313,30 @@ The latest applied migration on disk is `20260420000300_candidate_requirements_e
 ## Environment / validation status (Phase 1.1)
 
 - **Docker Desktop is down on this machine** (`supabase start` fails: "Docker Desktop is unable to start"). The spec's live DB gate — `supabase db reset && supabase db push` clean **twice**, then `supabase gen types typescript --local > types/supabase.ts` — **could not be run** and is **deferred** until Docker is healthy. The migration `20260420000310_active_sourcing.sql` was validated by careful manual review against the established idioms (enum guards, `FOR UPDATE` quota RPC, RLS policies, idempotent cron) rather than a live apply.
-- **`types/supabase.ts` was hand-extended** (not regenerated) for the new objects: `subscriptions.sourcing_quota_{used,limit}`, the `sourced_candidates` + `sourcing_searches` tables, the `source_kind`/`sourcing_status` enums, and the `try_consume_sourcing_quota` / `refund_sourcing_quota` / `purge_expired_sourcing` functions. Shapes mirror the generator exactly (Relationships left `[]` — the generator will fill them), so the eventual `supabase gen types` is a near-no-op. **Re-run `supabase gen types` once Docker is back** to pick up the real Relationships and any pre-existing billing/notification type drift.
+- **`types/supabase.ts` was hand-extended** (not regenerated) for the new objects: `subscriptions.sourcing_quota_{used,limit}`, the `sourced_candidates` + `sourcing_searches` tables, the `source_kind`/`sourcing_status` enums, the `notification_event_kind` values + `notification_preferences.{email,inapp}_sourcing_*` columns, and the `try_consume_sourcing_quota` / `refund_sourcing_quota` / `claim_sourcing_search` / `purge_expired_sourcing` functions. Shapes mirror the generator exactly (Relationships left `[]` — the generator will fill them), so the eventual `supabase gen types` is a near-no-op. **Re-run `supabase gen types` once Docker is back** to pick up the real Relationships and any pre-existing billing/notification type drift.
+- **Pre-existing lint error (not introduced here):** `components/auth/resend-verification-button.tsx:26` trips `react-hooks/set-state-in-effect`. It is on `main`, untouched by this branch; all sourcing files lint clean. Flagging so it isn't mistaken for sourcing fallout — fix it separately.
+
+## Architecture decision — worker vehicle (recorded 2026-05-29)
+
+The spec said to mirror `process-cv` as a **Supabase Deno Edge Function**. We instead run the funnel in a **Next.js background worker route** (`/api/internal/sourcing/run`), chosen by the user after surfacing the tradeoff. Rationale:
+
+- The spec's heavy **reuse mandate** (`lib/gemini` two-tier split, `lib/notifications/dispatch`, i18n email templates) is fundamentally Next-side and **cannot be imported from Deno** (extensionless imports + `process.env` + the Next module graph). A Deno worker would inline-duplicate ~600 lines of already-tested funnel/gate/prompt/schema logic **plus** a second notification path.
+- TezHR runs on **Railway (a persistent Node server, not serverless)**, where a cron-invoked background route can run for minutes without blocking user requests — which dissolves the original "don't run long work in a route" concern (a serverless constraint).
+- Net result: zero funnel duplication, the funnel is fully Vitest-tested, and `lib/notifications` is reused directly.
+
+**Consequences / future:** the pickup cron targets the app via a new `app.settings.app_url` GUC (see DEPLOYMENT.md §15) instead of the Supabase functions endpoint; `runSourcingSearch` claims via the atomic `claim_sourcing_search` RPC and runs in `after()` with `maxDuration = 300`. If TezHR ever moves to a serverless host where routes can't run minutes, migrating this one route to a Deno Edge Function (inlining the funnel) is the fallback.
+
+## Final validation checklist (run when Docker is healthy)
+
+Everything below is **deferred because Docker Desktop was down** during the build. The TypeScript surface (`pnpm typecheck`) and unit suite (`pnpm test`, 354 green incl. ~80 new sourcing tests) pass now; these steps need a live DB / Gemini / browser:
+
+1. `supabase db reset && supabase db push` runs cleanly **twice** (migrations `…000310`, `…000320` are idempotent: guarded enum create, `ADD VALUE IF NOT EXISTS`, `IF NOT EXISTS`, `drop policy if exists`).
+2. `supabase gen types typescript --local > types/supabase.ts` — should be a near-no-op diff vs the hand-edits (plus real Relationships + pre-existing billing/notification drift).
+3. Set the three GUCs (`app.settings.{supabase_url,service_role_key,app_url}`) and `supabase secrets set GOOGLE_GEMINI_API_KEY` for the (unused-in-Phase-1) edge runtime; the worker route uses Railway's `process.env`.
+4. **N+1 parallel "Find candidates"** on one posting → exactly one search runs (partial unique index); the rest get `409 already_searching`. The trial quota RPC (`FOR UPDATE`) independently caps concurrent consumption.
+5. Seed a candidate who misses exactly one hard requirement → **absent** from the shortlist regardless of score (unit-proven in `sourcing-funnel.test.ts`; confirm end-to-end).
+6. Seed a candidate with ambiguous (low-confidence) evidence → **excluded** (fail-closed; unit-proven), and explainable via the evidence drawer.
+7. Kill the worker mid-run → search ends `failed` (or resumes via the stale-run cron), never stuck in `running`; HR gets `sourcing_failed`.
+8. A finished search fires a notification that deep-links to a results page of ≤20, sorted desc, each with a complete ✓ checklist + quotable evidence.
+9. Token cost recorded per run; surface it to the operator portal (Phase 4 polish — extend the existing Gemini cost view).
+10. `pnpm test:e2e` (`tests/e2e/sourcing.spec.ts`) green.
