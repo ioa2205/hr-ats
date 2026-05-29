@@ -1,5 +1,7 @@
+import { z } from "zod/v4";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { INTERVIEW_QUESTIONS_MODEL_TAG } from "@/lib/gemini/interview-questions-types";
+import { logger } from "@/lib/logger";
 import type { Subscription, SubscriptionStatus } from "@/types";
 
 export type QuotaReason =
@@ -8,7 +10,8 @@ export type QuotaReason =
   | "job_quota_exceeded"
   | "cv_quota_exceeded"
   | "interview_quota_exceeded"
-  | "scheduling_quota_exceeded";
+  | "scheduling_quota_exceeded"
+  | "sourcing_quota_exceeded";
 
 export const TRIAL_INTERVIEW_QUESTIONS_LIMIT = 10;
 export const TRIAL_INTERVIEW_BOOKINGS_LIMIT = 3;
@@ -20,6 +23,8 @@ export interface QuotaState {
   cvQuotaUsed: number;
   cvQuotaLimit: number;
   jobQuotaLimit: number;
+  sourcingQuotaUsed: number;
+  sourcingQuotaLimit: number;
   activeJobCount: number;
   canWrite: boolean;
 }
@@ -68,6 +73,8 @@ export async function getQuotaState(companyId: string): Promise<QuotaState | nul
     cvQuotaUsed: sub.cv_quota_used,
     cvQuotaLimit: sub.cv_quota_limit,
     jobQuotaLimit: sub.job_quota_limit,
+    sourcingQuotaUsed: sub.sourcing_quota_used,
+    sourcingQuotaLimit: sub.sourcing_quota_limit,
     activeJobCount,
     canWrite: writable,
   };
@@ -136,6 +143,148 @@ export async function incrementCvQuota(companyId: string): Promise<boolean> {
   });
   if (error) return false;
   return data === true;
+}
+
+/** Per-search metering: one unit consumed per "Find candidates" run. */
+export const SOURCING_UNITS_PER_SEARCH = 1;
+
+export interface SourcingQuotaResult {
+  ok: boolean;
+  reason?: QuotaReason;
+  used?: number;
+  limit?: number;
+  remaining?: number;
+}
+
+/** Shape of the try_consume_sourcing_quota / refund RPC return (jsonb). */
+const sourcingQuotaRpcResult = z.object({
+  ok: z.boolean(),
+  error: z.string().optional(),
+  status: z.string().optional(),
+  used: z.number().optional(),
+  limit: z.number().optional(),
+  remaining: z.number().optional(),
+});
+
+function sourcingErrorToReason(error: string | undefined): QuotaReason {
+  switch (error) {
+    case "no_subscription":
+      return "no_subscription";
+    case "trial_expired":
+      return "subscription_inactive";
+    case "sourcing_quota_exceeded":
+      return "sourcing_quota_exceeded";
+    default:
+      // invalid_units / unknown — treat as a hard inactive gate, never a pass.
+      return "subscription_inactive";
+  }
+}
+
+/**
+ * Advisory (non-atomic) read: can this company start a sourcing run right now?
+ * Pro is unlimited; trialing must be within trial_ends_at AND below the
+ * sourcing trial cap. The authoritative gate is consumeSourcingQuota (below);
+ * this exists for pre-flight UI states (button enabled/disabled).
+ */
+export async function canSource(
+  companyId: string,
+): Promise<{ allowed: boolean; reason?: QuotaReason; used: number; limit: number }> {
+  const sub = await getSubscription(companyId);
+  if (!sub) {
+    return { allowed: false, reason: "no_subscription", used: 0, limit: 0 };
+  }
+
+  const now = Date.now();
+  const trialEnd = new Date(sub.trial_ends_at).getTime();
+
+  if (!isWritable(sub.status, trialEnd, now)) {
+    return {
+      allowed: false,
+      reason: "subscription_inactive",
+      used: sub.sourcing_quota_used,
+      limit: sub.sourcing_quota_limit,
+    };
+  }
+
+  if (sub.status === "active") {
+    return { allowed: true, used: sub.sourcing_quota_used, limit: sub.sourcing_quota_limit };
+  }
+
+  if (sub.sourcing_quota_used >= sub.sourcing_quota_limit) {
+    return {
+      allowed: false,
+      reason: "sourcing_quota_exceeded",
+      used: sub.sourcing_quota_used,
+      limit: sub.sourcing_quota_limit,
+    };
+  }
+
+  return { allowed: true, used: sub.sourcing_quota_used, limit: sub.sourcing_quota_limit };
+}
+
+/**
+ * Atomically reserve sourcing quota for a run. The DB function holds a
+ * FOR UPDATE row lock so N concurrent "Find candidates" clicks can never
+ * exceed the trial cap (only as many as there is quota succeed). This is the
+ * authoritative gate; canSource() is advisory only.
+ */
+export async function consumeSourcingQuota(
+  companyId: string,
+  units: number = SOURCING_UNITS_PER_SEARCH,
+): Promise<SourcingQuotaResult> {
+  const admin = createAdminClient();
+  const { data, error } = await admin.rpc("try_consume_sourcing_quota", {
+    p_company_id: companyId,
+    p_units: units,
+  });
+
+  if (error) {
+    logger.error({ err: error, companyId }, "[sourcing] consume quota rpc failed");
+    return { ok: false, reason: "subscription_inactive" };
+  }
+
+  const parsed = sourcingQuotaRpcResult.safeParse(data);
+  if (!parsed.success) {
+    logger.error({ companyId }, "[sourcing] consume quota rpc returned unexpected shape");
+    return { ok: false, reason: "subscription_inactive" };
+  }
+
+  const result = parsed.data;
+  if (!result.ok) {
+    return {
+      ok: false,
+      reason: sourcingErrorToReason(result.error),
+      used: result.used,
+      limit: result.limit,
+      remaining: result.remaining,
+    };
+  }
+
+  return {
+    ok: true,
+    used: result.used,
+    limit: result.limit,
+    remaining: result.remaining,
+  };
+}
+
+/**
+ * Refund a previously consumed sourcing unit when a run fails terminally, so
+ * infra/connector failures don't burn a trial slot. Idempotent (clamps at 0,
+ * trial only) — mirrors refund_cv_quota.
+ */
+export async function refundSourcingQuota(
+  companyId: string,
+  units: number = SOURCING_UNITS_PER_SEARCH,
+): Promise<void> {
+  const admin = createAdminClient();
+  const { error } = await admin.rpc("refund_sourcing_quota", {
+    p_company_id: companyId,
+    p_units: units,
+  });
+  if (error) {
+    logger.error({ err: error, companyId }, "[sourcing] refund quota rpc failed");
+  }
 }
 
 /** Returns true when the subscription + company status allow mutating writes. */

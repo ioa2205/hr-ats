@@ -811,6 +811,126 @@ export type Database = {
         };
         Relationships: [];
       };
+      sourced_candidates: {
+        Row: {
+          company_id: string;
+          contact: Json | null;
+          created_at: string;
+          expires_at: string;
+          id: string;
+          identity_key: string;
+          meets_all_requirements: boolean;
+          profile: Json;
+          promoted_candidate_id: string | null;
+          rank: number | null;
+          requirement_results: Json;
+          score: number | null;
+          score_breakdown: Json | null;
+          source: Database["public"]["Enums"]["source_kind"];
+          source_ref: string | null;
+          sourcing_search_id: string;
+          verified: boolean;
+        };
+        Insert: {
+          company_id: string;
+          contact?: Json | null;
+          created_at?: string;
+          expires_at?: string;
+          id?: string;
+          identity_key: string;
+          meets_all_requirements?: boolean;
+          profile: Json;
+          promoted_candidate_id?: string | null;
+          rank?: number | null;
+          requirement_results?: Json;
+          score?: number | null;
+          score_breakdown?: Json | null;
+          source: Database["public"]["Enums"]["source_kind"];
+          source_ref?: string | null;
+          sourcing_search_id: string;
+          verified?: boolean;
+        };
+        Update: {
+          company_id?: string;
+          contact?: Json | null;
+          created_at?: string;
+          expires_at?: string;
+          id?: string;
+          identity_key?: string;
+          meets_all_requirements?: boolean;
+          profile?: Json;
+          promoted_candidate_id?: string | null;
+          rank?: number | null;
+          requirement_results?: Json;
+          score?: number | null;
+          score_breakdown?: Json | null;
+          source?: Database["public"]["Enums"]["source_kind"];
+          source_ref?: string | null;
+          sourcing_search_id?: string;
+          verified?: boolean;
+        };
+        Relationships: [];
+      };
+      sourcing_searches: {
+        Row: {
+          attempts: number;
+          company_id: string;
+          completed_at: string | null;
+          cost_usd: number;
+          created_at: string;
+          error: string | null;
+          id: string;
+          input_tokens: number;
+          job_posting_id: string;
+          output_tokens: number;
+          requested_by: string | null;
+          requirement_profile: Json | null;
+          sources: Database["public"]["Enums"]["source_kind"][];
+          started_at: string | null;
+          stats: Json;
+          status: Database["public"]["Enums"]["sourcing_status"];
+          updated_at: string;
+        };
+        Insert: {
+          attempts?: number;
+          company_id: string;
+          completed_at?: string | null;
+          cost_usd?: number;
+          created_at?: string;
+          error?: string | null;
+          id?: string;
+          input_tokens?: number;
+          job_posting_id: string;
+          output_tokens?: number;
+          requested_by?: string | null;
+          requirement_profile?: Json | null;
+          sources: Database["public"]["Enums"]["source_kind"][];
+          started_at?: string | null;
+          stats?: Json;
+          status?: Database["public"]["Enums"]["sourcing_status"];
+          updated_at?: string;
+        };
+        Update: {
+          attempts?: number;
+          company_id?: string;
+          completed_at?: string | null;
+          cost_usd?: number;
+          created_at?: string;
+          error?: string | null;
+          id?: string;
+          input_tokens?: number;
+          job_posting_id?: string;
+          output_tokens?: number;
+          requested_by?: string | null;
+          requirement_profile?: Json | null;
+          sources?: Database["public"]["Enums"]["source_kind"][];
+          started_at?: string | null;
+          stats?: Json;
+          status?: Database["public"]["Enums"]["sourcing_status"];
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       subscriptions: {
         Row: {
           company_id: string;
@@ -819,6 +939,8 @@ export type Database = {
           job_quota_limit: number;
           pro_renews_at: string | null;
           pro_started_at: string | null;
+          sourcing_quota_limit: number;
+          sourcing_quota_used: number;
           status: Database["public"]["Enums"]["subscription_status"];
           trial_ends_at: string;
           updated_at: string;
@@ -830,6 +952,8 @@ export type Database = {
           job_quota_limit?: number;
           pro_renews_at?: string | null;
           pro_started_at?: string | null;
+          sourcing_quota_limit?: number;
+          sourcing_quota_used?: number;
           status?: Database["public"]["Enums"]["subscription_status"];
           trial_ends_at?: string;
           updated_at?: string;
@@ -841,6 +965,8 @@ export type Database = {
           job_quota_limit?: number;
           pro_renews_at?: string | null;
           pro_started_at?: string | null;
+          sourcing_quota_limit?: number;
+          sourcing_quota_used?: number;
           status?: Database["public"]["Enums"]["subscription_status"];
           trial_ends_at?: string;
           updated_at?: string;
@@ -1123,6 +1249,15 @@ export type Database = {
       show_limit: { Args: never; Returns: number };
       show_trgm: { Args: { "": string }; Returns: string[] };
       try_consume_cv_quota: { Args: { p_company_id: string }; Returns: boolean };
+      try_consume_sourcing_quota: {
+        Args: { p_company_id: string; p_units?: number };
+        Returns: Json;
+      };
+      refund_sourcing_quota: {
+        Args: { p_company_id: string; p_units?: number };
+        Returns: undefined;
+      };
+      purge_expired_sourcing: { Args: never; Returns: undefined };
       user_companies: { Args: never; Returns: string[] };
       get_interview_request_by_token: { Args: { p_token: string }; Returns: Json };
       book_interview_slot: {
@@ -1168,6 +1303,8 @@ export type Database = {
         | "interview_declined"
         | "ai_failed"
         | "quota_warning";
+      source_kind: "internal_pool" | "hh" | "telegram" | "linkedin_url";
+      sourcing_status: "queued" | "running" | "completed" | "partial" | "failed";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -1319,6 +1456,8 @@ export const Constants = {
         "ai_failed",
         "quota_warning",
       ],
+      source_kind: ["internal_pool", "hh", "telegram", "linkedin_url"],
+      sourcing_status: ["queued", "running", "completed", "partial", "failed"],
     },
   },
 } as const;

@@ -308,3 +308,9 @@ The latest applied migration on disk is `20260420000300_candidate_requirements_e
 - **Notification deep-link** needs a `dispatch.ts` change (hardcoded `/hr/dashboard` actionUrl) — tracked for Phase 1.6.
 - **Promote-to-candidate** must solve the `+998…` phone NOT-NULL CHECK for sourced profiles that lack a UZ phone.
 - **Sourcing economics** (per-search vs per-candidate vs per-Pro-call metering, per-plan quota) is a required human input before finalizing the quota table/RPC units in Phase 1.1.
+  - **Decided 2026-05-29:** per-search metering (1 unit/run); trial cap **2**, Pro **50/mo**. The RPC stays `units`-parameterized so per-candidate/per-Pro metering remains possible without a schema change.
+
+## Environment / validation status (Phase 1.1)
+
+- **Docker Desktop is down on this machine** (`supabase start` fails: "Docker Desktop is unable to start"). The spec's live DB gate — `supabase db reset && supabase db push` clean **twice**, then `supabase gen types typescript --local > types/supabase.ts` — **could not be run** and is **deferred** until Docker is healthy. The migration `20260420000310_active_sourcing.sql` was validated by careful manual review against the established idioms (enum guards, `FOR UPDATE` quota RPC, RLS policies, idempotent cron) rather than a live apply.
+- **`types/supabase.ts` was hand-extended** (not regenerated) for the new objects: `subscriptions.sourcing_quota_{used,limit}`, the `sourced_candidates` + `sourcing_searches` tables, the `source_kind`/`sourcing_status` enums, and the `try_consume_sourcing_quota` / `refund_sourcing_quota` / `purge_expired_sourcing` functions. Shapes mirror the generator exactly (Relationships left `[]` — the generator will fill them), so the eventual `supabase gen types` is a near-no-op. **Re-run `supabase gen types` once Docker is back** to pick up the real Relationships and any pre-existing billing/notification type drift.

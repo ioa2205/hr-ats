@@ -40,6 +40,8 @@ function makeSub(overrides: Partial<Subscription> = {}): Subscription {
     cv_quota_used: 0,
     cv_quota_limit: 50,
     job_quota_limit: 3,
+    sourcing_quota_used: 0,
+    sourcing_quota_limit: 2,
     pro_started_at: null,
     pro_renews_at: null,
     updated_at: new Date(FIXED_NOW).toISOString(),
