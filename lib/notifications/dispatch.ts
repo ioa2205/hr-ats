@@ -19,6 +19,8 @@ interface DispatchInput {
   metadata?: Record<string, unknown>;
   /** Restrict the dispatch to a single recipient (e.g. per-user event). */
   userIds?: string[];
+  /** Deep-link path appended to APP_URL for the email CTA (default dashboard). */
+  actionPath?: string;
 }
 
 const emailColumn: Record<Event, keyof PrefsRow> = {
@@ -28,6 +30,8 @@ const emailColumn: Record<Event, keyof PrefsRow> = {
   interview_declined: "email_interview_declined",
   ai_failed: "email_weekly_digest",
   quota_warning: "email_quota_warning",
+  sourcing_complete: "email_sourcing_complete",
+  sourcing_failed: "email_sourcing_failed",
 };
 
 const inappColumn: Record<Event, keyof PrefsRow> = {
@@ -37,6 +41,8 @@ const inappColumn: Record<Event, keyof PrefsRow> = {
   interview_declined: "inapp_interview_declined",
   ai_failed: "inapp_ai_failed",
   quota_warning: "inapp_new_application",
+  sourcing_complete: "inapp_sourcing_complete",
+  sourcing_failed: "inapp_sourcing_failed",
 };
 
 type PrefsRow = Database["public"]["Tables"]["notification_preferences"]["Row"];
@@ -157,7 +163,7 @@ export async function dispatchNotification(input: DispatchInput): Promise<void> 
       locale,
       title: input.title,
       body: input.body,
-      actionUrl: `${env.APP_URL}/hr/dashboard`,
+      actionUrl: `${env.APP_URL}${input.actionPath ?? "/hr/dashboard"}`,
       companyName: company?.name ?? undefined,
     });
 

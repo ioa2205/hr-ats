@@ -382,6 +382,8 @@ export const ru: Translations = {
   "notifications.email.subject_interview_declined": "Собеседование отклонено: {title}",
   "notifications.email.subject_ai_failed": "AI-анализ не удался: {title}",
   "notifications.email.subject_quota_warning": "Предупреждение о лимите: {title}",
+  "notifications.email.subject_sourcing_complete": "Кандидаты найдены: {title}",
+  "notifications.email.subject_sourcing_failed": "Поиск кандидатов не удался: {title}",
   "notifications.email.open_cta": "Открыть в TezHR",
   "notifications.email.footer": "Вы получили это письмо, потому что уведомления включены для вашего аккаунта.",
   "applicants.analysis.rate_limited_heading": "AI занят",
@@ -1324,6 +1326,13 @@ export const ru: Translations = {
   "hr.settings.notifications.group.pipeline": "Активность воронки",
   "hr.settings.notifications.group.interviews": "Интервью",
   "hr.settings.notifications.group.system": "Система и квоты",
+  "hr.settings.notifications.group.sourcing": "Поиск кандидатов",
+  "hr.settings.notifications.event.sourcing_complete": "Поиск завершён",
+  "hr.settings.notifications.event.sourcing_complete_desc":
+    "Когда фоновый поиск кандидатов готов и шорт-лист сформирован.",
+  "hr.settings.notifications.event.sourcing_failed": "Поиск не удался",
+  "hr.settings.notifications.event.sourcing_failed_desc":
+    "Когда фоновый поиск кандидатов завершился ошибкой.",
   "hr.settings.notifications.event.new_application": "Новая заявка",
   "hr.settings.notifications.event.new_application_desc":
     "Кандидат отправляет CV на одну из ваших вакансий.",

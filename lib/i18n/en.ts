@@ -381,6 +381,8 @@ export const en: Translations = {
   "notifications.email.subject_interview_declined": "Interview declined: {title}",
   "notifications.email.subject_ai_failed": "AI analysis failed: {title}",
   "notifications.email.subject_quota_warning": "Quota warning: {title}",
+  "notifications.email.subject_sourcing_complete": "Candidates found: {title}",
+  "notifications.email.subject_sourcing_failed": "Candidate search failed: {title}",
   "notifications.email.open_cta": "Open in TezHR",
   "notifications.email.footer": "You're receiving this because notifications are on for your account.",
   "applicants.analysis.rate_limited_heading": "AI is busy",
@@ -1320,6 +1322,13 @@ export const en: Translations = {
   "hr.settings.notifications.group.pipeline": "Pipeline activity",
   "hr.settings.notifications.group.interviews": "Interviews",
   "hr.settings.notifications.group.system": "System & quotas",
+  "hr.settings.notifications.group.sourcing": "Candidate sourcing",
+  "hr.settings.notifications.event.sourcing_complete": "Search complete",
+  "hr.settings.notifications.event.sourcing_complete_desc":
+    "When a background candidate search finishes and the shortlist is ready.",
+  "hr.settings.notifications.event.sourcing_failed": "Search failed",
+  "hr.settings.notifications.event.sourcing_failed_desc":
+    "When a background candidate search ends in an error.",
   "hr.settings.notifications.event.new_application": "New application",
   "hr.settings.notifications.event.new_application_desc":
     "A candidate submits their CV to one of your jobs.",

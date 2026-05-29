@@ -384,6 +384,8 @@ export const uz: Translations = {
   "notifications.email.subject_interview_declined": "Suhbat rad etildi: {title}",
   "notifications.email.subject_ai_failed": "AI tahlil muvaffaqiyatsiz: {title}",
   "notifications.email.subject_quota_warning": "Limit ogohlantirishi: {title}",
+  "notifications.email.subject_sourcing_complete": "Nomzodlar topildi: {title}",
+  "notifications.email.subject_sourcing_failed": "Nomzod qidiruvi muvaffaqiyatsiz: {title}",
   "notifications.email.open_cta": "TezHR da ochish",
   "notifications.email.footer": "Akkauntingizda bildirishnomalar yoqilgan, shuning uchun bu xatni oldingiz.",
   "applicants.analysis.rate_limited_heading": "AI band",
@@ -1327,6 +1329,13 @@ export const uz: Translations = {
   "hr.settings.notifications.group.pipeline": "Voronka faolligi",
   "hr.settings.notifications.group.interviews": "Suhbatlar",
   "hr.settings.notifications.group.system": "Tizim va chegaralar",
+  "hr.settings.notifications.group.sourcing": "Nomzod qidirish",
+  "hr.settings.notifications.event.sourcing_complete": "Qidiruv tugadi",
+  "hr.settings.notifications.event.sourcing_complete_desc":
+    "Fondagi nomzod qidiruvi tugab, qisqa ro‘yxat tayyor bo‘lganda.",
+  "hr.settings.notifications.event.sourcing_failed": "Qidiruv muvaffaqiyatsiz",
+  "hr.settings.notifications.event.sourcing_failed_desc":
+    "Fondagi nomzod qidiruvi xatolik bilan tugaganda.",
   "hr.settings.notifications.event.new_application": "Yangi ariza",
   "hr.settings.notifications.event.new_application_desc":
     "Nomzod vakansiyalaringizdan biriga CV yuboradi.",

@@ -275,6 +275,40 @@ revoke all on function refund_sourcing_quota(uuid, int) from public;
 grant execute on function refund_sourcing_quota(uuid, int) to service_role;
 
 -- ===================================================================
+-- claim_sourcing_search — atomic worker claim. Flips a queued search (or a
+-- stale 'running' one whose worker crashed) to 'running', stamps started_at
+-- once, and bumps attempts, all in a single conditional UPDATE so concurrent
+-- workers (the immediate kick + the pickup cron) can never double-process.
+-- Returns the claimed row, or NULL when another worker already owns it.
+-- ===================================================================
+create or replace function claim_sourcing_search(p_id uuid, p_stale_minutes int default 10)
+returns sourcing_searches
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_row sourcing_searches;
+begin
+  update sourcing_searches
+     set status = 'running',
+         started_at = coalesce(started_at, now()),
+         attempts = attempts + 1,
+         updated_at = now()
+   where id = p_id
+     and (
+       status = 'queued'
+       or (status = 'running' and updated_at < now() - make_interval(mins => greatest(p_stale_minutes, 1)))
+     )
+  returning * into v_row;
+
+  return v_row;
+end; $$;
+
+revoke all on function claim_sourcing_search(uuid, int) from public;
+grant execute on function claim_sourcing_search(uuid, int) to service_role;
+
+-- ===================================================================
 -- purge_expired_sourcing — TTL cleanup. Deletes unpromoted sourced_candidates
 -- past expires_at and sourcing_searches older than 90 days. Logs counts.
 -- ===================================================================
@@ -310,11 +344,13 @@ grant execute on function purge_expired_sourcing() to service_role;
 -- (set out-of-band, see DEPLOYMENT.md).
 -- ===================================================================
 
--- Worker pickup + stuck-run recovery (every 2 min). Re-invokes the
--- source-candidates Edge Function for queued searches the immediate kick
--- missed, and for searches stuck in 'running' (crashed worker). The worker's
--- atomic claim + bounded attempts turn a stale 'running' row into a resume or
--- a loud 'failed' (never a hang).
+-- Worker pickup + stuck-run recovery (every 2 min). Re-invokes the Next.js
+-- background worker route for queued searches the immediate kick missed, and
+-- for searches stuck in 'running' (crashed worker). The worker's atomic claim
+-- (claim_sourcing_search) + bounded attempts turn a stale 'running' row into a
+-- resume or a loud 'failed' (never a hang). Targets the app via the
+-- app.settings.app_url GUC (set out-of-band, see DEPLOYMENT.md); authenticates
+-- with the service-role key, which the route verifies.
 do $$
 begin
   perform cron.unschedule('source-candidates-pickup');
@@ -327,7 +363,7 @@ select cron.schedule(
   '*/2 * * * *',
   $$
     select net.http_post(
-      url     := current_setting('app.settings.supabase_url') || '/functions/v1/source-candidates',
+      url     := current_setting('app.settings.app_url') || '/api/internal/sourcing/run',
       headers := jsonb_build_object(
         'Content-Type', 'application/json',
         'Authorization', 'Bearer ' || current_setting('app.settings.service_role_key')

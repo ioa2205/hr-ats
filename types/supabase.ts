@@ -610,6 +610,8 @@ export type Database = {
           email_interview_declined: boolean;
           email_new_application: boolean;
           email_quota_warning: boolean;
+          email_sourcing_complete: boolean;
+          email_sourcing_failed: boolean;
           email_top_pick: boolean;
           email_weekly_digest: boolean;
           id: string;
@@ -617,6 +619,8 @@ export type Database = {
           inapp_interview_booked: boolean;
           inapp_interview_declined: boolean;
           inapp_new_application: boolean;
+          inapp_sourcing_complete: boolean;
+          inapp_sourcing_failed: boolean;
           inapp_top_pick: boolean;
           quiet_hours_end: number | null;
           quiet_hours_start: number | null;
@@ -631,6 +635,8 @@ export type Database = {
           email_interview_declined?: boolean;
           email_new_application?: boolean;
           email_quota_warning?: boolean;
+          email_sourcing_complete?: boolean;
+          email_sourcing_failed?: boolean;
           email_top_pick?: boolean;
           email_weekly_digest?: boolean;
           id?: string;
@@ -638,6 +644,8 @@ export type Database = {
           inapp_interview_booked?: boolean;
           inapp_interview_declined?: boolean;
           inapp_new_application?: boolean;
+          inapp_sourcing_complete?: boolean;
+          inapp_sourcing_failed?: boolean;
           inapp_top_pick?: boolean;
           quiet_hours_end?: number | null;
           quiet_hours_start?: number | null;
@@ -652,6 +660,8 @@ export type Database = {
           email_interview_declined?: boolean;
           email_new_application?: boolean;
           email_quota_warning?: boolean;
+          email_sourcing_complete?: boolean;
+          email_sourcing_failed?: boolean;
           email_top_pick?: boolean;
           email_weekly_digest?: boolean;
           id?: string;
@@ -659,6 +669,8 @@ export type Database = {
           inapp_interview_booked?: boolean;
           inapp_interview_declined?: boolean;
           inapp_new_application?: boolean;
+          inapp_sourcing_complete?: boolean;
+          inapp_sourcing_failed?: boolean;
           inapp_top_pick?: boolean;
           quiet_hours_end?: number | null;
           quiet_hours_start?: number | null;
@@ -1257,6 +1269,10 @@ export type Database = {
         Args: { p_company_id: string; p_units?: number };
         Returns: undefined;
       };
+      claim_sourcing_search: {
+        Args: { p_id: string; p_stale_minutes?: number };
+        Returns: Database["public"]["Tables"]["sourcing_searches"]["Row"];
+      };
       purge_expired_sourcing: { Args: never; Returns: undefined };
       user_companies: { Args: never; Returns: string[] };
       get_interview_request_by_token: { Args: { p_token: string }; Returns: Json };
@@ -1302,7 +1318,9 @@ export type Database = {
         | "interview_booked"
         | "interview_declined"
         | "ai_failed"
-        | "quota_warning";
+        | "quota_warning"
+        | "sourcing_complete"
+        | "sourcing_failed";
       source_kind: "internal_pool" | "hh" | "telegram" | "linkedin_url";
       sourcing_status: "queued" | "running" | "completed" | "partial" | "failed";
     };
@@ -1455,6 +1473,8 @@ export const Constants = {
         "interview_declined",
         "ai_failed",
         "quota_warning",
+        "sourcing_complete",
+        "sourcing_failed",
       ],
       source_kind: ["internal_pool", "hh", "telegram", "linkedin_url"],
       sourcing_status: ["queued", "running", "completed", "partial", "failed"],
