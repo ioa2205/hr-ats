@@ -30,6 +30,7 @@ import {
 } from "@/components/hr/design";
 import { JobDetailTabs } from "@/components/hr/job-detail-tabs";
 import { StatusToggleButton } from "@/components/hr/status-toggle-button";
+import { FindCandidatesButton } from "@/components/hr/sourcing/find-candidates-button";
 import { ShareButtons } from "@/components/hr/share-buttons";
 import { JobDescription } from "@/components/candidate/job-description";
 import { getLocale, t } from "@/lib/i18n";
@@ -563,6 +564,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             </TezButton>
           </Link>
           <StatusToggleButton jobId={id} status={job.status} canWrite={writable} />
+          <FindCandidatesButton jobId={id} variant="secondary" disabled={!writable} />
           <Link href={`/hr/jobs/${id}/applicants`}>
             <TezButton
               variant="primary"
