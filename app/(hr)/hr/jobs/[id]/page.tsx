@@ -10,6 +10,7 @@ import {
   MapPin,
   Check,
   ArrowRight,
+  Radar,
 } from "lucide-react";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { env } from "@/lib/env";
@@ -564,6 +565,11 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             </TezButton>
           </Link>
           <StatusToggleButton jobId={id} status={job.status} canWrite={writable} />
+          <Link href={`/hr/jobs/${id}/sourcing`}>
+            <TezButton variant="secondary" leadingIcon={<Radar className="h-3 w-3" />}>
+              {t("sourcing.runs.nav_label", locale)}
+            </TezButton>
+          </Link>
           <FindCandidatesButton jobId={id} variant="secondary" disabled={!writable} />
           <Link href={`/hr/jobs/${id}/applicants`}>
             <TezButton

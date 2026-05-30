@@ -8,6 +8,7 @@ import { requireCompanyAccess } from "@/lib/auth/guards";
 import { getLocale, t } from "@/lib/i18n";
 import { pickLocalized } from "@/lib/i18n/pick-localized";
 import { Panel, PanelHeader, PanelTitle, StatTile } from "@/components/hr/design";
+import { funnelDrops, type FunnelDrop } from "@/lib/sourcing/summary";
 import { FindCandidatesButton } from "@/components/hr/sourcing/find-candidates-button";
 import { SourcingAutoRefresh } from "@/components/hr/sourcing/sourcing-auto-refresh";
 import {
@@ -38,6 +39,20 @@ const SOURCE_KEY: Record<SourceKind, TranslationKey> = {
   hh: "sourcing.results.source.hh",
   telegram: "sourcing.results.source.telegram",
   linkedin_url: "sourcing.results.source.linkedin_url",
+};
+
+const DROP_REASON_KEY: Record<FunnelDrop["stage"], TranslationKey> = {
+  dedup: "sourcing.results.drop.dedup",
+  gate: "sourcing.results.drop.gate",
+  score: "sourcing.results.drop.score",
+  verify: "sourcing.results.drop.verify",
+};
+
+const DROP_KEPT_KEY: Record<FunnelDrop["stage"], TranslationKey> = {
+  dedup: "sourcing.results.stat.deduped",
+  gate: "sourcing.results.stat.gate_passed",
+  score: "sourcing.results.stat.scored",
+  verify: "sourcing.results.stat.verified",
 };
 
 const STATUS_TONE: Record<SourcingStatus, string> = {
@@ -94,6 +109,9 @@ export default async function SourcingResultsPage({
   const status = search.status as SourcingStatus;
   const stats = (search.stats ?? {}) as Partial<SourcingStats>;
   const isRunning = status === "queued" || status === "running";
+  const drops = funnelDrops(stats);
+  const showFunnel = !isRunning && (stats.fetched ?? 0) > 0;
+  const degradedSources = stats.degraded_sources ?? [];
 
   const cards: SourcedCandidateCardProps[] = (rows ?? []).map((row) => {
     const profile = (row.profile ?? {}) as NormalizedProfile;
@@ -203,6 +221,51 @@ export default async function SourcingResultsPage({
           />
         ))}
       </div>
+
+      {/* Funnel breakdown — honest, derived purely from the stage counts: how
+          many candidates were excluded at each rung and why. No fabrication. */}
+      {showFunnel && (
+        <Panel className="mb-5">
+          <PanelHeader>
+            <PanelTitle>{t("sourcing.results.funnel_title", locale)}</PanelTitle>
+            <span className="text-ink-5 text-[11.5px]">
+              {t("sourcing.results.funnel_subtitle", locale)}
+            </span>
+          </PanelHeader>
+          <ul className="divide-rule divide-y">
+            {drops.map((rung) => (
+              <li
+                key={rung.stage}
+                className="flex items-center justify-between gap-4 px-5 py-2.5 text-[12.5px]"
+              >
+                <span className="text-ink-3">
+                  {t(DROP_KEPT_KEY[rung.stage], locale)}
+                  <span className="text-ink-5 ml-2" style={{ fontFamily: "var(--font-tez-mono)" }}>
+                    {rung.entered} → {rung.kept}
+                  </span>
+                </span>
+                {rung.dropped > 0 ? (
+                  <span className="text-ink-4 text-right text-[11.5px]">
+                    {t("sourcing.results.drop_count", locale, { count: String(rung.dropped) })}{" "}
+                    {t(DROP_REASON_KEY[rung.stage], locale)}
+                  </span>
+                ) : (
+                  <span className="text-ink-5 text-[11.5px]">
+                    {t("sourcing.results.drop_none", locale)}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+          {degradedSources.length > 0 && (
+            <div className="border-rule border-t px-5 py-2.5 text-[11.5px] text-amber-700">
+              {t("sourcing.results.degraded_note", locale, {
+                sources: degradedSources.map((s) => t(SOURCE_KEY[s], locale)).join(", "),
+              })}
+            </div>
+          )}
+        </Panel>
+      )}
 
       {status === "partial" && (
         <div className="mb-4 rounded-[6px] border border-amber-200 bg-amber-50 px-4 py-2.5 text-[12.5px] text-amber-800">
