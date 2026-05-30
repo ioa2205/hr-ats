@@ -881,7 +881,57 @@ export type Database = {
           sourcing_search_id?: string;
           verified?: boolean;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "sourced_candidates_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "sourced_candidates_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "company_health";
+            referencedColumns: ["company_id"];
+          },
+          {
+            foreignKeyName: "sourced_candidates_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "company_usage_30d";
+            referencedColumns: ["company_id"];
+          },
+          {
+            foreignKeyName: "sourced_candidates_promoted_candidate_id_fkey";
+            columns: ["promoted_candidate_id"];
+            isOneToOne: false;
+            referencedRelation: "candidate_latest_ai_cost";
+            referencedColumns: ["candidate_id"];
+          },
+          {
+            foreignKeyName: "sourced_candidates_promoted_candidate_id_fkey";
+            columns: ["promoted_candidate_id"];
+            isOneToOne: false;
+            referencedRelation: "candidates";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "sourced_candidates_promoted_candidate_id_fkey";
+            columns: ["promoted_candidate_id"];
+            isOneToOne: false;
+            referencedRelation: "candidates_ranked";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "sourced_candidates_sourcing_search_id_fkey";
+            columns: ["sourcing_search_id"];
+            isOneToOne: false;
+            referencedRelation: "sourcing_searches";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       sourcing_searches: {
         Row: {
@@ -941,7 +991,50 @@ export type Database = {
           status?: Database["public"]["Enums"]["sourcing_status"];
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "sourcing_searches_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "sourcing_searches_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "company_health";
+            referencedColumns: ["company_id"];
+          },
+          {
+            foreignKeyName: "sourcing_searches_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "company_usage_30d";
+            referencedColumns: ["company_id"];
+          },
+          {
+            foreignKeyName: "sourcing_searches_job_posting_id_fkey";
+            columns: ["job_posting_id"];
+            isOneToOne: false;
+            referencedRelation: "job_postings";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "sourcing_searches_job_posting_id_fkey";
+            columns: ["job_posting_id"];
+            isOneToOne: false;
+            referencedRelation: "job_postings_with_counts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "sourcing_searches_requested_by_fkey";
+            columns: ["requested_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
       };
       subscriptions: {
         Row: {
