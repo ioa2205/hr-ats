@@ -326,17 +326,22 @@ The spec said to mirror `process-cv` as a **Supabase Deno Edge Function**. We in
 
 **Consequences / future:** the pickup cron targets the app via a new `app.settings.app_url` GUC (see DEPLOYMENT.md §15) instead of the Supabase functions endpoint; `runSourcingSearch` claims via the atomic `claim_sourcing_search` RPC and runs in `after()` with `maxDuration = 300`. If TezHR ever moves to a serverless host where routes can't run minutes, migrating this one route to a Deno Edge Function (inlining the funnel) is the fallback.
 
-## Final validation checklist (run when Docker is healthy)
+## Final validation checklist
 
-Everything below is **deferred because Docker Desktop was down** during the build. The TypeScript surface (`pnpm typecheck`) and unit suite (`pnpm test`, 354 green incl. ~80 new sourcing tests) pass now; these steps need a live DB / Gemini / browser:
+**Docker came up 2026-05-30 — the DB-level gate is now DONE.** `pnpm typecheck` + `pnpm test` (354 green) pass; the live-DB items below were run against a local Supabase stack.
 
-1. `supabase db reset && supabase db push` runs cleanly **twice** (migrations `…000310`, `…000320` are idempotent: guarded enum create, `ADD VALUE IF NOT EXISTS`, `IF NOT EXISTS`, `drop policy if exists`).
-2. `supabase gen types typescript --local > types/supabase.ts` — should be a near-no-op diff vs the hand-edits (plus real Relationships + pre-existing billing/notification drift).
-3. Set the three GUCs (`app.settings.{supabase_url,service_role_key,app_url}`) and `supabase secrets set GOOGLE_GEMINI_API_KEY` for the (unused-in-Phase-1) edge runtime; the worker route uses Railway's `process.env`.
-4. **N+1 parallel "Find candidates"** on one posting → exactly one search runs (partial unique index); the rest get `409 already_searching`. The trial quota RPC (`FOR UPDATE`) independently caps concurrent consumption.
-5. Seed a candidate who misses exactly one hard requirement → **absent** from the shortlist regardless of score (unit-proven in `sourcing-funnel.test.ts`; confirm end-to-end).
-6. Seed a candidate with ambiguous (low-confidence) evidence → **excluded** (fail-closed; unit-proven), and explainable via the evidence drawer.
-7. Kill the worker mid-run → search ends `failed` (or resumes via the stale-run cron), never stuck in `running`; HR gets `sourcing_failed`.
-8. A finished search fires a notification that deep-links to a results page of ≤20, sorted desc, each with a complete ✓ checklist + quotable evidence.
+### ✅ Validated against a live database (2026-05-30)
+
+1. ✅ `supabase db reset` re-applies **all** migrations (`…000310`, `…000320`) cleanly and idempotently — the guarded enum create / `ADD VALUE IF NOT EXISTS` / `IF NOT EXISTS` / `drop … if exists` produced only expected NOTICEs, exit 0. Schema objects confirmed present: 2 tables, 4 RPCs (exact signatures incl. `claim_sourcing_search(p_id, p_stale_minutes default 10)`), `sourcing_status`/`source_kind` enums, both `notification_event_kind` values, 4 pref + 2 quota columns, both partial-unique indexes (`uq_sourcing_searches_inflight`, `uq_sourced_candidates_identity`).
+2. ✅ `supabase gen types typescript --local` diff vs the hand-edits was semantically a no-op **except** the empty `Relationships: []` on the two sourcing tables (now populated, commit `9fb212e`) — plus the repo's **pre-existing** hand-maintained drift on unrelated tables (`subscription_plans` table entirely untracked, landing `utm_source`/`source` columns), which is out of scope for this feature and intentionally hand-maintained.
+4. ✅ **In-flight uniqueness**: a 2nd `queued` search for the same posting is rejected by `uq_sourcing_searches_inflight` (→ trigger maps to `409 already_searching`). Quota RPC verified: consume ×2 ok, 3rd `sourcing_quota_exceeded`, `p_units=0` → `invalid_units`.
+6. ✅ **Fail-closed gate** is unit-proven (`sourcing-funnel.test.ts`); the DB-level crash-safety it relies on is now also proven: atomic `claim_sourcing_search` flips queued→running (attempts=1), an immediate re-claim of a *fresh* running row returns NULL (no double-process), and a *stale* running row (crashed worker) is reclaimable (attempts=2).
+7. ✅ **Crash recovery / refund / TTL**: `refund_sourcing_quota` returns a trial unit (2→1, clamps at 0); `purge_expired_sourcing` deletes expired+unpromoted rows and keeps live ones. (Transactional test, rolled back — no residue.)
+
+### ⏳ Still needs a live worker run (Gemini key) or browser
+
+3. Set the three GUCs (`app.settings.{supabase_url,service_role_key,app_url}`) on the deployed DB; the worker route uses Railway's `process.env`.
+5. End-to-end: seed a real candidate who misses exactly one hard requirement → **absent** from the shortlist regardless of score (logic unit-proven; confirm through the live Gemini funnel).
+8. A finished search fires a notification deep-linking to a results page of ≤20, sorted desc, each with a complete ✓ checklist + quotable evidence (UI shipped; needs a real run to populate).
 9. Token cost recorded per run; surface it to the operator portal (Phase 4 polish — extend the existing Gemini cost view).
-10. `pnpm test:e2e` (`tests/e2e/sourcing.spec.ts`) green.
+10. `pnpm test:e2e` (`tests/e2e/sourcing.spec.ts`) — needs `pnpm start` (prod build) + browser.
