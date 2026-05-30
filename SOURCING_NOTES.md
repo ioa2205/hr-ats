@@ -343,5 +343,14 @@ The spec said to mirror `process-cv` as a **Supabase Deno Edge Function**. We in
 3. Set the three GUCs (`app.settings.{supabase_url,service_role_key,app_url}`) on the deployed DB; the worker route uses Railway's `process.env`.
 5. End-to-end: seed a real candidate who misses exactly one hard requirement → **absent** from the shortlist regardless of score (logic unit-proven; confirm through the live Gemini funnel).
 8. A finished search fires a notification deep-linking to a results page of ≤20, sorted desc, each with a complete ✓ checklist + quotable evidence (UI shipped; needs a real run to populate).
-9. Token cost recorded per run; surface it to the operator portal (Phase 4 polish — extend the existing Gemini cost view).
-10. `pnpm test:e2e` (`tests/e2e/sourcing.spec.ts`) — needs `pnpm start` (prod build) + browser.
+9. ✅ Token cost recorded per run and surfaced to the operator portal — shipped as a dedicated `/operator/sourcing` activity + cost view (cross-tenant runs, AI-spend tiles), plus a per-job run-history index (`/hr/jobs/[id]/sourcing`) and an honest funnel-drop breakdown on the results page. (Phase 4 polish, credential-free.)
+10. `pnpm test:e2e` (`tests/e2e/sourcing.spec.ts`) — needs `pnpm start` (prod build) + browser. The new observability views are read-only; their aggregation logic is unit-tested (`tests/unit/sourcing-summary.test.ts`). An e2e nav happy-path for them is a nice-to-have follow-up.
+
+## Phase 4 polish — shipped (2026-05-30, credential-free)
+
+Built on Phase 1 data only; **no external connectors** (hh.uz / Telegram / LinkedIn remain credential-blocked, per spec — `SourceConnector` interface still the seam):
+- **`lib/sourcing/summary.ts`** (pure, 10 tests): `summarizeRuns` (operator totals; NaN-safe numeric coercion) + `funnelDrops` (honest per-stage exclusion breakdown, clamped non-negative).
+- **Operator view** `/operator/sourcing` (+ `app/api/operator/sourcing`): cross-tenant runs + AI spend; mirrors `operator/processing`; nav entry added (Radar icon).
+- **Per-job run history** `/hr/jobs/[id]/sourcing` (+ loading/error/not-found): all runs for a job, newest first, linked from the job action bar; auto-refreshes while in flight.
+- **Results funnel breakdown**: stage-by-stage "how we reached this shortlist" + degraded-sources note, derived purely from funnel counts.
+- **Consciously deferred**: a *per-candidate* "why excluded" view (would require persisting every rejected profile — schema + TTL + PII-retention expansion). The aggregate breakdown is the honest, non-expanding answer.
