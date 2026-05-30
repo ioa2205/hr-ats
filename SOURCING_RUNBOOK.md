@@ -160,24 +160,54 @@ update subscription_plans  set sourcing_quota_monthly = 50 where code = 'pro_mon
 
 ---
 
-## C. Turn on external sources later (Phases 2–4)
+## C. External sources
 
-Phase 1 ships the **internal pool only**. The other sources are **scaffolded
-behind the `SourceConnector` interface** (`lib/sourcing/types.ts`) but **not
-built**, by design: we never stub an external API with fake keys or canned
-data. Each needs real credentials from you before it can be implemented:
+### C1. hh.uz (HeadHunter) — BUILT. Paste credentials to activate.
 
-| Phase | Source | What to provide |
-| --- | --- | --- |
-| 2 | **hh.uz** | Employer API client id + secret, and employer OAuth access (resume-search scope). |
-| 3 | **Telegram** | A bot token + an allow-list of channels/groups to read. |
-| 4 | **LinkedIn (by URL)** | Access method for the profile URLs you intend to ingest. |
+The hh.uz connector is implemented and wired into the funnel
+(`lib/sourcing/connectors/hh/`). It activates automatically when its credentials
+are present — no code change, no redeploy of logic.
 
-When you have the credentials, the build is: add the env vars, implement the
-connector against the existing interface, register it in the worker's connector
-list, and (Phase 3) wire continuous sourcing. Nothing else in the funnel
-changes — the gate, scoring, verification, dedup, and UI already handle any
-source generically.
+**To turn it on:**
+
+1. Register an OAuth app at <https://dev.hh.ru> → copy its **client id** + **client secret**.
+2. Add to `.env.local` (local) or your Railway service (prod):
+   ```bash
+   HH_CLIENT_ID=your-client-id
+   HH_CLIENT_SECRET=your-client-secret
+   # optional: narrow to a region (find ids via GET https://api.hh.ru/areas)
+   HH_AREA_ID=
+   ```
+3. Restart the app. Now **Find candidates** searches the hh.uz resume database
+   **in addition to** your internal pool; the search's `sources` records `hh`,
+   and the operator/results funnel shows the hh contribution.
+
+**The one live-only caveat (by design, not a gap):** hh has two access levels.
+- **Application token** (just id + secret) — what most apps get out of the box.
+- **Employer token** — required if *your* hh account gates the resume database
+  behind an authorized employer. If a live search returns `401`/empty from hh,
+  that's the signal: complete hh's one-time employer OAuth consent and paste the
+  resulting refresh token into **`HH_REFRESH_TOKEN`**. The client then uses it
+  (and auto-refreshes) — it takes precedence over id+secret. No other change.
+
+**Honest limitations of hh search results:** hh withholds names and contact
+details (phone/email) on *unopened* resumes — opening a resume is a paid action
+on hh. So sourced hh candidates show their headline, location, experience, and
+skills (enough for the AI to judge against your hard requirements) and a **link
+to open the resume on hh**, but typically no phone until you open it there.
+Because promotion to a real candidate needs a `+998` phone, you'll usually open
+promising hh resumes on hh first. This is hh's policy, not a bug — and we never
+fabricate the missing data.
+
+### C2. Telegram + LinkedIn — still need credentials
+
+Scaffolded behind the same `SourceConnector` interface, not yet built (we don't
+stub external APIs):
+
+| Phase | Source | What to provide | Reality |
+| --- | --- | --- | --- |
+| 3 | **Telegram** | Bot token + an allow-list of channels/groups | A bot reads only channels it's added to — this is *monitoring chosen CV channels*, not global search. |
+| 4 | **LinkedIn (by URL)** | The profile URLs to ingest | No candidate-search API exists; scope is *ingest specific URLs you provide*, not searching LinkedIn. |
 
 ---
 

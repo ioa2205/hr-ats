@@ -428,10 +428,10 @@ update subscription_plans set sourcing_quota_monthly = 50 where code = 'pro_mont
 
 `sourcing_complete` / `sourcing_failed` fan out via `lib/notifications/dispatch.ts` (in-app + email; Telegram is a future channel — `dispatch` does not currently send Telegram). The email CTA deep-links to `/hr/jobs/<id>/sourcing/<searchId>`. Per-event toggles live in `notification_preferences` (`email_/inapp_sourcing_*`).
 
-### Connectors & future env vars (Phases 2–4, not yet wired)
+### Connectors
 
-Phase 1 ships the `internal_pool` connector only (the company's own past candidates — no external creds, no extra env). The pluggable `SourceConnector` interface (`lib/sourcing/types.ts`) is in place for:
+The `internal_pool` connector (the company's own past candidates) always runs — no creds. Additional sources plug into the `SourceConnector` interface (`lib/sourcing/types.ts`):
 
-- **hh.uz (Phase 2):** `HH_CLIENT_ID`, `HH_CLIENT_SECRET`, employer OAuth token flow. Do not run against prod hh until billing is confirmed.
-- **Telegram (Phase 3):** `TELEGRAM_BOT_TOKEN` + an explicit allow-list of job channels to ingest.
-- **LinkedIn (Phase 4):** URL/paste only — no automated crawling, no creds.
+- **hh.uz (Phase 2) — BUILT, env-activated.** Set `HH_CLIENT_ID` + `HH_CLIENT_SECRET` and the connector (`lib/sourcing/connectors/hh/`) joins every search automatically; absent, sourcing is internal-pool-only. Optional: `HH_REFRESH_TOKEN` (one-time employer OAuth token — takes precedence if your access tier gates resume search behind an authorized employer; auto-refreshes), `HH_AREA_ID` (region filter — ids via `GET https://api.hh.ru/areas`), and overrides `HH_API_BASE_URL` / `HH_TOKEN_URL` / `HH_USER_AGENT` (sensible defaults). hh withholds names/contacts on unopened resumes (opening is paid on hh); sourced cards carry headline/experience/skills + a link to open on hh. **Confirm hh billing before pointing at prod hh.** See `SOURCING_RUNBOOK.md` §C1.
+- **Telegram (Phase 3):** `TELEGRAM_BOT_TOKEN` + an explicit allow-list of job channels to ingest. Not yet built.
+- **LinkedIn (Phase 4):** URL/paste only — no automated crawling, no creds. Not yet built.

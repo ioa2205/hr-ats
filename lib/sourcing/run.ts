@@ -21,6 +21,7 @@ import {
   type LoadPoolCandidates,
   type PoolCandidateRow,
 } from "./connectors/internal-pool";
+import { createHhConnectorFromEnv } from "./connectors/hh";
 import type { PostingSeed } from "./requirement-profile";
 import type { FetchBudget, RequirementProfile, SourceConnector } from "./types";
 import type { HardRequirement } from "@/types";
@@ -198,6 +199,11 @@ export async function runSourcingSearch(searchId: string): Promise<void> {
 
     const loader = makePoolLoader(admin, claimed.company_id, claimed.job_posting_id);
     const connectors: SourceConnector[] = [createInternalPoolConnector(loader)];
+    // hh.uz joins automatically when HH_CLIENT_ID/SECRET are set; otherwise the
+    // run sources the internal pool only. A failing connector degrades the run
+    // to `partial` (handled in the funnel) rather than failing it.
+    const hh = createHhConnectorFromEnv();
+    if (hh) connectors.push(hh);
 
     const deps: FunnelDeps = {
       connectors,

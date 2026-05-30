@@ -9,6 +9,8 @@ import {
   SOURCING_UNITS_PER_SEARCH,
 } from "@/lib/companies/quota";
 import { runSourcingSearch } from "@/lib/sourcing/run";
+import { hhConfiguredFromEnv } from "@/lib/sourcing/connectors/hh";
+import type { SourceKind } from "@/lib/sourcing/types";
 import { logger } from "@/lib/logger";
 
 export const runtime = "nodejs";
@@ -51,6 +53,11 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
       return NextResponse.json({ error: quota.reason }, { status });
     }
 
+    // Record the sources that will actually run (the worker builds connectors
+    // from the same env signal). hh joins only when its credentials are set.
+    const sources: SourceKind[] = ["internal_pool"];
+    if (hhConfiguredFromEnv()) sources.push("hh");
+
     // Enqueue. The partial unique index (job_posting_id where status in
     // queued/running) rejects a second in-flight run with code 23505.
     const { data: search, error: insErr } = await admin
@@ -60,7 +67,7 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
         job_posting_id: jobPostingId,
         requested_by: access.user.id,
         status: "queued",
-        sources: ["internal_pool"],
+        sources,
       })
       .select("id")
       .single();
