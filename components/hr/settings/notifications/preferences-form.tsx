@@ -76,6 +76,23 @@ const SYSTEM: EventRow[] = [
   },
 ];
 
+const SOURCING: EventRow[] = [
+  {
+    id: "sourcing_complete",
+    emailKey: "email_sourcing_complete",
+    inappKey: "inapp_sourcing_complete",
+    labelKey: "hr.settings.notifications.event.sourcing_complete",
+    descKey: "hr.settings.notifications.event.sourcing_complete_desc",
+  },
+  {
+    id: "sourcing_failed",
+    emailKey: "email_sourcing_failed",
+    inappKey: "inapp_sourcing_failed",
+    labelKey: "hr.settings.notifications.event.sourcing_failed",
+    descKey: "hr.settings.notifications.event.sourcing_failed_desc",
+  },
+];
+
 const DIGEST_HOURS = [8, 9, 10] as const;
 
 export function PreferencesForm({ initial }: { initial: Prefs }) {
@@ -176,6 +193,13 @@ export function PreferencesForm({ initial }: { initial: Prefs }) {
           <PanelTitle>{t("hr.settings.notifications.group.system")}</PanelTitle>
         </PanelHeader>
         {SYSTEM.map(renderRow)}
+      </Panel>
+
+      <Panel className="mb-4">
+        <PanelHeader>
+          <PanelTitle>{t("hr.settings.notifications.group.sourcing")}</PanelTitle>
+        </PanelHeader>
+        {SOURCING.map(renderRow)}
       </Panel>
 
       <Panel className="mb-4">
@@ -359,11 +383,15 @@ function toEditable(p: Prefs): EditablePrefs {
     email_interview_declined,
     email_quota_warning,
     email_weekly_digest,
+    email_sourcing_complete,
+    email_sourcing_failed,
     inapp_new_application,
     inapp_top_pick,
     inapp_interview_booked,
     inapp_interview_declined,
     inapp_ai_failed,
+    inapp_sourcing_complete,
+    inapp_sourcing_failed,
     digest_hour,
     quiet_hours_start,
     quiet_hours_end,
@@ -375,11 +403,15 @@ function toEditable(p: Prefs): EditablePrefs {
     email_interview_declined,
     email_quota_warning,
     email_weekly_digest,
+    email_sourcing_complete,
+    email_sourcing_failed,
     inapp_new_application,
     inapp_top_pick,
     inapp_interview_booked,
     inapp_interview_declined,
     inapp_ai_failed,
+    inapp_sourcing_complete,
+    inapp_sourcing_failed,
     digest_hour,
     quiet_hours_start,
     quiet_hours_end,

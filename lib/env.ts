@@ -17,6 +17,19 @@ const envSchema = z.object({
   EMAIL_FROM: z.string().min(1).default("TezHR <noreply@resend.dev>"),
   TELEGRAM_BOT_TOKEN: z.string().min(1).optional(),
   TELEGRAM_INBOX_CHAT_ID: z.string().min(1).optional(),
+  // Active sourcing — hh.uz (HeadHunter) outbound connector (Phase 2, optional).
+  // Sourcing falls back to the internal pool when the id/secret are absent.
+  HH_CLIENT_ID: z.string().min(1).optional(),
+  HH_CLIENT_SECRET: z.string().min(1).optional(),
+  // One-time employer OAuth token (only if your hh access tier gates resume
+  // search behind an authorized employer). When set, it takes precedence.
+  HH_REFRESH_TOKEN: z.string().min(1).optional(),
+  HH_API_BASE_URL: z.url().default("https://api.hh.ru"),
+  HH_TOKEN_URL: z.url().default("https://api.hh.ru/token"),
+  HH_USER_AGENT: z.string().min(1).default("TezHR/1.0 (+https://tezhr.uz)"),
+  // Area to search (e.g. Uzbekistan / Tashkent). Find ids via GET /areas.
+  // Unset ⇒ all areas.
+  HH_AREA_ID: z.string().min(1).optional(),
   // Click billing — placeholders allowed in dev. instrumentation.ts logs a
   // WARN when the merchant_id is left as the placeholder string in production.
   CLICK_MERCHANT_ID: z.string().min(1).default("CHANGE_ME_CLICK_MERCHANT_ID"),

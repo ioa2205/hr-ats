@@ -10,7 +10,9 @@ export type NotificationEvent =
   | "interview_booked"
   | "interview_declined"
   | "ai_failed"
-  | "quota_warning";
+  | "quota_warning"
+  | "sourcing_complete"
+  | "sourcing_failed";
 
 interface TemplateInput {
   locale: Locale;
@@ -27,6 +29,8 @@ const SUBJECT_KEYS: Record<NotificationEvent, TranslationKey | undefined> = {
   interview_declined: "notifications.email.subject_interview_declined",
   ai_failed: "notifications.email.subject_ai_failed",
   quota_warning: "notifications.email.subject_quota_warning",
+  sourcing_complete: "notifications.email.subject_sourcing_complete",
+  sourcing_failed: "notifications.email.subject_sourcing_failed",
 };
 
 export function renderNotificationEmail(

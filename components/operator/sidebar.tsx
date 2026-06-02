@@ -13,6 +13,7 @@ import {
   Inbox,
   LayoutDashboard,
   Menu,
+  Radar,
   Settings,
   Users,
   X,
@@ -80,6 +81,11 @@ const SECTIONS: NavSection[] = [
         labelKey: "admin.processing_log",
         href: "/operator/processing",
         icon: <Activity className="h-4 w-4" />,
+      },
+      {
+        labelKey: "operator.sourcing.title",
+        href: "/operator/sourcing",
+        icon: <Radar className="h-4 w-4" />,
       },
       {
         labelKey: "admin.templates",
