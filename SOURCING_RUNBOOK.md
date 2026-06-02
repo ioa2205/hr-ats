@@ -119,22 +119,30 @@ The feature itself only adds a hard dependency on **`GOOGLE_GEMINI_API_KEY`**.
 You'll already have `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
 `SUPABASE_SERVICE_ROLE_KEY`, and `APP_URL` from the base deploy.
 
-### B3. Set the three database GUCs (enables the cron backstop)
+### B3. Store the three secrets in Vault (enables the cron backstop)
 
-Run once on the **production** database (`alter database` persists them):
+The cron jobs read the project URL, service-role key, and app host from
+**Supabase Vault** (migration `…000330` points them there). On hosted Supabase
+you **cannot** use `alter database ... set app.settings.*` — the `postgres` role
+isn't a superuser, so it fails with `42501: permission denied to set parameter`.
+Vault works because `postgres` (which pg_cron runs as) can read it.
+
+Run once on the **production** database, **after** `supabase db push`:
 
 ```sql
-alter database postgres set app.settings.supabase_url     = 'https://<project-ref>.supabase.co';
-alter database postgres set app.settings.service_role_key = '<service_role_key>';
-alter database postgres set app.settings.app_url          = 'https://<your-app-host>';
-select pg_reload_conf();
+select vault.create_secret('https://<project-ref>.supabase.co', 'supabase_url');
+select vault.create_secret('<service_role_key>',                'service_role_key');
+select vault.create_secret('https://<your-app-host>',           'app_url');
 ```
 
 - These let the `source-candidates-pickup` cron re-invoke the worker route for
   crash-recovery and as a backstop for the immediate kick.
-- **If `app_url` is unset:** searches still run (the immediate in-process kick
-  fires); only crash-recovery/backstop is disabled. So sourcing is _usable_
-  without the GUCs, but set them for production resilience.
+- **If they're unset:** searches still run (the immediate in-process kick
+  fires); only crash-recovery/backstop is disabled, and the cron logs a loud
+  `app_cron_secret: Vault secret "…" is not set` each run. So sourcing is
+  _usable_ without them, but set them for production resilience.
+- To rotate later: `select vault.update_secret((select id from vault.secrets
+  where name = 'service_role_key'), '<new>');`
 
 ### B4. Verify the cron jobs exist
 

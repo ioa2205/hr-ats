@@ -72,17 +72,34 @@ Dashboard → Database → Extensions: confirm `pg_cron` and `pg_net` are enable
 
 #### Required Postgres GUCs for the HTTP cron jobs
 
-The `net.http_post` cron jobs (`retry-pending-cvs`, `dispatch-notification-retries`, `source-candidates-pickup`) read connection settings from database GUCs that **no migration sets** — provision them once per environment (Dashboard → SQL editor):
+The `net.http_post` cron jobs (`retry-pending-cvs`, `dispatch-notification-retries`, `source-candidates-pickup`) need the project URL, the service-role key, and the app host. These live in **Supabase Vault** (migration `…000330` repoints the crons to read them via `app_cron_secret(...)`).
+
+> **Why Vault and not `alter database ... set app.settings.*`?** On hosted
+> Supabase the `postgres` role is not a superuser and does not own the
+> `postgres` database, so persisting a custom GUC fails with
+> `42501: permission denied to set parameter`. Vault is readable by `postgres`
+> (which pg_cron runs as) and needs no superuser. Older guidance used GUCs —
+> that only works on self-hosted / superuser setups.
+
+Provision the three secrets once per environment (Dashboard → SQL editor), **after** `supabase db push` has applied `…000330`:
 
 ```sql
-alter database postgres set app.settings.supabase_url    = 'https://<project-ref>.supabase.co';
-alter database postgres set app.settings.service_role_key = '<service_role_key>';
--- NEW for active sourcing: the worker is a Next.js route on Railway, so the
--- pickup cron needs the app's public URL (no trailing slash).
-alter database postgres set app.settings.app_url          = 'https://<your-app-host>';
+select vault.create_secret('https://<project-ref>.supabase.co', 'supabase_url');
+select vault.create_secret('<service_role_key>',                'service_role_key');
+-- The worker is a Next.js route on Railway, so the pickup cron needs the
+-- app's public URL (no trailing slash):
+select vault.create_secret('https://<your-app-host>',           'app_url');
 ```
 
-Reconnect (or `select pg_reload_conf();`) after setting. If `app.settings.app_url` is unset, sourcing searches enqueue but the cron pickup silently no-ops (the immediate trigger kick still runs; only crash-recovery/backstop is affected).
+To rotate a value later (`create_secret` errors if the name already exists):
+
+```sql
+select vault.update_secret(
+  (select id from vault.secrets where name = 'service_role_key'),
+  '<new value>');
+```
+
+If a secret is missing, `app_cron_secret` raises a loud error each cron run (never a silent no-op), so a forgotten `create_secret` is visible in the cron logs. Sourcing searches still run without the secrets — the immediate trigger kick fires regardless; only the cron crash-recovery/backstop is affected.
 
 ### Seed the first operator
 
