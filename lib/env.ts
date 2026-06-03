@@ -30,6 +30,23 @@ const envSchema = z.object({
   // Area to search (e.g. Uzbekistan / Tashkent). Find ids via GET /areas.
   // Unset ⇒ all areas.
   HH_AREA_ID: z.string().min(1).optional(),
+  // Active sourcing — Telegram outbound connector (Phase 3, optional). Monitors
+  // an explicit allow-list of public job/CV channels via an MTProto USER client
+  // (GramJS). Configured only when api id + hash + session + channels are all
+  // present; absent ⇒ sourcing falls back to internal-pool / hh. NOTE: distinct
+  // from TELEGRAM_BOT_TOKEN (inbox notifications) above.
+  TELEGRAM_API_ID: z.string().min(1).optional(),
+  TELEGRAM_API_HASH: z.string().min(1).optional(),
+  // MTProto user session string (StringSession), obtained once via a login
+  // script. There is no app-token equivalent — sourcing needs full channel
+  // history, which only a user session can read.
+  TELEGRAM_SESSION: z.string().min(1).optional(),
+  // Comma-separated allow-list of channel handles to monitor (e.g. "ish_uz,hh_vacancy").
+  TELEGRAM_CHANNELS: z.string().min(1).optional(),
+  // Ignore any post older than this many days (hard recency cutoff).
+  TELEGRAM_MAX_AGE_DAYS: z.coerce.number().int().positive().default(45),
+  // Hard cap on messages pulled per channel per run.
+  TELEGRAM_PER_CHANNEL_LIMIT: z.coerce.number().int().positive().default(200),
   // Click billing — placeholders allowed in dev. instrumentation.ts logs a
   // WARN when the merchant_id is left as the placeholder string in production.
   CLICK_MERCHANT_ID: z.string().min(1).default("CHANGE_ME_CLICK_MERCHANT_ID"),

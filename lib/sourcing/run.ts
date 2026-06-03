@@ -22,6 +22,11 @@ import {
   type PoolCandidateRow,
 } from "./connectors/internal-pool";
 import { createHhConnectorFromEnv } from "./connectors/hh";
+import {
+  createTelegramConnectorFromEnv,
+  telegramConfiguredFromEnv,
+} from "./connectors/telegram";
+import { normalizePhone } from "./identity";
 import type { PostingSeed } from "./requirement-profile";
 import type { FetchBudget, RequirementProfile, SourceConnector } from "./types";
 import type { HardRequirement } from "@/types";
@@ -76,6 +81,52 @@ function makePoolLoader(
       }),
     );
   };
+}
+
+/**
+ * Build a company-scoped "already known" predicate for the Telegram connector:
+ * contacts (phone / @handle / email) that are already applicants to any of the
+ * company's jobs OR were sourced before are suppressed, so a search never
+ * re-surfaces someone the company already has. Keys mirror the connector's
+ * ExtractedContact.key format (`tg:@handle` / `tel:digits` / `eml:email`).
+ */
+async function makeKnownTelegramContacts(
+  admin: AdminClient,
+  companyId: string,
+): Promise<(key: string) => boolean> {
+  const keys = new Set<string>();
+
+  const { data: jobs } = await admin.from("job_postings").select("id").eq("company_id", companyId);
+  const jobIds = (jobs ?? []).map((job: { id: string }) => job.id);
+  if (jobIds.length > 0) {
+    const { data: cands } = await admin
+      .from("candidates")
+      .select("phone_number")
+      .in("job_posting_id", jobIds);
+    for (const row of cands ?? []) {
+      const digits = normalizePhone(row.phone_number ?? "");
+      if (digits.length >= 9) keys.add(`tel:${digits}`);
+    }
+  }
+
+  const { data: sourced } = await admin
+    .from("sourced_candidates")
+    .select("contact")
+    .eq("company_id", companyId);
+  for (const row of sourced ?? []) {
+    const contact = (row.contact ?? null) as {
+      phone?: string | null;
+      email?: string | null;
+      telegram?: string | null;
+    } | null;
+    if (!contact) continue;
+    if (contact.telegram) keys.add(`tg:${contact.telegram.toLowerCase()}`);
+    const digits = normalizePhone(contact.phone ?? "");
+    if (digits.length >= 9) keys.add(`tel:${digits}`);
+    if (contact.email) keys.add(`eml:${contact.email.toLowerCase()}`);
+  }
+
+  return (key: string) => keys.has(key);
 }
 
 function toRow(
@@ -204,6 +255,14 @@ export async function runSourcingSearch(searchId: string): Promise<void> {
     // to `partial` (handled in the funnel) rather than failing it.
     const hh = createHhConnectorFromEnv();
     if (hh) connectors.push(hh);
+    // Telegram joins automatically when its MTProto credentials + channel
+    // allow-list are set; otherwise omitted. It suppresses contacts the company
+    // already has so a search never re-surfaces a known candidate.
+    if (telegramConfiguredFromEnv()) {
+      const isKnownContact = await makeKnownTelegramContacts(admin, claimed.company_id);
+      const telegram = createTelegramConnectorFromEnv({ isKnownContact });
+      if (telegram) connectors.push(telegram);
+    }
 
     const deps: FunnelDeps = {
       connectors,
