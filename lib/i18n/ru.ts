@@ -434,6 +434,8 @@ export const ru: Translations = {
   "sourcing.results.contact_label": "Контакт",
   "sourcing.results.evidence_drawer_title": "Доказательства из источника",
   "sourcing.results.evidence_none": "Доказательство не приведено",
+  "sourcing.results.evidence_summary": "{met} из {total} выполнено",
+  "sourcing.results.provenance_title": "Данные из источника",
   "sourcing.results.gaps_title": "Пробелы",
   "sourcing.results.risks_title": "Риски",
   "sourcing.results.axis.skills_match": "Навыки",

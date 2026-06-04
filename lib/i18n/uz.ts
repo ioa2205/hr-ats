@@ -436,6 +436,8 @@ export const uz: Translations = {
   "sourcing.results.contact_label": "Aloqa",
   "sourcing.results.evidence_drawer_title": "Manbadan dalillar",
   "sourcing.results.evidence_none": "Dalil keltirilmagan",
+  "sourcing.results.evidence_summary": "{total} tadan {met} tasi bajarilgan",
+  "sourcing.results.provenance_title": "Manba ma'lumotlari",
   "sourcing.results.gaps_title": "Kamchiliklar",
   "sourcing.results.risks_title": "Xavflar",
   "sourcing.results.axis.skills_match": "Ko‘nikmalar",

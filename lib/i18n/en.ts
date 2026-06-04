@@ -433,6 +433,8 @@ export const en: Translations = {
   "sourcing.results.contact_label": "Contact",
   "sourcing.results.evidence_drawer_title": "Evidence from source",
   "sourcing.results.evidence_none": "No evidence cited",
+  "sourcing.results.evidence_summary": "{met} of {total} met",
+  "sourcing.results.provenance_title": "Source data",
   "sourcing.results.gaps_title": "Gaps",
   "sourcing.results.risks_title": "Risks",
   "sourcing.results.axis.skills_match": "Skills",

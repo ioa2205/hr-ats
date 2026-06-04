@@ -436,6 +436,8 @@ export type TranslationKey =
   | "sourcing.results.contact_label"
   | "sourcing.results.evidence_drawer_title"
   | "sourcing.results.evidence_none"
+  | "sourcing.results.evidence_summary"
+  | "sourcing.results.provenance_title"
   | "sourcing.results.gaps_title"
   | "sourcing.results.risks_title"
   | "sourcing.results.axis.skills_match"
