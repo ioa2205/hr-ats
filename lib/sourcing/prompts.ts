@@ -85,7 +85,7 @@ ${HARD_RULES}
 Treat the posting as the <source>. Additionally:
 - The job's hard_requirements are the NON-NEGOTIABLE gate. They are handled separately by the system — do NOT output them, do NOT soften/merge/drop them, and do NOT restate them as must_haves.
 - From the free-text description extract: must_haves[], nice_to_haves[] (each with a weight 1–5), seniority, required_languages (uz/ru/en + level), and search_keywords[] (synonyms / role titles that widen retrieval). Mark anything you are unsure about as a nice_to_have, never as a must_have.
-- If seniority is not stated, return an empty string for it. Do not guess.
+- seniority: the level the ROLE targets (intern / junior / middle / senior / lead / principal). READ it from the title or description — if the title names a level (e.g. "Senior Frontend Developer" ⇒ senior, "Junior QA" ⇒ junior), use that level. Return an empty string only when no level is stated or named in the title. Do not invent a level the posting does not support.
 - Output strictly in the provided schema. No prose.`;
 
 export function buildProfileExtractionUserPrompt(input: {
@@ -131,13 +131,24 @@ export function buildGateUserPrompt(source: string, requirements: HardRequiremen
 // C — Deep scoring (Pro)
 // ===================================================================
 
-export const SCORE_SYSTEM = `You are a senior recruiter scoring a candidate who has ALREADY passed every hard requirement. Produce a transparent 0–100 fit breakdown.
+export const SCORE_SYSTEM = `You are a senior recruiter scoring a candidate who has ALREADY passed every hard requirement. Produce a transparent 0–100 FIT breakdown FOR THIS SPECIFIC ROLE — not a generic "how strong is this person" rating. Always judge against the Role profile (its Title, Seniority, required skills, must/nice-haves), never against an absolute ideal.
 
 ${HARD_RULES}
 
-Score each axis with a 0–100 sub-score AND a verbatim evidence quote from <source>: skills_match, experience_relevance, seniority_fit, language_fit, recency_activity, nice_to_haves_covered. The system computes the weighted total from your sub-scores — do not output a total. Also return:
+Score each axis 0–100 with a verbatim evidence quote from <source>:
+- skills_match: share of the role's required skills the source explicitly evidences. Missing required skills ⇒ low.
+- experience_relevance: how relevant the candidate's PAST WORK is to THIS role's domain and stack. Reward on-target experience, not raw years.
+- seniority_fit: how well the candidate's evidenced level MATCHES the role's target level (from the Role profile's Seniority, else inferred from its Title). This is a TWO-SIDED match — BOTH under- and over-qualification lower it:
+    • same level as the role → 85–100
+    • one level off (e.g. role=Middle & candidate=Senior, or role=Senior & candidate=Middle) → 50–70
+    • two+ levels off (e.g. role=Junior & candidate=Senior/Lead, or role=Senior & candidate=Junior/intern) → 10–35
+  Underqualified (cannot do the job) is worse than slightly overqualified. If neither the Seniority nor the Title implies a level, score 60 and say so in evidence.
+- language_fit: required languages evidenced at the required level. Not stated ⇒ low.
+- recency_activity: how recent/active the profile is (recent roles, dated activity). Stale or undated ⇒ low.
+- nice_to_haves_covered: share of nice-to-haves evidenced.
+The system computes the weighted total from your sub-scores — do not output a total. Also return:
 - gaps[]: concrete things <source> does NOT evidence (be specific, not generic).
-- risks[]: e.g. employed/not actively looking, stale profile, location/relocation unclear.
+- risks[]: real, grounded concerns — over/under-qualification RELATIVE TO the role's stated/implied level, employed/not actively looking, stale profile, unclear location. Do NOT invent a role level the Role profile does not support.
 - confidence (0–1): how much of the judgement rests on explicit evidence.
 Do not reward anything you cannot quote. If an axis has no supporting evidence, score it low with evidence="". No prose outside the schema.`;
 

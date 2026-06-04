@@ -7,10 +7,14 @@
 import type { DeepScore, ScoreAxis } from "./types";
 import type { ScoreResultRaw } from "./schema";
 
+// seniority_fit and experience_relevance both keyed off tenure, so a senior
+// scored high on BOTH even when over/under-qualified for the role. Rebalanced
+// (experience 0.25→0.20, seniority 0.15→0.20) so a seniority mismatch actually
+// moves the total. Must still sum to 1.0 (asserted in tests).
 export const SCORE_AXIS_WEIGHTS = {
   skills_match: 0.3,
-  experience_relevance: 0.25,
-  seniority_fit: 0.15,
+  experience_relevance: 0.2,
+  seniority_fit: 0.2,
   language_fit: 0.1,
   recency_activity: 0.1,
   nice_to_haves_covered: 0.1,

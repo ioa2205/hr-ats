@@ -100,6 +100,23 @@ describe("computeDeepScore", () => {
     expect(score.gaps).toEqual(["no leadership evidence"]);
     expect(score.risks).toEqual(["employed"]);
   });
+
+  it("weights seniority_fit at 0.20 so a seniority mismatch moves the total", () => {
+    const raw: ScoreResultRaw = {
+      skills_match: axis(0),
+      experience_relevance: axis(0),
+      seniority_fit: axis(100),
+      language_fit: axis(0),
+      recency_activity: axis(0),
+      nice_to_haves_covered: axis(0),
+      gaps: [],
+      risks: [],
+      confidence: 0.7,
+    };
+    // 100 seniority_fit, all else 0 ⇒ 20 of the total. A two-levels-off
+    // candidate (seniority_fit ~25) contributes only ~5 here instead of ~15.
+    expect(computeDeepScore(raw).total).toBeCloseTo(20, 6);
+  });
 });
 
 describe("parseGeminiJson", () => {
