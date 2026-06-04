@@ -1,0 +1,105 @@
+[
+  {
+    "name": "strong-match-middle-backend",
+    "candidate": {
+      "full_name": "Aziz Karimov",
+      "headline": "Backend Developer",
+      "location": "Tashkent, Uzbekistan",
+      "fields": [
+        { "field": "skill", "value": "Python", "evidence": "Built REST APIs in Python (Django) for 4 years" },
+        { "field": "experience", "value": "4 years", "evidence": "Backend Developer at Click, 2021–2025 (4 years)" }
+      ],
+      "raw_text": "Aziz Karimov — Backend Developer, Tashkent.\nBackend Developer at Click, 2021–2025 (4 years). Built and maintained REST APIs in Python using Django and PostgreSQL. Designed payment-processing services handling 1M+ daily transactions. Wrote unit and integration tests.\nEducation: BSc Computer Science, TUIT, 2021.\nLanguages: Uzbek (native), Russian (fluent), English (intermediate)."
+    },
+    "hard_requirements": [
+      { "id": "exp3", "label_ru": "Опыт работы 3+ года", "label_uz": "3+ yil tajriba", "type": "number", "min_value": 3, "order": 0 },
+      { "id": "python", "label_ru": "Знание Python", "label_uz": "Python bilimi", "type": "boolean", "min_value": null, "order": 1 }
+    ],
+    "role_profile": {
+      "title": "Middle Backend Developer",
+      "seniority": "middle",
+      "required_skills": ["Python", "Django", "PostgreSQL"],
+      "must_haves": [{ "weight": 5, "text": "Production REST API experience" }],
+      "nice_to_haves": [{ "weight": 2, "text": "Payments domain experience" }],
+      "required_languages": [{ "language": "ru", "level": "fluent" }]
+    },
+    "expected": { "gate_pass": true, "verify_pass": true, "score_gte": 55 }
+  },
+  {
+    "name": "fail-insufficient-experience",
+    "candidate": {
+      "full_name": "Dilnoza Yusupova",
+      "headline": "Junior Python Developer",
+      "location": "Samarkand, Uzbekistan",
+      "fields": [
+        { "field": "skill", "value": "Python", "evidence": "Python scripting and small Flask apps" },
+        { "field": "experience", "value": "1 year", "evidence": "Junior Developer, 2024–2025 (1 year)" }
+      ],
+      "raw_text": "Dilnoza Yusupova — Junior Python Developer.\nJunior Developer at a startup, 2024–2025 (1 year). Wrote Python scripts and a small Flask app. Internship in 2023.\nEducation: BSc in progress.\nLanguages: Uzbek (native), Russian (fluent)."
+    },
+    "hard_requirements": [
+      { "id": "exp3", "label_ru": "Опыт работы 3+ года", "label_uz": "3+ yil tajriba", "type": "number", "min_value": 3, "order": 0 },
+      { "id": "python", "label_ru": "Знание Python", "label_uz": "Python bilimi", "type": "boolean", "min_value": null, "order": 1 }
+    ],
+    "role_profile": {
+      "title": "Middle Backend Developer",
+      "seniority": "middle",
+      "required_skills": ["Python"],
+      "must_haves": [],
+      "nice_to_haves": [],
+      "required_languages": []
+    },
+    "expected": { "gate_pass": false }
+  },
+  {
+    "name": "fail-missing-required-language",
+    "candidate": {
+      "full_name": "Bekzod Rashidov",
+      "headline": "Frontend Developer",
+      "location": "Tashkent, Uzbekistan",
+      "fields": [
+        { "field": "skill", "value": "React", "evidence": "5 years building React SPAs" }
+      ],
+      "raw_text": "Bekzod Rashidov — Frontend Developer.\nFrontend Developer, 2019–2025 (6 years). Built React single-page applications, TypeScript, Redux. Led a team of 3.\nLanguages: Uzbek (native), Russian (fluent)."
+    },
+    "hard_requirements": [
+      { "id": "english", "label_ru": "Английский язык", "label_uz": "Ingliz tili", "type": "boolean", "min_value": null, "order": 0 },
+      { "id": "react", "label_ru": "Знание React", "label_uz": "React bilimi", "type": "boolean", "min_value": null, "order": 1 }
+    ],
+    "role_profile": {
+      "title": "Senior Frontend Developer",
+      "seniority": "senior",
+      "required_skills": ["React", "TypeScript"],
+      "must_haves": [{ "weight": 5, "text": "English for client communication" }],
+      "nice_to_haves": [],
+      "required_languages": [{ "language": "en", "level": "fluent" }]
+    },
+    "expected": { "gate_pass": false }
+  },
+  {
+    "name": "pass-gate-overqualified-lowers-fit",
+    "candidate": {
+      "full_name": "Sardor Tashkentov",
+      "headline": "Engineering Manager / Staff Engineer",
+      "location": "Tashkent, Uzbekistan",
+      "fields": [
+        { "field": "skill", "value": "JavaScript", "evidence": "12 years of JavaScript across the stack" },
+        { "field": "experience", "value": "12 years", "evidence": "Staff Engineer and EM, 2013–2025 (12 years)" }
+      ],
+      "raw_text": "Sardor Tashkentov — Staff Engineer / Engineering Manager.\n2013–2025 (12 years). Led platform teams of 15+, set technical strategy, JavaScript/TypeScript, distributed systems. Previously Staff Engineer.\nLanguages: Uzbek, Russian, English (fluent)."
+    },
+    "hard_requirements": [
+      { "id": "exp2", "label_ru": "Опыт работы 2+ года", "label_uz": "2+ yil tajriba", "type": "number", "min_value": 2, "order": 0 },
+      { "id": "js", "label_ru": "Знание JavaScript", "label_uz": "JavaScript bilimi", "type": "boolean", "min_value": null, "order": 1 }
+    ],
+    "role_profile": {
+      "title": "Junior Frontend Developer",
+      "seniority": "junior",
+      "required_skills": ["JavaScript", "HTML", "CSS"],
+      "must_haves": [],
+      "nice_to_haves": [],
+      "required_languages": []
+    },
+    "expected": { "gate_pass": true, "verify_pass": true }
+  }
+]

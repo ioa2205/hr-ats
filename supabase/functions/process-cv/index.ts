@@ -10,9 +10,12 @@ import { corsHeaders } from "../_shared/cors.ts";
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
-const MODEL = "gemini-3.1-pro-preview";
-const INPUT_USD_PER_MTOK = 2.0;
-const OUTPUT_USD_PER_MTOK = 12.0;
+// Flash is ~4x cheaper than Pro and fast enough for single-pass CV screening.
+// Matches the model + pricing the active-sourcing funnel already runs on
+// (lib/gemini/client.ts MODEL_FLASH, lib/sourcing/pricing.ts FLASH_*).
+const MODEL = "gemini-3-flash-preview";
+const INPUT_USD_PER_MTOK = 0.5;
+const OUTPUT_USD_PER_MTOK = 3.0;
 
 // ---------------------------------------------------------------------------
 // Schema (mirrored from lib/gemini/schema.ts for Deno compatibility)
@@ -505,14 +508,20 @@ Deno.serve(async (req) => {
     // (retry-pending-cvs cron only retries rows with retry_count < 3).
     // Rate-limited failures are transient and keep the row in pending_analysis,
     // so they never reach this branch.
-    if (!isRateLimited && companyId && retryCount >= 3) {
-      const { error: refundError } = await supabase.rpc("refund_cv_quota", {
-        p_company_id: companyId,
-      });
-      if (refundError) {
-        log(candidateId, "error", "Quota refund failed", refundError);
+    if (!isRateLimited && retryCount >= 3) {
+      if (!companyId) {
+        // Orphaned candidate (broken job_postings FK) — the refund can't be
+        // attributed to a company. Log loudly instead of silently leaking it.
+        log(candidateId, "error", "Cannot refund CV quota: companyId is null (orphaned candidate)");
       } else {
-        log(candidateId, "info", "CV quota refunded", { companyId });
+        const { error: refundError } = await supabase.rpc("refund_cv_quota", {
+          p_company_id: companyId,
+        });
+        if (refundError) {
+          log(candidateId, "error", "Quota refund failed", refundError);
+        } else {
+          log(candidateId, "info", "CV quota refunded", { companyId });
+        }
       }
     }
 

@@ -320,3 +320,29 @@ green.
 **Still needs a real run with a Gemini key (do this in A5 above):** the full
 funnel against live Gemini, the completion notification + its deep link, and the
 Playwright E2E (`pnpm test:e2e`, needs a prod build + browser).
+
+---
+
+## E. Matching-quality eval (golden set)
+
+`pnpm test` is offline/deterministic, so it cannot measure whether the AI gate /
+score / verify stages are actually *correct* — only that the plumbing works. The
+golden-set eval fills that gap and is the regression guard to run **before**
+changing any sourcing prompt, model tier, or `MIN_REQUIREMENT_CONFIDENCE`.
+
+- Fixtures (hand-labeled CV + job pairs with expected gate/verify/score):
+  `tests/fixtures/golden-candidates.json`.
+- Runner: `tests/eval/golden.eval.test.ts` drives the real funnel stages
+  (`createGeminiFunnelMethods` → `evaluateGate` / `evaluateVerification` /
+  `computeDeepScore`) and asserts via the pure `compareFixture` (`lib/sourcing/eval.ts`).
+
+Run it (needs a real key — it never stubs the model; self-skips without one):
+
+```bash
+GOOGLE_GEMINI_API_KEY=... pnpm eval
+```
+
+It is intentionally **excluded from CI** (`vitest.eval.config.ts`, not the
+default `tests/unit/**` include). Add a fixture whenever a real run surfaces a
+mis-rank, so the case is caught next time. Keep expectations robust (clear-cut
+pass/fail; generous `score_gte` margins) since model output is not bit-stable.
