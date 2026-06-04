@@ -1093,6 +1093,130 @@ export type Database = {
           },
         ];
       };
+      telegram_ingest_state: {
+        Row: {
+          last_update_id: number;
+          singleton: boolean;
+          updated_at: string;
+        };
+        Insert: {
+          last_update_id?: number;
+          singleton?: boolean;
+          updated_at?: string;
+        };
+        Update: {
+          last_update_id?: number;
+          singleton?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      telegram_intake_channels: {
+        Row: {
+          active: boolean;
+          added_by: string | null;
+          chat_id: number | null;
+          company_id: string;
+          created_at: string;
+          handle: string;
+          id: string;
+          title: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          active?: boolean;
+          added_by?: string | null;
+          chat_id?: number | null;
+          company_id: string;
+          created_at?: string;
+          handle: string;
+          id?: string;
+          title?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          active?: boolean;
+          added_by?: string | null;
+          chat_id?: number | null;
+          company_id?: string;
+          created_at?: string;
+          handle?: string;
+          id?: string;
+          title?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "telegram_intake_channels_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      telegram_posts: {
+        Row: {
+          channel: string;
+          chat_id: number | null;
+          classification: string | null;
+          classified_at: string | null;
+          company_id: string;
+          confidence: number | null;
+          contact_key: string | null;
+          extraction: Json | null;
+          id: string;
+          ingested_at: string;
+          message_id: number;
+          posted_at: string;
+          source_mode: string;
+          text: string;
+          url: string | null;
+        };
+        Insert: {
+          channel: string;
+          chat_id?: number | null;
+          classification?: string | null;
+          classified_at?: string | null;
+          company_id: string;
+          confidence?: number | null;
+          contact_key?: string | null;
+          extraction?: Json | null;
+          id?: string;
+          ingested_at?: string;
+          message_id: number;
+          posted_at: string;
+          source_mode?: string;
+          text: string;
+          url?: string | null;
+        };
+        Update: {
+          channel?: string;
+          chat_id?: number | null;
+          classification?: string | null;
+          classified_at?: string | null;
+          company_id?: string;
+          confidence?: number | null;
+          contact_key?: string | null;
+          extraction?: Json | null;
+          id?: string;
+          ingested_at?: string;
+          message_id?: number;
+          posted_at?: string;
+          source_mode?: string;
+          text?: string;
+          url?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "telegram_posts_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       candidates_ranked: {
