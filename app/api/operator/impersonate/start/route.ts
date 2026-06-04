@@ -13,7 +13,7 @@ const bodySchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const auth = await requireOperatorApi();
+    const auth = await requireOperatorApi({ write: true });
     if (!auth.ok) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
     }

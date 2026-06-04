@@ -6,7 +6,7 @@ import { extractRequestContext, writeOperatorAudit } from "@/lib/operator/audit-
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const auth = await requireOperatorApi();
+    const auth = await requireOperatorApi({ write: true });
     if (!auth.ok) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
     }

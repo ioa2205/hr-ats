@@ -49,7 +49,7 @@ export async function GET() {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const auth = await requireOperatorApi();
+    const auth = await requireOperatorApi({ write: true });
     if (!auth.ok) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
     }

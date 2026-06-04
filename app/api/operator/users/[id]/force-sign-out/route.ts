@@ -7,7 +7,7 @@ export async function POST(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const auth = await requireOperatorApi();
+  const auth = await requireOperatorApi({ write: true });
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   const { id: targetId } = await params;
