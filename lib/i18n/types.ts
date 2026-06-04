@@ -571,6 +571,7 @@ export type TranslationKey =
   // --- applicants UI ---
   | "common.previous"
   | "common.next"
+  | "common.page_of"
   | "common.back"
   | "applicants.status.analyzed"
   | "applicants.status.pending"

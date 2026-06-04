@@ -564,6 +564,7 @@ export const ru: Translations = {
     "Язык по умолчанию, который видят кандидаты на ваших страницах подачи заявок.",
   "common.previous": "Назад",
   "common.next": "Далее",
+  "common.page_of": "Страница {page} из {total}",
   "common.back": "Назад",
   "applicants.status.analyzed": "Проанализирован",
   "applicants.status.pending": "Ожидает",

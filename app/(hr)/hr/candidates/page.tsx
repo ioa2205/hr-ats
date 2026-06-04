@@ -13,9 +13,12 @@ import {
 } from "@/components/hr/design";
 import { getLocale, t } from "@/lib/i18n";
 import { pickLocalized } from "@/lib/i18n/pick-localized";
+import { pageBounds } from "@/lib/pagination";
 import type { Locale } from "@/lib/i18n/types";
 
 type VerdictFilter = "all" | "new" | "recommend" | "review" | "reject";
+
+const PAGE_SIZE = 50;
 
 function verdictOf(status: string, score: number | null): "recommend" | "review" | "reject" | "none" {
   if (status === "rejected_screening") return "reject";
@@ -85,25 +88,25 @@ export default async function CandidatesPage({
     );
   }
 
-  const { data: candidates } = await admin
+  // Lightweight full-set fetch (3 tiny columns) drives accurate chip counts AND
+  // verdict filtering across ALL candidates, uncapped — so pagination never
+  // hides older rows or skews the counts. Full detail is fetched only for the
+  // current page below. Ordering matches idx_candidates_job_match.
+  const { data: lite } = await admin
     .from("candidates")
-    .select(
-      "id,full_name,match_score,status,job_posting_id,one_line_summary,one_line_summary_uz,one_line_summary_en,created_at,invited_at",
-    )
+    .select("id,status,match_score")
     .in("job_posting_id", jobIds)
-    .order("match_score", { ascending: false, nullsFirst: false })
-    .limit(200);
-
-  const all = candidates ?? [];
+    .order("match_score", { ascending: false, nullsFirst: false });
+  const liteRows = lite ?? [];
 
   const counts = {
-    all: all.length,
+    all: liteRows.length,
     new: 0,
     recommend: 0,
     review: 0,
     reject: 0,
   };
-  for (const c of all) {
+  for (const c of liteRows) {
     if (c.status === "pending_analysis" || c.status === "analyzing") counts.new++;
     const v = verdictOf(c.status, c.match_score);
     if (v === "recommend") counts.recommend++;
@@ -111,11 +114,39 @@ export default async function CandidatesPage({
     else if (v === "reject") counts.reject++;
   }
 
-  const filtered = all.filter((c) => {
+  const matchesFilter = (status: string, score: number | null) => {
     if (filter === "all") return true;
-    if (filter === "new") return c.status === "pending_analysis" || c.status === "analyzing";
-    return verdictOf(c.status, c.match_score) === filter;
+    if (filter === "new") return status === "pending_analysis" || status === "analyzing";
+    return verdictOf(status, score) === filter;
+  };
+
+  const filteredIds = liteRows.filter((c) => matchesFilter(c.status, c.match_score)).map((c) => c.id);
+  const { page, totalPages, from, to } = pageBounds(
+    filteredIds.length,
+    typeof sp.page === "string" ? sp.page : undefined,
+    PAGE_SIZE,
+  );
+  const pageIds = filteredIds.slice(from, to + 1);
+
+  const pageRows =
+    (pageIds.length > 0
+      ? (
+          await admin
+            .from("candidates")
+            .select(
+              "id,full_name,match_score,status,job_posting_id,one_line_summary,one_line_summary_uz,one_line_summary_en,created_at,invited_at",
+            )
+            .in("id", pageIds)
+        ).data
+      : []) ?? [];
+
+  // .in() does not preserve order — restore the match_score ranking via pageIds.
+  const byId = new Map(pageRows.map((r) => [r.id, r]));
+  const filtered = pageIds.flatMap((id) => {
+    const row = byId.get(id);
+    return row ? [row] : [];
   });
+  const pageStartIndex = (page - 1) * PAGE_SIZE;
 
   const chips: { value: VerdictFilter; labelKey: keyof typeof counts; count: number }[] = [
     { value: "all", labelKey: "all", count: counts.all },
@@ -186,6 +217,7 @@ export default async function CandidatesPage({
             </thead>
             <tbody>
               {filtered.map((c, i) => {
+                const rank = pageStartIndex + i;
                 const v = verdictOf(c.status, c.match_score);
                 const isNew = c.status === "pending_analysis" || c.status === "analyzing";
                 return (
@@ -197,14 +229,14 @@ export default async function CandidatesPage({
                       className="text-ink-5 px-3.5 py-2 text-[11px]"
                       style={{ fontFamily: "var(--font-tez-mono)" }}
                     >
-                      {String(i + 1).padStart(2, "0")}
+                      {String(rank + 1).padStart(2, "0")}
                     </td>
                     <td className="px-3.5 py-2">
                       <Link
                         href={`/hr/jobs/${c.job_posting_id}/applicants?candidate=${c.id}`}
                         className="flex items-center gap-2.5"
                       >
-                        <Avatar name={c.full_name} persimmon={v === "recommend" && i < 3} />
+                        <Avatar name={c.full_name} persimmon={v === "recommend" && rank < 3} />
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5">
                             <span className="text-ink text-[12.5px] font-semibold">
@@ -271,7 +303,62 @@ export default async function CandidatesPage({
           </table>
         )}
       </Panel>
+
+      {totalPages > 1 && (
+        <div className="mt-3.5 flex items-center justify-between text-[12px]">
+          <span className="text-ink-5">
+            {t("common.page_of", locale, { page: String(page), total: String(totalPages) })}
+          </span>
+          <div className="flex items-center gap-2">
+            <PageLink
+              href={candidatesHref(filter, page - 1)}
+              disabled={page <= 1}
+              label={t("common.previous", locale)}
+            />
+            <PageLink
+              href={candidatesHref(filter, page + 1)}
+              disabled={page >= totalPages}
+              label={t("common.next", locale)}
+            />
+          </div>
+        </div>
+      )}
     </div>
+  );
+}
+
+function candidatesHref(filter: VerdictFilter, page: number): string {
+  const params = new URLSearchParams();
+  if (filter !== "all") params.set("filter", filter);
+  if (page > 1) params.set("page", String(page));
+  const qs = params.toString();
+  return qs ? `/hr/candidates?${qs}` : "/hr/candidates";
+}
+
+function PageLink({
+  href,
+  disabled,
+  label,
+}: {
+  href: string;
+  disabled: boolean;
+  label: string;
+}) {
+  if (disabled) {
+    return (
+      <span className="border-rule text-ink-5 cursor-not-allowed rounded-[4px] border px-2.5 py-1 opacity-50">
+        {label}
+      </span>
+    );
+  }
+  return (
+    <Link
+      href={href}
+      prefetch={false}
+      className="border-rule text-ink-3 hover:bg-bone-2 rounded-[4px] border px-2.5 py-1"
+    >
+      {label}
+    </Link>
   );
 }
 

@@ -566,6 +566,7 @@ export const uz: Translations = {
     "Ariza sahifalaringizda nomzodlarga ko'rsatiladigan standart til.",
   "common.previous": "Oldingi",
   "common.next": "Keyingi",
+  "common.page_of": "{total} dan {page}-sahifa",
   "common.back": "Orqaga",
   "applicants.status.analyzed": "Tahlil qilindi",
   "applicants.status.pending": "Kutilmoqda",

@@ -562,6 +562,7 @@ export const en: Translations = {
     "Default language shown to candidates on your apply pages.",
   "common.previous": "Previous",
   "common.next": "Next",
+  "common.page_of": "Page {page} of {total}",
   "common.back": "Back",
   "applicants.status.analyzed": "Analyzed",
   "applicants.status.pending": "Pending",

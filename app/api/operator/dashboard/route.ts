@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { unstable_cache } from "next/cache";
 import { z } from "zod";
 import { requireOperatorApi } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -63,6 +64,26 @@ export async function GET(request: NextRequest) {
   }
   const range = Number(parsed.data.range) as 30 | 90;
 
+  try {
+    const body = await getCachedDashboard(range);
+    return NextResponse.json(body, { headers: { "cache-control": "no-store" } });
+  } catch (err) {
+    logger.error({ err }, "[api/operator/dashboard] failed");
+    return NextResponse.json({ error: "dashboard_failed" }, { status: 500 });
+  }
+}
+
+// Cached 30s, platform-global (operator-only data, not tenant-scoped) — dedupes
+// the dashboard's heavy aggregation across the every-60s client auto-refresh
+// and concurrent operator tabs.
+function getCachedDashboard(range: 30 | 90): Promise<DashboardResponse> {
+  return unstable_cache(() => computeDashboard(range), ["operator-dashboard", String(range)], {
+    revalidate: 30,
+    tags: ["operator-dashboard"],
+  })();
+}
+
+async function computeDashboard(range: 30 | 90): Promise<DashboardResponse> {
   const admin = createAdminClient();
 
   try {
@@ -286,9 +307,9 @@ export async function GET(request: NextRequest) {
       workers,
     };
 
-    return NextResponse.json(body, { headers: { "cache-control": "no-store" } });
+    return body;
   } catch (err) {
-    logger.error({ err }, "[api/operator/dashboard] failed");
-    return NextResponse.json({ error: "dashboard_failed" }, { status: 500 });
+    logger.error({ err }, "[api/operator/dashboard] compute failed");
+    throw err;
   }
 }

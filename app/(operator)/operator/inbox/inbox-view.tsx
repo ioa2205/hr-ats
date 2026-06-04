@@ -155,14 +155,26 @@ function MessageCard({ msg }: { msg: ContactMessage }) {
   );
 }
 
+function inboxHref(filter: "unread" | "all", page: number): string {
+  const params = new URLSearchParams();
+  if (filter === "all") params.set("filter", "all");
+  if (page > 1) params.set("page", String(page));
+  const qs = params.toString();
+  return qs ? `/operator/inbox?${qs}` : "/operator/inbox";
+}
+
 export function InboxView({
   messages,
   unreadCount,
   filter,
+  page,
+  totalPages,
 }: {
   messages: ContactMessage[];
   unreadCount: number;
   filter: "unread" | "all";
+  page: number;
+  totalPages: number;
 }) {
   const { t } = useTranslation();
   const [pendingAll, startAllTransition] = useTransition();
@@ -238,6 +250,38 @@ export function InboxView({
           {messages.map((msg) => (
             <MessageCard key={msg.id} msg={msg} />
           ))}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-1">
+          <span className="text-on-surface-variant text-sm">
+            {t("common.page_of", { page: String(page), total: String(totalPages) })}
+          </span>
+          <div className="flex items-center gap-2">
+            {page > 1 ? (
+              <Link href={inboxHref(filter, page - 1)}>
+                <Button variant="secondary" size="sm">
+                  {t("common.previous")}
+                </Button>
+              </Link>
+            ) : (
+              <Button variant="secondary" size="sm" disabled>
+                {t("common.previous")}
+              </Button>
+            )}
+            {page < totalPages ? (
+              <Link href={inboxHref(filter, page + 1)}>
+                <Button variant="secondary" size="sm">
+                  {t("common.next")}
+                </Button>
+              </Link>
+            ) : (
+              <Button variant="secondary" size="sm" disabled>
+                {t("common.next")}
+              </Button>
+            )}
+          </div>
         </div>
       )}
     </div>

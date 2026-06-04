@@ -15,33 +15,42 @@ interface ContactMessage {
   created_at: string;
 }
 
+const PAGE_SIZE = 50;
+
 export default async function InboxPage({
   searchParams,
 }: {
-  searchParams: Promise<{ filter?: string }>;
+  searchParams: Promise<{ filter?: string; page?: string }>;
 }) {
   await requireOperator();
-  const { filter } = await searchParams;
+  const { filter, page: pageParam } = await searchParams;
   const showOnlyUnread = filter !== "all";
+  const page = Math.max(1, parseInt(pageParam ?? "1", 10) || 1);
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
 
   const supabase = createAdminClient();
   let query = supabase
     .from("contact_messages")
-    .select("id, name, email, company, message, locale, source, read_at, created_at")
+    .select("id, name, email, company, message, locale, source, read_at, created_at", {
+      count: "exact",
+    })
     .order("created_at", { ascending: false })
-    .limit(200);
+    .range(from, to);
 
   if (showOnlyUnread) {
     query = query.is("read_at", null);
   }
 
-  const [{ data: messages }, unreadCountRes] = await Promise.all([
+  const [{ data: messages, count: filteredCount }, unreadCountRes] = await Promise.all([
     query,
     supabase
       .from("contact_messages")
       .select("id", { count: "exact", head: true })
       .is("read_at", null),
   ]);
+
+  const totalPages = Math.max(1, Math.ceil((filteredCount ?? 0) / PAGE_SIZE));
 
   return (
     <div className="flex flex-col gap-4">
@@ -50,6 +59,8 @@ export default async function InboxPage({
         messages={(messages ?? []) as ContactMessage[]}
         unreadCount={unreadCountRes.count ?? 0}
         filter={showOnlyUnread ? "unread" : "all"}
+        page={Math.min(page, totalPages)}
+        totalPages={totalPages}
       />
     </div>
   );
