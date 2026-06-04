@@ -10,7 +10,10 @@ import {
 } from "@/lib/companies/quota";
 import { runSourcingSearch } from "@/lib/sourcing/run";
 import { hhConfiguredFromEnv } from "@/lib/sourcing/connectors/hh";
-import { telegramConfiguredFromEnv } from "@/lib/sourcing/connectors/telegram";
+import {
+  telegramBotIntakeConfigured,
+  telegramConfiguredFromEnv,
+} from "@/lib/sourcing/connectors/telegram";
 import type { SourceKind } from "@/lib/sourcing/types";
 import { logger } from "@/lib/logger";
 
@@ -58,7 +61,8 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
     // from the same env signal). hh joins only when its credentials are set.
     const sources: SourceKind[] = ["internal_pool"];
     if (hhConfiguredFromEnv()) sources.push("hh");
-    if (telegramConfiguredFromEnv()) sources.push("telegram");
+    // telegram covers BOTH the MTProto (public) and bot-intake (owned) paths.
+    if (telegramConfiguredFromEnv() || telegramBotIntakeConfigured()) sources.push("telegram");
 
     // Enqueue. The partial unique index (job_posting_id where status in
     // queued/running) rejects a second in-flight run with code 23505.

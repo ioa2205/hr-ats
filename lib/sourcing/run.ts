@@ -24,8 +24,11 @@ import {
 import { createHhConnectorFromEnv } from "./connectors/hh";
 import {
   createTelegramConnectorFromEnv,
+  createTelegramDbConnector,
+  telegramBotIntakeConfigured,
   telegramConfiguredFromEnv,
 } from "./connectors/telegram";
+import type { LoadTelegramPosts } from "./connectors/telegram/db-reader";
 import { normalizePhone } from "./identity";
 import type { PostingSeed } from "./requirement-profile";
 import type { FetchBudget, RequirementProfile, SourceConnector } from "./types";
@@ -127,6 +130,46 @@ async function makeKnownTelegramContacts(
   }
 
   return (key: string) => keys.has(key);
+}
+
+/** The company's active OWNED intake channel handles (lowercased, no '@'). */
+async function loadCompanyIntakeChannels(admin: AdminClient, companyId: string): Promise<string[]> {
+  const { data } = await admin
+    .from("telegram_intake_channels")
+    .select("handle")
+    .eq("company_id", companyId)
+    .eq("active", true);
+  return (data ?? []).map((row: { handle: string }) => row.handle);
+}
+
+/**
+ * Company-scoped loader over telegram_posts for the DB connector: newest
+ * pre-classified candidate_cv posts for one owned channel within the freshness
+ * window. RLS is moot here (admin client), so the company_id filter is the
+ * tenant boundary.
+ */
+function makeTelegramPostLoader(admin: AdminClient, companyId: string): LoadTelegramPosts {
+  return async (channel, sinceIso, limit) => {
+    const { data } = await admin
+      .from("telegram_posts")
+      .select("channel, message_id, posted_at, text, url, classification, confidence, extraction")
+      .eq("company_id", companyId)
+      .eq("channel", channel)
+      .eq("classification", "candidate_cv")
+      .gte("posted_at", sinceIso)
+      .order("posted_at", { ascending: false })
+      .limit(limit);
+    return (data ?? []).map((row) => ({
+      channel: row.channel,
+      message_id: row.message_id,
+      posted_at: row.posted_at,
+      text: row.text,
+      url: row.url,
+      classification: row.classification,
+      confidence: row.confidence,
+      extraction: row.extraction,
+    }));
+  };
 }
 
 function toRow(
@@ -255,13 +298,31 @@ export async function runSourcingSearch(searchId: string): Promise<void> {
     // to `partial` (handled in the funnel) rather than failing it.
     const hh = createHhConnectorFromEnv();
     if (hh) connectors.push(hh);
-    // Telegram joins automatically when its MTProto credentials + channel
-    // allow-list are set; otherwise omitted. It suppresses contacts the company
-    // already has so a search never re-surfaces a known candidate.
-    if (telegramConfiguredFromEnv()) {
+    // Telegram joins automatically via two independent paths, both suppressing
+    // contacts the company already has so a search never re-surfaces a known
+    // candidate. The known-contact set is built once and shared:
+    //   • MTProto user session  → PUBLIC channels (TELEGRAM_* env creds);
+    //   • bot intake (DB reader) → the company's OWNED channels (registered in
+    //     telegram_intake_channels, ingested by the bot — no MTProto needed).
+    const mtprotoOn = telegramConfiguredFromEnv();
+    const ownedChannels = telegramBotIntakeConfigured()
+      ? await loadCompanyIntakeChannels(admin, claimed.company_id)
+      : [];
+    if (mtprotoOn || ownedChannels.length > 0) {
       const isKnownContact = await makeKnownTelegramContacts(admin, claimed.company_id);
-      const telegram = createTelegramConnectorFromEnv({ isKnownContact });
-      if (telegram) connectors.push(telegram);
+      if (mtprotoOn) {
+        const telegram = createTelegramConnectorFromEnv({ isKnownContact });
+        if (telegram) connectors.push(telegram);
+      }
+      if (ownedChannels.length > 0) {
+        connectors.push(
+          createTelegramDbConnector({
+            load: makeTelegramPostLoader(admin, claimed.company_id),
+            channels: ownedChannels,
+            isKnownContact,
+          }),
+        );
+      }
     }
 
     const deps: FunnelDeps = {
