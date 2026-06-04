@@ -612,6 +612,15 @@ export const ru: Translations = {
   "applicants.analysis.failed_heading": "Ошибка анализа",
   "applicants.analysis.retry": "Повторить анализ",
   "applicants.analysis.max_retries": "Достигнут предел попыток — проверьте резюме вручную",
+  "applicants.analysis.unavailable_heading": "ИИ временно недоступен",
+  "applicants.analysis.unavailable_body":
+    "Анализ ИИ приостановлен из-за сбоя на нашей стороне. Мы автоматически продолжим обработку этого кандидата после устранения проблемы — действий не требуется.",
+  "applicants.analysis.err_unavailable": "ИИ временно недоступен — мы повторим попытку автоматически",
+  "applicants.analysis.err_timeout": "Превышено время ожидания ответа ИИ. Попробуйте снова.",
+  "applicants.analysis.err_job_missing": "Связанная вакансия не найдена.",
+  "applicants.analysis.err_cv_access": "Не удалось открыть загруженный файл резюме.",
+  "applicants.analysis.err_generic":
+    "Во время анализа произошла ошибка. Повторите попытку или проверьте резюме вручную.",
   "applicants.analysis.no_data": "Нет данных анализа",
   "applicants.analysis.strengths": "Сильные стороны",
   "applicants.analysis.gaps": "Пробелы",
@@ -2076,6 +2085,7 @@ export const ru: Translations = {
   "operator.dashboard.workers.name_sourcing": "Поиск кандидатов",
   "operator.dashboard.workers.name_telegram": "Приём из Telegram",
   "operator.dashboard.workers.name_notifications": "Email-уведомления",
+  "operator.dashboard.workers.name_process_cv": "Анализ резюме",
   // --- operator companies list (PR #3) ---
   "operator.companies.title": "Компании",
   "operator.companies.search_placeholder": "Название, slug или ID…",

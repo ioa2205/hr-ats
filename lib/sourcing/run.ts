@@ -13,6 +13,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
 import { dispatchNotification } from "@/lib/notifications/dispatch";
 import { refundSourcingQuota, SOURCING_UNITS_PER_SEARCH } from "@/lib/companies/quota";
+import { redactSecrets } from "@/lib/security/redact";
 import { t } from "@/lib/i18n";
 import { runFunnel, type FunnelDeps, type ShortlistEntry } from "./funnel";
 import { createGeminiFunnelMethods } from "./gemini";
@@ -253,7 +254,11 @@ async function failSearch(
 ): Promise<void> {
   await admin
     .from("sourcing_searches")
-    .update({ status: "failed", error: truncate(reason), completed_at: new Date().toISOString() })
+    .update({
+      status: "failed",
+      error: redactSecrets(truncate(reason)),
+      completed_at: new Date().toISOString(),
+    })
     .eq("id", search.id);
   // Refund the consumed unit so an infra/connector failure doesn't burn a slot.
   await refundSourcingQuota(search.company_id, SOURCING_UNITS_PER_SEARCH);
@@ -418,7 +423,7 @@ export async function runSourcingSearch(searchId: string): Promise<void> {
       // extraction Pro call is not repeated.
       await admin
         .from("sourcing_searches")
-        .update({ status: "queued", error: truncate(message) })
+        .update({ status: "queued", error: redactSecrets(truncate(message)) })
         .eq("id", searchId);
     }
   }

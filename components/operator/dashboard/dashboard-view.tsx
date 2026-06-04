@@ -504,6 +504,7 @@ const WORKER_NAME_KEY: Record<string, TranslationKey> = {
   "sourcing-run": "operator.dashboard.workers.name_sourcing",
   "telegram-ingest": "operator.dashboard.workers.name_telegram",
   "notification-retry": "operator.dashboard.workers.name_notifications",
+  "process-cv": "operator.dashboard.workers.name_process_cv",
 };
 
 function compactAgo(iso: string | null): string {

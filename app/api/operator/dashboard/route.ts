@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireOperatorApi } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
+import { redactSecrets } from "@/lib/security/redact";
 
 const querySchema = z.object({
   range: z.enum(["30", "90"]).default("30"),
@@ -261,17 +262,25 @@ async function computeDashboard(range: 30 | 90): Promise<DashboardResponse> {
     // Background-worker health (migration 390). red = the last run errored,
     // amber = stale (these crons run every 1–2 min, so >15 min is overdue).
     const WORKER_STALE_MS = 15 * 60 * 1000;
+    // Event-driven workers fire on demand (process-cv runs per applicant), so
+    // "no run for a while" means "no work arrived", not "unhealthy" — exclude
+    // them from the staleness check. The failure-streak signal still applies.
+    const EVENT_DRIVEN_WORKERS = new Set(["process-cv"]);
     const nowMs = Date.now();
     const workers = (workersRes.data ?? []).map((w) => {
+      const worker = w.worker as string;
       const lastRunMs = w.last_run_at ? Date.parse(w.last_run_at as string) : 0;
       const failing = Number(w.consecutive_failures ?? 0) >= 1;
-      const stale = lastRunMs > 0 && nowMs - lastRunMs > WORKER_STALE_MS;
+      const stale =
+        !EVENT_DRIVEN_WORKERS.has(worker) && lastRunMs > 0 && nowMs - lastRunMs > WORKER_STALE_MS;
       const state: "ok" | "amber" | "red" = failing ? "red" : stale ? "amber" : "ok";
       return {
-        worker: w.worker as string,
+        worker,
         state,
         lastRunAt: (w.last_run_at as string | null) ?? null,
-        lastError: (w.last_error as string | null) ?? null,
+        // Defense-in-depth: legacy rows may still hold an un-redacted provider
+        // message; never ship a raw secret to the operator's browser.
+        lastError: w.last_error ? redactSecrets(w.last_error as string) : null,
         consecutiveFailures: Number(w.consecutive_failures ?? 0),
       };
     });

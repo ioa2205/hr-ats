@@ -614,6 +614,15 @@ export const uz: Translations = {
   "applicants.analysis.failed_heading": "Tahlil xatosi",
   "applicants.analysis.retry": "Tahlilni qayta urinish",
   "applicants.analysis.max_retries": "Urinishlar tugadi — rezyumeni qo'lda tekshiring",
+  "applicants.analysis.unavailable_heading": "AI vaqtincha ishlamayapti",
+  "applicants.analysis.unavailable_body":
+    "AI tahlili bizning tomonimizdagi nosozlik sababli to'xtatildi. Muammo hal bo'lgach, bu nomzodni avtomatik davom ettiramiz — sizdan hech narsa talab etilmaydi.",
+  "applicants.analysis.err_unavailable": "AI vaqtincha ishlamayapti — biz avtomatik qayta urinamiz",
+  "applicants.analysis.err_timeout": "AI so'rovi vaqti tugadi. Qayta urinib ko'ring.",
+  "applicants.analysis.err_job_missing": "Bog'langan ish o'rni topilmadi.",
+  "applicants.analysis.err_cv_access": "Yuklangan rezyume faylini ochib bo'lmadi.",
+  "applicants.analysis.err_generic":
+    "Tahlil vaqtida xatolik yuz berdi. Qayta urinib ko'ring yoki rezyumeni qo'lda tekshiring.",
   "applicants.analysis.no_data": "Tahlil ma'lumotlari yo'q",
   "applicants.analysis.strengths": "Kuchli tomonlar",
   "applicants.analysis.gaps": "Kamchiliklar",
@@ -2080,6 +2089,7 @@ export const uz: Translations = {
   "operator.dashboard.workers.name_sourcing": "Nomzod qidirish",
   "operator.dashboard.workers.name_telegram": "Telegram qabuli",
   "operator.dashboard.workers.name_notifications": "Email bildirishnomalar",
+  "operator.dashboard.workers.name_process_cv": "Rezyume tahlili",
   // --- operator companies list (PR #3) ---
   "operator.companies.title": "Kompaniyalar",
   "operator.companies.search_placeholder": "Nomi, slug yoki ID…",

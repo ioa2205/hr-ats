@@ -610,6 +610,15 @@ export const en: Translations = {
   "applicants.analysis.failed_heading": "Analysis failed",
   "applicants.analysis.retry": "Retry analysis",
   "applicants.analysis.max_retries": "Max retries reached — check CV manually",
+  "applicants.analysis.unavailable_heading": "AI temporarily unavailable",
+  "applicants.analysis.unavailable_body":
+    "AI analysis is paused due to a service issue on our side. We'll resume this candidate automatically once it's resolved — no action needed.",
+  "applicants.analysis.err_unavailable": "AI temporarily unavailable — we'll retry automatically",
+  "applicants.analysis.err_timeout": "The AI request timed out. Try again.",
+  "applicants.analysis.err_job_missing": "The linked job posting could not be found.",
+  "applicants.analysis.err_cv_access": "We couldn't open the uploaded CV file.",
+  "applicants.analysis.err_generic":
+    "Something went wrong during analysis. Try again or review the CV manually.",
   "applicants.analysis.no_data": "No analysis data available",
   "applicants.analysis.strengths": "Strengths",
   "applicants.analysis.gaps": "Gaps",
@@ -2070,6 +2079,7 @@ export const en: Translations = {
   "operator.dashboard.workers.name_sourcing": "Candidate sourcing",
   "operator.dashboard.workers.name_telegram": "Telegram intake",
   "operator.dashboard.workers.name_notifications": "Email notifications",
+  "operator.dashboard.workers.name_process_cv": "CV analysis",
   // --- operator companies list (PR #3) ---
   "operator.companies.title": "Companies",
   "operator.companies.search_placeholder": "Name, slug, or ID…",

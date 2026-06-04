@@ -30,6 +30,18 @@ const languageLabelKey: Record<string, TranslationKey> = {
   other: "applicants.analysis.language_other",
 };
 
+// ai_error holds a controlled marker (set by process-cv), never a raw provider
+// message — that previously leaked the Gemini API key into this UI. Map known
+// markers to localized copy; anything unrecognized falls back to a generic
+// message so a raw string can never be rendered.
+const aiErrorKey: Record<string, TranslationKey> = {
+  ai_unavailable: "applicants.analysis.err_unavailable",
+  "AI timeout": "applicants.analysis.err_timeout",
+  "Job posting not found": "applicants.analysis.err_job_missing",
+  "Failed to access CV file": "applicants.analysis.err_cv_access",
+  ai_error: "applicants.analysis.err_generic",
+};
+
 export function AiAnalysisTab({ candidate, jobTitle, appUrl, onUpdate }: AiAnalysisTabProps) {
   const { t, locale } = useTranslation();
   const [retrying, setRetrying] = useState(false);
@@ -174,6 +186,8 @@ export function AiAnalysisTab({ candidate, jobTitle, appUrl, onUpdate }: AiAnaly
   if (candidate.status === "pending_analysis" || candidate.status === "analyzing") {
     const isRateLimited =
       candidate.status === "pending_analysis" && candidate.ai_error === "rate_limited";
+    const isUnavailable =
+      candidate.status === "pending_analysis" && candidate.ai_error === "ai_unavailable";
     return (
       <div className="space-y-6">
         {isRateLimited && (
@@ -185,6 +199,19 @@ export function AiAnalysisTab({ candidate, jobTitle, appUrl, onUpdate }: AiAnaly
               </p>
               <p className="text-on-surface-variant text-xs">
                 {t("applicants.analysis.rate_limited_body")}
+              </p>
+            </div>
+          </div>
+        )}
+        {isUnavailable && (
+          <div className="border-warning/40 bg-warning-container/30 flex items-start gap-3 rounded-[var(--radius-lg)] border p-4">
+            <AlertTriangle className="text-warning mt-0.5 h-5 w-5 shrink-0" />
+            <div className="space-y-1">
+              <p className="text-on-surface text-sm font-medium">
+                {t("applicants.analysis.unavailable_heading")}
+              </p>
+              <p className="text-on-surface-variant text-xs">
+                {t("applicants.analysis.unavailable_body")}
               </p>
             </div>
           </div>
@@ -220,7 +247,9 @@ export function AiAnalysisTab({ candidate, jobTitle, appUrl, onUpdate }: AiAnaly
               {t("applicants.analysis.failed_heading")}
             </p>
             {candidate.ai_error && (
-              <p className="text-on-surface-variant text-xs">{candidate.ai_error.slice(0, 200)}</p>
+              <p className="text-on-surface-variant text-xs">
+                {t(aiErrorKey[candidate.ai_error] ?? "applicants.analysis.err_generic")}
+              </p>
             )}
             {candidate.retry_count < 3 ? (
               <Button

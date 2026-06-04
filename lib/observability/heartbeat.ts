@@ -1,11 +1,16 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
+import { redactSecrets } from "@/lib/security/redact";
 
 /** Canonical worker identifiers recorded in worker_heartbeats. */
 export const WORKER = {
   sourcingRun: "sourcing-run",
   telegramIngest: "telegram-ingest",
   notificationRetry: "notification-retry",
+  // process-cv is the Deno Edge Function; it records its own heartbeat by
+  // calling record_worker_heartbeat directly. Listed here for the canonical
+  // name + so the operator dashboard label map stays in one mental model.
+  processCv: "process-cv",
 } as const;
 
 export type WorkerName = (typeof WORKER)[keyof typeof WORKER];
@@ -26,7 +31,8 @@ export async function recordWorkerHeartbeat(
     const { error: rpcErr } = await admin.rpc("record_worker_heartbeat", {
       p_worker: worker,
       p_ok: ok,
-      p_error: error ? error.slice(0, 500) : null,
+      // Redact before storing — worker error text can echo provider API keys.
+      p_error: error ? redactSecrets(error).slice(0, 500) : null,
     });
     if (rpcErr) {
       logger.error({ err: rpcErr, worker }, "[heartbeat] record failed");

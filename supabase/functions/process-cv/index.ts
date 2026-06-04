@@ -200,6 +200,43 @@ function truncate(str: string, max: number): string {
   return str.length > max ? str.slice(0, max) : str;
 }
 
+// Mirror of lib/security/redact.ts — kept inline so this Deno Edge Function
+// doesn't bundle the Next.js module graph. Strips credential-shaped tokens
+// (notably the Google API key the provider echoes in 403 error text) before any
+// error string is logged, persisted, or returned. Keep the two in sync.
+function redactSecrets(text: string): string {
+  let out = text;
+  out = out.replace(/AIza[0-9A-Za-z_-]{10,}/g, "[redacted-key]");
+  out = out.replace(/\b(?:sk|pk|rk)-[A-Za-z0-9_-]{16,}/g, "[redacted-key]");
+  out = out.replace(
+    /\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/g,
+    "[redacted-jwt]",
+  );
+  out = out.replace(/(bearer\s+)[A-Za-z0-9._-]{12,}/gi, "$1[redacted]");
+  out = out.replace(
+    /((?:api[_-]?key|apikey|access[_-]?token|secret)["'\s:=]{1,4})[A-Za-z0-9._-]{8,}/gi,
+    "$1[redacted]",
+  );
+  return out;
+}
+
+// Record the process-cv worker heartbeat (migration 390) so the operator
+// dashboard flags a Gemini outage (suspended/invalid key) instead of it being
+// invisible behind per-candidate "analysis failed" rows. Best-effort.
+// deno-lint-ignore no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function recordHeartbeat(supabase: any, ok: boolean, error?: string): Promise<void> {
+  try {
+    await supabase.rpc("record_worker_heartbeat", {
+      p_worker: "process-cv",
+      p_ok: ok,
+      p_error: ok ? null : redactSecrets(error ?? "").slice(0, 500),
+    });
+  } catch (e) {
+    console.error("[process-cv] heartbeat record failed:", String(e));
+  }
+}
+
 function log(candidateId: string, level: string, msg: string, extra?: unknown) {
   const entry = {
     ts: new Date().toISOString(),
@@ -415,13 +452,20 @@ Deno.serve(async (req) => {
       cost_usd: costUsd,
     });
 
+    // A clean run clears the process-cv failure streak on the operator dashboard.
+    await recordHeartbeat(supabase, true);
+
     return new Response(JSON.stringify({ ok: true }), { status: 200, headers });
   } catch (err: unknown) {
     // ── 9. Error classification and persistence ─────────────────────────
     const error = err as { status?: number; message?: string; code?: string };
     const message = error.message ?? String(err);
+    // Provider SDKs embed the API key in their error text (e.g. Google's
+    // "Consumer 'api_key:AIza...' has been suspended"). Redact before this
+    // message reaches any log, the attempts table, or a response body.
+    const safeMessage = redactSecrets(truncate(message, 500));
 
-    log(candidateId, "error", "Processing failed", { message });
+    log(candidateId, "error", "Processing failed", { message: safeMessage });
 
     // Classify the error
     const isRateLimited =
@@ -429,6 +473,17 @@ Deno.serve(async (req) => {
       error.code === "rate_limited" ||
       message.toLowerCase().includes("rate") ||
       message.toLowerCase().includes("429");
+
+    // Auth/config/billing failures (suspended or invalid key, billing disabled)
+    // are a PLATFORM outage, not a per-candidate problem — every candidate fails
+    // identically. Detect them so we don't burn the row's retry budget or tell
+    // HR to "check the CV manually". Classify on the raw message.
+    const isAuthError =
+      error.status === 401 ||
+      error.status === 403 ||
+      /permission.?denied|api[_ ]?key|key.*(?:invalid|expired|suspended)|suspended|consumer.*suspend|billing|account.*disabl/i.test(
+        message,
+      );
 
     const isTimeout =
       message.toLowerCase().includes("timeout") || message.toLowerCase().includes("deadline");
@@ -466,7 +521,30 @@ Deno.serve(async (req) => {
         company_id: companyId,
         status: "rate_limited",
         model: MODEL,
-        error: truncate(message, 500),
+        error: safeMessage,
+      });
+    } else if (isAuthError) {
+      // Keep the row retryable WITHOUT spending its retry budget so it
+      // auto-heals the moment the key/billing is fixed; show HR a calm
+      // "ai_unavailable" state; flag process-cv red on the operator dashboard.
+      // No refund — the analysis still owes a credit and will consume it
+      // legitimately on the eventual success.
+      log(candidateId, "error", "AI provider unavailable (auth/config)", { safeMessage });
+      await supabase
+        .from("candidates")
+        .update({ status: "pending_analysis", ai_error: "ai_unavailable" })
+        .eq("id", candidateId);
+      await supabase.from("ai_processing_attempts").insert({
+        candidate_id: candidateId,
+        company_id: companyId,
+        status: "failed",
+        model: MODEL,
+        error: "ai_unavailable",
+      });
+      await recordHeartbeat(supabase, false, "ai_unavailable");
+      return new Response(JSON.stringify({ error: "ai_unavailable" }), {
+        status: 503,
+        headers,
       });
     } else if (isTimeout) {
       log(candidateId, "error", "Timeout — marking analysis_failed");
@@ -483,7 +561,7 @@ Deno.serve(async (req) => {
         company_id: companyId,
         status: "timeout",
         model: MODEL,
-        error: truncate(message, 500),
+        error: safeMessage,
       });
     } else {
       log(candidateId, "error", "General failure — marking analysis_failed");
@@ -491,7 +569,10 @@ Deno.serve(async (req) => {
         .from("candidates")
         .update({
           status: "analysis_failed",
-          ai_error: truncate(message, 500),
+          // Controlled marker, never the raw provider message (which can carry
+          // the API key). The HR UI maps this to a localized string; the
+          // redacted detail lives in ai_processing_attempts + logs.
+          ai_error: "ai_error",
           retry_count: retryCount,
         })
         .eq("id", candidateId);
@@ -500,7 +581,7 @@ Deno.serve(async (req) => {
         company_id: companyId,
         status: "failed",
         model: MODEL,
-        error: truncate(message, 500),
+        error: safeMessage,
       });
     }
 
@@ -525,7 +606,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    return new Response(JSON.stringify({ error: truncate(message, 500) }), {
+    return new Response(JSON.stringify({ error: "analysis_failed" }), {
       status: 500,
       headers,
     });
