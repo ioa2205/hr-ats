@@ -17,15 +17,28 @@
  */
 import type { TelegramClient } from "telegram";
 import { logger } from "@/lib/logger";
-import { RawMessageSchema, type RawMessage } from "./schema";
+import { RawMessageSchema, type RawMessage, type TelegramExtraction } from "./schema";
+
+/**
+ * One message as a reader hands it to the pipeline. The MTProto reader yields a
+ * bare {@link RawMessage} (the connector classifies it live). The DB-backed
+ * reader for owned channels additionally carries `cachedExtraction` — the
+ * classification computed ONCE at bot-ingest time — so the connector skips the
+ * paid Gemini call. The field is optional, so a plain RawMessage is a valid
+ * ReaderMessage and the existing MTProto path + fakes are unchanged.
+ */
+export interface ReaderMessage extends RawMessage {
+  cachedExtraction?: TelegramExtraction;
+}
 
 /**
  * Reads messages from one allow-listed channel newer than `sinceDate`, newest
  * first. The pipeline depends ONLY on this interface; in tests it is a fake
- * async generator, in prod it is {@link GramJsTelegramReader}.
+ * async generator, in prod it is {@link GramJsTelegramReader} (public channels)
+ * or {@link import("./db-reader").DbTelegramReader} (owned channels).
  */
 export interface TelegramReader {
-  listMessages(channel: string, sinceDate: Date): AsyncIterable<RawMessage>;
+  listMessages(channel: string, sinceDate: Date): AsyncIterable<ReaderMessage>;
 }
 
 export interface GramJsReaderConfig {

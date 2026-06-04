@@ -18,8 +18,8 @@
  */
 import type { RawSourcedProfile, SourceConnector } from "../../types";
 import type { SourcingLogger } from "../../funnel";
-import type { TelegramReader } from "./reader";
-import type { RawMessage, TelegramExtraction } from "./schema";
+import type { ReaderMessage, TelegramReader } from "./reader";
+import type { TelegramExtraction } from "./schema";
 import { prefilter, type ExtractedContact } from "./classify";
 import { collapseReposts, isClosedSignal, withinAgeWindow } from "./recency";
 import { normalizeTelegramMessage } from "./normalize";
@@ -49,7 +49,7 @@ export interface TelegramConnectorDeps {
 const DEFAULT_MIN_CONFIDENCE = 0.6;
 
 interface Survivor {
-  message: RawMessage;
+  message: ReaderMessage;
   contact: ExtractedContact;
 }
 
@@ -104,22 +104,29 @@ export function createTelegramConnector(deps: TelegramConnectorDeps): SourceConn
       );
 
       // --- Stages 5–6: AI classify (budget-capped) + normalize + yield -----
-      // budget.maxFetched caps how many messages reach the paid AI step.
+      // budget.maxFetched caps how many messages reach the paid AI step. A
+      // message that arrived with a cached classification (owned-channel DB
+      // reader — classified once at bot ingest) skips the paid call entirely.
       let classifyCalls = 0;
       let emitted = 0;
       for (const survivor of collapsed) {
-        if (emitted >= budget.maxFetched || classifyCalls >= budget.maxFetched) break;
-        classifyCalls += 1;
+        if (emitted >= budget.maxFetched) break;
         let extraction: TelegramExtraction;
-        try {
-          extraction = await deps.classify(survivor.message.text);
-        } catch (err) {
-          // Fail-closed: a classify/parse failure drops the single message.
-          log?.warn(
-            { ref: `${survivor.message.channel}:${survivor.message.message_id}`, err: String(err) },
-            "[sourcing] telegram classify failed; dropping message",
-          );
-          continue;
+        if (survivor.message.cachedExtraction) {
+          extraction = survivor.message.cachedExtraction;
+        } else {
+          if (classifyCalls >= budget.maxFetched) break;
+          classifyCalls += 1;
+          try {
+            extraction = await deps.classify(survivor.message.text);
+          } catch (err) {
+            // Fail-closed: a classify/parse failure drops the single message.
+            log?.warn(
+              { ref: `${survivor.message.channel}:${survivor.message.message_id}`, err: String(err) },
+              "[sourcing] telegram classify failed; dropping message",
+            );
+            continue;
+          }
         }
         // Reject recruiter vacancies, ads, noise, and low-confidence calls.
         if (extraction.classification !== "candidate_cv") continue;

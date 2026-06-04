@@ -47,6 +47,13 @@ const envSchema = z.object({
   TELEGRAM_MAX_AGE_DAYS: z.coerce.number().int().positive().default(45),
   // Hard cap on messages pulled per channel per run.
   TELEGRAM_PER_CHANNEL_LIMIT: z.coerce.number().int().positive().default(200),
+  // Active sourcing — Telegram BOT intake for company-OWNED CV channels (Phase
+  // 3b, optional). Reuses TELEGRAM_BOT_TOKEN above (the bot must be an admin of
+  // each company's registered channel). The bot ingests posts into the
+  // telegram_posts staging table; the funnel reads candidates from there with NO
+  // MTProto session. This is the freshness horizon for BOTH the search window
+  // and the nightly TTL purge — "won't surface anyone older than ~3 months".
+  TELEGRAM_INTAKE_RETENTION_DAYS: z.coerce.number().int().positive().default(90),
   // Click billing — placeholders allowed in dev. instrumentation.ts logs a
   // WARN when the merchant_id is left as the placeholder string in production.
   CLICK_MERCHANT_ID: z.string().min(1).default("CHANGE_ME_CLICK_MERCHANT_ID"),
