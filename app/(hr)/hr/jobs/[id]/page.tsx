@@ -32,6 +32,7 @@ import {
 import { JobDetailTabs } from "@/components/hr/job-detail-tabs";
 import { StatusToggleButton } from "@/components/hr/status-toggle-button";
 import { FindCandidatesButton } from "@/components/hr/sourcing/find-candidates-button";
+import { availableSourcesForCompany } from "@/lib/sourcing/availability";
 import { ShareButtons } from "@/components/hr/share-buttons";
 import { JobDescription } from "@/components/candidate/job-description";
 import { getLocale, t } from "@/lib/i18n";
@@ -64,6 +65,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   if (!job) notFound();
 
   const writable = await canWriteQuota(companyId);
+  const availableSources = await availableSourcesForCompany(companyId);
   const publicUrl = `${env.APP_URL}/apply/${job.public_token}`;
   const requirements = (job.hard_requirements ?? []) as HardRequirement[];
 
@@ -570,7 +572,12 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               {t("sourcing.runs.nav_label", locale)}
             </TezButton>
           </Link>
-          <FindCandidatesButton jobId={id} variant="secondary" disabled={!writable} />
+          <FindCandidatesButton
+            jobId={id}
+            variant="secondary"
+            disabled={!writable}
+            availableSources={availableSources}
+          />
           <Link href={`/hr/jobs/${id}/applicants`}>
             <TezButton
               variant="primary"

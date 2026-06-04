@@ -22,6 +22,17 @@ export type HhConnectionScope =
   | { kind: "company"; companyId: string; row: CompanyConnection }
   | { kind: "platform"; row: PlatformConnection | null };
 
+/**
+ * Per-run hh.uz query overrides, injected where the company connector is built
+ * (an hh-only concern — the funnel and other connectors never see these).
+ */
+export interface HhConnectorOverrides {
+  /** user free-text query; replaces the AI-derived query when non-empty. */
+  text?: string;
+  /** user area id; `null` ⇒ all areas; absent (`undefined`) ⇒ env HH_AREA_ID. */
+  areaId?: string | null;
+}
+
 export interface HhConnectionHealth {
   configured: boolean;
   scope: "company" | "platform" | "none";
@@ -98,6 +109,12 @@ function hasBaseConfig(): boolean {
   return Boolean(env.HH_CLIENT_ID && env.HH_CLIENT_SECRET);
 }
 
+/** Whether the platform has hh OAuth app credentials (client id + secret) set —
+ *  the precondition for the in-app Connect flow to work at all. */
+export function isHhConfigured(): boolean {
+  return hasBaseConfig();
+}
+
 async function persistToken(admin: AdminClient, scope: HhConnectionScope, token: HhPersistedTokenState): Promise<void> {
   const accessName =
     scope.kind === "company" ? companySecretName(scope.companyId, "access") : PLATFORM_ACCESS_SECRET;
@@ -157,11 +174,19 @@ export async function hhAvailableForCompany(companyId: string): Promise<boolean>
   return (await resolveScope(admin, companyId)) != null;
 }
 
-export async function createHhConnectorForCompany(companyId: string): Promise<SourceConnector | null> {
+export async function createHhConnectorForCompany(
+  companyId: string,
+  overrides?: HhConnectorOverrides,
+): Promise<SourceConnector | null> {
   if (!hasBaseConfig()) return null;
   const admin = createAdminClient();
   const scope = await resolveScope(admin, companyId);
   if (!scope) return null;
+
+  // areaId precedence: explicit override (incl. `null` ⇒ all areas) wins;
+  // absent override falls back to the platform default env HH_AREA_ID.
+  const areaId =
+    overrides?.areaId !== undefined ? (overrides.areaId ?? undefined) : env.HH_AREA_ID;
 
   const refreshToken =
     scope.kind === "company"
@@ -186,7 +211,7 @@ export async function createHhConnectorForCompany(companyId: string): Promise<So
     tokenUrl: env.HH_TOKEN_URL,
     userAgent: env.HH_USER_AGENT,
     host: env.HH_HOST,
-    areaId: env.HH_AREA_ID,
+    areaId,
     onToken: (token) => persistToken(admin, scope, token),
   });
 
@@ -200,6 +225,7 @@ export async function createHhConnectorForCompany(companyId: string): Promise<So
       }
     },
     isConfigured: () => true,
+    textOverride: overrides?.text,
   });
 }
 

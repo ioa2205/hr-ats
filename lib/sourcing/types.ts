@@ -236,3 +236,20 @@ export function emptyStats(): SourcingStats {
     degraded_details: [],
   };
 }
+
+// ===================================================================
+// Per-run user overrides (persisted to sourcing_searches.search_overrides)
+// ===================================================================
+
+/**
+ * Optional, hh.uz-specific overrides a user can set per run. The on/off source
+ * set lives in `sourcing_searches.sources` (not here). `null`/absent fields ⇒
+ * zero-config defaults: keywords derive from the frozen
+ * requirement_profile.search_keywords; area falls back to env HH_AREA_ID.
+ */
+export interface SearchOverrides {
+  /** free-text hh.uz keywords; replaces the AI-derived search query when set. */
+  keywords?: string[];
+  /** hh.uz area id (digits per hh `/areas`); null ⇒ all areas. */
+  area_id?: string | null;
+}

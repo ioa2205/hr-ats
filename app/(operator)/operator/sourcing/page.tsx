@@ -55,6 +55,13 @@ const statusKey: Record<SourcingStatus, TranslationKey> = {
   failed: "sourcing.results.status.failed",
 };
 
+const sourceKey: Record<SourceKind, TranslationKey> = {
+  internal_pool: "sourcing.results.source.internal_pool",
+  hh: "sourcing.results.source.hh",
+  telegram: "sourcing.results.source.telegram",
+  linkedin_url: "sourcing.results.source.linkedin_url",
+};
+
 function num(value: number | string | null | undefined): number {
   if (value == null) return 0;
   const n = typeof value === "string" ? Number(value) : value;
@@ -178,6 +185,7 @@ export default function OperatorSourcingPage() {
               <TableHead>{t("operator.processing.col.time")}</TableHead>
               <TableHead>{t("operator.processing.col.company")}</TableHead>
               <TableHead>{t("operator.processing.col.job")}</TableHead>
+              <TableHead>{t("operator.sourcing.col.sources")}</TableHead>
               <TableHead>{t("operator.processing.col.status")}</TableHead>
               <TableHead>{t("operator.sourcing.col.funnel")}</TableHead>
               <TableHead>{t("operator.processing.col.tokens")}</TableHead>
@@ -204,6 +212,9 @@ export default function OperatorSourcingPage() {
                 </TableCell>
                 <TableCell className="max-w-[160px] truncate">
                   {row.job_posting?.title ?? "—"}
+                </TableCell>
+                <TableCell className="max-w-[140px] truncate text-xs">
+                  {(row.sources ?? []).map((s) => t(sourceKey[s])).join(", ") || "—"}
                 </TableCell>
                 <TableCell>
                   <Badge tone={statusToneMap[row.status]} size="sm">

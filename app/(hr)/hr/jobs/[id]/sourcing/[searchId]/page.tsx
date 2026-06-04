@@ -15,12 +15,17 @@ import {
   SourcedCandidateCard,
   type SourcedCandidateCardProps,
 } from "@/components/hr/sourcing/sourced-candidate-card";
+import { availableSourcesForCompany } from "@/lib/sourcing/availability";
+import { buildQueryText, joinKeywords } from "@/lib/sourcing/connectors/hh/connector";
+import { hhAreaName } from "@/lib/sourcing/connectors/hh/areas";
 import type { TranslationKey } from "@/lib/i18n/types";
 import type { HardRequirement } from "@/types";
 import type {
   DeepScore,
   NormalizedProfile,
+  RequirementProfile,
   RequirementResult,
+  SearchOverrides,
   SourceKind,
   SourcingStats,
   SourcingStatus,
@@ -113,6 +118,36 @@ export default async function SourcingResultsPage({
   const showFunnel = !isRunning && (stats.fetched ?? 0) > 0;
   const degradedSources = stats.degraded_sources ?? [];
   const hasHhDegraded = degradedSources.includes("hh");
+
+  // --- "Search configuration" panel: what was searched + with what terms -----
+  // search_overrides is a post-Docker column absent from the generated types.
+  const overrides = ((search as { search_overrides?: unknown }).search_overrides ??
+    null) as SearchOverrides | null;
+  const profile = (search.requirement_profile ?? null) as RequirementProfile | null;
+  const searchedSources = (search.sources ?? []) as SourceKind[];
+  const perSource = stats.per_source ?? {};
+  const degradedBySource = new Map(
+    (stats.degraded_details ?? []).map((d) => [d.source, d]),
+  );
+  const aiKeywords = profile?.search_keywords ?? [];
+  const overrodeKeywords = (overrides?.keywords?.length ?? 0) > 0;
+  // The exact hh `text` query that ran (override wins, else the AI-derived query).
+  const hhQuery = overrodeKeywords
+    ? joinKeywords(overrides!.keywords!)
+    : profile
+      ? buildQueryText(profile)
+      : "";
+  const hhRegionLabel =
+    overrides?.area_id === undefined
+      ? t("sourcing.config.region_default", locale)
+      : overrides.area_id === null
+        ? t("sourcing.config.region_all", locale)
+        : (hhAreaName(overrides.area_id) ?? overrides.area_id);
+  const showHhConfig = searchedSources.includes("hh");
+
+  // Re-run dialog defaults — pre-fill from this run so "Adjust & re-run" is sticky.
+  const availableSources = await availableSourcesForCompany(companyId);
+  const rerunKeywords = overrides?.keywords ?? aiKeywords;
 
   const cards: SourcedCandidateCardProps[] = (rows ?? []).map((row) => {
     const profile = (row.profile ?? {}) as NormalizedProfile;
@@ -208,6 +243,10 @@ export default async function SourcingResultsPage({
             jobId={jobId}
             variant="secondary"
             label={t("sourcing.results.rerun", locale)}
+            availableSources={availableSources}
+            defaultSources={searchedSources}
+            defaultKeywords={rerunKeywords}
+            defaultAreaId={overrides?.area_id}
           />
         </div>
       </div>
@@ -222,6 +261,81 @@ export default async function SourcingResultsPage({
           />
         ))}
       </div>
+
+      {/* Search configuration — which sources ran and with what terms. Built
+          purely from persisted data; honest about per-source counts + failures. */}
+      {searchedSources.length > 0 && (
+        <Panel className="mb-5">
+          <PanelHeader>
+            <PanelTitle>{t("sourcing.config.searched_title", locale)}</PanelTitle>
+          </PanelHeader>
+          <div className="space-y-3 px-5 py-3.5">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-ink-4 mr-1 text-[11.5px]">
+                {t("sourcing.config.sources_label", locale)}:
+              </span>
+              {searchedSources.map((src) => {
+                const degraded = degradedBySource.get(src);
+                const count = perSource[src];
+                return (
+                  <span
+                    key={src}
+                    className={`inline-flex items-center gap-1.5 rounded-[4px] border px-2 py-0.5 text-[11.5px] ${
+                      degraded
+                        ? "border-red-200 bg-red-50 text-red-600"
+                        : "border-rule bg-bone text-ink-3"
+                    }`}
+                  >
+                    {t(SOURCE_KEY[src], locale)}
+                    {degraded ? (
+                      <span className="text-[11px]">
+                        {[degraded.status, degraded.code].filter(Boolean).join(" ") ||
+                          t("sourcing.config.source_failed", locale)}
+                      </span>
+                    ) : (
+                      <span
+                        className="text-ink-5"
+                        style={{ fontFamily: "var(--font-tez-mono)" }}
+                      >
+                        {count ?? 0}
+                      </span>
+                    )}
+                  </span>
+                );
+              })}
+            </div>
+
+            {showHhConfig && (
+              <div className="space-y-1.5 text-[12px]">
+                <div className="flex flex-wrap items-baseline gap-1.5">
+                  <span className="text-ink-4 text-[11.5px]">
+                    {t("sourcing.config.keywords_used", locale)}:
+                  </span>
+                  <span className="text-ink-2" style={{ fontFamily: "var(--font-tez-mono)" }}>
+                    {hhQuery || "—"}
+                  </span>
+                  <span className="text-ink-5 text-[11px]">
+                    {overrodeKeywords
+                      ? t("sourcing.config.tag_yours", locale)
+                      : t("sourcing.config.tag_ai", locale)}
+                  </span>
+                </div>
+                {overrodeKeywords && aiKeywords.length > 0 && (
+                  <div className="text-ink-5 text-[11px]">
+                    {t("sourcing.config.ai_suggested", locale)}: {joinKeywords(aiKeywords)}
+                  </div>
+                )}
+                <div className="flex flex-wrap items-baseline gap-1.5">
+                  <span className="text-ink-4 text-[11.5px]">
+                    {t("sourcing.config.region_label", locale)}:
+                  </span>
+                  <span className="text-ink-2">{hhRegionLabel}</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </Panel>
+      )}
 
       {/* Funnel breakdown — honest, derived purely from the stage counts: how
           many candidates were excluded at each rung and why. No fabrication. */}

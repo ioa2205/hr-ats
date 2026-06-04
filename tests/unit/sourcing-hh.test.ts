@@ -1,7 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { HhResumeSearchSchema, HhResumeItemSchema } from "@/lib/sourcing/connectors/hh/schema";
 import { normalizeHhResume } from "@/lib/sourcing/connectors/hh/normalize";
-import { buildQueryText, createHhConnector } from "@/lib/sourcing/connectors/hh/connector";
+import { buildQueryText, joinKeywords, createHhConnector } from "@/lib/sourcing/connectors/hh/connector";
+import { hhAreaName, HH_UZBEKISTAN_AREA_ID } from "@/lib/sourcing/connectors/hh/areas";
 import { HhClient, HhAuthError, HhRequestError } from "@/lib/sourcing/connectors/hh/client";
 import type { HhResumeSearch } from "@/lib/sourcing/connectors/hh/schema";
 import type { RequirementProfile, FetchBudget } from "@/lib/sourcing/types";
@@ -113,6 +114,29 @@ describe("buildQueryText", () => {
   });
 });
 
+describe("joinKeywords (user keyword override → hh text)", () => {
+  it("trims, de-duplicates case-insensitively, and space-joins", () => {
+    expect(joinKeywords(["React", "react", " frontend ", ""])).toBe("React frontend");
+  });
+
+  it("returns an empty string for an all-blank list", () => {
+    expect(joinKeywords(["", "   "])).toBe("");
+  });
+});
+
+describe("hh region catalog", () => {
+  it("resolves a curated area id to its hh name", () => {
+    expect(hhAreaName("2759")).toBe("Ташкент");
+    expect(hhAreaName(HH_UZBEKISTAN_AREA_ID)).toBe("Узбекистан");
+  });
+
+  it("returns null for all-regions (null/undefined) and unknown ids", () => {
+    expect(hhAreaName(null)).toBeNull();
+    expect(hhAreaName(undefined)).toBeNull();
+    expect(hhAreaName("99999")).toBeNull();
+  });
+});
+
 describe("createHhConnector.fetch — pagination + budget", () => {
   function pageOf(ids: string[], pages: number): HhResumeSearch {
     return { items: ids.map((id) => ({ id })), pages, page: 0, per_page: 2, found: pages * 2 };
@@ -154,6 +178,36 @@ describe("createHhConnector.fetch — pagination + budget", () => {
     for await (const r of connector.fetch(profile(), BUDGET)) out.push(r);
     expect(out).toHaveLength(1);
     expect(search).toHaveBeenCalledTimes(1);
+  });
+
+  it("queries the user's textOverride verbatim, ignoring profile keywords", async () => {
+    const search = vi.fn().mockResolvedValueOnce(pageOf(["a"], 0));
+    const connector = createHhConnector({
+      search,
+      isConfigured: () => true,
+      perPage: 2,
+      textOverride: "react frontend",
+    });
+    const out = [];
+    for await (const r of connector.fetch(profile({ search_keywords: ["driver"] }), BUDGET)) {
+      out.push(r);
+    }
+    expect(search).toHaveBeenCalledWith(expect.objectContaining({ text: "react frontend" }));
+  });
+
+  it("falls back to the profile query when textOverride is blank", async () => {
+    const search = vi.fn().mockResolvedValueOnce(pageOf(["a"], 0));
+    const connector = createHhConnector({
+      search,
+      isConfigured: () => true,
+      perPage: 2,
+      textOverride: "   ",
+    });
+    const out = [];
+    for await (const r of connector.fetch(profile({ search_keywords: ["driver"] }), BUDGET)) {
+      out.push(r);
+    }
+    expect(search).toHaveBeenCalledWith(expect.objectContaining({ text: "driver" }));
   });
 });
 

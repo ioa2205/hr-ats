@@ -1,5 +1,6 @@
 import { NextResponse, after, type NextRequest } from "next/server";
 import { revalidatePath } from "next/cache";
+import { z } from "zod/v4";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireCompanyAccessApi } from "@/lib/auth/guards";
 import {
@@ -9,27 +10,51 @@ import {
   SOURCING_UNITS_PER_SEARCH,
 } from "@/lib/companies/quota";
 import { runSourcingSearch } from "@/lib/sourcing/run";
-import { hhAvailableForCompany } from "@/lib/sourcing/connectors/hh";
-import {
-  telegramBotIntakeConfigured,
-  telegramConfiguredFromEnv,
-} from "@/lib/sourcing/connectors/telegram";
-import type { SourceKind } from "@/lib/sourcing/types";
+import { availableSourcesForCompany } from "@/lib/sourcing/availability";
+import type { SearchOverrides, SourceKind } from "@/lib/sourcing/types";
+import type { Database, Json } from "@/types/supabase";
 import { logger } from "@/lib/logger";
 
 export const runtime = "nodejs";
+
+// Sources a user may toggle from the config dialog. `linkedin_url` is a schema
+// placeholder, never user-selectable.
+const SELECTABLE_SOURCES = ["internal_pool", "hh", "telegram"] as const;
+
+// Optional config from the "Find candidates" / "Adjust & re-run" dialog. A bare
+// POST with no body (the original one-click flow) parses to {} ⇒ all-defaults.
+const bodySchema = z
+  .object({
+    sources: z.array(z.enum(SELECTABLE_SOURCES)).min(1).optional(),
+    keywords: z.array(z.string().trim().min(1)).max(20).optional(),
+    // hh.uz area id (digits per hh `/areas`); null ⇒ all areas; absent ⇒ default.
+    areaId: z.string().trim().max(20).nullable().optional(),
+  })
+  .strict();
+
+type SourcingSearchInsert = Database["public"]["Tables"]["sourcing_searches"]["Insert"] & {
+  // search_overrides is a post-Docker column absent from the generated types.
+  search_overrides?: Json | null;
+};
 
 // POST /api/hr/jobs/[id]/source — "Find candidates". Recruiter+ (any member
 // with write access). Consumes a sourcing unit atomically, enqueues a queued
 // search (the partial unique index blocks a second in-flight run per posting),
 // kicks the background worker after the response, and returns immediately.
-export async function POST(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: jobPostingId } = await params;
     const access = await requireCompanyAccessApi({ requireWrite: true });
     if (!access.ok) {
       return NextResponse.json({ error: access.error }, { status: access.status });
     }
+
+    // Optional dialog config. A bodyless POST (original one-click) ⇒ {} ⇒ defaults.
+    const parsed = bodySchema.safeParse(await request.json().catch(() => ({})));
+    if (!parsed.success) {
+      return NextResponse.json({ error: "invalid_body" }, { status: 400 });
+    }
+    const { sources: requestedSources, keywords, areaId } = parsed.data;
 
     const admin = createAdminClient();
 
@@ -42,6 +67,28 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
     if (!job || job.company_id !== access.companyId) {
       return NextResponse.json({ error: "not_found" }, { status: 404 });
     }
+
+    // Availability is the ceiling; intersect with the user's selection so a user
+    // can never enable a source that isn't actually configured. Computed BEFORE
+    // quota consumption so a bad selection never burns a unit.
+    const available = await availableSourcesForCompany(access.companyId);
+
+    const sources: SourceKind[] = requestedSources
+      ? available.filter((kind) => requestedSources.includes(kind as (typeof SELECTABLE_SOURCES)[number]))
+      : available;
+    if (sources.length === 0) {
+      return NextResponse.json({ error: "no_sources_selected" }, { status: 400 });
+    }
+
+    // hh.uz-only knobs. Persisted only when the user actually set one — a null
+    // row keeps today's zero-config behavior.
+    const overrides: SearchOverrides | null =
+      keywords?.length || areaId !== undefined
+        ? {
+            ...(keywords?.length ? { keywords } : {}),
+            ...(areaId !== undefined ? { area_id: areaId } : {}),
+          }
+        : null;
 
     // Advisory pre-check for a friendly message (authoritative gate is below).
     const advisory = await canSource(access.companyId);
@@ -57,24 +104,21 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
       return NextResponse.json({ error: quota.reason }, { status });
     }
 
-    // Record the sources that will actually run (the worker builds connectors
-    // from the same company-aware signal).
-    const sources: SourceKind[] = ["internal_pool"];
-    if (await hhAvailableForCompany(access.companyId)) sources.push("hh");
-    // telegram covers BOTH the MTProto (public) and bot-intake (owned) paths.
-    if (telegramConfiguredFromEnv() || telegramBotIntakeConfigured()) sources.push("telegram");
-
     // Enqueue. The partial unique index (job_posting_id where status in
     // queued/running) rejects a second in-flight run with code 23505.
+    const insertRow: SourcingSearchInsert = {
+      company_id: access.companyId,
+      job_posting_id: jobPostingId,
+      requested_by: access.user.id,
+      status: "queued",
+      sources,
+      // Only reference the (post-Docker) column when there's an override, so the
+      // zero-config flow keeps working even if code ships before the migration.
+      ...(overrides ? { search_overrides: overrides as unknown as Json } : {}),
+    };
     const { data: search, error: insErr } = await admin
       .from("sourcing_searches")
-      .insert({
-        company_id: access.companyId,
-        job_posting_id: jobPostingId,
-        requested_by: access.user.id,
-        status: "queued",
-        sources,
-      })
+      .insert(insertRow)
       .select("id")
       .single();
 
@@ -95,7 +139,7 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
       action: "sourcing.search.created",
       entity_type: "sourcing_search",
       entity_id: search.id,
-      metadata: { job_posting_id: jobPostingId, title: job.title },
+      metadata: { job_posting_id: jobPostingId, title: job.title, sources, has_overrides: overrides != null },
     });
 
     // Immediate background kick (the pickup cron is the backstop).

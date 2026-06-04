@@ -10,6 +10,7 @@ import { pickLocalized } from "@/lib/i18n/pick-localized";
 import { Panel, PanelHeader, PanelTitle } from "@/components/hr/design";
 import { FindCandidatesButton } from "@/components/hr/sourcing/find-candidates-button";
 import { SourcingAutoRefresh } from "@/components/hr/sourcing/sourcing-auto-refresh";
+import { availableSourcesForCompany } from "@/lib/sourcing/availability";
 import type { TranslationKey } from "@/lib/i18n/types";
 import type { SourcingStats, SourcingStatus } from "@/lib/sourcing/types";
 
@@ -59,6 +60,7 @@ export default async function SourcingRunsPage({ params }: { params: Promise<{ i
 
   const rows = runs ?? [];
   const hasInflight = rows.some((r) => r.status === "queued" || r.status === "running");
+  const availableSources = await availableSourcesForCompany(companyId);
 
   return (
     <div>
@@ -92,6 +94,7 @@ export default async function SourcingRunsPage({ params }: { params: Promise<{ i
             jobId={jobId}
             variant="primary"
             label={t("sourcing.runs.new", locale)}
+            availableSources={availableSources}
           />
         </div>
       </div>

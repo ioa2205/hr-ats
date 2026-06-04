@@ -5,6 +5,8 @@ import { requireCompanyAccess } from "@/lib/auth/guards";
 import { getLocale, t } from "@/lib/i18n";
 import { SettingsHeader } from "@/components/hr/design";
 import { CompanyClient } from "@/components/hr/settings/company/company-client";
+import { HhConnectionCard } from "@/components/hr/settings/hh-connection-card";
+import { isHhConfigured } from "@/lib/sourcing/connectors/hh";
 import type { Locale } from "@/lib/i18n/types";
 
 export default async function CompanySettingsPage() {
@@ -57,6 +59,10 @@ export default async function CompanySettingsPage() {
         }}
         admins={admins}
         owners={owners}
+      />
+      <HhConnectionCard
+        canConnect={role === "owner" || role === "admin"}
+        hhConfigured={isHhConfigured()}
       />
     </section>
   );

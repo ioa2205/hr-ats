@@ -7,5 +7,6 @@ export {
   createHhConnectorForCompany,
   disconnectCompanyHh,
   hhAvailableForCompany,
+  isHhConfigured,
   saveCompanyHhConnection,
 } from "./connection";

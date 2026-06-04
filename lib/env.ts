@@ -72,7 +72,15 @@ const envSchema = z.object({
 type Env = z.infer<typeof envSchema>;
 
 function parseEnv(): Env {
-  const result = envSchema.safeParse(process.env);
+  // Treat a blank var (`KEY=` with no value) as unset. `.env.local.example`
+  // ships optional integrations (hh, telegram, …) as empty placeholders and
+  // documents that leaving them blank disables the feature — so an empty string
+  // must read as "absent", not as a zero-length value that trips `.min(1)`.
+  const raw: Record<string, string | undefined> = {};
+  for (const [key, value] of Object.entries(process.env)) {
+    raw[key] = value === "" ? undefined : value;
+  }
+  const result = envSchema.safeParse(raw);
 
   if (!result.success) {
     const formatted = z.prettifyError(result.error);

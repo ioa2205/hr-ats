@@ -22,6 +22,7 @@ import {
   type PoolCandidateRow,
 } from "./connectors/internal-pool";
 import { createHhConnectorForCompany } from "./connectors/hh";
+import { joinKeywords } from "./connectors/hh/connector";
 import {
   createTelegramConnectorFromEnv,
   createTelegramDbConnector,
@@ -31,7 +32,13 @@ import {
 import type { LoadTelegramPosts } from "./connectors/telegram/db-reader";
 import { normalizePhone } from "./identity";
 import type { PostingSeed } from "./requirement-profile";
-import type { FetchBudget, RequirementProfile, SourceConnector } from "./types";
+import type {
+  FetchBudget,
+  RequirementProfile,
+  SearchOverrides,
+  SourceConnector,
+  SourceKind,
+} from "./types";
 import type { HardRequirement } from "@/types";
 import type { Json, Database } from "@/types/supabase";
 import type { Locale } from "@/lib/i18n/types";
@@ -291,23 +298,42 @@ export async function runSourcingSearch(searchId: string): Promise<void> {
       hard_requirements: (posting.hard_requirements ?? []) as HardRequirement[],
     };
 
+    // Per-run user config: the chosen on/off source set (search.sources) and the
+    // hh.uz keyword/area overrides (search.search_overrides). Both are re-read
+    // from the row on every retry, so they survive a crash/re-queue verbatim.
+    // search_overrides is a post-Docker column absent from the generated types.
+    const overrides = ((claimed as { search_overrides?: unknown }).search_overrides ??
+      null) as SearchOverrides | null;
+    const selected = new Set<SourceKind>((claimed.sources ?? []) as SourceKind[]);
+    // Legacy/empty rows (none in practice — the trigger always writes sources)
+    // fall back to "build every available source", the pre-config behavior.
+    const wants = (kind: SourceKind): boolean => selected.size === 0 || selected.has(kind);
+
     const loader = makePoolLoader(admin, claimed.company_id, claimed.job_posting_id);
-    const connectors: SourceConnector[] = [createInternalPoolConnector(loader)];
-    // hh.uz joins when this company has an employer OAuth connection, or when
-    // the platform fallback connection is enabled. A failing connector degrades
-    // the run to `partial` (handled in the funnel) rather than failing it.
-    const hh = await createHhConnectorForCompany(claimed.company_id);
-    if (hh) connectors.push(hh);
+    const connectors: SourceConnector[] = [];
+    if (wants("internal_pool")) connectors.push(createInternalPoolConnector(loader));
+    // hh.uz joins when selected AND this company has an employer OAuth connection
+    // (or the platform fallback is enabled). The user's keyword/area overrides are
+    // injected here. A failing connector degrades the run to `partial` (handled in
+    // the funnel) rather than failing it.
+    if (wants("hh")) {
+      const hh = await createHhConnectorForCompany(claimed.company_id, {
+        text: overrides?.keywords?.length ? joinKeywords(overrides.keywords) : undefined,
+        areaId: overrides?.area_id,
+      });
+      if (hh) connectors.push(hh);
+    }
     // Telegram joins automatically via two independent paths, both suppressing
     // contacts the company already has so a search never re-surfaces a known
     // candidate. The known-contact set is built once and shared:
     //   • MTProto user session  → PUBLIC channels (TELEGRAM_* env creds);
     //   • bot intake (DB reader) → the company's OWNED channels (registered in
     //     telegram_intake_channels, ingested by the bot — no MTProto needed).
-    const mtprotoOn = telegramConfiguredFromEnv();
-    const ownedChannels = telegramBotIntakeConfigured()
-      ? await loadCompanyIntakeChannels(admin, claimed.company_id)
-      : [];
+    const mtprotoOn = wants("telegram") && telegramConfiguredFromEnv();
+    const ownedChannels =
+      wants("telegram") && telegramBotIntakeConfigured()
+        ? await loadCompanyIntakeChannels(admin, claimed.company_id)
+        : [];
     if (mtprotoOn || ownedChannels.length > 0) {
       const isKnownContact = await makeKnownTelegramContacts(admin, claimed.company_id);
       if (mtprotoOn) {
