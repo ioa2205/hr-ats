@@ -36,6 +36,13 @@ export interface DashboardResponse {
     entityId: string | null;
     createdAt: string;
   }>;
+  workers: Array<{
+    worker: string;
+    state: "ok" | "amber" | "red";
+    lastRunAt: string | null;
+    lastError: string | null;
+    consecutiveFailures: number;
+  }>;
 }
 
 /** Proxy price until billing lands. Spec §4.2 calls for an MRR estimate —
@@ -77,6 +84,7 @@ export async function GET(request: NextRequest) {
       activeSubs30dAgoRes,
       trials7dRes,
       conversions7dRes,
+      workersRes,
     ] = await Promise.all([
       admin
         .from("operator_daily_metrics")
@@ -148,6 +156,11 @@ export async function GET(request: NextRequest) {
         .eq("status", "active")
         .not("pro_started_at", "is", null)
         .gte("pro_started_at", sevenDaysAgo),
+
+      admin
+        .from("worker_heartbeats")
+        .select("worker, last_run_at, last_error, consecutive_failures")
+        .order("worker", { ascending: true }),
     ]);
 
     if (tsRes.error) throw tsRes.error;
@@ -224,6 +237,24 @@ export async function GET(request: NextRequest) {
       };
     });
 
+    // Background-worker health (migration 390). red = the last run errored,
+    // amber = stale (these crons run every 1–2 min, so >15 min is overdue).
+    const WORKER_STALE_MS = 15 * 60 * 1000;
+    const nowMs = Date.now();
+    const workers = (workersRes.data ?? []).map((w) => {
+      const lastRunMs = w.last_run_at ? Date.parse(w.last_run_at as string) : 0;
+      const failing = Number(w.consecutive_failures ?? 0) >= 1;
+      const stale = lastRunMs > 0 && nowMs - lastRunMs > WORKER_STALE_MS;
+      const state: "ok" | "amber" | "red" = failing ? "red" : stale ? "amber" : "ok";
+      return {
+        worker: w.worker as string,
+        state,
+        lastRunAt: (w.last_run_at as string | null) ?? null,
+        lastError: (w.last_error as string | null) ?? null,
+        consecutiveFailures: Number(w.consecutive_failures ?? 0),
+      };
+    });
+
     const recentActivity = (activityRes.data ?? []).map((r) => ({
       id: Number(r.id),
       action: r.action as string,
@@ -252,6 +283,7 @@ export async function GET(request: NextRequest) {
       timeseries,
       topMovers: { growing, atRisk },
       recentActivity,
+      workers,
     };
 
     return NextResponse.json(body, { headers: { "cache-control": "no-store" } });

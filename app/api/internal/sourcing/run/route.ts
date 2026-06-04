@@ -1,8 +1,10 @@
 import { NextResponse, after, type NextRequest } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { z } from "zod/v4";
 import { env } from "@/lib/env";
 import { logger } from "@/lib/logger";
 import { runSourcingSearch } from "@/lib/sourcing/run";
+import { recordWorkerHeartbeat, WORKER } from "@/lib/observability/heartbeat";
 
 // Background worker route. Invoked by the pickup / stuck-run pg_cron job and by
 // the trigger's immediate kick. Authenticated with the service-role key (the
@@ -32,8 +34,11 @@ export async function POST(request: NextRequest) {
   after(async () => {
     try {
       await runSourcingSearch(searchId);
+      await recordWorkerHeartbeat(WORKER.sourcingRun, true);
     } catch (err) {
       logger.error({ err: String(err), searchId }, "[sourcing] worker after() crashed");
+      Sentry.captureException(err, { tags: { worker: WORKER.sourcingRun }, extra: { searchId } });
+      await recordWorkerHeartbeat(WORKER.sourcingRun, false, String(err));
     }
   });
 

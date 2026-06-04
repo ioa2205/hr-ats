@@ -11,6 +11,7 @@ import {
   DollarSign,
   Flame,
   RefreshCw,
+  Server,
   TrendingUp,
   Users,
 } from "lucide-react";
@@ -46,6 +47,13 @@ export interface DashboardData {
     entityType: string | null;
     entityId: string | null;
     createdAt: string;
+  }>;
+  workers: Array<{
+    worker: string;
+    state: "ok" | "amber" | "red";
+    lastRunAt: string | null;
+    lastError: string | null;
+    consecutiveFailures: number;
   }>;
 }
 
@@ -131,6 +139,9 @@ export function DashboardView({ initial }: { initial: DashboardData }) {
 
       {/* Health strip */}
       <HealthStrip health={data.health} t={t} />
+
+      {/* Background workers */}
+      <WorkersCard workers={data.workers} t={t} />
 
       {/* Time-series cards */}
       <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -486,6 +497,80 @@ function TopMoversCard({
         </ul>
       )}
     </div>
+  );
+}
+
+const WORKER_NAME_KEY: Record<string, TranslationKey> = {
+  "sourcing-run": "operator.dashboard.workers.name_sourcing",
+  "telegram-ingest": "operator.dashboard.workers.name_telegram",
+  "notification-retry": "operator.dashboard.workers.name_notifications",
+};
+
+function compactAgo(iso: string | null): string {
+  if (!iso) return "";
+  const sec = Math.max(0, Math.floor((Date.now() - Date.parse(iso)) / 1000));
+  if (sec < 60) return `${sec}s`;
+  if (sec < 3600) return `${Math.floor(sec / 60)}m`;
+  if (sec < 86400) return `${Math.floor(sec / 3600)}h`;
+  return `${Math.floor(sec / 86400)}d`;
+}
+
+function WorkersCard({
+  workers,
+  t,
+}: {
+  workers: DashboardData["workers"];
+  t: (k: TranslationKey, vars?: Record<string, string>) => string;
+}) {
+  return (
+    <section className="rounded-[var(--radius-md)] border border-[var(--color-rule-2)] bg-[var(--color-paper)]">
+      <div className="flex items-center gap-1.5 border-b border-[var(--color-rule-2)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-ink-4)]">
+        <Server className="h-3.5 w-3.5 text-[var(--color-ink-5)]" />
+        <span>{t("operator.dashboard.workers.title")}</span>
+      </div>
+      {workers.length === 0 ? (
+        <p className="p-6 text-center text-[12px] text-[var(--color-ink-4)]">
+          {t("operator.dashboard.workers.empty")}
+        </p>
+      ) : (
+        <ul className="divide-y divide-[var(--color-rule)]">
+          {workers.map((w) => {
+            const dot =
+              w.state === "red"
+                ? "bg-[var(--color-tez-red)]"
+                : w.state === "amber"
+                  ? "bg-[var(--color-tez-amber)]"
+                  : "bg-[var(--color-tez-green)]";
+            const nameKey = WORKER_NAME_KEY[w.worker];
+            return (
+              <li
+                key={w.worker}
+                className="grid grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-2.5 text-[12px]"
+              >
+                <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
+                <div className="flex min-w-0 flex-col">
+                  <span className="truncate font-medium text-[var(--color-ink)]">
+                    {nameKey ? t(nameKey) : w.worker}
+                  </span>
+                  {w.consecutiveFailures > 0 && w.lastError && (
+                    <span className="font-[var(--font-tez-mono)] truncate text-[10px] text-[var(--color-tez-red)]">
+                      {t("operator.dashboard.workers.failures", {
+                        n: String(w.consecutiveFailures),
+                      })}
+                    </span>
+                  )}
+                </div>
+                <span className="nums whitespace-nowrap text-[11px] text-[var(--color-ink-4)]">
+                  {w.lastRunAt
+                    ? t("operator.dashboard.workers.ran_ago", { ago: compactAgo(w.lastRunAt) })
+                    : t("operator.dashboard.workers.never")}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
   );
 }
 

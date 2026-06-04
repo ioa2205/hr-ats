@@ -2,7 +2,7 @@ import { NextResponse, after } from "next/server";
 import type { NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { rateLimit } from "@/lib/rate-limit";
-import { incrementCvQuota } from "@/lib/companies/quota";
+import { incrementCvQuota, refundCvQuota } from "@/lib/companies/quota";
 import { dispatchNotification } from "@/lib/notifications/dispatch";
 import { logger } from "@/lib/logger";
 import { validatePdfBuffer } from "@/lib/pdf/validate";
@@ -249,6 +249,9 @@ export async function POST(req: NextRequest) {
     });
 
     if (insertError) {
+      // The slot was reserved (step 11b) but no candidate row exists — refund it
+      // so a transient insert failure doesn't permanently burn a trial CV slot.
+      await refundCvQuota(posting.company_id);
       logger.error({ context: "apply", err: insertError, ip }, "Candidate insert failed");
       return NextResponse.json({ error: "insert_failed" }, { status: 500 });
     }

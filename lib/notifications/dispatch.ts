@@ -179,6 +179,7 @@ export async function dispatchNotification(input: DispatchInput): Promise<void> 
         recipient_email: profile.email,
         event: input.event,
         subject: rendered.subject,
+        body_html: rendered.html,
         status: "queued",
         next_retry_at: retryAt.toISOString(),
       });
@@ -194,6 +195,7 @@ export async function dispatchNotification(input: DispatchInput): Promise<void> 
         recipient_email: profile.email,
         event: input.event,
         subject: rendered.subject,
+        body_html: rendered.html,
         status: "sending",
         attempts: 1,
       })

@@ -145,6 +145,20 @@ export async function incrementCvQuota(companyId: string): Promise<boolean> {
   return data === true;
 }
 
+/**
+ * Refund a CV analysis slot reserved by incrementCvQuota when the work it was
+ * reserved for never lands (e.g. the candidate insert fails after the slot was
+ * consumed). Idempotent + trial-only via the refund_cv_quota RPC (migration
+ * 031); best-effort — a refund failure is logged, never thrown.
+ */
+export async function refundCvQuota(companyId: string): Promise<void> {
+  const admin = createAdminClient();
+  const { error } = await admin.rpc("refund_cv_quota", { p_company_id: companyId });
+  if (error) {
+    logger.error({ err: error, companyId }, "[quota] refund cv quota rpc failed");
+  }
+}
+
 /** Per-search metering: one unit consumed per "Find candidates" run. */
 export const SOURCING_UNITS_PER_SEARCH = 1;
 

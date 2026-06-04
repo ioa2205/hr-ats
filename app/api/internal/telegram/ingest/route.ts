@@ -1,7 +1,9 @@
 import { NextResponse, after, type NextRequest } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { env } from "@/lib/env";
 import { logger } from "@/lib/logger";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { recordWorkerHeartbeat, WORKER } from "@/lib/observability/heartbeat";
 import {
   runTelegramIngest,
   type IntakeChannel,
@@ -99,8 +101,11 @@ export async function POST(request: NextRequest) {
         logger,
       });
       logger.info({ ...summary }, "[sourcing] telegram bot ingest complete");
+      await recordWorkerHeartbeat(WORKER.telegramIngest, true);
     } catch (err) {
       logger.error({ err: String(err) }, "[sourcing] telegram bot ingest crashed");
+      Sentry.captureException(err, { tags: { worker: WORKER.telegramIngest } });
+      await recordWorkerHeartbeat(WORKER.telegramIngest, false, String(err));
     }
   });
 
