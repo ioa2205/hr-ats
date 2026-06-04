@@ -9,6 +9,7 @@ import { getLocale, t } from "@/lib/i18n";
 import { pickLocalized } from "@/lib/i18n/pick-localized";
 import { Panel, PanelHeader, PanelTitle, StatTile } from "@/components/hr/design";
 import { funnelDrops, type FunnelDrop } from "@/lib/sourcing/summary";
+import { safeHttpUrl } from "@/lib/utils";
 import { FindCandidatesButton } from "@/components/hr/sourcing/find-candidates-button";
 import { SourcingAutoRefresh } from "@/components/hr/sourcing/sourcing-auto-refresh";
 import {
@@ -23,9 +24,10 @@ import type { HardRequirement } from "@/types";
 import type {
   DeepScore,
   NormalizedProfile,
-  RequirementProfile,
   RequirementResult,
+  RequirementProfile,
   SearchOverrides,
+  SourcedContact,
   SourceKind,
   SourcingStats,
   SourcingStatus,
@@ -153,12 +155,16 @@ export default async function SourcingResultsPage({
     const profile = (row.profile ?? {}) as NormalizedProfile;
     const reqResults = (row.requirement_results ?? []) as RequirementResult[];
     const breakdown = (row.score_breakdown ?? null) as DeepScore | null;
+    const contact = (row.contact ?? {}) as Partial<SourcedContact>;
     return {
       sourcedId: row.id,
       rank: row.rank ?? 0,
       fullName: profile.full_name ?? "—",
       headline: profile.headline ?? null,
       sourceLabel: t(SOURCE_KEY[row.source as SourceKind], locale),
+      profileUrl: safeHttpUrl(contact.profile_url),
+      phone: contact.phone ?? null,
+      telegram: contact.telegram ?? null,
       score: typeof row.score === "number" ? row.score : 0,
       confidence: breakdown?.confidence ?? 0,
       verified: row.verified === true,

@@ -430,6 +430,8 @@ export const ru: Translations = {
   "sourcing.results.not_met": "Не соответствует",
   "sourcing.results.evidence_label": "Доказательство",
   "sourcing.results.view_evidence": "Доказательства",
+  "sourcing.results.open_profile": "Открыть профиль",
+  "sourcing.results.contact_label": "Контакт",
   "sourcing.results.evidence_drawer_title": "Доказательства из источника",
   "sourcing.results.evidence_none": "Доказательство не приведено",
   "sourcing.results.gaps_title": "Пробелы",

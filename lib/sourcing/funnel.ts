@@ -135,6 +135,33 @@ function degradedDetail(source: SourceKind, reason: unknown): SourcingStats["deg
   return { source, status, code, message };
 }
 
+/**
+ * How many per-candidate Gemini calls run at once within a stage. The funnel is
+ * dominated by independent per-candidate calls (gate/score/verify), so bounded
+ * concurrency turns a minutes-long sequential run into seconds without tripping
+ * Gemini rate limits.
+ */
+const JUDGE_CONCURRENCY = 6;
+
+/** Map over items with a fixed worker pool, preserving input order in the output. */
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const out: R[] = new Array(items.length);
+  let cursor = 0;
+  async function worker(): Promise<void> {
+    for (;;) {
+      const i = cursor++;
+      if (i >= items.length) return;
+      out[i] = await fn(items[i], i);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, () => worker()));
+  return out;
+}
+
 export async function runFunnel(input: FunnelInput, deps: FunnelDeps): Promise<FunnelResult> {
   const stats = emptyStats();
   let cost = ZERO_COST;
@@ -144,7 +171,7 @@ export async function runFunnel(input: FunnelInput, deps: FunnelDeps): Promise<F
   let profile = input.frozenProfile;
   if (!profile) {
     const extraction = await deps.extractProfile(input.posting);
-    cost = addUsage(cost, "pro", extraction.usage);
+    cost = addUsage(cost, "flash", extraction.usage);
     profile = buildRequirementProfile(input.posting, extraction.data);
     await deps.onProfileFrozen?.(profile, cost);
   }
@@ -182,116 +209,125 @@ export async function runFunnel(input: FunnelInput, deps: FunnelDeps): Promise<F
   stats.deduped = deduped.length;
   await deps.onProgress?.(stats, cost);
 
-  // --- Stage 3: hard-requirement gate (Flash, fail-closed) --------------
+  // --- Stage 3: hard-requirement gate (Flash, fail-closed, concurrent) --
   interface Gated {
     record: DedupedProfile;
     requirement_results: RequirementResult[];
   }
-  const gated: Gated[] = [];
-  for (const record of deduped) {
-    let gateResult: GateResultsRaw;
+  const gateOutcomes = await mapWithConcurrency(deduped, JUDGE_CONCURRENCY, async (record) => {
     try {
       const call = await deps.runGate(record.profile, requirements);
-      cost = addUsage(cost, "flash", call.usage);
-      gateResult = call.data;
+      return { record, usage: call.usage, data: call.data, ok: true as const };
     } catch (err) {
       // fail-closed: a gate error excludes the candidate, never passes them.
       deps.logger.warn(
         { identity: record.identity_key, err: String(err) },
         "[sourcing] gate call failed; excluding candidate",
       );
-      continue;
+      return { record, ok: false as const };
     }
-    const outcome = evaluateGate(requirements, gateResult.requirements);
+  });
+  const gated: Gated[] = [];
+  for (const r of gateOutcomes) {
+    if (!r.ok) continue;
+    cost = addUsage(cost, "flash", r.usage);
+    const outcome = evaluateGate(requirements, r.data.requirements);
     if (outcome.meets_all_requirements) {
-      gated.push({ record, requirement_results: outcome.results });
+      gated.push({ record: r.record, requirement_results: outcome.results });
     }
   }
   stats.gate_passed = gated.length;
   await deps.onProgress?.(stats, cost);
 
-  // proCalls budget covers score (1 per survivor) + verify (1 per finalist).
-  let proCalls = input.frozenProfile ? 0 : 1; // stage-0 extraction is a Pro call
+  // Judgement-call budget (score + verify), a safety ceiling — not normally hit.
+  const judgeBudget = input.budget.maxProCalls;
+  let judgeUsed = input.frozenProfile ? 0 : 1; // stage-0 extraction call
 
-  // --- Stage 4: deep score (Pro, survivors only) ------------------------
+  // --- Stage 4: deep score (Flash, survivors only, concurrent) ----------
   interface Scored extends Gated {
     score: DeepScore;
   }
-  const scored: Scored[] = [];
-  for (const item of gated) {
-    if (proCalls >= input.budget.maxProCalls) {
-      deps.logger.warn(
-        { scored: scored.length, remaining: gated.length - scored.length },
-        "[sourcing] pro-call budget reached before scoring all survivors",
-      );
-      break;
-    }
+  const toScore = gated.slice(0, Math.max(0, judgeBudget - judgeUsed));
+  if (toScore.length < gated.length) {
+    deps.logger.warn(
+      { scored: toScore.length, remaining: gated.length - toScore.length },
+      "[sourcing] judge budget reached before scoring all survivors",
+    );
+  }
+  const scoreOutcomes = await mapWithConcurrency(toScore, JUDGE_CONCURRENCY, async (item) => {
     try {
-      const call = await deps.runScore(item.record.profile, profile);
-      cost = addUsage(cost, "pro", call.usage);
-      proCalls += 1;
-      scored.push({ ...item, score: computeDeepScore(call.data) });
+      const call = await deps.runScore(item.record.profile, profile as RequirementProfile);
+      return { item, usage: call.usage, data: call.data, ok: true as const };
     } catch (err) {
       deps.logger.warn(
         { identity: item.record.identity_key, err: String(err) },
         "[sourcing] score call failed; excluding candidate",
       );
+      return { item, ok: false as const };
     }
+  });
+  const scored: Scored[] = [];
+  for (const r of scoreOutcomes) {
+    if (!r.ok) continue;
+    cost = addUsage(cost, "flash", r.usage);
+    scored.push({ ...r.item, score: computeDeepScore(r.data) });
   }
+  judgeUsed += toScore.length;
   stats.scored = scored.length;
   await deps.onProgress?.(stats, cost);
 
-  // --- Stage 5: independent verification (Pro, top finalists) -----------
-  // Verify the strongest finalists first so the Pro budget protects the
-  // candidates most likely to be shown.
+  // --- Stage 5: independent verification (Flash, finalists, concurrent) -
+  // Verify the strongest finalists first so the budget protects the candidates
+  // most likely to be shown.
   const byScoreDesc = [...scored].sort((a, b) => b.score.total - a.score.total);
-  const verified: ShortlistEntry[] = [];
-  for (const item of byScoreDesc) {
-    if (proCalls >= input.budget.maxProCalls) {
-      deps.logger.warn(
-        { verified: verified.length },
-        "[sourcing] pro-call budget reached before verifying all finalists",
-      );
-      break;
-    }
-    let verifyResult: VerifyResultRaw;
+  const toVerify = byScoreDesc.slice(0, Math.max(0, judgeBudget - judgeUsed));
+  if (toVerify.length < byScoreDesc.length) {
+    deps.logger.warn(
+      { verifying: toVerify.length, remaining: byScoreDesc.length - toVerify.length },
+      "[sourcing] judge budget reached before verifying all finalists",
+    );
+  }
+  const verifyOutcomes = await mapWithConcurrency(toVerify, JUDGE_CONCURRENCY, async (item) => {
     try {
       const call = await deps.runVerify(item.record.profile, requirements, item.requirement_results);
-      cost = addUsage(cost, "pro", call.usage);
-      proCalls += 1;
-      verifyResult = call.data;
+      return { item, usage: call.usage, data: call.data, ok: true as const };
     } catch (err) {
       // fail-closed: cannot verify ⇒ drop the finalist.
       deps.logger.warn(
         { identity: item.record.identity_key, err: String(err) },
         "[sourcing] verify call failed; dropping finalist",
       );
-      continue;
+      return { item, ok: false as const };
     }
+  });
+  const verified: ShortlistEntry[] = [];
+  for (const r of verifyOutcomes) {
+    if (!r.ok) continue;
+    cost = addUsage(cost, "flash", r.usage);
     // The gate already passed for every `scored` item (stage 3 only kept
     // meets_all). Re-confirm independently against the same gate-true baseline.
     const verification = evaluateVerification(
       requirements,
-      { meets_all_requirements: true, results: item.requirement_results },
-      verifyResult.requirements,
+      { meets_all_requirements: true, results: r.item.requirement_results },
+      r.data.requirements,
     );
     if (!verification.verified) {
       deps.logger.info(
-        { identity: item.record.identity_key },
+        { identity: r.item.record.identity_key },
         "[sourcing] finalist not re-confirmed by verification; dropped",
       );
       continue;
     }
     verified.push({
-      identity_key: item.record.identity_key,
-      source: item.record.source,
-      source_ref: item.record.source_ref,
-      profile: item.record.profile,
-      contact: item.record.contact,
-      requirement_results: item.requirement_results,
+      identity_key: r.item.record.identity_key,
+      source: r.item.record.source,
+      source_ref: r.item.record.source_ref,
+      profile: r.item.record.profile,
+      contact: r.item.record.contact,
+      requirement_results: r.item.requirement_results,
       meets_all_requirements: true,
-      score: item.score.total,
-      score_breakdown: item.score,
+      score: r.item.score.total,
+      score_breakdown: r.item.score,
       verified: true,
       rank: 0,
     });

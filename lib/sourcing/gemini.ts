@@ -1,15 +1,14 @@
 /**
- * Wires the funnel's Gemini dependencies to the real lib/gemini wrappers
- * (two-tier split: Flash for the bulk gate, Pro for extraction / deep score /
- * verification). Each method calls the model, then JSON-parses + Zod-validates
- * via parseGeminiJson, surfacing invalid_json / schema_mismatch. Flash returns
- * no token counts, so the gate reports null usage (cost.ts adds zero, never
- * inventing Flash tokens).
+ * Wires the funnel's Gemini dependencies to the real lib/gemini wrappers. The
+ * whole funnel runs on Gemini 3 Flash — fast + ~4x cheaper than Pro, which kept
+ * per-candidate scoring/verification under a few seconds even at high fan-out.
+ * Each method calls the model, then JSON-parses + Zod-validates via
+ * parseGeminiJson, surfacing invalid_json / schema_mismatch. Flash now reports
+ * token counts, so every stage records real usage/cost.
  *
  * Server-only: imports lib/gemini/* which read process.env and pull in
  * @google/genai. Used by the Next.js background worker route.
  */
-import { callGeminiProJson } from "@/lib/gemini/call-pro";
 import { callGeminiFlashJson } from "@/lib/gemini/call-flash";
 import { parseGeminiJson } from "./parse";
 import {
@@ -58,7 +57,7 @@ export function createGeminiFunnelMethods(): GeminiFunnelMethods {
     async extractProfile(
       posting: PostingSeed,
     ): Promise<GeminiCallResult<RequirementProfileExtraction>> {
-      const { text, promptTokens, outputTokens } = await callGeminiProJson({
+      const { text, promptTokens, outputTokens } = await callGeminiFlashJson({
         systemInstruction: PROFILE_EXTRACTION_SYSTEM,
         userPrompt: buildProfileExtractionUserPrompt({
           title: posting.title,
@@ -76,20 +75,20 @@ export function createGeminiFunnelMethods(): GeminiFunnelMethods {
       source: NormalizedProfile,
       requirements: HardRequirement[],
     ): Promise<GeminiCallResult<GateResultsRaw>> {
-      const { text } = await callGeminiFlashJson({
+      const { text, promptTokens, outputTokens } = await callGeminiFlashJson({
         systemInstruction: GATE_SYSTEM,
         userPrompt: buildGateUserPrompt(serializeSource(source), requirements),
         responseSchema: gateSchema,
       });
       const data = parseGeminiJson(text, GateResultsZod, "gate");
-      return { data, usage: { promptTokens: null, outputTokens: null } };
+      return { data, usage: { promptTokens, outputTokens } };
     },
 
     async runScore(
       source: NormalizedProfile,
       profile: RequirementProfile,
     ): Promise<GeminiCallResult<ScoreResultRaw>> {
-      const { text, promptTokens, outputTokens } = await callGeminiProJson({
+      const { text, promptTokens, outputTokens } = await callGeminiFlashJson({
         systemInstruction: SCORE_SYSTEM,
         userPrompt: buildScoreUserPrompt(serializeSource(source), profile),
         responseSchema: scoreSchema,
@@ -103,7 +102,7 @@ export function createGeminiFunnelMethods(): GeminiFunnelMethods {
       requirements: HardRequirement[],
       prior: RequirementResult[],
     ): Promise<GeminiCallResult<VerifyResultRaw>> {
-      const { text, promptTokens, outputTokens } = await callGeminiProJson({
+      const { text, promptTokens, outputTokens } = await callGeminiFlashJson({
         systemInstruction: VERIFY_SYSTEM,
         userPrompt: buildVerifyUserPrompt(
           serializeSource(source),

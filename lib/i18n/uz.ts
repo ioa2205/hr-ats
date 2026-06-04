@@ -432,6 +432,8 @@ export const uz: Translations = {
   "sourcing.results.not_met": "Mos kelmaydi",
   "sourcing.results.evidence_label": "Dalil",
   "sourcing.results.view_evidence": "Dalillar",
+  "sourcing.results.open_profile": "Profilni ochish",
+  "sourcing.results.contact_label": "Aloqa",
   "sourcing.results.evidence_drawer_title": "Manbadan dalillar",
   "sourcing.results.evidence_none": "Dalil keltirilmagan",
   "sourcing.results.gaps_title": "Kamchiliklar",

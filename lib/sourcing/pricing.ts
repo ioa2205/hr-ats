@@ -10,5 +10,6 @@
  */
 export const PRO_INPUT_USD_PER_MTOK = 2.0;
 export const PRO_OUTPUT_USD_PER_MTOK = 12.0;
-export const FLASH_INPUT_USD_PER_MTOK = 0.15;
-export const FLASH_OUTPUT_USD_PER_MTOK = 0.6;
+// Gemini 3 Flash (2026). The sourcing funnel runs entirely on Flash now.
+export const FLASH_INPUT_USD_PER_MTOK = 0.5;
+export const FLASH_OUTPUT_USD_PER_MTOK = 3.0;

@@ -21,6 +21,21 @@ export function sanitize(input: string): string {
     .replace(/'/g, "&#039;");
 }
 
+/**
+ * Returns the URL only if it parses and uses http(s); otherwise null. Guards
+ * against `javascript:`/`data:` schemes reaching an <a href> (which execute on
+ * click regardless of target="_blank"), e.g. URLs sourced from external APIs.
+ */
+export function safeHttpUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "https:" || parsed.protocol === "http:" ? parsed.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
 export function slugify(text: string): string {
   return text
     .toLowerCase()

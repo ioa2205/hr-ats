@@ -429,6 +429,8 @@ export const en: Translations = {
   "sourcing.results.not_met": "Not met",
   "sourcing.results.evidence_label": "Evidence",
   "sourcing.results.view_evidence": "Evidence",
+  "sourcing.results.open_profile": "Open profile",
+  "sourcing.results.contact_label": "Contact",
   "sourcing.results.evidence_drawer_title": "Evidence from source",
   "sourcing.results.evidence_none": "No evidence cited",
   "sourcing.results.gaps_title": "Gaps",

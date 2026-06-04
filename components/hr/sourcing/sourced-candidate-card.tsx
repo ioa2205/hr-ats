@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X, FileSearch } from "lucide-react";
+import { Check, X, FileSearch, ExternalLink, Phone, Send } from "lucide-react";
 import {
   Button,
   Dialog,
@@ -11,6 +11,7 @@ import {
   DialogDescription,
 } from "@/components/ui";
 import { ScoreMini } from "@/components/hr/design";
+import { safeHttpUrl } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n/provider";
 import type { TranslationKey } from "@/lib/i18n/types";
 import { PromoteButton } from "./promote-button";
@@ -47,6 +48,11 @@ export interface SourcedCandidateCardProps {
   gaps: string[];
   risks: string[];
   evidenceFields: EvidenceFieldView[];
+  /** how to reach the candidate. hh hides phone/email until the resume is opened
+   *  on hh, so profileUrl is the connect path there; telegram/internal carry a phone. */
+  profileUrl: string | null;
+  phone: string | null;
+  telegram: string | null;
 }
 
 function MetIcon({ met }: { met: boolean }) {
@@ -64,6 +70,9 @@ function MetIcon({ met }: { met: boolean }) {
 export function SourcedCandidateCard(props: SourcedCandidateCardProps) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  // Re-validate at render: this card is reusable and a javascript:/data: href
+  // would execute on click even with target="_blank".
+  const safeProfileUrl = safeHttpUrl(props.profileUrl);
 
   return (
     <div className="border-rule border-b px-5 py-4 last:border-b-0">
@@ -84,7 +93,7 @@ export function SourcedCandidateCard(props: SourcedCandidateCardProps) {
               </span>
             )}
           </div>
-          {props.headline && (
+          {props.headline && props.headline !== props.fullName && (
             <div className="text-ink-4 mt-0.5 line-clamp-1 text-[12.5px]">{props.headline}</div>
           )}
 
@@ -114,12 +123,27 @@ export function SourcedCandidateCard(props: SourcedCandidateCardProps) {
           >
             {t("sourcing.results.confidence_label")} {Math.round(props.confidence * 100)}%
           </span>
-          <div className="mt-1 flex items-center gap-2">
+          <div className="mt-1 flex flex-wrap items-center justify-end gap-2">
             <Button variant="secondary" onClick={() => setOpen(true)}>
               <FileSearch className="h-3.5 w-3.5" />
               {t("sourcing.results.view_evidence")}
             </Button>
-            <PromoteButton sourcedId={props.sourcedId} promoted={props.promoted} />
+            {safeProfileUrl && (
+              <a
+                href={safeProfileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border-rule-2 bg-paper text-ink-2 hover:bg-bone inline-flex h-[34px] items-center gap-1.5 rounded-[4px] border px-3 text-[13px] font-medium"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+                {t("sourcing.results.open_profile")}
+              </a>
+            )}
+            {/* Promote only when there's a usable phone — the candidates pool
+                requires one, so this avoids a dead-end "no phone" error. */}
+            {props.phone && (
+              <PromoteButton sourcedId={props.sourcedId} promoted={props.promoted} />
+            )}
           </div>
         </div>
       </div>
@@ -132,6 +156,47 @@ export function SourcedCandidateCard(props: SourcedCandidateCardProps) {
           </DialogHeader>
 
           <div className="max-h-[60vh] overflow-y-auto pr-1">
+            {/* Contact — how to reach the candidate. hh exposes contacts only on
+                the resume page itself, so the link is the connect path there. */}
+            {(safeProfileUrl || props.phone || props.telegram) && (
+              <div className="border-rule mb-4 flex flex-wrap items-center gap-2 rounded-[4px] border bg-bone/40 p-2.5">
+                <span className="text-ink-3 text-[11px] font-semibold uppercase tracking-[0.04em]">
+                  {t("sourcing.results.contact_label")}
+                </span>
+                {safeProfileUrl && (
+                  <a
+                    href={safeProfileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-persimmon-2 inline-flex items-center gap-1 text-[12.5px] font-medium hover:underline"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    {t("sourcing.results.open_profile")}
+                  </a>
+                )}
+                {props.phone && (
+                  <a
+                    href={`tel:${props.phone}`}
+                    className="text-ink-2 inline-flex items-center gap-1 text-[12.5px] hover:underline"
+                  >
+                    <Phone className="h-3.5 w-3.5" />
+                    {props.phone}
+                  </a>
+                )}
+                {props.telegram && (
+                  <a
+                    href={`https://t.me/${props.telegram.replace(/^@/, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-ink-2 inline-flex items-center gap-1 text-[12.5px] hover:underline"
+                  >
+                    <Send className="h-3.5 w-3.5" />
+                    {props.telegram}
+                  </a>
+                )}
+              </div>
+            )}
+
             {/* Requirements with full evidence + confidence */}
             <h4 className="text-ink-3 mb-2 text-[12px] font-semibold uppercase tracking-[0.04em]">
               {t("sourcing.results.requirements_title")}

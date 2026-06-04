@@ -432,6 +432,8 @@ export type TranslationKey =
   | "sourcing.results.not_met"
   | "sourcing.results.evidence_label"
   | "sourcing.results.view_evidence"
+  | "sourcing.results.open_profile"
+  | "sourcing.results.contact_label"
   | "sourcing.results.evidence_drawer_title"
   | "sourcing.results.evidence_none"
   | "sourcing.results.gaps_title"

@@ -49,7 +49,10 @@ type AdminClient = ReturnType<typeof createAdminClient>;
 const MAX_ATTEMPTS = 3;
 const DEFAULT_BUDGET: FetchBudget = {
   maxFetched: 200,
-  maxProCalls: 60,
+  // Judgement-call ceiling (score + verify). On Flash + bounded concurrency this
+  // is cheap/fast, so it's set high enough to score AND verify every fetched
+  // candidate (2 × maxFetched + extraction) rather than capping the shortlist.
+  maxProCalls: 450,
   tokenCeiling: 4_000_000,
 };
 
