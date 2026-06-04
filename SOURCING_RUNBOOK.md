@@ -259,6 +259,46 @@ suppressed.
 and a working **Gemini key** (classification/extraction runs on Gemini Flash).
 The code + 33 unit tests run fully without either; a live run needs both.
 
+### C2b. Telegram BOT intake — BUILT. For channels you OWN, no session needed.
+
+C2 reads PUBLIC channels you don't own (needs the MTProto user session). If
+instead each company runs **its own CV-intake channel**, a plain **bot** is
+enough — no `my.telegram.org` app, no StringSession. The catch the design works
+around: the Bot API has **no get-history method**, so a bot can never re-fetch
+past posts; it only receives each `channel_post` as it's posted. So the bot
+**persists every post as it arrives** into the `telegram_posts` staging table,
+classifies it **once** there (the cost win — search reads are then free of
+Gemini), and the funnel reads candidates straight from that table.
+
+**To turn it on:**
+
+1. You already have a bot (`TELEGRAM_BOT_TOKEN`, used for inbox DMs). Reuse it —
+   nothing new to create. (Optional: set `TELEGRAM_INTAKE_RETENTION_DAYS=90` to
+   change the freshness/retention horizon; default is ~3 months.)
+2. Add the **TezHR bot as an administrator** of each company's intake channel
+   (Telegram → channel → Administrators → Add). A bot can only read a channel it
+   administers — this is the access grant.
+3. Register the channel handle so posts are attributed to the right company:
+   `POST /api/hr/telegram-channels { "handle": "acme_cv" }` (any HR member with
+   write access; a UI surface is the remaining follow-up). A handle is claimed by
+   exactly **one** company — the global-unique boundary that stops one tenant
+   ingesting another's channel. `GET` lists, `DELETE /…/{id}` removes,
+   `PATCH /…/{id} { "active": false }` pauses without losing the claim.
+4. The `telegram-bot-ingest` pg_cron job (every 2 min) polls the bot, stores new
+   posts, and classifies them. **Find candidates** then surfaces fresh CVs from
+   those channels; the search's `sources` records `telegram`.
+
+**Same anti-staleness intelligence as C2**, applied at ingest: too-old / closed
+("нашёл работу") / contactless / vacancy posts are dropped (cheaply, before any
+AI for the obvious ones), only `candidate_cv` survives, every field carries a
+verbatim quote, and the 90-day TTL purge (`purge_stale_telegram_posts`, nightly
+03:50) keeps the pool fresh so a search never re-surfaces a stale post.
+
+**PII note:** this stores posts (CVs) of people who haven't applied; the 90-day
+purge is the retention control and RLS confines reads to the owning company +
+operators. The only live prerequisite is a working **Gemini key** (ingest-time
+classification) — no user session.
+
 ### C3. LinkedIn — still needs scope confirmation
 
 Scaffolded behind the same `SourceConnector` interface, not yet built (we don't
