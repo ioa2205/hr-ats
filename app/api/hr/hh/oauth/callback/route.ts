@@ -19,7 +19,6 @@ function redirectToCompanySettings(status: "connected" | "failed") {
 export async function GET(request: NextRequest) {
   const access = await requireCompanyAccessApi({
     roles: ["owner", "admin"],
-    requireWrite: true,
   });
   if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status });
 
