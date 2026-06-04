@@ -61,6 +61,20 @@ function num(value: number | string | null | undefined): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+function rowIssue(row: SourcingRow): string | null {
+  if (row.error) return row.error;
+  const detail = row.stats?.degraded_details?.[0];
+  if (!detail) return null;
+  return [
+    detail.source,
+    detail.status ? String(detail.status) : null,
+    detail.code ?? null,
+    detail.message,
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
 export default function OperatorSourcingPage() {
   const { t } = useTranslation();
   const [rows, setRows] = useState<SourcingRow[]>([]);
@@ -172,7 +186,10 @@ export default function OperatorSourcingPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows.map((row) => (
+            {rows.map((row) => {
+              const issue = rowIssue(row);
+              row.error = issue;
+              return (
               <TableRow key={row.id}>
                 <TableCell className="nums text-xs whitespace-nowrap">
                   {new Date(row.created_at).toLocaleString(undefined, {
@@ -202,12 +219,13 @@ export default function OperatorSourcingPage() {
                 <TableCell className="nums text-xs">{`$${num(row.cost_usd).toFixed(4)}`}</TableCell>
                 <TableCell
                   className="text-danger max-w-[200px] truncate text-xs"
-                  title={row.error ?? undefined}
+                  title={issue ?? undefined}
                 >
                   {row.error ? row.error.slice(0, 100) : "—"}
                 </TableCell>
               </TableRow>
-            ))}
+              );
+            })}
           </TableBody>
         </Table>
       )}

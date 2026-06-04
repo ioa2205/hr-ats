@@ -26,7 +26,13 @@ const envSchema = z.object({
   HH_REFRESH_TOKEN: z.string().min(1).optional(),
   HH_API_BASE_URL: z.url().default("https://api.hh.ru"),
   HH_TOKEN_URL: z.url().default("https://api.hh.ru/token"),
+  HH_AUTH_URL: z.url().default("https://hh.ru/oauth/authorize"),
   HH_USER_AGENT: z.string().min(1).default("TezHR/1.0 (+https://tezhr.uz)"),
+  HH_HOST: z
+    .enum(["hh.ru", "rabota.by", "hh1.az", "hh.uz", "hh.kz", "headhunter.ge", "headhunter.kg"])
+    .default("hh.uz"),
+  HH_REDIRECT_URI: z.url().optional(),
+  HH_PLATFORM_FALLBACK_ENABLED: z.coerce.boolean().default(true),
   // Area to search (e.g. Uzbekistan / Tashkent). Find ids via GET /areas.
   // Unset ⇒ all areas.
   HH_AREA_ID: z.string().min(1).optional(),

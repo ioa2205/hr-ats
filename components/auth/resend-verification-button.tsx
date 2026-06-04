@@ -19,19 +19,22 @@ export function ResendVerificationButton({ email }: ResendVerificationButtonProp
     resendVerification,
     null,
   );
-  const [cooldown, setCooldown] = useState(0);
+  const [now, setNow] = useState(0);
+  const [cooldownUntil, setCooldownUntil] = useState(0);
+  const cooldown = Math.max(0, Math.ceil((cooldownUntil - now) / 1000));
 
   useEffect(() => {
-    if (state?.ok) {
-      setCooldown(COOLDOWN_SECONDS);
-    }
-  }, [state]);
-
-  useEffect(() => {
-    if (cooldown <= 0) return;
-    const id = window.setTimeout(() => setCooldown((s) => s - 1), 1000);
+    if (cooldownUntil <= now) return;
+    const id = window.setTimeout(() => setNow(Date.now()), 1000);
     return () => window.clearTimeout(id);
-  }, [cooldown]);
+  }, [cooldownUntil, now]);
+
+  function handleSubmit(formData: FormData) {
+    const startedAt = Date.now();
+    setNow(startedAt);
+    setCooldownUntil(startedAt + COOLDOWN_SECONDS * 1000);
+    formAction(formData);
+  }
 
   const disabled = !email || isPending || cooldown > 0;
 
@@ -62,7 +65,7 @@ export function ResendVerificationButton({ email }: ResendVerificationButtonProp
   })();
 
   return (
-    <form action={formAction} className="flex flex-col gap-3">
+    <form action={handleSubmit} className="flex flex-col gap-3">
       <input type="hidden" name="email" value={email} />
       {bannerNode}
       <TezButton

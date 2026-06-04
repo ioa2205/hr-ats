@@ -435,6 +435,72 @@ export type Database = {
           },
         ];
       };
+      company_hh_connections: {
+        Row: {
+          access_expires_at: string | null;
+          access_secret_name: string | null;
+          account_id: string | null;
+          company_id: string;
+          connected_by: string | null;
+          created_at: string;
+          employer_id: string | null;
+          employer_name: string | null;
+          last_error: string | null;
+          last_error_at: string | null;
+          manager_id: string | null;
+          refresh_secret_name: string;
+          status: string;
+          updated_at: string;
+        };
+        Insert: {
+          access_expires_at?: string | null;
+          access_secret_name?: string | null;
+          account_id?: string | null;
+          company_id: string;
+          connected_by?: string | null;
+          created_at?: string;
+          employer_id?: string | null;
+          employer_name?: string | null;
+          last_error?: string | null;
+          last_error_at?: string | null;
+          manager_id?: string | null;
+          refresh_secret_name: string;
+          status?: string;
+          updated_at?: string;
+        };
+        Update: {
+          access_expires_at?: string | null;
+          access_secret_name?: string | null;
+          account_id?: string | null;
+          company_id?: string;
+          connected_by?: string | null;
+          created_at?: string;
+          employer_id?: string | null;
+          employer_name?: string | null;
+          last_error?: string | null;
+          last_error_at?: string | null;
+          manager_id?: string | null;
+          refresh_secret_name?: string;
+          status?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "company_hh_connections_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: true;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "company_hh_connections_connected_by_fkey";
+            columns: ["connected_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       impersonation_sessions: {
         Row: {
           ended_at: string | null;
@@ -742,6 +808,39 @@ export type Database = {
           key?: string;
           updated_at?: string;
           value?: string;
+        };
+        Relationships: [];
+      };
+      platform_hh_connection: {
+        Row: {
+          access_expires_at: string | null;
+          access_secret_name: string | null;
+          id: boolean;
+          last_error: string | null;
+          last_error_at: string | null;
+          refresh_secret_name: string | null;
+          status: string;
+          updated_at: string;
+        };
+        Insert: {
+          access_expires_at?: string | null;
+          access_secret_name?: string | null;
+          id?: boolean;
+          last_error?: string | null;
+          last_error_at?: string | null;
+          refresh_secret_name?: string | null;
+          status?: string;
+          updated_at?: string;
+        };
+        Update: {
+          access_expires_at?: string | null;
+          access_secret_name?: string | null;
+          id?: boolean;
+          last_error?: string | null;
+          last_error_at?: string | null;
+          refresh_secret_name?: string | null;
+          status?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -1475,6 +1574,11 @@ export type Database = {
         }[];
       };
       increment_cv_quota: { Args: { p_company_id: string }; Returns: undefined };
+      app_secret_read: { Args: { p_name: string }; Returns: string | null };
+      app_secret_upsert: {
+        Args: { p_name: string; p_secret: string };
+        Returns: undefined;
+      };
       show_limit: { Args: never; Returns: number };
       show_trgm: { Args: { "": string }; Returns: string[] };
       try_consume_cv_quota: { Args: { p_company_id: string }; Returns: boolean };

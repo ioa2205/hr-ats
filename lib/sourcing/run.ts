@@ -21,7 +21,7 @@ import {
   type LoadPoolCandidates,
   type PoolCandidateRow,
 } from "./connectors/internal-pool";
-import { createHhConnectorFromEnv } from "./connectors/hh";
+import { createHhConnectorForCompany } from "./connectors/hh";
 import {
   createTelegramConnectorFromEnv,
   createTelegramDbConnector,
@@ -293,10 +293,10 @@ export async function runSourcingSearch(searchId: string): Promise<void> {
 
     const loader = makePoolLoader(admin, claimed.company_id, claimed.job_posting_id);
     const connectors: SourceConnector[] = [createInternalPoolConnector(loader)];
-    // hh.uz joins automatically when HH_CLIENT_ID/SECRET are set; otherwise the
-    // run sources the internal pool only. A failing connector degrades the run
-    // to `partial` (handled in the funnel) rather than failing it.
-    const hh = createHhConnectorFromEnv();
+    // hh.uz joins when this company has an employer OAuth connection, or when
+    // the platform fallback connection is enabled. A failing connector degrades
+    // the run to `partial` (handled in the funnel) rather than failing it.
+    const hh = await createHhConnectorForCompany(claimed.company_id);
     if (hh) connectors.push(hh);
     // Telegram joins automatically via two independent paths, both suppressing
     // contacts the company already has so a search never re-surfaces a known

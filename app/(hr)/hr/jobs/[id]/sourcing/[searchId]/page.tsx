@@ -112,6 +112,7 @@ export default async function SourcingResultsPage({
   const drops = funnelDrops(stats);
   const showFunnel = !isRunning && (stats.fetched ?? 0) > 0;
   const degradedSources = stats.degraded_sources ?? [];
+  const hasHhDegraded = degradedSources.includes("hh");
 
   const cards: SourcedCandidateCardProps[] = (rows ?? []).map((row) => {
     const profile = (row.profile ?? {}) as NormalizedProfile;
@@ -257,19 +258,22 @@ export default async function SourcingResultsPage({
               </li>
             ))}
           </ul>
-          {degradedSources.length > 0 && (
-            <div className="border-rule border-t px-5 py-2.5 text-[11.5px] text-amber-700">
-              {t("sourcing.results.degraded_note", locale, {
-                sources: degradedSources.map((s) => t(SOURCE_KEY[s], locale)).join(", "),
-              })}
-            </div>
-          )}
         </Panel>
       )}
 
       {status === "partial" && (
         <div className="mb-4 rounded-[6px] border border-amber-200 bg-amber-50 px-4 py-2.5 text-[12.5px] text-amber-800">
-          {t("sourcing.results.partial_note", locale)}
+          <div>{t("sourcing.results.partial_note", locale)}</div>
+          {degradedSources.length > 0 && (
+            <div className="mt-1">
+              {t("sourcing.results.degraded_note", locale, {
+                sources: degradedSources.map((s) => t(SOURCE_KEY[s], locale)).join(", "),
+              })}
+            </div>
+          )}
+          {hasHhDegraded && (
+            <div className="mt-1">{t("sourcing.results.hh_reconnect_hint", locale)}</div>
+          )}
         </div>
       )}
       {status === "failed" && (

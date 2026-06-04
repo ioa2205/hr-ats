@@ -9,7 +9,7 @@ import {
   SOURCING_UNITS_PER_SEARCH,
 } from "@/lib/companies/quota";
 import { runSourcingSearch } from "@/lib/sourcing/run";
-import { hhConfiguredFromEnv } from "@/lib/sourcing/connectors/hh";
+import { hhAvailableForCompany } from "@/lib/sourcing/connectors/hh";
 import {
   telegramBotIntakeConfigured,
   telegramConfiguredFromEnv,
@@ -58,9 +58,9 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
     }
 
     // Record the sources that will actually run (the worker builds connectors
-    // from the same env signal). hh joins only when its credentials are set.
+    // from the same company-aware signal).
     const sources: SourceKind[] = ["internal_pool"];
-    if (hhConfiguredFromEnv()) sources.push("hh");
+    if (await hhAvailableForCompany(access.companyId)) sources.push("hh");
     // telegram covers BOTH the MTProto (public) and bot-intake (owned) paths.
     if (telegramConfiguredFromEnv() || telegramBotIntakeConfigured()) sources.push("telegram");
 

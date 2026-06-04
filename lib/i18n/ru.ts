@@ -411,6 +411,7 @@ export const ru: Translations = {
   "sourcing.results.running_hint": "Поиск выполняется в фоне. Эта страница обновится, когда шорт-лист будет готов.",
   "sourcing.results.failed_hint": "Поиск не удался. Попробуйте запустить его снова.",
   "sourcing.results.partial_note": "Часть источников была недоступна — показаны результаты из доступных.",
+  "sourcing.results.hh_reconnect_hint": "hh.uz недоступен. Подключите аккаунт работодателя HH заново и повторите поиск.",
   "sourcing.results.empty_title": "Подходящих кандидатов не найдено",
   "sourcing.results.empty_hint": "Никто из базы не прошёл все обязательные требования. Мы никогда не показываем тех, кто не соответствует.",
   "sourcing.results.count_summary": "{count} из 20 — по убыванию соответствия",
