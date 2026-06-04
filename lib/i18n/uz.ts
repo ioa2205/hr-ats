@@ -640,6 +640,7 @@ export const uz: Translations = {
   "landing.meta.today_analyzed": "Bugun {count} ta rezyume",
   "landing.meta.free_trial_badge": "BEPUL · 14 KUN · KARTASIZ",
   "landing.nav.how": "Qanday ishlaydi",
+  "landing.nav.sourcing": "Qidiruv",
   "landing.nav.ai": "AI",
   "landing.nav.pricing": "Narxlar",
   "landing.nav.contact": "Aloqa",
@@ -751,6 +752,32 @@ export const uz: Translations = {
   "landing.showcase.feat_speed_desc": "200 tadan iborat paket — bir daqiqadan kam.",
   "landing.showcase.model_line":
     "Model versiyasi {version} · oxirgi yangilanish 12-aprel, 2026",
+  "landing.sourcing.section_tag": "QIDIRUV",
+  "landing.sourcing.section_title": "— Faol qidiruv",
+  "landing.sourcing.section_meta": "BAZA · HH.UZ · TELEGRAM",
+  "landing.sourcing.heading": "Keyingi xodimingiz pochta qutingizda emas.",
+  "landing.sourcing.heading_em": "Uni toping.",
+  "landing.sourcing.lede":
+    "Bitta qidiruv: o'z nomzodlar bazangiz, hh.uz va ochiq Telegram kanallari bo'ylab — saralangan, tekshirilgan va bog'lanishga tayyor.",
+  "landing.sourcing.src1_label": "Sizning bazangiz",
+  "landing.sourcing.src1_desc":
+    "Barcha vakansiyalaringiz bo'yicha avvalgi nomzodlar va short-listlar — qayta jalb qilinadi, qayta to'lovsiz.",
+  "landing.sourcing.src2_label": "hh.uz",
+  "landing.sourcing.src2_desc":
+    "O'zbekistonning eng katta rezyumelar bazasi — xuddi shu vakansiya profili bo'yicha qidiriladi.",
+  "landing.sourcing.src3_label": "Telegram",
+  "landing.sourcing.src3_desc":
+    "Mahalliy nomzodlar haqiqatan ham e'lon beradigan ochiq ish kanallari.",
+  "landing.sourcing.guarantee_kicker": "KAFOLAT",
+  "landing.sourcing.guarantee_text":
+    "Har bir topilgan nomzod barcha majburiy talablarga isbotlangan tarzda javob beradi — profilidan iqtibos bilan.",
+  "landing.sourcing.funnel_found": "Yuzlab topildi",
+  "landing.sourcing.funnel_gate": "Majburiy talablar bo'yicha filtr",
+  "landing.sourcing.funnel_shortlist": "Top-20, har biri tekshirilgan",
+  "landing.sourcing.automation_line":
+    "Ochiq vakansiyadan saralangan short-listgacha — avtomatik, fonda.",
+  "landing.sourcing.cta_primary": "Bepul qidiruvni boshlash",
+  "landing.sourcing.cta_secondary": "Qidiruv qanday ishlaydi",
   "landing.pain.section_tag": "§ 03",
   "landing.pain.section_title": "— Oldin va keyin",
   "landing.pain.section_meta": "BIR PAYSHANBANING IKKI VERSIYASI",
@@ -961,6 +988,19 @@ export const uz: Translations = {
   "landing.product.sec.sec_3_title": "Ma'lumotlarni o'chirish",
   "landing.product.sec.sec_3_body":
     "Nomzod privacy@tezhr.uz ga yozib o'z ma'lumotlarini o'chirishni so'rashi mumkin — biz CVni va barcha hosila AI-artefaktlarni 30 kun ichida o'chiramiz. Kompaniyangiz to'liq hisobni o'chirishni Settings → Company → Delete dan boshlashi mumkin, 14 kunlik tiklash oynasi bilan.",
+  "landing.product.src.kicker": "FAOL QIDIRUV",
+  "landing.product.src.headline": "Kerakli nomzodni kutmang. Uni toping.",
+  "landing.product.src.lede":
+    "TezHR bitta ishga tushirishda nomzodlarni sizning bazangiz, hh.uz va ochiq Telegram kanallaridan qidiradi — so'ng har birini aniq talablaringiz bo'yicha baholaydi, saralaydi va tekshiradi.",
+  "landing.product.src.sec_1_title": "Uch manba, bitta qidiruv",
+  "landing.product.src.sec_1_body":
+    "Avvalgi nomzodlarning ichki bazangiz, hh.uz rezyumelar bazasi va ochiq Telegram ish kanallari — bitta vakansiyadan qidiriladi. Manbalarni tanlang, kalit so'zlar va hududni belgilang, istalgan vaqtda qayta ishga tushiring.",
+  "landing.product.src.sec_2_title": "Topilgan emas, isbotlangan",
+  "landing.product.src.sec_2_body":
+    "Har bir nomzod majburiy talablar bo'yicha qat'iy filtrdan va mustaqil tekshiruvdan o'tadi. Agar talab profildan to'g'ridan-to'g'ri iqtibos bilan tasdiqlanmasa — nomzod ko'rsatilmaydi. Soxta mosliklar yo'q.",
+  "landing.product.src.sec_3_title": "Vakansiyadan saralangan short-listgacha",
+  "landing.product.src.sec_3_body":
+    "TezHR vakansiya profilini ajratadi, nomzodlarni topadi, dublikatlarni olib tashlaydi, moslikni baholaydi, dalillarni tekshiradi va top-20 ni saralaydi — avtomatik, fonda. Siz qidiruv navbatiga emas, tayyor short-listga qaytasiz.",
   // --- PR #4: walkthrough ---
   "landing.how.wt_tag": "§ BOSQICHLAR",
   "landing.how.wt_title": "— 90 soniyada butun yo'l",

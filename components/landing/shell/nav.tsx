@@ -12,6 +12,7 @@ export interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { id: "product", href: "/#product", labelKey: "landing.nav.product" },
   { id: "how", href: "/#how", labelKey: "landing.nav.how" },
+  { id: "sourcing", href: "/#sourcing", labelKey: "landing.nav.sourcing" },
   { id: "customers", href: "/#customers", labelKey: "landing.nav.customers" },
   { id: "pricing", href: "/#pricing", labelKey: "landing.nav.pricing" },
 ];

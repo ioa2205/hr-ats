@@ -22,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { p: "/for-candidates", priority: 0.6, changeFrequency: "monthly" as const },
     { p: "/product/multilingual", priority: 0.7, changeFrequency: "monthly" as const },
     { p: "/product/local-market", priority: 0.7, changeFrequency: "monthly" as const },
+    { p: "/product/sourcing", priority: 0.7, changeFrequency: "monthly" as const },
     { p: "/terms", priority: 0.4, changeFrequency: "yearly" as const },
     { p: "/privacy", priority: 0.4, changeFrequency: "yearly" as const },
   ];

@@ -10,6 +10,7 @@ import { Pricing } from "./pricing/pricing";
 import { Proof } from "./proof/proof";
 import { LandingFooter } from "./shell/footer";
 import { Showcase } from "./showcase/showcase";
+import { Sourcing } from "./sourcing/sourcing-section";
 import { Why } from "./why/why";
 
 export async function TezhrLanding() {
@@ -20,6 +21,7 @@ export async function TezhrLanding() {
       <Why />
       <HowItWorks />
       <Showcase />
+      <Sourcing />
       <PainSolution />
       <Proof />
       <Pricing />

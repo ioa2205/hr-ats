@@ -636,6 +636,7 @@ export const en: Translations = {
   "landing.meta.today_analyzed": "{count} résumés today",
   "landing.meta.free_trial_badge": "FREE · 14 DAYS · NO CARD",
   "landing.nav.how": "How it works",
+  "landing.nav.sourcing": "Sourcing",
   "landing.nav.ai": "The AI",
   "landing.nav.pricing": "Pricing",
   "landing.nav.contact": "Contact",
@@ -747,6 +748,32 @@ export const en: Translations = {
   "landing.showcase.feat_speed_desc": "A batch of 200 — less than a minute.",
   "landing.showcase.model_line":
     "Model version {version} · last update April 12, 2026",
+  "landing.sourcing.section_tag": "SOURCING",
+  "landing.sourcing.section_title": "— Outbound search",
+  "landing.sourcing.section_meta": "POOL · HH.UZ · TELEGRAM",
+  "landing.sourcing.heading": "Your next hire isn't in your inbox.",
+  "landing.sourcing.heading_em": "Go find them.",
+  "landing.sourcing.lede":
+    "One search across your own candidate pool, hh.uz, and public Telegram channels — ranked, verified, and ready to contact.",
+  "landing.sourcing.src1_label": "Your pool",
+  "landing.sourcing.src1_desc":
+    "Past applicants and shortlisted candidates from every role you've run — re-surfaced, never re-bought.",
+  "landing.sourcing.src2_label": "hh.uz",
+  "landing.sourcing.src2_desc":
+    "Uzbekistan's largest CV database, searched with the same role profile.",
+  "landing.sourcing.src3_label": "Telegram",
+  "landing.sourcing.src3_desc":
+    "Public hiring channels where local candidates actually post.",
+  "landing.sourcing.guarantee_kicker": "THE GUARANTEE",
+  "landing.sourcing.guarantee_text":
+    "Every sourced candidate provably meets every hard requirement — each match backed by a cited quote from their profile.",
+  "landing.sourcing.funnel_found": "Hundreds found",
+  "landing.sourcing.funnel_gate": "Gated on hard requirements",
+  "landing.sourcing.funnel_shortlist": "Top 20, every one verified",
+  "landing.sourcing.automation_line":
+    "From an open role to a ranked shortlist — automatically, in the background.",
+  "landing.sourcing.cta_primary": "Start sourcing free",
+  "landing.sourcing.cta_secondary": "How sourcing works",
   "landing.pain.section_tag": "§ 03",
   "landing.pain.section_title": "— Before and after",
   "landing.pain.section_meta": "TWO VERSIONS OF ONE THURSDAY",
@@ -956,6 +983,19 @@ export const en: Translations = {
   "landing.product.sec.sec_3_title": "Deleting data",
   "landing.product.sec.sec_3_body":
     "Candidates can email privacy@tezhr.uz to request deletion — we remove the CV and every derived AI artefact within 30 days. Your company can trigger a full account deletion from Settings → Company → Delete, with a 14-day undo window.",
+  "landing.product.src.kicker": "OUTBOUND SOURCING",
+  "landing.product.src.headline": "Don't wait for the right candidate. Go find them.",
+  "landing.product.src.lede":
+    "TezHR searches your own talent pool, hh.uz, and public Telegram channels in one run — then screens, ranks, and verifies everyone it finds against your exact requirements.",
+  "landing.product.src.sec_1_title": "Three sources, one search",
+  "landing.product.src.sec_1_body":
+    "Your internal pool of past applicants, hh.uz's CV database, and public Telegram hiring channels — searched together from a single role. Choose which sources to use, set keywords and region, and re-run any time.",
+  "landing.product.src.sec_2_title": "Proven, not just found",
+  "landing.product.src.sec_2_body":
+    "Every candidate passes a fail-closed gate on your hard requirements and an independent verification pass. If a requirement can't be backed by a direct quote from their profile, they're not shown. No false positives, no wishful matching.",
+  "landing.product.src.sec_3_title": "From open role to ranked shortlist",
+  "landing.product.src.sec_3_body":
+    "TezHR extracts the role profile, fetches candidates, removes duplicates, scores fit, verifies the evidence, and ranks the top 20 — automatically, in the background. You come back to a shortlist, not a search queue.",
   // --- PR #4: walkthrough ---
   "landing.how.wt_tag": "§ WALKTHROUGH",
   "landing.how.wt_title": "— 90 seconds, the whole path",

@@ -638,6 +638,7 @@ export const ru: Translations = {
   "landing.meta.today_analyzed": "{count} резюме сегодня",
   "landing.meta.free_trial_badge": "БЕСПЛАТНО · 14 ДНЕЙ · БЕЗ КАРТЫ",
   "landing.nav.how": "Как работает",
+  "landing.nav.sourcing": "Сорсинг",
   "landing.nav.ai": "ИИ",
   "landing.nav.pricing": "Цены",
   "landing.nav.contact": "Контакты",
@@ -749,6 +750,32 @@ export const ru: Translations = {
   "landing.showcase.feat_speed_desc": "Пакет из 200 штук — меньше минуты.",
   "landing.showcase.model_line":
     "Модель версии {version} · последнее обновление 12 апреля 2026",
+  "landing.sourcing.section_tag": "СОРСИНГ",
+  "landing.sourcing.section_title": "— Активный поиск",
+  "landing.sourcing.section_meta": "БАЗА · HH.UZ · TELEGRAM",
+  "landing.sourcing.heading": "Ваш следующий сотрудник — не в вашем почтовом ящике.",
+  "landing.sourcing.heading_em": "Найдите его.",
+  "landing.sourcing.lede":
+    "Один поиск по вашей собственной базе кандидатов, hh.uz и публичным Telegram-каналам — ранжировано, проверено и готово к контакту.",
+  "landing.sourcing.src1_label": "Ваша база",
+  "landing.sourcing.src1_desc":
+    "Прошлые кандидаты и шорт-листы по всем вашим вакансиям — снова в работе, без повторной оплаты.",
+  "landing.sourcing.src2_label": "hh.uz",
+  "landing.sourcing.src2_desc":
+    "Крупнейшая база резюме Узбекистана — поиск по тому же профилю вакансии.",
+  "landing.sourcing.src3_label": "Telegram",
+  "landing.sourcing.src3_desc":
+    "Публичные каналы по найму, где реально публикуются местные кандидаты.",
+  "landing.sourcing.guarantee_kicker": "ГАРАНТИЯ",
+  "landing.sourcing.guarantee_text":
+    "Каждый найденный кандидат доказуемо соответствует всем обязательным требованиям — с цитатой из его профиля.",
+  "landing.sourcing.funnel_found": "Сотни найдено",
+  "landing.sourcing.funnel_gate": "Фильтр по обязательным требованиям",
+  "landing.sourcing.funnel_shortlist": "Топ-20, каждый проверен",
+  "landing.sourcing.automation_line":
+    "От открытой вакансии до ранжированного шорт-листа — автоматически, в фоне.",
+  "landing.sourcing.cta_primary": "Начать поиск бесплатно",
+  "landing.sourcing.cta_secondary": "Как работает поиск",
   "landing.pain.section_tag": "§ 03",
   "landing.pain.section_title": "— До и после",
   "landing.pain.section_meta": "ДВЕ ВЕРСИИ ОДНОГО ЧЕТВЕРГА",
@@ -958,6 +985,19 @@ export const ru: Translations = {
   "landing.product.sec.sec_3_title": "Удаление данных",
   "landing.product.sec.sec_3_body":
     "Кандидат может запросить удаление своих данных, написав на privacy@tezhr.uz — мы удаляем CV и все производные AI-артефакты в течение 30 дней. Ваша компания может инициировать полное удаление аккаунта из Settings → Company → Delete, с 14-дневным окном восстановления.",
+  "landing.product.src.kicker": "АКТИВНЫЙ ПОИСК",
+  "landing.product.src.headline": "Не ждите нужного кандидата. Найдите его.",
+  "landing.product.src.lede":
+    "TezHR за один запуск ищет кандидатов в вашей базе, на hh.uz и в публичных Telegram-каналах — затем оценивает, ранжирует и проверяет каждого по вашим точным требованиям.",
+  "landing.product.src.sec_1_title": "Три источника, один поиск",
+  "landing.product.src.sec_1_body":
+    "Ваша внутренняя база прошлых кандидатов, база резюме hh.uz и публичные Telegram-каналы по найму — поиск из одной вакансии. Выбирайте источники, задавайте ключевые слова и регион, перезапускайте в любой момент.",
+  "landing.product.src.sec_2_title": "Доказано, а не просто найдено",
+  "landing.product.src.sec_2_body":
+    "Каждый кандидат проходит строгий фильтр по обязательным требованиям и независимую проверку. Если требование нельзя подтвердить прямой цитатой из профиля — кандидат не показывается. Никаких ложных совпадений.",
+  "landing.product.src.sec_3_title": "От вакансии до ранжированного шорт-листа",
+  "landing.product.src.sec_3_body":
+    "TezHR извлекает профиль вакансии, находит кандидатов, убирает дубликаты, оценивает соответствие, проверяет доказательства и ранжирует топ-20 — автоматически, в фоне. Вы возвращаетесь к готовому шорт-листу, а не к очереди поиска.",
   // --- PR #4: walkthrough ---
   "landing.how.wt_tag": "§ ПРОХОЖДЕНИЕ",
   "landing.how.wt_title": "— 90 секунд, весь путь",
