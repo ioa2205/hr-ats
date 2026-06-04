@@ -80,8 +80,14 @@ export default async function CandidatesPage({
           {t("hr.nav.candidates", locale)}.
         </h1>
         <Panel>
-          <div className="text-ink-5 px-6 py-12 text-center text-[13px]">
-            {t("hr.dashboard.empty_jobs", locale)}
+          <div className="flex flex-col items-center gap-2.5 px-6 py-12 text-center">
+            <p className="text-ink-5 text-[13px]">{t("hr.dashboard.empty_jobs", locale)}</p>
+            <Link
+              href="/hr/jobs/new"
+              className="bg-ink text-paper hover:bg-ink-2 inline-flex h-[30px] items-center rounded-[4px] px-3 text-[12.5px] font-medium"
+            >
+              {t("hr.jobs.create", locale)}
+            </Link>
           </div>
         </Panel>
       </div>

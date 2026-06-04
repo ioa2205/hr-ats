@@ -244,6 +244,8 @@ export type TranslationKey =
   | "quota.cv_usage"
   | "quota.job_usage"
   | "quota.upgrade"
+  | "quota.cv_low_banner"
+  | "quota.cv_out_banner"
   | "quota.billing_title"
   | "quota.billing_desc"
   | "quota.plan_trial"
@@ -274,6 +276,9 @@ export type TranslationKey =
   | "errors.load_failed"
   // --- hr nav ---
   | "hr.dashboard.empty_jobs"
+  | "hr.dashboard.first_run.title"
+  | "hr.dashboard.first_run.body"
+  | "hr.dashboard.first_run.trial"
   | "hr.nav.dashboard"
   | "hr.nav.jobs"
   | "hr.nav.settings"

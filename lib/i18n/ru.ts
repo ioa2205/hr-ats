@@ -249,6 +249,8 @@ export const ru: Translations = {
   "quota.cv_usage": "{used} из {limit} резюме проанализировано",
   "quota.job_usage": "{used} из {limit} активных вакансий",
   "quota.upgrade": "Улучшить план",
+  "quota.cv_low_banner": "CV-анализы заканчиваются — пора улучшить план",
+  "quota.cv_out_banner": "Лимит CV-анализов исчерпан — улучшите план, чтобы продолжить",
   "quota.billing_title": "Подписка и лимиты",
   "quota.billing_desc": "Текущий план и использование ресурсов.",
   "quota.plan_trial": "Пробный период",
@@ -280,6 +282,11 @@ export const ru: Translations = {
   "errors.not_found.description": "Возможно, это было удалено или ссылка неверна.",
   "errors.load_failed": "Не удалось загрузить данные. Попробуйте обновить страницу.",
   "hr.dashboard.empty_jobs": "Нет вакансий. Создайте первую!",
+  "hr.dashboard.first_run.title": "Добро пожаловать в TezHR",
+  "hr.dashboard.first_run.body":
+    "Создайте первую вакансию, чтобы начать получать кандидатов и оценивать их с помощью ИИ.",
+  "hr.dashboard.first_run.trial":
+    "Ваш пробный период: {days} дн. · {jobs} вакансий · {cv} анализов CV",
   "hr.nav.dashboard": "Панель",
   "hr.nav.jobs": "Вакансии",
   "hr.nav.settings": "Настройки",

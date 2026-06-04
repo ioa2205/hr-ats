@@ -251,6 +251,8 @@ export const uz: Translations = {
   "quota.cv_usage": "{used} / {limit} rezyume tahlil qilindi",
   "quota.job_usage": "{used} / {limit} faol vakansiya",
   "quota.upgrade": "Rejani yaxshilash",
+  "quota.cv_low_banner": "CV tahlillari tugayapti — rejani yangilang",
+  "quota.cv_out_banner": "CV tahlili limiti tugadi — davom etish uchun rejani yangilang",
   "quota.billing_title": "Obuna va limitlar",
   "quota.billing_desc": "Joriy reja va resurslardan foydalanish.",
   "quota.plan_trial": "Sinov davri",
@@ -282,6 +284,11 @@ export const uz: Translations = {
   "errors.not_found.description": "Ehtimol, u o'chirilgan yoki havola noto'g'ri.",
   "errors.load_failed": "Ma'lumotlarni yuklab bo'lmadi. Sahifani yangilab ko'ring.",
   "hr.dashboard.empty_jobs": "Vakansiyalar yo'q. Birinchisini yarating!",
+  "hr.dashboard.first_run.title": "TezHR'ga xush kelibsiz",
+  "hr.dashboard.first_run.body":
+    "Nomzodlarni qabul qilish va ularni AI yordamida baholashni boshlash uchun birinchi vakansiyangizni yarating.",
+  "hr.dashboard.first_run.trial":
+    "Sinov muddati: {days} kun · {jobs} vakansiya · {cv} ta CV tahlili",
   "hr.nav.dashboard": "Panel",
   "hr.nav.jobs": "Vakansiyalar",
   "hr.nav.settings": "Sozlamalar",

@@ -248,6 +248,8 @@ export const en: Translations = {
   "quota.cv_usage": "{used} of {limit} CVs analyzed",
   "quota.job_usage": "{used} of {limit} active positions",
   "quota.upgrade": "Upgrade plan",
+  "quota.cv_low_banner": "Almost out of CV analyses — upgrade soon",
+  "quota.cv_out_banner": "CV analysis limit reached — upgrade to keep screening",
   "quota.billing_title": "Subscription & limits",
   "quota.billing_desc": "Current plan and resource usage.",
   "quota.plan_trial": "Trial period",
@@ -279,6 +281,11 @@ export const en: Translations = {
   "errors.not_found.description": "It may have been deleted or the link is incorrect.",
   "errors.load_failed": "Failed to load. Please try refreshing the page.",
   "hr.dashboard.empty_jobs": "No positions yet. Create your first one!",
+  "hr.dashboard.first_run.title": "Welcome to TezHR",
+  "hr.dashboard.first_run.body":
+    "Create your first position to start receiving candidates and screening them with AI.",
+  "hr.dashboard.first_run.trial":
+    "Your trial: {days} days · {jobs} positions · {cv} CV analyses",
   "hr.nav.dashboard": "Dashboard",
   "hr.nav.jobs": "Job postings",
   "hr.nav.settings": "Settings",

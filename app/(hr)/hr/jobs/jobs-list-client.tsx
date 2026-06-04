@@ -181,12 +181,19 @@ export function JobsListClient({
       {/* Table */}
       <Panel>
         {filtered.length === 0 ? (
-          <div className="text-ink-5 flex flex-col items-center gap-2 px-6 py-12 text-center">
+          <div className="text-ink-5 flex flex-col items-center gap-2.5 px-6 py-12 text-center">
             <Briefcase className="text-ink-6 h-8 w-8" />
             <div className="text-ink-3 text-[13px] font-medium">
               {t("hr.jobs.empty_title")}
             </div>
             <p className="max-w-sm text-[12px]">{t("hr.jobs.empty_body")}</p>
+            <Link
+              href="/hr/jobs/new"
+              className="bg-ink text-paper hover:bg-ink-2 mt-1 inline-flex h-[30px] items-center gap-1.5 rounded-[4px] px-3 text-[12.5px] font-medium"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              {t("hr.jobs.create")}
+            </Link>
           </div>
         ) : (
           <table className="w-full border-collapse text-[12.5px]">

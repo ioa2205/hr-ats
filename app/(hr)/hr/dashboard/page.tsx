@@ -1,9 +1,10 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { ArrowRight, Sparkles, RefreshCw } from "lucide-react";
+import { ArrowRight, Sparkles, RefreshCw, Plus } from "lucide-react";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireCompanyAccess } from "@/lib/auth/guards";
+import { getQuotaState } from "@/lib/companies/quota";
 import { weekStartTashkent } from "@/lib/time";
 import { getLocale, t } from "@/lib/i18n";
 import { pickLocalized } from "@/lib/i18n/pick-localized";
@@ -67,6 +68,49 @@ export default async function DashboardPage() {
     .select("id")
     .eq("company_id", companyId);
   const jobIds = (companyJobs ?? []).map((j) => j.id);
+
+  // First-run: a company with no positions at all lands here. Show a focused
+  // "create your first position" call to action instead of an empty dashboard.
+  if (jobIds.length === 0) {
+    const quota = await getQuotaState(companyId);
+    return (
+      <div>
+        <div className="text-ink-5 mb-1.5 text-[11px] font-medium">
+          {t("hr.dashboard.eyebrow", locale, { date: formatEyebrow(locale) })}
+        </div>
+        <Panel>
+          <div className="flex flex-col items-center gap-3 px-6 py-14 text-center">
+            <span className="border-rule-2 bg-bone flex h-12 w-12 items-center justify-center rounded-full border">
+              <Sparkles className="text-persimmon h-5 w-5" />
+            </span>
+            <h1 className="text-ink text-[22px] font-semibold tracking-[-0.012em]">
+              {t("hr.dashboard.first_run.title", locale)}
+            </h1>
+            <p className="text-ink-4 max-w-[420px] text-[13px] leading-[1.5]">
+              {t("hr.dashboard.first_run.body", locale)}
+            </p>
+            <Link href="/hr/jobs/new" className="mt-1">
+              <TezButton variant="primary" leadingIcon={<Plus className="h-3.5 w-3.5" />}>
+                {t("hr.jobs.create", locale)}
+              </TezButton>
+            </Link>
+            {quota && quota.status === "trialing" && (
+              <p
+                className="text-ink-5 mt-1 text-[11px]"
+                style={{ fontFamily: "var(--font-tez-mono)" }}
+              >
+                {t("hr.dashboard.first_run.trial", locale, {
+                  days: String(quota.daysRemaining),
+                  jobs: String(quota.jobQuotaLimit),
+                  cv: String(quota.cvQuotaLimit),
+                })}
+              </p>
+            )}
+          </div>
+        </Panel>
+      </div>
+    );
+  }
 
   const [
     activeJobsRes,
@@ -321,7 +365,14 @@ export default async function DashboardPage() {
             </Link>
           </PanelHeader>
           {activeJobs.length === 0 ? (
-            <EmptyRow message={t("hr.dashboard.empty_jobs", locale)} />
+            <div className="flex flex-col items-center gap-2.5 px-4 py-8 text-center">
+              <p className="text-ink-5 text-[12px]">{t("hr.dashboard.empty_jobs", locale)}</p>
+              <Link href="/hr/jobs/new">
+                <TezButton variant="secondary" leadingIcon={<Plus className="h-3 w-3" />}>
+                  {t("hr.jobs.create", locale)}
+                </TezButton>
+              </Link>
+            </div>
           ) : (
             <table className="w-full border-collapse text-[12px]">
               <thead>

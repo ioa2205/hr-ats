@@ -43,18 +43,39 @@ export async function QuotaBanner({ companyId, locale }: QuotaBannerProps) {
     const used = quota.cvQuotaUsed;
     const limit = quota.cvQuotaLimit;
     const pct = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
+    const cvOut = limit > 0 && used >= limit;
+    const cvLow = !cvOut && pct >= 80;
+
+    // Escalate the upgrade prompt as the CV budget runs out, so HR notices the
+    // limit before applications silently stop being screened.
+    const escalation = cvOut
+      ? t("quota.cv_out_banner", locale)
+      : cvLow
+        ? t("quota.cv_low_banner", locale)
+        : null;
+    const amber = cvLow || isLowDays;
 
     return (
       <Link
         href="/hr/settings/billing"
         className={cn(
-          "group border-rule bg-bone hover:bg-bone-2 mx-2.5 mb-2.5 block rounded-[4px] border px-2.5 py-2 text-[11px] transition-colors",
-          isLowDays && "border-[color:var(--color-tez-amber)]/40",
+          "group mx-2.5 mb-2.5 block rounded-[4px] border px-2.5 py-2 text-[11px] transition-colors",
+          cvOut
+            ? "border-[color:var(--color-tez-red-tint)] bg-[color:var(--color-tez-red-tint)] text-[color:var(--color-tez-red)] hover:bg-[color:var(--color-tez-red-tint)]/80"
+            : amber
+              ? "border-rule bg-bone hover:bg-bone-2 border-[color:var(--color-tez-amber)]/40"
+              : "border-rule bg-bone hover:bg-bone-2",
         )}
       >
+        {escalation && (
+          <div className="mb-1 flex items-center gap-1.5 font-semibold">
+            <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+            {escalation}
+          </div>
+        )}
         <div className="flex items-center justify-between gap-2">
           <span className="text-ink-4 flex items-center gap-1.5 text-[10.5px] font-medium">
-            {isLowDays && <AlertTriangle className="h-3 w-3 shrink-0" />}
+            {isLowDays && !escalation && <AlertTriangle className="h-3 w-3 shrink-0" />}
             {t("quota.trial_banner", locale)} ·{" "}
             {t("team.days_left", locale, { days: String(quota.daysRemaining) })}
           </span>
@@ -70,7 +91,11 @@ export async function QuotaBanner({ companyId, locale }: QuotaBannerProps) {
             aria-hidden
             className={cn(
               "absolute inset-y-0 left-0 rounded-[2px]",
-              isLowDays ? "bg-[color:var(--color-tez-amber)]" : "bg-ink-3",
+              cvOut
+                ? "bg-[color:var(--color-tez-red)]"
+                : amber
+                  ? "bg-[color:var(--color-tez-amber)]"
+                  : "bg-ink-3",
             )}
             style={{ width: `${pct}%` }}
           />
