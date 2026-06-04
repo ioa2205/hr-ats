@@ -278,7 +278,7 @@ export default function CompanyDetailPage() {
             <h2 className="text-on-surface mb-2 text-lg font-medium">
               {t("operator.company_detail.subscription")}
             </h2>
-            <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
+            <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-5">
               <div>
                 <dt className="text-on-surface-variant text-xs">
                   {t("operator.company_detail.sub_status")}
@@ -308,6 +308,14 @@ export default function CompanyDetailPage() {
                   {t("operator.company_detail.sub_job_limit")}
                 </dt>
                 <dd className="nums">{subscription.job_quota_limit}</dd>
+              </div>
+              <div>
+                <dt className="text-on-surface-variant text-xs">
+                  {t("operator.company_detail.sub_sourcing_used")}
+                </dt>
+                <dd className="nums">
+                  {subscription.sourcing_quota_used} / {subscription.sourcing_quota_limit}
+                </dd>
               </div>
             </dl>
           </CardContent>
@@ -366,6 +374,7 @@ export default function CompanyDetailPage() {
         companyName={company.name}
         cvQuotaLimit={subscription?.cv_quota_limit ?? null}
         jobQuotaLimit={subscription?.job_quota_limit ?? null}
+        sourcingQuotaLimit={subscription?.sourcing_quota_limit ?? null}
         onChanged={fetchDetail}
       />
 

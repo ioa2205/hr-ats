@@ -5,6 +5,51 @@ import { createCompanySchema } from "@/lib/validations/onboarding";
 import { slugify } from "@/lib/utils";
 import { logger } from "@/lib/logger";
 
+const SUBSCRIPTION_DEFAULTS = {
+  trialLengthDays: 14,
+  cvQuotaLimit: 50,
+  jobQuotaLimit: 3,
+  sourcingQuotaLimit: 50,
+};
+
+function readPositiveInt(value: unknown, fallback: number): number {
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 0) return fallback;
+  return parsed;
+}
+
+async function readSubscriptionDefaults(admin: ReturnType<typeof createAdminClient>) {
+  const { data } = await admin
+    .from("platform_settings")
+    .select("key, value")
+    .in("key", [
+      "trial_length_days",
+      "default_cv_quota",
+      "default_job_quota",
+      "default_sourcing_quota",
+    ]);
+
+  const settings = new Map((data ?? []).map((row) => [row.key, row.value]));
+  return {
+    trialLengthDays: readPositiveInt(
+      settings.get("trial_length_days"),
+      SUBSCRIPTION_DEFAULTS.trialLengthDays,
+    ),
+    cvQuotaLimit: readPositiveInt(
+      settings.get("default_cv_quota"),
+      SUBSCRIPTION_DEFAULTS.cvQuotaLimit,
+    ),
+    jobQuotaLimit: readPositiveInt(
+      settings.get("default_job_quota"),
+      SUBSCRIPTION_DEFAULTS.jobQuotaLimit,
+    ),
+    sourcingQuotaLimit: readPositiveInt(
+      settings.get("default_sourcing_quota"),
+      SUBSCRIPTION_DEFAULTS.sourcingQuotaLimit,
+    ),
+  };
+}
+
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const {
@@ -80,9 +125,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "create_failed" }, { status: 500 });
   }
 
-  // Create subscription with 14-day trial
+  const defaults = await readSubscriptionDefaults(admin);
+
+  // Create subscription with operator-controlled trial defaults.
   const { error: subError } = await admin.from("subscriptions").insert({
     company_id: company.id,
+    trial_ends_at: new Date(Date.now() + defaults.trialLengthDays * 86400_000).toISOString(),
+    cv_quota_limit: defaults.cvQuotaLimit,
+    job_quota_limit: defaults.jobQuotaLimit,
+    sourcing_quota_limit: defaults.sourcingQuotaLimit,
   });
 
   if (subError) {

@@ -240,6 +240,12 @@ const PLATFORM_FIELDS: Array<{
     helpKey: "operator.settings.field.job_quota_help",
     type: "number",
   },
+  {
+    key: "default_sourcing_quota",
+    labelKey: "operator.settings.field.sourcing_quota_label",
+    helpKey: "operator.settings.field.sourcing_quota_help",
+    type: "number",
+  },
 ];
 
 function PlatformTab() {

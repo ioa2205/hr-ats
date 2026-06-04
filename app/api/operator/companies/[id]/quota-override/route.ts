@@ -7,6 +7,7 @@ import { logger } from "@/lib/logger";
 const bodySchema = z.object({
   cvQuotaLimit: z.number().int().min(0).max(100_000).optional(),
   jobQuotaLimit: z.number().int().min(0).max(10_000).optional(),
+  sourcingQuotaLimit: z.number().int().min(0).max(100_000).optional(),
   reason: z.string().trim().min(10).max(1000),
 });
 
@@ -14,7 +15,7 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const auth = await requireOperatorApi();
+  const auth = await requireOperatorApi({ write: true });
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
 
   const body = await req.json().catch(() => null);
@@ -22,7 +23,11 @@ export async function POST(
   if (!parsed.success) {
     return NextResponse.json({ error: "validation_failed" }, { status: 400 });
   }
-  if (parsed.data.cvQuotaLimit === undefined && parsed.data.jobQuotaLimit === undefined) {
+  if (
+    parsed.data.cvQuotaLimit === undefined &&
+    parsed.data.jobQuotaLimit === undefined &&
+    parsed.data.sourcingQuotaLimit === undefined
+  ) {
     return NextResponse.json({ error: "no_override_fields" }, { status: 400 });
   }
 
@@ -31,7 +36,7 @@ export async function POST(
 
   const { data: before } = await admin
     .from("subscriptions")
-    .select("cv_quota_limit, job_quota_limit, manual_override")
+    .select("cv_quota_limit, job_quota_limit, sourcing_quota_limit, manual_override")
     .eq("company_id", companyId)
     .maybeSingle();
 
@@ -40,6 +45,9 @@ export async function POST(
   const update: Record<string, unknown> = {};
   if (parsed.data.cvQuotaLimit !== undefined) update.cv_quota_limit = parsed.data.cvQuotaLimit;
   if (parsed.data.jobQuotaLimit !== undefined) update.job_quota_limit = parsed.data.jobQuotaLimit;
+  if (parsed.data.sourcingQuotaLimit !== undefined) {
+    update.sourcing_quota_limit = parsed.data.sourcingQuotaLimit;
+  }
 
   const nextOverride = {
     ...(before.manual_override as Record<string, unknown> | null),
@@ -67,6 +75,7 @@ export async function POST(
       before: {
         cv_quota_limit: before.cv_quota_limit,
         job_quota_limit: before.job_quota_limit,
+        sourcing_quota_limit: before.sourcing_quota_limit,
       },
       after: update,
       reason: parsed.data.reason,

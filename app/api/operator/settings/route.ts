@@ -17,6 +17,7 @@ const WRITABLE_KEYS = [
   "trial_length_days",
   "default_cv_quota",
   "default_job_quota",
+  "default_sourcing_quota",
 ] as const;
 type WritableKey = (typeof WRITABLE_KEYS)[number];
 

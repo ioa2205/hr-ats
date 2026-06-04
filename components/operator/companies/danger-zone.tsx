@@ -21,6 +21,7 @@ interface Props {
   companyName: string;
   cvQuotaLimit: number | null;
   jobQuotaLimit: number | null;
+  sourcingQuotaLimit: number | null;
   onChanged: () => void;
 }
 
@@ -29,6 +30,7 @@ export function DangerZone({
   companyName,
   cvQuotaLimit,
   jobQuotaLimit,
+  sourcingQuotaLimit,
   onChanged,
 }: Props) {
   const { t } = useTranslation();
@@ -52,6 +54,7 @@ export function DangerZone({
               {t("operator.danger.quota_current", {
                 cv: cvQuotaLimit !== null ? String(cvQuotaLimit) : "—",
                 job: jobQuotaLimit !== null ? String(jobQuotaLimit) : "—",
+                sourcing: sourcingQuotaLimit !== null ? String(sourcingQuotaLimit) : "—",
               })}
             </span>
           </div>
@@ -81,6 +84,7 @@ export function DangerZone({
         companyId={companyId}
         currentCv={cvQuotaLimit}
         currentJob={jobQuotaLimit}
+        currentSourcing={sourcingQuotaLimit}
         onDone={() => {
           setOverrideOpen(false);
           onChanged();
@@ -106,6 +110,7 @@ function OverrideDialog({
   companyId,
   currentCv,
   currentJob,
+  currentSourcing,
   onDone,
 }: {
   open: boolean;
@@ -113,12 +118,16 @@ function OverrideDialog({
   companyId: string;
   currentCv: number | null;
   currentJob: number | null;
+  currentSourcing: number | null;
   onDone: () => void;
 }) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [cvLimit, setCvLimit] = useState<string>(currentCv?.toString() ?? "");
   const [jobLimit, setJobLimit] = useState<string>(currentJob?.toString() ?? "");
+  const [sourcingLimit, setSourcingLimit] = useState<string>(
+    currentSourcing?.toString() ?? "",
+  );
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -126,14 +135,20 @@ function OverrideDialog({
     if (reason.trim().length < 10) return;
     const cv = cvLimit === "" ? undefined : Number(cvLimit);
     const job = jobLimit === "" ? undefined : Number(jobLimit);
-    if (cv === undefined && job === undefined) return;
+    const sourcing = sourcingLimit === "" ? undefined : Number(sourcingLimit);
+    if (cv === undefined && job === undefined && sourcing === undefined) return;
 
     setBusy(true);
     try {
       const res = await fetch(`/api/operator/companies/${companyId}/quota-override`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cvQuotaLimit: cv, jobQuotaLimit: job, reason }),
+        body: JSON.stringify({
+          cvQuotaLimit: cv,
+          jobQuotaLimit: job,
+          sourcingQuotaLimit: sourcing,
+          reason,
+        }),
       });
       if (res.ok) {
         toast({ variant: "success", title: t("operator.danger.quota_updated") });
@@ -166,6 +181,13 @@ function OverrideDialog({
             label={t("operator.danger.job_quota_label")}
             value={jobLimit}
             onChange={(e) => setJobLimit(e.target.value)}
+            type="number"
+            min={0}
+          />
+          <Input
+            label={t("operator.danger.sourcing_quota_label")}
+            value={sourcingLimit}
+            onChange={(e) => setSourcingLimit(e.target.value)}
             type="number"
             min={0}
           />
