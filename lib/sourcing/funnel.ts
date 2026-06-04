@@ -122,6 +122,19 @@ async function collectConnector(
   return out;
 }
 
+function degradedDetail(source: SourceKind, reason: unknown): SourcingStats["degraded_details"][number] {
+  const obj = reason && typeof reason === "object" ? (reason as Record<string, unknown>) : {};
+  const status = typeof obj.status === "number" ? obj.status : undefined;
+  const code = typeof obj.code === "string" ? obj.code.slice(0, 80) : undefined;
+  const rawMessage =
+    reason instanceof Error ? reason.message : typeof reason === "string" ? reason : String(reason);
+  const message = rawMessage
+    .replace(/(access_token|refresh_token|client_secret)["'=:\s]+[^"',\s}]+/gi, "$1=[REDACTED]")
+    .replace(/Bearer\s+[A-Za-z0-9._~+/=-]+/gi, "Bearer [REDACTED]")
+    .slice(0, 240);
+  return { source, status, code, message };
+}
+
 export async function runFunnel(input: FunnelInput, deps: FunnelDeps): Promise<FunnelResult> {
   const stats = emptyStats();
   let cost = ZERO_COST;
@@ -150,6 +163,7 @@ export async function runFunnel(input: FunnelInput, deps: FunnelDeps): Promise<F
     if (result.status === "rejected") {
       degraded = true;
       stats.degraded_sources.push(connector.kind);
+      stats.degraded_details.push(degradedDetail(connector.kind, result.reason));
       deps.logger.warn(
         { source: connector.kind, err: String(result.reason) },
         "[sourcing] connector degraded",

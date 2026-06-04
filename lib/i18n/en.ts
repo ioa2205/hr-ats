@@ -410,6 +410,7 @@ export const en: Translations = {
   "sourcing.results.running_hint": "The search is running in the background. This page updates when the shortlist is ready.",
   "sourcing.results.failed_hint": "The search failed. Try running it again.",
   "sourcing.results.partial_note": "Some sources were unavailable — showing results from the ones that worked.",
+  "sourcing.results.hh_reconnect_hint": "hh.uz is unavailable. Reconnect the HH employer account, then re-run the search.",
   "sourcing.results.empty_title": "No matching candidates",
   "sourcing.results.empty_hint": "No one in the pool cleared every hard requirement. We never show candidates who don't meet them.",
   "sourcing.results.count_summary": "{count} of 20 — highest to lowest fit",

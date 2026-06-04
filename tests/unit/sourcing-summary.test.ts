@@ -56,6 +56,7 @@ describe("funnelDrops", () => {
     shortlisted: 20,
     per_source: {},
     degraded_sources: [],
+    degraded_details: [],
   };
 
   it("derives drop/kept per stage straight from the counts", () => {

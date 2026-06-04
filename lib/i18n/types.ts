@@ -413,6 +413,7 @@ export type TranslationKey =
   | "sourcing.results.running_hint"
   | "sourcing.results.failed_hint"
   | "sourcing.results.partial_note"
+  | "sourcing.results.hh_reconnect_hint"
   | "sourcing.results.empty_title"
   | "sourcing.results.empty_hint"
   | "sourcing.results.count_summary"

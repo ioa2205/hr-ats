@@ -413,6 +413,7 @@ export const uz: Translations = {
   "sourcing.results.running_hint": "Qidiruv fonda bajarilmoqda. Qisqa ro‘yxat tayyor bo‘lganda bu sahifa yangilanadi.",
   "sourcing.results.failed_hint": "Qidiruv muvaffaqiyatsiz tugadi. Qaytadan urinib ko‘ring.",
   "sourcing.results.partial_note": "Ba’zi manbalar mavjud bo‘lmadi — mavjudlaridan natijalar ko‘rsatildi.",
+  "sourcing.results.hh_reconnect_hint": "hh.uz mavjud emas. HH ish beruvchi akkauntini qayta ulang, keyin qidiruvni takrorlang.",
   "sourcing.results.empty_title": "Mos nomzod topilmadi",
   "sourcing.results.empty_hint": "Bazadan hech kim barcha majburiy talablardan o‘tmadi. Biz mos kelmaganlarni hech qachon ko‘rsatmaymiz.",
   "sourcing.results.count_summary": "20 tadan {count} ta — moslik bo‘yicha kamayish tartibida",

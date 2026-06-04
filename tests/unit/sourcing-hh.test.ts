@@ -172,13 +172,14 @@ describe("HhClient — token + search", () => {
       apiBaseUrl: "https://api.hh.ru",
       tokenUrl: "https://api.hh.ru/token",
       userAgent: "TezHR/test",
+      host: "hh.uz",
       fetchFn,
       now: () => 1_000_000,
       ...over,
     };
   }
 
-  it("requests a client_credentials token and sends UA + bearer on search", async () => {
+  it("requests a token and sends HH-User-Agent, host=hh.uz, area + bearer on search", async () => {
     const calls: Array<{ url: string; init?: RequestInit }> = [];
     const fetchFn = vi.fn(async (url: string | URL | Request, init?: RequestInit) => {
       const u = url.toString();
@@ -194,10 +195,11 @@ describe("HhClient — token + search", () => {
     const tokenCall = calls.find((c) => c.url.includes("/token"))!;
     expect(String(tokenCall.init?.body)).toContain("grant_type=client_credentials");
     const searchCall = calls.find((c) => c.url.includes("/resumes"))!;
+    expect(searchCall.url).toContain("host=hh.uz");
     expect(searchCall.url).toContain("area=2759");
     expect(searchCall.url).toContain("text=driver");
     const headers = searchCall.init?.headers as Record<string, string>;
-    expect(headers["User-Agent"]).toBe("TezHR/test");
+    expect(headers["HH-User-Agent"]).toBe("TezHR/test");
     expect(headers.Authorization).toBe("Bearer TKN");
   });
 
@@ -231,6 +233,24 @@ describe("HhClient — token + search", () => {
     await client.searchResumes({ text: "a", perPage: 50, page: 0 });
     expect(body).toContain("grant_type=refresh_token");
     expect(body).toContain("refresh_token=RT");
+    expect(body).not.toContain("client_id=");
+    expect(body).not.toContain("client_secret=");
+  });
+
+  it("persists rotated refresh tokens", async () => {
+    const onToken = vi.fn();
+    const fetchFn = vi.fn(async (url: string | URL | Request) => {
+      const u = url.toString();
+      if (u.includes("/token")) {
+        return jsonResponse({ access_token: "NEW", refresh_token: "RT2", expires_in: 120 });
+      }
+      return jsonResponse({ items: [], pages: 0 });
+    }) as unknown as typeof fetch;
+    const client = new HhClient(baseCfg(fetchFn, { refreshToken: "RT1", onToken }));
+    await client.searchResumes({ text: "a", perPage: 50, page: 0 });
+    expect(onToken).toHaveBeenCalledWith(
+      expect.objectContaining({ accessToken: "NEW", refreshToken: "RT2" }),
+    );
   });
 
   it("retries once on a 401 by re-authenticating", async () => {
@@ -239,7 +259,7 @@ describe("HhClient — token + search", () => {
       const u = url.toString();
       if (u.includes("/token")) return jsonResponse({ access_token: "TKN", expires_in: 1800 });
       searchHits += 1;
-      if (searchHits === 1) return new Response("unauthorized", { status: 401 });
+      if (searchHits === 1) return jsonResponse({ type: "token_expired" }, 401);
       return jsonResponse({ items: [{ id: "ok" }], pages: 1 });
     }) as unknown as typeof fetch;
     const client = new HhClient(baseCfg(fetchFn));
@@ -265,6 +285,18 @@ describe("HhClient — token + search", () => {
     const client = new HhClient(baseCfg(fetchFn));
     await expect(client.searchResumes({ text: "a", perPage: 50, page: 0 })).rejects.toBeInstanceOf(
       HhRequestError,
+    );
+  });
+
+  it("keeps secrets out of request error messages", async () => {
+    const fetchFn = vi.fn(async (url: string | URL | Request) => {
+      const u = url.toString();
+      if (u.includes("/token")) return jsonResponse({ access_token: "TKN", expires_in: 1800 });
+      return jsonResponse({ error: "bad_authorization", error_description: "refresh_token SUPERSECRET" }, 403);
+    }) as unknown as typeof fetch;
+    const client = new HhClient(baseCfg(fetchFn));
+    await expect(client.searchResumes({ text: "a", perPage: 50, page: 0 })).rejects.toThrow(
+      /\[REDACTED\]/,
     );
   });
 });

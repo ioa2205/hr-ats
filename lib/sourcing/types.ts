@@ -215,6 +215,12 @@ export interface SourcingStats {
   per_source: Partial<Record<SourceKind, number>>;
   /** sources that degraded (errored) mid-run ⇒ run completes as `partial`. */
   degraded_sources: SourceKind[];
+  degraded_details: Array<{
+    source: SourceKind;
+    status?: number;
+    code?: string;
+    message: string;
+  }>;
 }
 
 export function emptyStats(): SourcingStats {
@@ -227,5 +233,6 @@ export function emptyStats(): SourcingStats {
     shortlisted: 0,
     per_source: {},
     degraded_sources: [],
+    degraded_details: [],
   };
 }

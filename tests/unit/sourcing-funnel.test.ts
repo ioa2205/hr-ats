@@ -189,6 +189,7 @@ describe("runFunnel — accuracy guarantee end-to-end", () => {
     const result = await runFunnel({ posting, frozenProfile: null, budget: BUDGET }, deps);
     expect(result.status).toBe("partial");
     expect(result.stats.degraded_sources).toContain("hh");
+    expect(result.stats.degraded_details[0]).toMatchObject({ source: "hh" });
     expect(result.shortlist.map((e) => e.profile.full_name)).toEqual(["Good"]);
   });
 
