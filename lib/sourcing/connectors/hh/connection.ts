@@ -268,6 +268,43 @@ export async function disconnectCompanyHh(companyId: string): Promise<void> {
     .eq("company_id", companyId);
 }
 
+/**
+ * Save the platform-wide fallback connection (operator OAuth). Every tenant
+ * without its own connection searches hh through this shared employer account.
+ * Tokens go to Vault; the row stores only references + status.
+ */
+export async function savePlatformHhConnection(input: {
+  token: HhPersistedTokenState;
+}): Promise<void> {
+  const admin = createAdminClient();
+  await upsertSecret(admin, PLATFORM_ACCESS_SECRET, input.token.accessToken);
+  if (!input.token.refreshToken) throw new Error("hh_refresh_token_missing");
+  await upsertSecret(admin, PLATFORM_REFRESH_SECRET, input.token.refreshToken);
+
+  await admin.from("platform_hh_connection").upsert(
+    {
+      id: true,
+      access_secret_name: PLATFORM_ACCESS_SECRET,
+      refresh_secret_name: PLATFORM_REFRESH_SECRET,
+      access_expires_at: input.token.accessExpiresAt,
+      status: "active",
+      last_error: null,
+      last_error_at: null,
+    },
+    { onConflict: "id" },
+  );
+}
+
+export async function disconnectPlatformHh(): Promise<void> {
+  const admin = createAdminClient();
+  await admin
+    .from("platform_hh_connection")
+    .upsert(
+      { id: true, status: "disabled", last_error: null, last_error_at: null },
+      { onConflict: "id" },
+    );
+}
+
 export async function checkHhHealth(companyId?: string): Promise<HhConnectionHealth> {
   if (!hasBaseConfig()) return { configured: false, scope: "none", status: "not_configured" };
   const admin = createAdminClient();

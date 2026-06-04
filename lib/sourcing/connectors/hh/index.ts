@@ -6,7 +6,9 @@ export {
   checkHhHealth,
   createHhConnectorForCompany,
   disconnectCompanyHh,
+  disconnectPlatformHh,
   hhAvailableForCompany,
   isHhConfigured,
   saveCompanyHhConnection,
+  savePlatformHhConnection,
 } from "./connection";

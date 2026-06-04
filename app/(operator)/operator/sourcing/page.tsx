@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui";
 import { useTranslation } from "@/lib/i18n/provider";
+import { HhPlatformConnectionCard } from "@/components/operator/hh-platform-connection-card";
 import type { TranslationKey } from "@/lib/i18n/types";
 import type { RunsSummary } from "@/lib/sourcing/summary";
 import type { SourceKind, SourcingStats, SourcingStatus } from "@/lib/sourcing/types";
@@ -148,6 +149,8 @@ export default function OperatorSourcingPage() {
       </div>
 
       <p className="text-on-surface-variant -mt-3 text-sm">{t("operator.sourcing.subtitle")}</p>
+
+      <HhPlatformConnectionCard />
 
       {!loading && summary && (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-6">
