@@ -14,20 +14,15 @@ const errorKeys: Record<string, TranslationKey> = {
   invalid_credentials: "auth.invalid_credentials",
 };
 
-export function LoginForm() {
+export function LoginForm({ nextPath }: { nextPath?: string }) {
   const { t } = useTranslation();
-  const [state, formAction, isPending] = useActionState<AuthState, FormData>(
-    signInWithEmail,
-    null,
-  );
+  const [state, formAction, isPending] = useActionState<AuthState, FormData>(signInWithEmail, null);
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
       {state?.error && (
         <AuthBanner tone="error">
-          {errorKeys[state.error]
-            ? t(errorKeys[state.error])
-            : t("auth.invalid_credentials")}
+          {errorKeys[state.error] ? t(errorKeys[state.error]) : t("auth.invalid_credentials")}
         </AuthBanner>
       )}
 
@@ -39,6 +34,8 @@ export function LoginForm() {
         required
         placeholder="you@example.com"
       />
+
+      {nextPath && <input type="hidden" name="next" value={nextPath} />}
 
       <AuthField
         label={t("auth.password")}

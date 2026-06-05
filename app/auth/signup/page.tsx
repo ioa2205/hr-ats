@@ -18,6 +18,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
   const sp = await searchParams;
   const rawEmail = typeof sp.email === "string" ? sp.email : undefined;
   const rawInvite = typeof sp.invite === "string" ? sp.invite : undefined;
+  const rawIntent = sp.intent === "pro" ? "pro" : undefined;
   const locale = await getLocale();
 
   return (
@@ -29,13 +30,13 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
       >
         <OAuthButtons />
         <AuthDivider label={t("auth.or", locale)} />
-        <SignupForm pinnedEmail={rawEmail} inviteToken={rawInvite} />
+        <SignupForm pinnedEmail={rawEmail} inviteToken={rawInvite} intent={rawIntent} />
       </AuthPanel>
 
       <p className="text-ink-4 text-center text-[13px]">
         {t("auth.already_have_account", locale)}
         <Link
-          href="/auth/login"
+          href={rawIntent === "pro" ? "/auth/login?next=/upgrade" : "/auth/login"}
           className="text-ink hover:text-persimmon ml-1.5 font-semibold underline-offset-2 hover:underline"
         >
           {t("auth.sign_in", locale)}

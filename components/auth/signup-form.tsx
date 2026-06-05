@@ -18,14 +18,12 @@ const errorMessageKeys: Record<string, TranslationKey> = {
 interface SignupFormProps {
   pinnedEmail?: string;
   inviteToken?: string;
+  intent?: "pro";
 }
 
-export function SignupForm({ pinnedEmail, inviteToken }: SignupFormProps = {}) {
+export function SignupForm({ pinnedEmail, inviteToken, intent }: SignupFormProps = {}) {
   const { t } = useTranslation();
-  const [state, formAction, isPending] = useActionState<AuthState, FormData>(
-    signUpWithEmail,
-    null,
-  );
+  const [state, formAction, isPending] = useActionState<AuthState, FormData>(signUpWithEmail, null);
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
@@ -38,6 +36,7 @@ export function SignupForm({ pinnedEmail, inviteToken }: SignupFormProps = {}) {
       )}
 
       {inviteToken && <input type="hidden" name="invite" value={inviteToken} />}
+      {intent && <input type="hidden" name="intent" value={intent} />}
 
       <AuthField
         label={t("auth.full_name")}

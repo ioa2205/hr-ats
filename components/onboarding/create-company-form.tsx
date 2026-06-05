@@ -31,9 +31,10 @@ export interface CreateCompanyLabels {
 
 interface CreateCompanyFormProps {
   labels: CreateCompanyLabels;
+  intent?: "pro";
 }
 
-export function CreateCompanyForm({ labels }: CreateCompanyFormProps) {
+export function CreateCompanyForm({ labels, intent }: CreateCompanyFormProps) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [defaultLocale, setDefaultLocale] = useState("ru");
@@ -65,7 +66,7 @@ export function CreateCompanyForm({ labels }: CreateCompanyFormProps) {
         return;
       }
 
-      router.push("/hr/dashboard");
+      router.push(intent === "pro" ? "/hr/settings/billing?intent=pro" : "/hr/dashboard");
       router.refresh();
     } catch {
       setError(labels.error_create_failed);
@@ -97,9 +98,7 @@ export function CreateCompanyForm({ labels }: CreateCompanyFormProps) {
           {labels.default_locale}
         </label>
         <Select value={defaultLocale} onValueChange={setDefaultLocale}>
-          <SelectTrigger
-            className="border-rule bg-paper text-ink hover:border-ink-6 h-[44px] rounded-[6px] px-3.5 text-[14.5px] transition-colors"
-          >
+          <SelectTrigger className="border-rule bg-paper text-ink hover:border-ink-6 h-[44px] rounded-[6px] px-3.5 text-[14.5px] transition-colors">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -116,7 +115,7 @@ export function CreateCompanyForm({ labels }: CreateCompanyFormProps) {
           type="button"
           variant="ghost"
           size="lg"
-          onClick={() => router.push("/onboarding")}
+          onClick={() => router.push(intent === "pro" ? "/onboarding?intent=pro" : "/onboarding")}
           leadingIcon={<ArrowLeft className="h-3.5 w-3.5" />}
           className="h-11 text-[13.5px]"
         >

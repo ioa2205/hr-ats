@@ -23,6 +23,12 @@ async function getOrigin(): Promise<string> {
   return host ? `${proto}://${host}` : env.APP_URL;
 }
 
+function safeNextPath(value: FormDataEntryValue | null, fallback: string): string {
+  if (typeof value !== "string") return fallback;
+  if (!value.startsWith("/") || value.startsWith("//")) return fallback;
+  return value;
+}
+
 export async function signUpWithEmail(_prev: AuthState, formData: FormData): Promise<AuthState> {
   const parsed = signUpSchema.safeParse({
     email: formData.get("email"),
@@ -36,12 +42,13 @@ export async function signUpWithEmail(_prev: AuthState, formData: FormData): Pro
 
   const supabase = await createClient();
   const origin = await getOrigin();
+  const nextPath = formData.get("intent") === "pro" ? "/onboarding?intent=pro" : "/onboarding";
 
   const { error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      emailRedirectTo: `${origin}/auth/callback?next=/onboarding`,
+      emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
       data: {
         full_name: parsed.data.full_name,
       },
@@ -84,7 +91,8 @@ export async function signInWithEmail(_prev: AuthState, formData: FormData): Pro
   }
 
   const isOperator = data.user?.app_metadata?.is_operator === true;
-  redirect(isOperator ? "/operator" : "/hr/dashboard");
+  const nextPath = safeNextPath(formData.get("next"), "");
+  redirect(nextPath || (isOperator ? "/operator" : "/hr/dashboard"));
 }
 
 export async function signInWithGoogle(): Promise<void> {
@@ -163,10 +171,7 @@ export async function signOut(): Promise<void> {
   redirect("/auth/login");
 }
 
-export async function resendVerification(
-  _prev: AuthState,
-  formData: FormData,
-): Promise<AuthState> {
+export async function resendVerification(_prev: AuthState, formData: FormData): Promise<AuthState> {
   const parsed = requestPasswordResetSchema.safeParse({
     email: formData.get("email"),
   });

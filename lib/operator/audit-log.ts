@@ -12,6 +12,8 @@ export type OperatorAuditAction =
   | "operator.promotion.propose"
   | "operator.promotion.approve"
   | "operator.promotion.reject"
+  | "operator.subscription_upgrade.approve"
+  | "operator.subscription_upgrade.reject"
   | "operator.grant.bootstrap"
   | "operator.platform_setting.update";
 
@@ -57,11 +59,12 @@ export async function writeOperatorAudit(args: WriteOperatorAuditArgs): Promise<
 }
 
 /** Extract `ip` and `user_agent` from a Next.js Request/Headers surface. */
-export function extractRequestContext(headers: Headers): { ip: string | null; userAgent: string | null } {
+export function extractRequestContext(headers: Headers): {
+  ip: string | null;
+  userAgent: string | null;
+} {
   const ip =
-    headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    headers.get("x-real-ip") ??
-    null;
+    headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? headers.get("x-real-ip") ?? null;
   const userAgent = headers.get("user-agent");
   return { ip, userAgent };
 }

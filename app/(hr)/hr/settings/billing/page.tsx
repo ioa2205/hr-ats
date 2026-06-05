@@ -4,19 +4,13 @@ import { Lock, Check } from "lucide-react";
 import { format } from "date-fns";
 import { ru as ruLocale, enUS, uz } from "date-fns/locale";
 import { requireCompanyAccess } from "@/lib/auth/guards";
-import {
-  canGenerateQuestions,
-  canScheduleInterview,
-  getQuotaState,
-} from "@/lib/companies/quota";
+import { canGenerateQuestions, canScheduleInterview, getQuotaState } from "@/lib/companies/quota";
 import { getLocale, t } from "@/lib/i18n";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { Locale, TranslationKey } from "@/lib/i18n/types";
 import { Panel, PanelHeader, PanelTitle, Pill, SettingsHeader } from "@/components/hr/design";
 import { cn } from "@/lib/utils";
-import {
-  CancelButton,
-  UpgradeButton,
-} from "@/components/hr/settings/billing/billing-dialogs";
+import { CancelButton, UpgradeButton } from "@/components/hr/settings/billing/billing-dialogs";
 
 const MOST_POPULAR = true;
 
@@ -26,8 +20,13 @@ const dateLocaleByLocale: Record<Locale, typeof ruLocale> = {
   en: enUS,
 };
 
-export default async function BillingSettingsPage() {
+export default async function BillingSettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ intent?: string }>;
+}) {
   const { companyId } = await requireCompanyAccess();
+  const sp = await searchParams;
   const locale = await getLocale();
   const quota = await getQuotaState(companyId);
 
@@ -40,10 +39,19 @@ export default async function BillingSettingsPage() {
     );
   }
 
-  const [interviewBookings, aiQuestions] = await Promise.all([
+  const admin = createAdminClient();
+  const [interviewBookings, aiQuestions, pendingUpgradeResult] = await Promise.all([
     canScheduleInterview(companyId),
     canGenerateQuestions(companyId),
+    admin
+      .from("subscription_upgrade_requests")
+      .select("id")
+      .eq("company_id", companyId)
+      .eq("status", "pending")
+      .maybeSingle(),
   ]);
+  const hasPendingUpgrade = Boolean(pendingUpgradeResult.data);
+  const autoOpenUpgrade = sp.intent === "pro";
 
   const trialDate = format(new Date(quota.trialEndsAt), "d MMMM yyyy", {
     locale: dateLocaleByLocale[locale],
@@ -65,6 +73,8 @@ export default async function BillingSettingsPage() {
         locale={locale}
         trialDate={trialDate}
         status={quota.status}
+        hasPendingUpgrade={hasPendingUpgrade}
+        autoOpenUpgrade={autoOpenUpgrade}
       />
 
       <Panel className="mb-4">
@@ -130,7 +140,7 @@ export default async function BillingSettingsPage() {
         {!isPro && (
           <div className="border-rule flex items-center justify-end gap-2 border-t px-[18px] py-3">
             {(isExpired || isCancelled) && <CancelStatus status={quota.status} locale={locale} />}
-            <UpgradeButton />
+            <UpgradeButton hasPendingRequest={hasPendingUpgrade} />
           </div>
         )}
       </Panel>
@@ -160,7 +170,6 @@ export default async function BillingSettingsPage() {
           {t("hr.settings.billing.invoices.empty", locale)}
         </div>
       </Panel>
-
     </section>
   );
 }
@@ -170,11 +179,15 @@ function PlanCard({
   locale,
   trialDate,
   status,
+  hasPendingUpgrade,
+  autoOpenUpgrade,
 }: {
   quota: { status: string; daysRemaining: number; canWrite: boolean };
   locale: Locale;
   trialDate: string;
   status: string;
+  hasPendingUpgrade: boolean;
+  autoOpenUpgrade: boolean;
 }) {
   const isPro = status === "active";
   const isTrial = status === "trialing";
@@ -190,10 +203,9 @@ function PlanCard({
         ? "hr.settings.billing.plan.cancelled_badge"
         : "hr.settings.billing.plan.trial_badge";
 
-  const trialPct =
-    isTrial
-      ? Math.max(0, Math.min(100, Math.round(((14 - quota.daysRemaining) / 14) * 100)))
-      : 0;
+  const trialPct = isTrial
+    ? Math.max(0, Math.min(100, Math.round(((14 - quota.daysRemaining) / 14) * 100)))
+    : 0;
 
   return (
     <Panel className="mb-4">
@@ -238,7 +250,9 @@ function PlanCard({
             </div>
           )}
         </div>
-        {!isPro && <UpgradeButton />}
+        {!isPro && (
+          <UpgradeButton hasPendingRequest={hasPendingUpgrade} autoOpen={autoOpenUpgrade} />
+        )}
       </div>
     </Panel>
   );
@@ -259,10 +273,7 @@ function UsageRow({
     return (
       <div className="flex items-center justify-between gap-3 px-[18px] py-3">
         <div className="text-ink text-[13px] font-semibold">{label}</div>
-        <div
-          className="text-ink-4 text-[11.5px]"
-          style={{ fontFamily: "var(--font-tez-mono)" }}
-        >
+        <div className="text-ink-4 text-[11.5px]" style={{ fontFamily: "var(--font-tez-mono)" }}>
           {used} · {t("hr.settings.billing.usage.unlimited", locale)}
         </div>
       </div>
@@ -276,10 +287,7 @@ function UsageRow({
     <div className="px-[18px] py-3">
       <div className="flex items-center justify-between gap-3">
         <div className="text-ink text-[13px] font-semibold">{label}</div>
-        <div
-          className="text-ink-4 text-[11.5px]"
-          style={{ fontFamily: "var(--font-tez-mono)" }}
-        >
+        <div className="text-ink-4 text-[11.5px]" style={{ fontFamily: "var(--font-tez-mono)" }}>
           {t("hr.settings.billing.usage.used_of", locale, {
             used: String(used),
             limit: String(limit),
@@ -315,15 +323,10 @@ function ComparisonColumn({
   ribbon?: string | null;
 }) {
   return (
-    <div
-      className={cn(
-        "relative px-5 py-5",
-        highlighted ? "bg-persimmon-tint/30" : "bg-paper",
-      )}
-    >
+    <div className={cn("relative px-5 py-5", highlighted ? "bg-persimmon-tint/30" : "bg-paper")}>
       {ribbon && (
         <div
-          className="bg-persimmon text-paper absolute right-3 top-3 rounded-[3px] px-1.5 py-[1px] text-[9.5px] font-semibold uppercase tracking-[0.1em]"
+          className="bg-persimmon text-paper absolute top-3 right-3 rounded-[3px] px-1.5 py-[1px] text-[9.5px] font-semibold tracking-[0.1em] uppercase"
           style={{ fontFamily: "var(--font-tez-mono)" }}
         >
           {ribbon}

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { TezButton } from "@/components/hr/design";
 import { useTranslation } from "@/lib/i18n/provider";
-import { requestCancel } from "@/lib/actions/billing";
+import { requestCancel, requestUpgrade } from "@/lib/actions/billing";
 import type { TranslationKey } from "@/lib/i18n/types";
 
 type CancelReason = "too_expensive" | "missing_feature" | "no_need" | "other";
@@ -16,40 +16,35 @@ const CANCEL_REASONS: { value: CancelReason; labelKey: TranslationKey }[] = [
   { value: "other", labelKey: "hr.settings.billing.cancel.reason_other" },
 ];
 
-export function UpgradeButton({ emphasized = true }: { emphasized?: boolean }) {
+export function UpgradeButton({
+  emphasized = true,
+  hasPendingRequest = false,
+  autoOpen = false,
+}: {
+  emphasized?: boolean;
+  hasPendingRequest?: boolean;
+  autoOpen?: boolean;
+}) {
   const { t } = useTranslation();
-  const [status, setStatus] = useState<"idle" | "redirecting" | "error" | "not_configured">(
-    "idle",
+  const [open, setOpen] = useState(autoOpen);
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">(
+    hasPendingRequest ? "sent" : "idle",
   );
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const submit = async () => {
-    setStatus("redirecting");
-    setErrorMsg(null);
-    try {
-      const res = await fetch("/api/billing/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan_code: "pro_monthly_flat" }),
-      });
-      if (res.status === 503) {
-        setStatus("not_configured");
+    setStatus("sending");
+    const res = await requestUpgrade({
+      source: autoOpen ? "landing_intent" : "billing_settings",
+    });
+    if (res.ok) {
+      if (res.status === "already_pro") {
+        window.location.reload();
         return;
       }
-      if (!res.ok) {
-        setStatus("error");
-        return;
-      }
-      const data = (await res.json()) as { url?: string };
-      if (!data.url) {
-        setStatus("error");
-        return;
-      }
-      window.location.href = data.url;
-    } catch (err) {
-      setErrorMsg((err as Error).message);
-      setStatus("error");
+      setStatus("sent");
+      return;
     }
+    setStatus("error");
   };
 
   return (
@@ -57,22 +52,73 @@ export function UpgradeButton({ emphasized = true }: { emphasized?: boolean }) {
       <TezButton
         variant={emphasized ? "accent" : "secondary"}
         size="md"
-        onClick={submit}
-        disabled={status === "redirecting"}
+        onClick={() => {
+          setStatus(hasPendingRequest ? "sent" : "idle");
+          setOpen(true);
+        }}
+        disabled={status === "sending"}
       >
-        {status === "redirecting"
+        {status === "sending"
           ? t("hr.settings.billing.upgrade.dialog_submitting")
-          : t("hr.settings.billing.cta.upgrade")}
+          : hasPendingRequest || status === "sent"
+            ? t("hr.settings.billing.upgrade.dialog_sent_title")
+            : t("hr.settings.billing.cta.upgrade")}
       </TezButton>
-      {status === "error" && (
-        <p className="text-tez-red mt-2 text-right text-[11.5px]">
-          {errorMsg ?? t("hr.settings.billing.upgrade.dialog_error")}
-        </p>
-      )}
-      {status === "not_configured" && (
-        <p className="text-ink-4 mt-2 text-right text-[11.5px]">
-          {t("hr.settings.billing.upgrade.dialog_error")}
-        </p>
+      {open && (
+        <DialogShell onClose={() => setOpen(false)}>
+          {status === "sent" ? (
+            <div className="text-center">
+              <div className="text-ink text-[14px] font-semibold">
+                {t("hr.settings.billing.upgrade.dialog_sent_title")}
+              </div>
+              <p className="text-ink-4 mt-2 text-[12.5px] leading-[1.5]">
+                {t("hr.settings.billing.upgrade.dialog_sent_body")}
+              </p>
+              <TezButton
+                variant="secondary"
+                size="sm"
+                className="mt-4"
+                onClick={() => setOpen(false)}
+              >
+                {t("common.save")}
+              </TezButton>
+            </div>
+          ) : (
+            <>
+              <div className="text-ink text-[16px] font-semibold tracking-[-0.01em]">
+                {t("hr.settings.billing.upgrade.dialog_title")}
+              </div>
+              <p className="text-ink-4 mt-2 text-[12.5px] leading-[1.5]">
+                {t("hr.settings.billing.upgrade.dialog_body")}
+              </p>
+              {status === "error" && (
+                <p className="text-tez-red mt-2 text-[11.5px]">
+                  {t("hr.settings.billing.upgrade.dialog_error")}
+                </p>
+              )}
+              <div className="mt-4 flex justify-end gap-2">
+                <TezButton
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setOpen(false)}
+                  disabled={status === "sending"}
+                >
+                  {t("common.cancel")}
+                </TezButton>
+                <TezButton
+                  variant="primary"
+                  size="sm"
+                  onClick={submit}
+                  disabled={status === "sending"}
+                >
+                  {status === "sending"
+                    ? t("hr.settings.billing.upgrade.dialog_submitting")
+                    : t("hr.settings.billing.upgrade.dialog_submit")}
+                </TezButton>
+              </div>
+            </>
+          )}
+        </DialogShell>
       )}
     </>
   );
@@ -202,18 +248,12 @@ export function CancelButton() {
   );
 }
 
-function DialogShell({
-  children,
-  onClose,
-}: {
-  children: React.ReactNode;
-  onClose: () => void;
-}) {
+function DialogShell({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
   return (
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
+      className="bg-ink/40 fixed inset-0 z-50 flex items-center justify-center p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}

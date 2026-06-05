@@ -7,7 +7,13 @@ import {
   type OnboardingLabels,
 } from "@/components/onboarding/onboarding-decision";
 
-export default async function OnboardingPage() {
+export default async function OnboardingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ intent?: string }>;
+}) {
+  const sp = await searchParams;
+  const intent = sp.intent === "pro" ? "pro" : undefined;
   const supabase = await createClient();
   const {
     data: { user },
@@ -24,7 +30,7 @@ export default async function OnboardingPage() {
     .single();
 
   if (profile?.current_company_id) {
-    redirect("/hr/dashboard");
+    redirect(intent === "pro" ? "/hr/settings/billing?intent=pro" : "/hr/dashboard");
   }
 
   const locale = await getLocale();
@@ -52,7 +58,7 @@ export default async function OnboardingPage() {
       title={t("onboarding.title", locale)}
       subtitle={t("onboarding.subtitle", locale)}
     >
-      <OnboardingDecision labels={labels} />
+      <OnboardingDecision labels={labels} intent={intent} />
     </AuthPanel>
   );
 }

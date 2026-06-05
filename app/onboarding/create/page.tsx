@@ -7,7 +7,13 @@ import {
   type CreateCompanyLabels,
 } from "@/components/onboarding/create-company-form";
 
-export default async function OnboardingCreatePage() {
+export default async function OnboardingCreatePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ intent?: string }>;
+}) {
+  const sp = await searchParams;
+  const intent = sp.intent === "pro" ? "pro" : undefined;
   const supabase = await createClient();
   const {
     data: { user },
@@ -24,7 +30,7 @@ export default async function OnboardingCreatePage() {
     .single();
 
   if (profile?.current_company_id) {
-    redirect("/hr/dashboard");
+    redirect(intent === "pro" ? "/hr/settings/billing?intent=pro" : "/hr/dashboard");
   }
 
   const locale = await getLocale();
@@ -50,7 +56,7 @@ export default async function OnboardingCreatePage() {
       title={t("onboarding.create_title", locale)}
       subtitle={t("onboarding.create_subtitle", locale)}
     >
-      <CreateCompanyForm labels={labels} />
+      <CreateCompanyForm labels={labels} intent={intent} />
     </AuthPanel>
   );
 }

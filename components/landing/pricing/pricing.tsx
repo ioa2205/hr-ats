@@ -4,12 +4,12 @@ import { SIGNUP_HREF } from "../constants";
 import { ComparisonTable } from "./comparison-table";
 import { FAQ } from "./faq";
 import { PlanCard, PlanCtaLink } from "./plan-card";
-import { ProContactDialog } from "./pro-contact-dialog";
 
 const PRO_MIN_UZS = 1_500_000;
 const PRO_MIN_USD = 120;
 
 const TRIAL_HREF = `${SIGNUP_HREF}?utm_source=landing&utm_section=pricing_trial`;
+const PRO_HREF = "/upgrade?source=landing_pricing";
 
 export async function Pricing() {
   const { locale, t } = await getT();
@@ -100,10 +100,7 @@ export async function Pricing() {
           >
             {t("landing.pricing.section_tag")}
           </span>
-          <span
-            className="serif text-[20px] italic"
-            style={{ color: "var(--ink-3)" }}
-          >
+          <span className="serif text-[20px] italic" style={{ color: "var(--ink-3)" }}>
             {t("landing.pricing.section_title")}
           </span>
           <span
@@ -144,11 +141,7 @@ export async function Pricing() {
               t("landing.pricing.trial_f5_new"),
             ]}
             ctaSlot={
-              <PlanCtaLink
-                href={TRIAL_HREF}
-                label={t("landing.pricing.trial_cta")}
-                isPrimary
-              />
+              <PlanCtaLink href={TRIAL_HREF} label={t("landing.pricing.trial_cta")} isPrimary />
             }
             note={t("landing.pricing.trial_note")}
             variant="primary"
@@ -169,30 +162,10 @@ export async function Pricing() {
               t("landing.pricing.pro_f5_new"),
             ]}
             ctaSlot={
-              <ProContactDialog
-                labels={{
-                  triggerLabel: t("landing.pricing.pro_cta_new"),
-                  heading: t("landing.pricing.pro_dialog_heading"),
-                  intro: t("landing.pricing.pro_dialog_intro"),
-                  closeLabel: t("landing.hero.demo_close"),
-                  nameLabel: t("landing.pricing.pro_dialog_name"),
-                  emailLabel: t("landing.pricing.pro_dialog_email"),
-                  companyLabel: t("landing.pricing.pro_dialog_company"),
-                  teamSizeLabel: t("landing.pricing.pro_dialog_team"),
-                  channelLabel: t("landing.pricing.pro_dialog_channel"),
-                  messageLabel: t("landing.pricing.pro_dialog_message"),
-                  messagePlaceholder: t("landing.pricing.pro_dialog_message_ph"),
-                  submit: t("landing.pricing.pro_dialog_submit"),
-                  submitting: t("landing.pricing.pro_dialog_submitting"),
-                  successHeading: t("landing.pricing.pro_dialog_success_h"),
-                  successBody: t("landing.pricing.pro_dialog_success_b"),
-                  errorGeneric: t("landing.pricing.pro_dialog_err_generic"),
-                  errorRateLimited: t("landing.pricing.pro_dialog_err_rate"),
-                  channelTelegram: "Telegram",
-                  channelPhone: t("landing.pricing.pro_dialog_ch_phone"),
-                  channelEmail: "Email",
-                  teamSizes: ["1–5", "6–20", "21–100", "100+"],
-                }}
+              <PlanCtaLink
+                href={PRO_HREF}
+                label={t("landing.pricing.pro_cta_new")}
+                isPrimary={false}
               />
             }
             note={t("landing.pricing.pro_note_new")}

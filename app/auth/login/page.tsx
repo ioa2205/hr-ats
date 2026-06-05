@@ -13,7 +13,19 @@ export const metadata: Metadata = {
   title: "Sign in · TezHR",
 };
 
-export default async function LoginPage() {
+function safeNextPath(value: string | string[] | undefined): string | null {
+  if (typeof value !== "string") return null;
+  if (!value.startsWith("/") || value.startsWith("//")) return null;
+  return value;
+}
+
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const nextPath = safeNextPath(sp.next);
   const supabase = await createClient();
   const {
     data: { user },
@@ -22,7 +34,7 @@ export default async function LoginPage() {
 
   if (user) {
     const isOperator = user.app_metadata?.is_operator === true;
-    const continueHref = isOperator ? "/operator" : "/hr/dashboard";
+    const continueHref = nextPath ?? (isOperator ? "/operator" : "/hr/dashboard");
     return (
       <AuthPanel
         eyebrow={t("auth.sign_in", locale)}
@@ -63,13 +75,13 @@ export default async function LoginPage() {
       >
         <OAuthButtons />
         <AuthDivider label={t("auth.or", locale)} />
-        <LoginForm />
+        <LoginForm nextPath={nextPath ?? undefined} />
       </AuthPanel>
 
       <p className="text-ink-4 text-center text-[13px]">
         {t("auth.no_account", locale)}
         <Link
-          href="/auth/signup"
+          href={nextPath === "/upgrade" ? "/auth/signup?intent=pro" : "/auth/signup"}
           className="text-ink hover:text-persimmon ml-1.5 font-semibold underline-offset-2 hover:underline"
         >
           {t("auth.create_account", locale)}

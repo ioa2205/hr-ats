@@ -26,9 +26,10 @@ export interface OnboardingLabels {
 
 interface OnboardingDecisionProps {
   labels: OnboardingLabels;
+  intent?: "pro";
 }
 
-export function OnboardingDecision({ labels }: OnboardingDecisionProps) {
+export function OnboardingDecision({ labels, intent }: OnboardingDecisionProps) {
   const router = useRouter();
   const [token, setToken] = useState("");
   const [joining, setJoining] = useState(false);
@@ -62,7 +63,7 @@ export function OnboardingDecision({ labels }: OnboardingDecisionProps) {
         return;
       }
 
-      router.push("/hr/dashboard");
+      router.push(intent === "pro" ? "/hr/settings/billing?intent=pro" : "/hr/dashboard");
       router.refresh();
     } catch {
       setError(labels.error_accept_failed);
@@ -76,16 +77,16 @@ export function OnboardingDecision({ labels }: OnboardingDecisionProps) {
       {/* Create Company — primary path */}
       <button
         type="button"
-        onClick={() => router.push("/onboarding/create")}
+        onClick={() =>
+          router.push(intent === "pro" ? "/onboarding/create?intent=pro" : "/onboarding/create")
+        }
         className="border-rule bg-paper hover:border-ink-6 hover:bg-bone-2/60 group flex items-center gap-3 rounded-[6px] border px-4 py-3.5 text-left transition-colors"
       >
         <span className="bg-ink text-paper flex h-10 w-10 shrink-0 items-center justify-center rounded-[5px]">
           <Building2 className="h-5 w-5" strokeWidth={1.75} />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="text-ink block text-[14px] font-semibold">
-            {labels.create_company}
-          </span>
+          <span className="text-ink block text-[14px] font-semibold">{labels.create_company}</span>
           <span className="text-ink-4 mt-0.5 block text-[12.5px] leading-[1.45]">
             {labels.create_company_desc}
           </span>

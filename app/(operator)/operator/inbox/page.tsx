@@ -2,6 +2,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireOperator } from "@/lib/auth/guards";
 import { InboxView } from "./inbox-view";
 import { PendingPromotions } from "@/components/operator/inbox/pending-promotions";
+import { PendingSubscriptionUpgrades } from "@/components/operator/inbox/pending-subscription-upgrades";
 
 interface ContactMessage {
   id: string;
@@ -54,6 +55,7 @@ export default async function InboxPage({
 
   return (
     <div className="flex flex-col gap-4">
+      <PendingSubscriptionUpgrades />
       <PendingPromotions />
       <InboxView
         messages={(messages ?? []) as ContactMessage[]}
