@@ -20,15 +20,27 @@ export function SuccessState({ t }: SuccessStateProps) {
           <Check className="text-persimmon-2 h-8 w-8" strokeWidth={2.5} />
         </div>
 
-        <div
-          className="space-y-2"
-          style={{ animation: "fadeInUp 320ms ease-out 120ms both" }}
-        >
-          <h2 className="text-ink text-[24px] font-bold leading-[1.2] tracking-[-0.02em] sm:text-[28px]">
+        <div className="space-y-2" style={{ animation: "fadeInUp 320ms ease-out 120ms both" }}>
+          <h2 className="text-ink text-[24px] leading-[1.2] font-bold tracking-[-0.02em] sm:text-[28px]">
             {t("apply.success_heading")}
           </h2>
           <p className="text-ink-3 mx-auto max-w-sm text-[14.5px] leading-[1.6]">
             {t("apply.success_body")}
+          </p>
+        </div>
+
+        <div
+          className="border-rule bg-bone-2/60 w-full max-w-sm rounded-[6px] border px-4 py-3 text-left"
+          style={{ animation: "fadeInUp 320ms ease-out 180ms both" }}
+        >
+          <p
+            className="text-ink-5 text-[10.5px] font-semibold tracking-[0.12em] uppercase"
+            style={{ fontFamily: "var(--font-tez-mono)" }}
+          >
+            {t("apply.next_step_label")}
+          </p>
+          <p className="text-ink-2 mt-1 text-[13.5px] leading-[1.55]">
+            {t("apply.next_step_body")}
           </p>
         </div>
 

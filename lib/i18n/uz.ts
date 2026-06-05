@@ -309,8 +309,10 @@ export const uz: Translations = {
   "hr.jobs.actions_label": "Amallar",
   "hr.jobs.back_to_list": "Vakansiyalar ro'yxatiga",
   "hr.job.title_placeholder": "Kamida 3 belgi",
-  "hr.job.description_placeholder": "## Rol haqida\n\nMutaxassis nima qilishi haqida qisqacha.\n\n## Nimalar qilasiz\n\n- Funksionallikni to'liq ishlab chiqasiz\n- Dizayn va mahsulot bilan hamkorlik qilasiz\n\n## Kimni qidiramiz\n\n- 3+ yil tajriba\n- Yozma muloqot qobiliyati",
-  "hr.job.description_hint": "Markdown qo'llanadi: ## sarlavha uchun, - ro'yxat uchun, **qalin**. Eng kamida 20 belgi.",
+  "hr.job.description_placeholder":
+    "## Rol haqida\n\nMutaxassis nima qilishi haqida qisqacha.\n\n## Nimalar qilasiz\n\n- Funksionallikni to'liq ishlab chiqasiz\n- Dizayn va mahsulot bilan hamkorlik qilasiz\n\n## Kimni qidiramiz\n\n- 3+ yil tajriba\n- Yozma muloqot qobiliyati",
+  "hr.job.description_hint":
+    "Markdown qo'llanadi: ## sarlavha uchun, - ro'yxat uchun, **qalin**. Eng kamida 20 belgi.",
   "hr.job.skills_placeholder": "TypeScript, React, ...",
   "hr.job.save_changes": "O'zgarishlarni saqlash",
   "hr.job.close_button": "Yopish",
@@ -376,8 +378,10 @@ export const uz: Translations = {
   "auth.no_account": "Akkauntingiz yo'qmi?",
   "auth.forgot_password": "Parolni unutdingizmi?",
   "auth.verify_title": "Pochtangizni tekshiring",
-  "auth.verify_body_with_email": "Tasdiqlash havolasi {email} manziliga yuborildi. Akkauntni faollashtirish uchun bosing.",
-  "auth.verify_body_no_email": "Sizga tasdiqlash havolasi yuborildi. Akkauntni faollashtirish uchun bosing.",
+  "auth.verify_body_with_email":
+    "Tasdiqlash havolasi {email} manziliga yuborildi. Akkauntni faollashtirish uchun bosing.",
+  "auth.verify_body_no_email":
+    "Sizga tasdiqlash havolasi yuborildi. Akkauntni faollashtirish uchun bosing.",
   "auth.verify_help": "Xat kelmadimi? Spam papkasini tekshiring. Havola 24 soat amal qiladi.",
   "auth.verify_resend_button": "Xatni qayta yuborish",
   "auth.verify_resend_sending": "Yuborilyapti…",
@@ -394,21 +398,25 @@ export const uz: Translations = {
   "notifications.email.subject_sourcing_complete": "Nomzodlar topildi: {title}",
   "notifications.email.subject_sourcing_failed": "Nomzod qidiruvi muvaffaqiyatsiz: {title}",
   "notifications.email.open_cta": "TezHR da ochish",
-  "notifications.email.footer": "Akkauntingizda bildirishnomalar yoqilgan, shuning uchun bu xatni oldingiz.",
+  "notifications.email.footer":
+    "Akkauntingizda bildirishnomalar yoqilgan, shuning uchun bu xatni oldingiz.",
   "sourcing.notify.complete_title": "Nomzodlar topildi",
   "sourcing.notify.complete_body": "«{job}» uchun qisqa ro‘yxatda {count} ta nomzod",
   "sourcing.notify.failed_title": "Qidiruv muvaffaqiyatsiz",
-  "sourcing.notify.failed_body": "«{job}» uchun nomzod qidiruvini yakunlab bo‘lmadi. Qayta urinib ko‘ring.",
+  "sourcing.notify.failed_body":
+    "«{job}» uchun nomzod qidiruvini yakunlab bo‘lmadi. Qayta urinib ko‘ring.",
   "sourcing.find.button": "Nomzod topish",
   "sourcing.find.searching": "Qidirilmoqda…",
   "sourcing.find.inflight": "Qidiruv allaqachon ketmoqda",
   "sourcing.find.quota_exceeded": "Qidiruv limiti tugadi",
   "sourcing.find.inactive": "Obuna faol emas",
   "sourcing.find.error": "Qidiruvni boshlab bo‘lmadi",
-  "sourcing.find.hint": "AI bazangizdan nomzodlarni topib, har birini vakansiya talablariga ko‘ra baholaydi.",
+  "sourcing.find.hint":
+    "AI bazangizdan nomzodlarni topib, har birini vakansiya talablariga ko‘ra baholaydi.",
   "sourcing.results.breadcrumb": "Nomzod qidirish",
   "sourcing.results.title": "Topilgan nomzodlar",
-  "sourcing.results.subtitle": "Har bir nomzod barcha majburiy talablarga tasdiqlangan holda mos keladi.",
+  "sourcing.results.subtitle":
+    "Har bir nomzod barcha majburiy talablarga tasdiqlangan holda mos keladi.",
   "sourcing.results.back_to_job": "Vakansiyaga",
   "sourcing.results.rerun": "Qayta qidirish",
   "sourcing.results.status_label": "Holat",
@@ -417,12 +425,16 @@ export const uz: Translations = {
   "sourcing.results.status.completed": "Tugadi",
   "sourcing.results.status.partial": "Qisman",
   "sourcing.results.status.failed": "Xatolik",
-  "sourcing.results.running_hint": "Qidiruv fonda bajarilmoqda. Qisqa ro‘yxat tayyor bo‘lganda bu sahifa yangilanadi.",
+  "sourcing.results.running_hint":
+    "Qidiruv fonda bajarilmoqda. Qisqa ro‘yxat tayyor bo‘lganda bu sahifa yangilanadi.",
   "sourcing.results.failed_hint": "Qidiruv muvaffaqiyatsiz tugadi. Qaytadan urinib ko‘ring.",
-  "sourcing.results.partial_note": "Ba’zi manbalar mavjud bo‘lmadi — mavjudlaridan natijalar ko‘rsatildi.",
-  "sourcing.results.hh_reconnect_hint": "hh.uz mavjud emas. HH ish beruvchi akkauntini qayta ulang, keyin qidiruvni takrorlang.",
+  "sourcing.results.partial_note":
+    "Ba’zi manbalar mavjud bo‘lmadi — mavjudlaridan natijalar ko‘rsatildi.",
+  "sourcing.results.hh_reconnect_hint":
+    "hh.uz mavjud emas. HH ish beruvchi akkauntini qayta ulang, keyin qidiruvni takrorlang.",
   "sourcing.results.empty_title": "Mos nomzod topilmadi",
-  "sourcing.results.empty_hint": "Bazadan hech kim barcha majburiy talablardan o‘tmadi. Biz mos kelmaganlarni hech qachon ko‘rsatmaymiz.",
+  "sourcing.results.empty_hint":
+    "Bazadan hech kim barcha majburiy talablardan o‘tmadi. Biz mos kelmaganlarni hech qachon ko‘rsatmaymiz.",
   "sourcing.results.count_summary": "20 tadan {count} ta — moslik bo‘yicha kamayish tartibida",
   "sourcing.results.stat.fetched": "Topildi",
   "sourcing.results.stat.deduped": "Dublikatlardan keyin",
@@ -470,24 +482,28 @@ export const uz: Translations = {
   "sourcing.results.drop.gate": "barcha qat'iy talablarga javob bermadi",
   "sourcing.results.drop.score": "baholanmadi (limit yoki xato)",
   "sourcing.results.drop.verify": "qayta tekshiruvda tasdiqlanmadi",
-  "sourcing.results.degraded_note": "Ba'zi manbalar javob bermadi va o‘tkazib yuborildi: {sources}. Natijalar to‘liq emas.",
+  "sourcing.results.degraded_note":
+    "Ba'zi manbalar javob bermadi va o‘tkazib yuborildi: {sources}. Natijalar to‘liq emas.",
   "sourcing.runs.nav_label": "Qidiruv",
   "sourcing.runs.breadcrumb": "Qidiruvlar",
   "sourcing.runs.title": "Qidiruvlar",
   "sourcing.runs.subtitle": "Bu ish o‘rni bo‘yicha barcha nomzod qidiruvlari, yangilari yuqorida.",
   "sourcing.runs.new": "Yangi qidiruv",
   "sourcing.runs.empty_title": "Hali qidiruv yo‘q",
-  "sourcing.runs.empty_hint": "Ish o‘rnining qat'iy talablari bo‘yicha o‘z bazangizdan nomzodlarni topish uchun qidiruvni ishga tushiring.",
+  "sourcing.runs.empty_hint":
+    "Ish o‘rnining qat'iy talablari bo‘yicha o‘z bazangizdan nomzodlarni topish uchun qidiruvni ishga tushiring.",
   "sourcing.runs.funnel_summary": "{fetched} topildi → {shortlisted} qisqa ro‘yxatda",
   "sourcing.config.title": "Qidiruv sozlamalari",
   "sourcing.config.subtitle": "Qayerdan va nimani qidirishni tanlang.",
   "sourcing.config.sources_label": "Manbalar",
   "sourcing.config.unavailable": "Mavjud emas",
   "sourcing.config.hh_connect": "hh.uz ulash",
-  "sourcing.config.hh_unavailable": "Rezyumelar bazasidan qidirish uchun hh.uz ish beruvchi hisobini ulang.",
+  "sourcing.config.hh_unavailable":
+    "Rezyumelar bazasidan qidirish uchun hh.uz ish beruvchi hisobini ulang.",
   "sourcing.config.hh_options_label": "hh.uz parametrlari",
   "sourcing.config.keywords_label": "Kalit so‘zlar",
-  "sourcing.config.keywords_hint": "Vergul bilan ajrating. Bo‘sh qoldirsangiz — AI vakansiyadan tanlaydi.",
+  "sourcing.config.keywords_hint":
+    "Vergul bilan ajrating. Bo‘sh qoldirsangiz — AI vakansiyadan tanlaydi.",
   "sourcing.config.keywords_placeholder": "react, frontend, typescript",
   "sourcing.config.region_label": "Hudud",
   "sourcing.config.region_all": "Barcha hududlar",
@@ -507,7 +523,8 @@ export const uz: Translations = {
   "sourcing.hh.status_not_connected": "Ulanmagan",
   "sourcing.hh.status_needs_reconnect": "Qayta ulash kerak",
   "sourcing.hh.connected_as": "{name} sifatida ulangan",
-  "sourcing.hh.employer_required": "Rezyume qidirish uchun hh.uz ish beruvchi hisobi kerak — ish izlovchi hisobi rezyume qidira olmaydi.",
+  "sourcing.hh.employer_required":
+    "Rezyume qidirish uchun hh.uz ish beruvchi hisobi kerak — ish izlovchi hisobi rezyume qidira olmaydi.",
   "sourcing.hh.connect": "hh.uz ulash",
   "sourcing.hh.reconnect": "Qayta ulash",
   "sourcing.hh.disconnect": "Uzish",
@@ -516,7 +533,8 @@ export const uz: Translations = {
   "sourcing.hh.failed_toast": "hh.uz ulanmadi",
   "sourcing.hh.last_error": "Oxirgi xatolik",
   "operator.sourcing.title": "Qidiruv",
-  "operator.sourcing.subtitle": "Barcha ijarachilar bo‘yicha tashqi nomzod qidiruvi va AI xarajatlari.",
+  "operator.sourcing.subtitle":
+    "Barcha ijarachilar bo‘yicha tashqi nomzod qidiruvi va AI xarajatlari.",
   "operator.sourcing.empty": "Qidiruvlar yo‘q",
   "operator.sourcing.tile.runs": "Qidiruvlar",
   "operator.sourcing.tile.completed": "Tugallangan",
@@ -527,20 +545,24 @@ export const uz: Translations = {
   "operator.sourcing.col.funnel": "Voronka",
   "operator.sourcing.col.sources": "Manbalar",
   "operator.hh.title": "hh.uz platforma ulanishi",
-  "operator.hh.subtitle": "Barcha ijarachilar qidiradigan yagona umumiy ish beruvchi hisobi — agar ular o‘zinikini ulamagan bo‘lsa.",
+  "operator.hh.subtitle":
+    "Barcha ijarachilar qidiradigan yagona umumiy ish beruvchi hisobi — agar ular o‘zinikini ulamagan bo‘lsa.",
   "operator.hh.status_connected": "Ulangan",
   "operator.hh.status_not_connected": "Ulanmagan",
   "operator.hh.status_error": "Xato",
   "operator.hh.connected_as": "{name} sifatida ulangan",
-  "operator.hh.employer_required": "hh.uz ish beruvchi hisobi kerak. client id/secret yetarli emas — ish izlovchi hisobi rezyume qidira olmaydi.",
-  "operator.hh.not_configured": "Buni yoqish uchun HH_CLIENT_ID va HH_CLIENT_SECRET ni belgilang (masalan, Railway’da).",
+  "operator.hh.employer_required":
+    "hh.uz ish beruvchi hisobi kerak. client id/secret yetarli emas — ish izlovchi hisobi rezyume qidira olmaydi.",
+  "operator.hh.not_configured":
+    "Buni yoqish uchun HH_CLIENT_ID va HH_CLIENT_SECRET ni belgilang (masalan, Railway’da).",
   "operator.hh.connect": "Platforma hh.uz ni ulash",
   "operator.hh.reconnect": "Qayta ulash",
   "operator.hh.disconnect": "Uzish",
   "operator.hh.connected_toast": "Platforma hh.uz ulandi",
   "operator.hh.failed_toast": "Platforma hh.uz ulanmadi",
   "applicants.analysis.rate_limited_heading": "AI band",
-  "applicants.analysis.rate_limited_body": "Gemini hozir limitlangan. Biz tahlilni bir necha daqiqa ichida avtomatik takrorlaymiz — sizdan hech narsa talab etilmaydi.",
+  "applicants.analysis.rate_limited_body":
+    "Gemini hozir limitlangan. Biz tahlilni bir necha daqiqa ichida avtomatik takrorlaymiz — sizdan hech narsa talab etilmaydi.",
   "auth.phone_change_number": "Raqamni o'zgartirish",
   "auth.phone_email_hint": "Akkauntni tiklash va billing uchun zarur.",
   "auth.phone_digit_hint": "+998 va keyin 9 ta raqam.",
@@ -550,18 +572,25 @@ export const uz: Translations = {
   "errors.not_found.home": "Bosh sahifaga",
   "apply.cv.remove_label": "Faylni o'chirish",
   "apply.eyebrow_position": "Ochiq vakansiya",
-  "apply.intro_subtitle": "O'zingiz haqingizda qisqacha ma'lumot bering va rezyumeni yuklang. Bir daqiqadan kam vaqt oladi.",
+  "apply.intro_subtitle":
+    "O'zingiz haqingizda qisqacha ma'lumot bering va rezyumeni yuklang. Bir daqiqadan kam vaqt oladi.",
   "apply.description_heading": "Vakansiya haqida",
   "apply.personal_heading": "Shaxsiy ma'lumotlar",
   "apply.continue": "Davom etish",
   "apply.min_value_short": "Min. {value}",
   "apply.field_required": "Majburiy",
   "apply.footer_note": "Ma'lumotlaringiz faqat ushbu arizani ko'rib chiqish uchun ishlatiladi.",
+  "apply.time_estimate": "Taxminan 60 soniya oladi",
+  "apply.privacy_note": "CV faqat shu ish beruvchida qoladi",
+  "apply.next_step_label": "Keyingi qadam",
+  "apply.next_step_body":
+    "HR jamoasi CV, javoblar va moslik signallarini TezHR ichida ko'radi. Moslik bo'lsa, siz bilan telefon orqali bog'lanadi.",
   "apply.powered_by": "Ishlaydi",
   "apply.secured_by": "Cloudflare himoyasida",
   "common.saving": "Saqlanmoqda...",
   "profile.avatar_url_label": "Avatar URL",
-  "profile.avatar_url_hint": "Ommaviy rasm URL'ini joylashtiring (fayl yuklash keyinroq qo'shiladi).",
+  "profile.avatar_url_hint":
+    "Ommaviy rasm URL'ini joylashtiring (fayl yuklash keyinroq qo'shiladi).",
   "profile.language_label": "Interfeys tili",
   "profile.saved": "Saqlandi",
   "profile.save_failed": "Saqlab bo'lmadi — qayta urinib ko'ring",
@@ -593,8 +622,10 @@ export const uz: Translations = {
   "applicants.requirements.required_label": "Talab",
   "applicants.requirements.candidate_answer": "Javob",
   "applicants.requirements.analyze_anyway": "Baribir AI bilan tahlil qilish",
-  "applicants.requirements.analyze_anyway_intro": "Bu nomzod sizning qattiq talablaringizga javob bermagani uchun avtomatik tahlil o'tkazib yuborildi. Siz AI tahlilini qo'lda ishga tushirishingiz mumkin — bu bir CV kreditini sarflaydi.",
-  "applicants.requirements.analyze_anyway_quota": "Sinov davrida CV tahlili kreditlaringiz tugadi. Bu nomzodda AI ishga tushirish uchun obunani yangilang.",
+  "applicants.requirements.analyze_anyway_intro":
+    "Bu nomzod sizning qattiq talablaringizga javob bermagani uchun avtomatik tahlil o'tkazib yuborildi. Siz AI tahlilini qo'lda ishga tushirishingiz mumkin — bu bir CV kreditini sarflaydi.",
+  "applicants.requirements.analyze_anyway_quota":
+    "Sinov davrida CV tahlili kreditlaringiz tugadi. Bu nomzodda AI ishga tushirish uchun obunani yangilang.",
   "applicants.requirements.years_unit": "{value} yil",
   "applicants.requirements.boolean_yes": "Ha",
   "applicants.requirements.boolean_no": "Yo'q",
@@ -767,8 +798,7 @@ export const uz: Translations = {
   "landing.showcase.feat_pdf_desc": "hh.uz, Word-eksport, shablonlar — barchasini o‘qiydi.",
   "landing.showcase.feat_speed_label": "Bitta rezyumega",
   "landing.showcase.feat_speed_desc": "200 tadan iborat paket — bir daqiqadan kam.",
-  "landing.showcase.model_line":
-    "Model versiyasi {version} · oxirgi yangilanish 12-aprel, 2026",
+  "landing.showcase.model_line": "Model versiyasi {version} · oxirgi yangilanish 12-aprel, 2026",
   "landing.sourcing.section_tag": "QIDIRUV",
   "landing.sourcing.section_title": "— Faol qidiruv",
   "landing.sourcing.section_meta": "BAZA · HH.UZ · TELEGRAM",
@@ -834,8 +864,7 @@ export const uz: Translations = {
   "landing.pain.gain4_u": "soniyada yangilanish",
   "landing.pain.summary_label": "KUN YAKUNI",
   "landing.pain.summary_without": "47 ta rezyume o‘qildi. 3 ta intervyu belgilandi.",
-  "landing.pain.summary_with":
-    "247 ta rezyume saralandi. Tushlikgacha 12 ta intervyu belgilandi.",
+  "landing.pain.summary_with": "247 ta rezyume saralandi. Tushlikgacha 12 ta intervyu belgilandi.",
   "landing.pricing.section_tag": "§ 04",
   "landing.pricing.section_title": "— Narxnoma",
   "landing.pricing.section_meta": "IKKI REJA · YASHIRIN TO‘LOVSIZ",
@@ -875,8 +904,7 @@ export const uz: Translations = {
   "landing.final.note_setup": "SOZLASH — 3 DAQIQA",
   "landing.final.note_cancel": "BEKOR QILISH — BIR BOSISHDA",
   "landing.final.note_support": "QO‘LLAB-QUVVATLASH — O‘ZBEK TILIDA",
-  "landing.footer.tagline":
-    "AI-rezyume saralash. Toshkentda butun O‘rta Osiyo uchun yaratilgan.",
+  "landing.footer.tagline": "AI-rezyume saralash. Toshkentda butun O‘rta Osiyo uchun yaratilgan.",
   "landing.footer.col_product": "MAHSULOT",
   "landing.footer.col_company": "KOMPANIYA",
   "landing.footer.col_legal": "HUQUQIY",
@@ -913,14 +941,27 @@ export const uz: Translations = {
   "landing.hero.cta_demo_button": "Demoni ko'rish",
   "landing.hero.pulse_today": "bugun {count} ta qayta ishlandi",
   "landing.hero.live_caption": "94 — eng mos nomzod,\nishga tayyor",
+  "landing.hero.product_label": "O'zbekiston uchun AI hiring cockpit",
+  "landing.hero.proof_label": "MAHSULOT OQIMI",
+  "landing.hero.proof_title": "Havoladan shortlistgacha va taklifgacha — jadval tartibsizligisiz.",
+  "landing.hero.proof_1_label": "YIG'ISH",
+  "landing.hero.proof_1_value":
+    "Ochiq ariza havolalari, Telegram, hh va yuklangan CVlar bitta navbatda turadi.",
+  "landing.hero.proof_2_label": "TANLASH",
+  "landing.hero.proof_2_value":
+    "Har bir ball kuchli tomonlar, kamchiliklar, til mosligi va majburiy talablarni ko'rsatadi.",
+  "landing.hero.proof_3_label": "HARAKAT",
+  "landing.hero.proof_3_value":
+    "Kuchli nomzodlarni taklif qiling, noaniqlarni tekshiring va qaror tarixini toza saqlang.",
+  "landing.hero.proof_footer":
+    "Ma'lumotlar kompaniya bo'yicha ajratilgan · +998 format · RU / UZ / EN birinchi kundan",
   "landing.hero.demo_trigger_aria": "Demoni oching: TezHR qanday ishlaydi",
   "landing.hero.demo_heading": "Bu qanday ishlaydi",
   "landing.hero.demo_body":
     "Uch qadam — 247 nomzodli reyting. ← → tugmalari bilan bosqichlar orasida harakatlaning.",
   "landing.hero.demo_close": "Yopish",
   "landing.hero.demo_step_1_title": "Vakansiyani e'lon qiling",
-  "landing.hero.demo_step_1_body":
-    "Sarlavha, talablar, teglar — va tezhr.uz/j/… umumiy havolasi.",
+  "landing.hero.demo_step_1_body": "Sarlavha, talablar, teglar — va tezhr.uz/j/… umumiy havolasi.",
   "landing.hero.demo_step_2_title": "CV-larni yuklang",
   "landing.hero.demo_step_2_body":
     "PDF yoki DOCXni tashlang, yoki havola orqali yig'ing — AI darhol o'qishni boshlaydi.",
@@ -1131,7 +1172,8 @@ export const uz: Translations = {
   "landing.pricing.cmp.residency": "Ma'lumotlar himoyasi",
   "landing.pricing.cmp.residency_trial": "Shifrlash · ajratish",
   "landing.pricing.cmp.residency_pro": "Shifrlash · ajratish · audit jurnali",
-  "landing.pricing.cmp.residency_note": "Har bir kompaniya uchun ajratilgan; har bir kirish qayd etiladi",
+  "landing.pricing.cmp.residency_note":
+    "Har bir kompaniya uchun ajratilgan; har bir kirish qayd etiladi",
   "landing.pricing.cmp.sla": "Qo'llab-quvvatlash vaqti",
   "landing.pricing.cmp.sla_trial": "ish kuni ichida",
   "landing.pricing.cmp.sla_pro": "4 soat ichida",
@@ -1245,8 +1287,7 @@ export const uz: Translations = {
     "Mustahkam mobil tajriba. Kamchilik: dizayn tizimlari va veb-interfeyslar.",
   "landing.cand.summary5":
     "Tez rivojlanmoqda, lekin mahsulot jamoalaridagi tajriba darajasidan past.",
-  "landing.cand.summary6":
-    "Grafik dizayn, mahsulotga oid emas. Talablarga mos kelmaydi.",
+  "landing.cand.summary6": "Grafik dizayn, mahsulotga oid emas. Talablarga mos kelmaydi.",
   "landing.cand.salary1": "18–22 mln",
   "landing.cand.salary2": "15–18 mln",
   "landing.cand.salary3": "14–17 mln",
@@ -1284,8 +1325,7 @@ export const uz: Translations = {
     "Maydonlarni tekshiring: ism (2–120 belgi), email va xabar (10–2000 belgi) majburiy.",
   "contact.form.err_too_many":
     "Ushbu IP dan juda ko‘p xabar. Bir soatdan keyin urinib ko‘ring yoki Telegramga yozing.",
-  "contact.form.err_generic":
-    "Yuborib bo‘lmadi. Qayta urinib ko‘ring yoki Telegramga yozing.",
+  "contact.form.err_generic": "Yuborib bo‘lmadi. Qayta urinib ko‘ring yoki Telegramga yozing.",
   "contact.telegram.kicker": "TEZ YO‘L",
   "contact.telegram.title": "To‘g‘ridan-to‘g‘ri Telegramga yozing",
   "contact.telegram.body":
@@ -1378,8 +1418,7 @@ export const uz: Translations = {
   "inbox.mark_all_read": "Barchasini o‘qildi",
   "inbox.reply_email": "Email orqali javob",
   "inbox.empty_unread_title": "Hammasi o‘qilgan",
-  "inbox.empty_unread_desc":
-    "Yangi xabarlar yo‘q. Dam oling — yoki barcha tarixni ko‘ring.",
+  "inbox.empty_unread_desc": "Yangi xabarlar yo‘q. Dam oling — yoki barcha tarixni ko‘ring.",
   "inbox.empty_all_title": "Hozircha bo‘sh",
   "inbox.empty_all_desc": "/contact formasidan xabarlar shu yerga tushadi.",
   // --- hr portal redesign (TezHR Pro) ---
@@ -1389,6 +1428,25 @@ export const uz: Translations = {
   "hr.nav.archive": "Arxiv",
   "hr.nav.section_workspace": "Ish joyi",
   "hr.nav.section_tools": "Vositalar",
+  "hr.chrome.search_placeholder": "Vakansiya, nomzod va amallarni qidiring",
+  "hr.palette.title": "HR qidiruvi",
+  "hr.palette.subtitle": "Shu kompaniyadagi vakansiyalar, nomzodlar va amallar",
+  "hr.palette.placeholder": "Nomzod, vakansiya yoki amalni qidiring...",
+  "hr.palette.loading": "Qidirilmoqda...",
+  "hr.palette.empty_results": "Mos natija topilmadi",
+  "hr.palette.empty_hint": "Ism, rol yoki amal yozing",
+  "hr.palette.group.actions": "Amallar",
+  "hr.palette.group.jobs": "Vakansiyalar",
+  "hr.palette.group.candidates": "Nomzodlar",
+  "hr.palette.jump_dashboard": "Panelni ochish",
+  "hr.palette.jump_jobs": "Vakansiyalarni ochish",
+  "hr.palette.jump_candidates": "Nomzodlarni ochish",
+  "hr.palette.jump_new_job": "Vakansiya yaratish",
+  "hr.palette.jump_templates": "Shablonlarni ochish",
+  "hr.palette.jump_settings": "Sozlamalarni ochish",
+  "hr.palette.hint.navigate": "harakat",
+  "hr.palette.hint.open": "ochish",
+  "hr.palette.hint.new_tab": "yangi oynada",
   "hr.time.today": "bugun",
   "hr.time.yesterday": "kecha",
   "hr.time.days_ago": "{days} kun avval",
@@ -1483,8 +1541,7 @@ export const uz: Translations = {
   // --- hr settings shell ---
   "hr.settings.eyebrow": "Ish joyi",
   "hr.settings.title": "Sozlamalar",
-  "hr.settings.subtitle":
-    "Profil, kompaniya, jamoa, shablonlar va to‘lovlarni boshqaring.",
+  "hr.settings.subtitle": "Profil, kompaniya, jamoa, shablonlar va to‘lovlarni boshqaring.",
   "hr.settings.group.personal": "Shaxsiy",
   "hr.settings.group.workspace": "Kompaniya",
   "hr.settings.nav.profile": "Profil",
@@ -1547,8 +1604,7 @@ export const uz: Translations = {
   "hr.settings.notifications.event.interview_booked_desc":
     "Nomzod taklif qilingan slotlardan birini tanladi.",
   "hr.settings.notifications.event.interview_declined": "Suhbat rad etildi",
-  "hr.settings.notifications.event.interview_declined_desc":
-    "Nomzod suhbat taklifini rad etdi.",
+  "hr.settings.notifications.event.interview_declined_desc": "Nomzod suhbat taklifini rad etdi.",
   "hr.settings.notifications.event.quota_warning": "Chegaraga yaqinlashmoqda",
   "hr.settings.notifications.event.quota_warning_desc":
     "Oylik limitning 80%i ishlatildi. 100%ga yetganda yana bildirishnoma keladi.",
@@ -1616,8 +1672,7 @@ export const uz: Translations = {
   "hr.settings.billing.upgrade.dialog_submit": "So‘rov yuborish",
   "hr.settings.billing.upgrade.dialog_submitting": "Yuborilmoqda…",
   "hr.settings.billing.upgrade.dialog_sent_title": "So‘rov yuborildi",
-  "hr.settings.billing.upgrade.dialog_sent_body":
-    "Bir ish kuni ichida email yuboramiz.",
+  "hr.settings.billing.upgrade.dialog_sent_body": "Bir ish kuni ichida email yuboramiz.",
   "hr.settings.billing.upgrade.dialog_error": "Yuborib bo‘lmadi — qayta urinib ko‘ring.",
   "hr.settings.billing.cancel.dialog_title": "Pro-ni bekor qilish",
   "hr.settings.billing.cancel.dialog_body":
@@ -1674,8 +1729,7 @@ export const uz: Translations = {
     "Kursorga qo‘shish uchun bosing. Faqat ko‘rsatilgan o‘zgaruvchilar ruxsat etilgan — noma'lum tokenlar saqlashni bloklaydi.",
   "hr.settings.templates.unknown_token":
     "Noma'lum tokenlar: {tokens}. Ularni olib tashlang, aks holda saqlash rad etiladi.",
-  "hr.settings.templates.parity_warning":
-    "Bu tilda boshqalardagi o‘zgaruvchilardan biri yo‘q.",
+  "hr.settings.templates.parity_warning": "Bu tilda boshqalardagi o‘zgaruvchilardan biri yo‘q.",
   "hr.settings.templates.save": "Shablonlarni saqlash",
   "hr.settings.templates.saving": "Saqlanmoqda…",
   "hr.settings.templates.saved": "Saqlandi",
@@ -1689,11 +1743,11 @@ export const uz: Translations = {
     "Shablon Aziza Karimova fixturasi bilan renderlanadi va Telegram orqali raqamingizga yuborish navbatiga qo‘yiladi.",
   "hr.settings.templates.test_send_phone_label": "Telegram raqami",
   "hr.settings.templates.test_send_submit": "Yuborish",
-  "hr.settings.templates.test_send_rate_limited": "Juda ko‘p sinov — bir soatdan keyin urinib ko‘ring.",
+  "hr.settings.templates.test_send_rate_limited":
+    "Juda ko‘p sinov — bir soatdan keyin urinib ko‘ring.",
   "hr.settings.templates.test_send_queued": "Sinov navbatga qo‘yildi.",
   "hr.settings.profile.title": "Profil",
-  "hr.settings.profile.subtitle":
-    "Ish joyida siz qanday ko‘rinasiz. Faqat siz tahrirlay olasiz.",
+  "hr.settings.profile.subtitle": "Ish joyida siz qanday ko‘rinasiz. Faqat siz tahrirlay olasiz.",
   "hr.settings.profile.identity.role": "Rol",
   "hr.settings.profile.identity.change_avatar": "Avatarni almashtirish",
   "hr.settings.profile.identity.remove_avatar": "O‘chirish",
@@ -1710,11 +1764,9 @@ export const uz: Translations = {
   "hr.settings.profile.email.current_label": "Kirilgan",
   "hr.settings.profile.email.change_button": "Emailni almashtirish",
   "hr.settings.profile.email.new_label": "Yangi email",
-  "hr.settings.profile.email.hint":
-    "Tasdiqlash havolasini ikkala emailga yuboramiz.",
+  "hr.settings.profile.email.hint": "Tasdiqlash havolasini ikkala emailga yuboramiz.",
   "hr.settings.profile.email.submit": "Tasdiqlash yuborish",
-  "hr.settings.profile.email.sent":
-    "Tasdiqlash yuborildi. Ikkala emailda ham havolani oching.",
+  "hr.settings.profile.email.sent": "Tasdiqlash yuborildi. Ikkala emailda ham havolani oching.",
   "hr.settings.profile.email.invalid": "Email formati noto‘g‘ri.",
   "hr.settings.profile.email.unchanged": "Bu joriy emailingiz.",
   "hr.settings.profile.email.error": "Yuborib bo‘lmadi — qayta urinib ko‘ring.",
@@ -1784,8 +1836,7 @@ export const uz: Translations = {
     "Yangi Egasining email-ini tasdiqlash uchun yozing.",
   "hr.settings.company.ownership_confirm_hint": "Tanlangan a'zoning aniq email-i.",
   "hr.settings.company.ownership_submit": "O‘tkazish",
-  "hr.settings.company.ownership_no_admins":
-    "Mos adminlar yo‘q — avval a'zoni Admin-ga ko‘taring.",
+  "hr.settings.company.ownership_no_admins": "Mos adminlar yo‘q — avval a'zoni Admin-ga ko‘taring.",
   "hr.settings.company.ownership_not_you": "O‘zingizga o‘tkazib bo‘lmaydi.",
   "hr.settings.company.ownership_error": "O‘tkazib bo‘lmadi — qayta urinib ko‘ring.",
   "hr.settings.company.danger_panel": "Xavfli zona",
@@ -1869,13 +1920,11 @@ export const uz: Translations = {
   "hr.req.name_en_placeholder": "Nomi (en)",
   // --- branded share + OG (feature C) ---
   "hr.job.share.preview_label": "Havola ko‘rinishi",
-  "hr.job.share.preview_help":
-    "Havola Telegram, WhatsApp va LinkedIn’da shunday ko‘rinadi.",
+  "hr.job.share.preview_help": "Havola Telegram, WhatsApp va LinkedIn’da shunday ko‘rinadi.",
   "hr.job.share.share_label": "Ulashish",
   "hr.job.share.copy_whatsapp":
     "{title} — {company}. 60 soniyada ariza topshiring, rus, o‘zbek yoki ingliz tilida. {url}",
-  "hr.job.share.copy_telegram":
-    "Qidiryapmiz — {title}, {company}.\nCV bilan ariza: {url}",
+  "hr.job.share.copy_telegram": "Qidiryapmiz — {title}, {company}.\nCV bilan ariza: {url}",
   "hr.job.share.copy_linkedin":
     "{company} {title} qidirmoqda. To‘g‘ridan-to‘g‘ri ariza — ro‘yxatdan o‘tmasdan: {url}",
   "hr.job.share.copy_email_subject": "{title} — {company}",
@@ -1899,12 +1948,9 @@ export const uz: Translations = {
   "applicants.questions.generate_cta": "Savollar tayyorlash",
   "applicants.questions.generating": "Savollar tayyorlanmoqda…",
   "applicants.questions.regenerate": "Qayta tayyorlash",
-  "applicants.questions.regenerate_warning":
-    "Joriy ro‘yxat yangisiga almashtiriladi.",
-  "applicants.questions.loading_hint":
-    "Odatda 10–20 soniyada tayyor bo‘ladi.",
-  "applicants.questions.rate_limited":
-    "AI ga juda ko‘p so‘rov. Bir soatdan keyin urinib ko‘ring.",
+  "applicants.questions.regenerate_warning": "Joriy ro‘yxat yangisiga almashtiriladi.",
+  "applicants.questions.loading_hint": "Odatda 10–20 soniyada tayyor bo‘ladi.",
+  "applicants.questions.rate_limited": "AI ga juda ko‘p so‘rov. Bir soatdan keyin urinib ko‘ring.",
   "applicants.questions.quota_blocked":
     "Bu oy uchun 10 ta bepul qoralamadan foydalanib bo‘ldingiz. Cheksiz uchun Pro’ga o‘ting.",
   "applicants.questions.error":
@@ -1919,8 +1965,7 @@ export const uz: Translations = {
   "applicants.questions.copy_all_done": "Hammasidan nusxa olindi",
   "applicants.questions.copy_sheet": "Suhbat varag‘i sifatida nusxa olish",
   "applicants.questions.copy_sheet_done": "Varaq nusxalandi",
-  "applicants.questions.sheet_intro":
-    "{candidate} bilan suhbat savollari — {job}",
+  "applicants.questions.sheet_intro": "{candidate} bilan suhbat savollari — {job}",
   "applicants.questions.focus.strength_probe": "KUCHLI TOMONLAR",
   "applicants.questions.focus.gap_probe": "BO‘SHLIQLAR",
   "applicants.questions.focus.role_fit": "ROLGA MOSLIK",
@@ -1945,8 +1990,7 @@ export const uz: Translations = {
   "interview.confirm_slot": "Vaqtni tasdiqlash",
   "interview.confirming": "Tasdiqlanmoqda…",
   "interview.confirmed_heading": "Bron qilindi!",
-  "interview.confirmed_body":
-    "Tez orada bog‘lanamiz. Quyidagi tugma bilan kalendarga qo‘shing.",
+  "interview.confirmed_body": "Tez orada bog‘lanamiz. Quyidagi tugma bilan kalendarga qo‘shing.",
   "interview.add_to_calendar": "Kalendarga qo‘shish",
   "interview.decline": "Hech qaysi vaqt to‘g‘ri kelmaydi",
   "interview.decline_heading": "Yaxshi",
@@ -1966,8 +2010,7 @@ export const uz: Translations = {
     "Bu taklif endi bron qabul qilmayapti. Iltimos, jamoa bilan bog‘laning.",
   "interview.book_error":
     "Vaqtni tasdiqlay olmadik. Yana urinib ko‘ring yoki jamoa bilan bog‘laning.",
-  "interview.decline_error":
-    "Javobingizni yubora olmadik. Iltimos, qayta urinib ko‘ring.",
+  "interview.decline_error": "Javobingizni yubora olmadik. Iltimos, qayta urinib ko‘ring.",
   "interview.hr.status.pending": "Nomzod kutilmoqda",
   "interview.hr.status.booked": "Bron qilindi",
   "interview.hr.status.declined": "Rad etildi",
@@ -1981,25 +2024,20 @@ export const uz: Translations = {
     "Bu havolani nomzodga yuboring — u vaqtni tanlaydi va .ics faylini avtomatik oladi.",
   "interview.hr.modal.duration_label": "Davomiyligi",
   "interview.hr.modal.location_label": "Qayerda",
-  "interview.hr.modal.location_detail_placeholder":
-    "Qo‘shimcha ma’lumot (havola, xona, manzil)",
+  "interview.hr.modal.location_detail_placeholder": "Qo‘shimcha ma’lumot (havola, xona, manzil)",
   "interview.hr.modal.message_label": "Nomzodga xabar (ixtiyoriy)",
-  "interview.hr.modal.message_placeholder":
-    "Rol, jamoa yoki nimani kutish haqida qisqacha yozing.",
+  "interview.hr.modal.message_placeholder": "Rol, jamoa yoki nimani kutish haqida qisqacha yozing.",
   "interview.hr.modal.slots_label": "Taklif qilingan vaqtlar",
   "interview.hr.modal.add_slot": "Yana vaqt qo‘shish",
   "interview.hr.modal.cta": "Taklifni yuborish",
   "interview.hr.modal.expiry_hint": "HAVOLA 7 KUN AMAL QILADI",
   "interview.hr.modal.quota_blocked":
     "Bu oy uchun 3 ta bepul bronlash tugadi. Cheksiz uchun Pro’ga o‘ting.",
-  "interview.hr.modal.confirmed_inline":
-    "Taklif yaratildi. Nomzodga istalgan usulda yuboring.",
+  "interview.hr.modal.confirmed_inline": "Taklif yaratildi. Nomzodga istalgan usulda yuboring.",
   "interview.hr.modal.error.invalid_slots":
     "Barcha vaqtlar kelajakda va kamida 30 daqiqa orasida bo‘lishi kerak.",
-  "interview.hr.modal.error.slot_count":
-    "3 dan 6 gacha vaqt taklif qiling.",
-  "interview.hr.modal.error.generic":
-    "Taklifni yarata olmadik. Qayta urinib ko‘ring.",
+  "interview.hr.modal.error.slot_count": "3 dan 6 gacha vaqt taklif qiling.",
+  "interview.hr.modal.error.generic": "Taklifni yarata olmadik. Qayta urinib ko‘ring.",
   "interview.hr.block.title": "Jadval",
   "interview.hr.block.empty":
     "Hali suhbat tayinlanmagan. Tayyor bo‘lganingizda vaqt taklif qiling.",
@@ -2058,7 +2096,8 @@ export const uz: Translations = {
   "operator.pulse.incidents_title": "Hodisalar",
   "operator.pulse.incidents_subtitle": "Faol va yaqindagi platforma hodisalari",
   "operator.pulse.no_incidents": "Faol hodisa yo‘q.",
-  "operator.pulse.wiring_note": "To‘liq aniqlash §4.5 bosqichida ulanadi (incidents + alert rules).",
+  "operator.pulse.wiring_note":
+    "To‘liq aniqlash §4.5 bosqichida ulanadi (incidents + alert rules).",
   // --- operator dashboard (PR #2) ---
   "operator.dashboard.eyebrow": "Platforma",
   "operator.dashboard.title": "Operator paneli",
@@ -2132,7 +2171,8 @@ export const uz: Translations = {
   "operator.notes.submit": "Eslatma qo‘shish",
   "operator.notes.loading": "Yuklanmoqda…",
   "operator.notes.save_failed": "Saqlash muvaffaqiyatsiz tugadi",
-  "operator.notes.empty": "Hali eslatma yo‘q. Ushbu mijoz haqida kontekst qoldiring — keyingi operator foydalanadi.",
+  "operator.notes.empty":
+    "Hali eslatma yo‘q. Ushbu mijoz haqida kontekst qoldiring — keyingi operator foydalanadi.",
   "operator.notes.pin": "Mahkamlash",
   "operator.notes.unpin": "Mahkamlikni yechish",
   "operator.notes.delete": "Eslatmani o‘chirish",
@@ -2143,10 +2183,12 @@ export const uz: Translations = {
   "operator.danger.quota_current": "Joriy: CV {cv} / vakansiya {job} / qidiruv {sourcing}",
   "operator.danger.quota_button": "Kvotani qayta belgilash",
   "operator.danger.delete_title": "O‘chirishni rejalashtirish",
-  "operator.danger.delete_help": "30 kunlik kechikish. Egasi bannerni ko‘radi. Keyin qaytarib bo‘lmaydi.",
+  "operator.danger.delete_help":
+    "30 kunlik kechikish. Egasi bannerni ko‘radi. Keyin qaytarib bo‘lmaydi.",
   "operator.danger.delete_button": "O‘chirishni rejalashtirish…",
   "operator.danger.dialog_quota_title": "Obuna kvotalarini qayta belgilash",
-  "operator.danger.dialog_quota_desc": "CV, vakansiya yoki qidiruv limitlarini qo‘lda oshiring yoki kamaytiring. Darhol qo‘llaniladi. audit_log ga yoziladi.",
+  "operator.danger.dialog_quota_desc":
+    "CV, vakansiya yoki qidiruv limitlarini qo‘lda oshiring yoki kamaytiring. Darhol qo‘llaniladi. audit_log ga yoziladi.",
   "operator.danger.cv_quota_label": "CV limiti",
   "operator.danger.job_quota_label": "Vakansiya limiti",
   "operator.danger.sourcing_quota_label": "Nomzod qidirish limiti",
@@ -2156,7 +2198,8 @@ export const uz: Translations = {
   "operator.danger.override_failed": "Qayta belgilash bajarilmadi",
   "operator.danger.reversible": "✓ Qaytarib bo‘ladi",
   "operator.danger.dialog_delete_title": "Kompaniyani o‘chirishni rejalashtirish",
-  "operator.danger.dialog_delete_desc": "{name} 30 kundan so‘ng o‘chirilishi belgilanadi. Egasi bannerni ko‘radi va qo‘llab-quvvatlashga murojaat qilib bekor qilishi mumkin. Yakuniy o‘chirish kundalik vazifa bilan amalga oshadi.",
+  "operator.danger.dialog_delete_desc":
+    "{name} 30 kundan so‘ng o‘chirilishi belgilanadi. Egasi bannerni ko‘radi va qo‘llab-quvvatlashga murojaat qilib bekor qilishi mumkin. Yakuniy o‘chirish kundalik vazifa bilan amalga oshadi.",
   "operator.danger.confirm_type_label": "Tasdiqlash uchun «{name}» deb yozing",
   "operator.danger.name_mismatch": "Nom mos emas",
   "operator.danger.schedule_delete": "Rejalashtirish",
@@ -2173,7 +2216,8 @@ export const uz: Translations = {
   "operator.promotions.toast_approved": "Tasdiqlandi",
   "operator.promotions.toast_rejected": "Rad etildi",
   "operator.promotions.failed": "Bajarilmadi",
-  "operator.promotions.footer_note": "O‘z taklifingizni tasdiqlay olmaysiz. Har ikkala ishtirokchi auditga yoziladi.",
+  "operator.promotions.footer_note":
+    "O‘z taklifingizni tasdiqlay olmaysiz. Har ikkala ishtirokchi auditga yoziladi.",
   // --- operator incidents page ---
   "operator.incidents.eyebrow": "Platforma",
   "operator.incidents.title": "Hodisalar",
@@ -2202,23 +2246,28 @@ export const uz: Translations = {
   "operator.settings.tab.team": "Operatorlar jamoasi",
   "operator.settings.tab.platform": "Platforma",
   "operator.settings.prefs_title": "Sozlamalar",
-  "operator.settings.prefs_help": "Tema va til — yuqori paneldagi avatar menyusida. Klaviatura qisqartmalari uchun ? bosing.",
+  "operator.settings.prefs_help":
+    "Tema va til — yuqori paneldagi avatar menyusida. Klaviatura qisqartmalari uchun ? bosing.",
   "operator.settings.team_title": "Operatorlar jamoasi ({n})",
-  "operator.settings.team_note": "Ko‘tarish / pasaytirish (is_operator bayrog‘i) «Foydalanuvchilar» bo‘limidagi ikkitomonlama tasdiq orqali amalga oshadi.",
+  "operator.settings.team_note":
+    "Ko‘tarish / pasaytirish (is_operator bayrog‘i) «Foydalanuvchilar» bo‘limidagi ikkitomonlama tasdiq orqali amalga oshadi.",
   "operator.settings.restrict": "Faqat o‘qish qil",
   "operator.settings.grant": "Yozishga ruxsat ber",
-  "operator.settings.role_prompt": "{email} rolini {next} ga o‘zgartirilsinmi? Sababni kiriting (kamida 10 belgi).",
+  "operator.settings.role_prompt":
+    "{email} rolini {next} ga o‘zgartirilsinmi? Sababni kiriting (kamida 10 belgi).",
   "operator.settings.role_updated": "Rol yangilandi",
   "operator.settings.role_failed": "Rolni o‘zgartirib bo‘lmadi",
   "operator.settings.platform_title": "Platforma sozlamalari",
-  "operator.settings.save_prompt": "{key} ni «{value}» ga o‘zgartirish — sabab yozing (kamida 10 belgi).",
+  "operator.settings.save_prompt":
+    "{key} ni «{value}» ga o‘zgartirish — sabab yozing (kamida 10 belgi).",
   "operator.settings.saved": "Saqlandi",
   "operator.settings.save_failed": "Saqlab bo‘lmadi",
   "operator.settings.off": "o‘chiq",
   "operator.settings.on": "yoniq",
   "operator.settings.save": "Saqlash",
   "operator.settings.field.maintenance_label": "Texnik xizmat rejimi",
-  "operator.settings.field.maintenance_help": "Platforma bo‘yicha operatorlardan tashqari yozuvni bloklaydi.",
+  "operator.settings.field.maintenance_help":
+    "Platforma bo‘yicha operatorlardan tashqari yozuvni bloklaydi.",
   "operator.settings.field.signup_label": "Ro‘yxatdan o‘tish to‘xtatilgan",
   "operator.settings.field.signup_help": "Yangi mijoz ro‘yxatdan o‘tish formasini yashiradi.",
   "operator.settings.field.gemini_label": "Gemini modeli (override)",
@@ -2313,12 +2362,14 @@ export const uz: Translations = {
   "operator.users.pagination": "Sahifa {page} / {total}",
   "operator.users.dialog.propose_promote_title": "Ko'tarishni taklif qilish — {email}",
   "operator.users.dialog.propose_demote_title": "Tushirishni taklif qilish — {email}",
-  "operator.users.dialog.propose_desc": "Kutayotgan so'rov yaratiladi. Ikkinchi operator uni Qabul qilish qutisidan tasdiqlaguncha amalga oshmaydi. O'z so'rovingizni o'zingiz tasdiqlay olmaysiz.",
+  "operator.users.dialog.propose_desc":
+    "Kutayotgan so'rov yaratiladi. Ikkinchi operator uni Qabul qilish qutisidan tasdiqlaguncha amalga oshmaydi. O'z so'rovingizni o'zingiz tasdiqlay olmaysiz.",
   "operator.users.dialog.reason_label": "Sabab (majburiy, min 10 belgi)",
   "operator.users.dialog.cancel": "Bekor qilish",
   "operator.users.dialog.submit": "Yuborish",
   "operator.users.dialog.impersonate_title": "{email} nomidan kirish",
-  "operator.users.dialog.impersonate_desc": "Siz uning sessiyasiga kirasiz. Barcha amallar ikkala user ID ostida yozib boriladi.",
+  "operator.users.dialog.impersonate_desc":
+    "Siz uning sessiyasiga kirasiz. Barcha amallar ikkala user ID ostida yozib boriladi.",
   "operator.users.dialog.impersonate_reason_label": "Sabab (majburiy)",
   "operator.users.dialog.impersonate_placeholder": "masalan, Qo'llab-quvvatlash tiketi #1234",
   "operator.users.dialog.start_session": "Sessiyani boshlash",
@@ -2346,11 +2397,13 @@ export const uz: Translations = {
   "operator.processing.col.error": "Xatolik",
   // --- operator templates page ---
   "operator.templates.title": "Platforma shablonlari",
-  "operator.templates.description": "Telegram taklifnomalari uchun operator tomonidan o'rnatiladigan standart shablonlar. Kompaniyalar ularni Sozlamalar > Shablonlar bo'limida o'zgartirishi mumkin.",
+  "operator.templates.description":
+    "Telegram taklifnomalari uchun operator tomonidan o'rnatiladigan standart shablonlar. Kompaniyalar ularni Sozlamalar > Shablonlar bo'limida o'zgartirishi mumkin.",
   "operator.templates.save": "Saqlash",
   "operator.templates.aria_save": "Shablonlarni saqlash",
   "operator.templates.toast.saved": "Shablonlar yangilandi",
-  "operator.templates.toast.saved_desc": "Yangi standart qiymatlar o'z sozlamasi yo'q kompaniyalarga qo'llaniladi.",
+  "operator.templates.toast.saved_desc":
+    "Yangi standart qiymatlar o'z sozlamasi yo'q kompaniyalarga qo'llaniladi.",
   "operator.templates.toast.save_failed": "Saqlab bo'lmadi",
   "operator.templates.toast.save_failed_desc": "Shablonlarni saqlab bo'lmadi",
   "operator.templates.lang.ru": "Ruscha",
@@ -2388,7 +2441,8 @@ export const uz: Translations = {
   "operator.company_detail.col.actions": "Amallar",
   "operator.company_detail.impersonate": "Nomidan kirish",
   "operator.company_detail.dialog.title": "Foydalanuvchi nomidan kirish",
-  "operator.company_detail.dialog.desc": "{email} uchun kirish sessiyasi boshlanmoqda. Sessiya davomidagi barcha amallar ikkala user ID ostida yozib boriladi.",
+  "operator.company_detail.dialog.desc":
+    "{email} uchun kirish sessiyasi boshlanmoqda. Sessiya davomidagi barcha amallar ikkala user ID ostida yozib boriladi.",
   "operator.company_detail.dialog.reason_label": "Sabab (majburiy)",
   "operator.company_detail.dialog.placeholder": "masalan, Qo'llab-quvvatlash tiketi #1234",
   "operator.company_detail.dialog.cancel": "Bekor qilish",
@@ -2408,5 +2462,6 @@ export const uz: Translations = {
   "operator.dashboard.movers.at_risk_primary": "baho {score} · {reasons}",
   "operator.dashboard.activity.system_actor": "tizim",
   // --- operator dashboard error fallback ---
-  "operator.dashboard.error": "Panel mavjud emas — yangilashga urinib ko'ring. Muammo davom etsa, operator_daily_metrics va cron yangilash yo'lini tekshiring.",
+  "operator.dashboard.error":
+    "Panel mavjud emas — yangilashga urinib ko'ring. Muammo davom etsa, operator_daily_metrics va cron yangilash yo'lini tekshiring.",
 };

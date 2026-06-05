@@ -1,14 +1,10 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useSyncExternalStore,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { HRChromeProvider, type HRChromeValue, type Theme } from "./hr-chrome-context";
 import { Sidebar } from "./sidebar";
 import { HRTopBar } from "./top-bar";
+import { HRCommandPalette } from "./command-palette";
 import type { CompanyOption } from "./company-switcher";
 import type { Locale } from "@/lib/i18n/types";
 import {
@@ -47,6 +43,7 @@ export function HRShell({
     getThemeServerSnapshot,
   );
   const setTheme = useCallback((t: Theme) => writeTheme(t), []);
+  const [paletteOpen, setPaletteOpen] = useState(false);
 
   // Mirror the theme onto <html data-hr-theme> so Radix portals (Dialog,
   // DropdownMenu, Tooltip) — which render outside the `.tezhr` subtree —
@@ -59,7 +56,18 @@ export function HRShell({
     };
   }, [theme]);
 
-  const value: HRChromeValue = { theme, setTheme };
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if ((e.key === "k" || e.key === "K") && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setPaletteOpen(true);
+      }
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  const value: HRChromeValue = { theme, setTheme, paletteOpen, setPaletteOpen };
 
   return (
     <HRChromeProvider value={value}>
@@ -79,15 +87,14 @@ export function HRShell({
           <HRTopBar
             email={email}
             fullName={fullName}
-            notifications={
-              currentCompany ? { companyId: currentCompany.id, userId } : null
-            }
+            notifications={currentCompany ? { companyId: currentCompany.id, userId } : null}
           />
           <main className="flex-1 overflow-y-auto">
-            <div className="mx-auto max-w-[1280px] px-7 pb-14 pt-6">{children}</div>
+            <div className="mx-auto max-w-[1280px] px-7 pt-6 pb-14">{children}</div>
           </main>
         </div>
       </div>
+      <HRCommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
     </HRChromeProvider>
   );
 }

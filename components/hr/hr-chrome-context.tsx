@@ -7,6 +7,8 @@ export type Theme = "light" | "dark";
 export interface HRChromeValue {
   theme: Theme;
   setTheme: (t: Theme) => void;
+  paletteOpen: boolean;
+  setPaletteOpen: (open: boolean) => void;
 }
 
 const HRChromeContext = createContext<HRChromeValue | null>(null);

@@ -284,8 +284,7 @@ export const en: Translations = {
   "hr.dashboard.first_run.title": "Welcome to TezHR",
   "hr.dashboard.first_run.body":
     "Create your first position to start receiving candidates and screening them with AI.",
-  "hr.dashboard.first_run.trial":
-    "Your trial: {days} days · {jobs} positions · {cv} CV analyses",
+  "hr.dashboard.first_run.trial": "Your trial: {days} days · {jobs} positions · {cv} CV analyses",
   "hr.nav.dashboard": "Dashboard",
   "hr.nav.jobs": "Job postings",
   "hr.nav.settings": "Settings",
@@ -306,8 +305,10 @@ export const en: Translations = {
   "hr.jobs.actions_label": "Actions",
   "hr.jobs.back_to_list": "Back to positions",
   "hr.job.title_placeholder": "At least 3 characters",
-  "hr.job.description_placeholder": "## About the role\n\nShort paragraph on what the role does.\n\n## What you'll do\n\n- Ship features end-to-end\n- Collaborate with design and product\n\n## What we're looking for\n\n- 3+ years of relevant experience\n- Strong written communication",
-  "hr.job.description_hint": "Markdown supported: ## for sections, - for bullets, **bold**. Min. 20 characters.",
+  "hr.job.description_placeholder":
+    "## About the role\n\nShort paragraph on what the role does.\n\n## What you'll do\n\n- Ship features end-to-end\n- Collaborate with design and product\n\n## What we're looking for\n\n- 3+ years of relevant experience\n- Strong written communication",
+  "hr.job.description_hint":
+    "Markdown supported: ## for sections, - for bullets, **bold**. Min. 20 characters.",
   "hr.job.skills_placeholder": "TypeScript, React, ...",
   "hr.job.save_changes": "Save changes",
   "hr.job.close_button": "Close",
@@ -373,8 +374,10 @@ export const en: Translations = {
   "auth.no_account": "Don't have an account?",
   "auth.forgot_password": "Forgot password?",
   "auth.verify_title": "Check your email",
-  "auth.verify_body_with_email": "We sent a verification link to {email}. Click it to activate your account.",
-  "auth.verify_body_no_email": "We sent you a verification link. Click it to activate your account.",
+  "auth.verify_body_with_email":
+    "We sent a verification link to {email}. Click it to activate your account.",
+  "auth.verify_body_no_email":
+    "We sent you a verification link. Click it to activate your account.",
   "auth.verify_help": "Didn't get the email? Check your spam folder. The link expires in 24 hours.",
   "auth.verify_resend_button": "Resend verification email",
   "auth.verify_resend_sending": "Sending…",
@@ -391,18 +394,21 @@ export const en: Translations = {
   "notifications.email.subject_sourcing_complete": "Candidates found: {title}",
   "notifications.email.subject_sourcing_failed": "Candidate search failed: {title}",
   "notifications.email.open_cta": "Open in TezHR",
-  "notifications.email.footer": "You're receiving this because notifications are on for your account.",
+  "notifications.email.footer":
+    "You're receiving this because notifications are on for your account.",
   "sourcing.notify.complete_title": "Candidates found",
   "sourcing.notify.complete_body": "{count} candidates shortlisted for “{job}”",
   "sourcing.notify.failed_title": "Search failed",
-  "sourcing.notify.failed_body": "Couldn't complete the candidate search for “{job}”. Please try again.",
+  "sourcing.notify.failed_body":
+    "Couldn't complete the candidate search for “{job}”. Please try again.",
   "sourcing.find.button": "Find candidates",
   "sourcing.find.searching": "Searching…",
   "sourcing.find.inflight": "Search already running",
   "sourcing.find.quota_exceeded": "Sourcing limit reached",
   "sourcing.find.inactive": "Subscription inactive",
   "sourcing.find.error": "Couldn't start the search",
-  "sourcing.find.hint": "AI finds candidates from your pool and judges each against the job's requirements.",
+  "sourcing.find.hint":
+    "AI finds candidates from your pool and judges each against the job's requirements.",
   "sourcing.results.breadcrumb": "Candidate sourcing",
   "sourcing.results.title": "Sourced candidates",
   "sourcing.results.subtitle": "Every candidate provably meets every hard requirement.",
@@ -414,12 +420,16 @@ export const en: Translations = {
   "sourcing.results.status.completed": "Completed",
   "sourcing.results.status.partial": "Partial",
   "sourcing.results.status.failed": "Failed",
-  "sourcing.results.running_hint": "The search is running in the background. This page updates when the shortlist is ready.",
+  "sourcing.results.running_hint":
+    "The search is running in the background. This page updates when the shortlist is ready.",
   "sourcing.results.failed_hint": "The search failed. Try running it again.",
-  "sourcing.results.partial_note": "Some sources were unavailable — showing results from the ones that worked.",
-  "sourcing.results.hh_reconnect_hint": "hh.uz is unavailable. Reconnect the HH employer account, then re-run the search.",
+  "sourcing.results.partial_note":
+    "Some sources were unavailable — showing results from the ones that worked.",
+  "sourcing.results.hh_reconnect_hint":
+    "hh.uz is unavailable. Reconnect the HH employer account, then re-run the search.",
   "sourcing.results.empty_title": "No matching candidates",
-  "sourcing.results.empty_hint": "No one in the pool cleared every hard requirement. We never show candidates who don't meet them.",
+  "sourcing.results.empty_hint":
+    "No one in the pool cleared every hard requirement. We never show candidates who don't meet them.",
   "sourcing.results.count_summary": "{count} of 20 — highest to lowest fit",
   "sourcing.results.stat.fetched": "Fetched",
   "sourcing.results.stat.deduped": "After dedup",
@@ -467,24 +477,28 @@ export const en: Translations = {
   "sourcing.results.drop.gate": "didn't meet every hard requirement",
   "sourcing.results.drop.score": "not scored (budget or error)",
   "sourcing.results.drop.verify": "not re-confirmed by verification",
-  "sourcing.results.degraded_note": "Some sources didn't respond and were skipped: {sources}. Results are partial.",
+  "sourcing.results.degraded_note":
+    "Some sources didn't respond and were skipped: {sources}. Results are partial.",
   "sourcing.runs.nav_label": "Sourcing",
   "sourcing.runs.breadcrumb": "Sourcing runs",
   "sourcing.runs.title": "Sourcing runs",
   "sourcing.runs.subtitle": "Every candidate search run for this job, newest first.",
   "sourcing.runs.new": "New search",
   "sourcing.runs.empty_title": "No searches yet",
-  "sourcing.runs.empty_hint": "Run a search to source candidates from your own pool against this job's hard requirements.",
+  "sourcing.runs.empty_hint":
+    "Run a search to source candidates from your own pool against this job's hard requirements.",
   "sourcing.runs.funnel_summary": "{fetched} found → {shortlisted} shortlisted",
   "sourcing.config.title": "Configure search",
   "sourcing.config.subtitle": "Choose where to look and what to look for.",
   "sourcing.config.sources_label": "Sources",
   "sourcing.config.unavailable": "Not available",
   "sourcing.config.hh_connect": "Connect hh.uz",
-  "sourcing.config.hh_unavailable": "Connect an hh.uz employer account to search the resume database.",
+  "sourcing.config.hh_unavailable":
+    "Connect an hh.uz employer account to search the resume database.",
   "sourcing.config.hh_options_label": "hh.uz options",
   "sourcing.config.keywords_label": "Keywords",
-  "sourcing.config.keywords_hint": "Comma-separated. Leave blank to let AI derive them from the job.",
+  "sourcing.config.keywords_hint":
+    "Comma-separated. Leave blank to let AI derive them from the job.",
   "sourcing.config.keywords_placeholder": "react, frontend, typescript",
   "sourcing.config.region_label": "Region",
   "sourcing.config.region_all": "All regions",
@@ -504,7 +518,8 @@ export const en: Translations = {
   "sourcing.hh.status_not_connected": "Not connected",
   "sourcing.hh.status_needs_reconnect": "Needs reconnect",
   "sourcing.hh.connected_as": "Connected as {name}",
-  "sourcing.hh.employer_required": "Resume search requires an hh.uz employer account — a jobseeker account can't search resumes.",
+  "sourcing.hh.employer_required":
+    "Resume search requires an hh.uz employer account — a jobseeker account can't search resumes.",
   "sourcing.hh.connect": "Connect hh.uz",
   "sourcing.hh.reconnect": "Reconnect",
   "sourcing.hh.disconnect": "Disconnect",
@@ -524,20 +539,24 @@ export const en: Translations = {
   "operator.sourcing.col.funnel": "Funnel",
   "operator.sourcing.col.sources": "Sources",
   "operator.hh.title": "hh.uz platform connection",
-  "operator.hh.subtitle": "One shared employer account every tenant can search through — unless they connect their own.",
+  "operator.hh.subtitle":
+    "One shared employer account every tenant can search through — unless they connect their own.",
   "operator.hh.status_connected": "Connected",
   "operator.hh.status_not_connected": "Not connected",
   "operator.hh.status_error": "Error",
   "operator.hh.connected_as": "Connected as {name}",
-  "operator.hh.employer_required": "Requires an hh.uz employer account. The OAuth app (client id/secret) is not enough — a jobseeker account can't search resumes.",
-  "operator.hh.not_configured": "Set HH_CLIENT_ID and HH_CLIENT_SECRET (e.g. on Railway) to enable this.",
+  "operator.hh.employer_required":
+    "Requires an hh.uz employer account. The OAuth app (client id/secret) is not enough — a jobseeker account can't search resumes.",
+  "operator.hh.not_configured":
+    "Set HH_CLIENT_ID and HH_CLIENT_SECRET (e.g. on Railway) to enable this.",
   "operator.hh.connect": "Connect platform hh.uz",
   "operator.hh.reconnect": "Reconnect",
   "operator.hh.disconnect": "Disconnect",
   "operator.hh.connected_toast": "Platform hh.uz connected",
   "operator.hh.failed_toast": "Platform hh.uz connection failed",
   "applicants.analysis.rate_limited_heading": "AI is busy",
-  "applicants.analysis.rate_limited_body": "Gemini is rate-limited right now. We'll retry this candidate automatically within a few minutes — no action needed.",
+  "applicants.analysis.rate_limited_body":
+    "Gemini is rate-limited right now. We'll retry this candidate automatically within a few minutes — no action needed.",
   "auth.phone_change_number": "Change number",
   "auth.phone_email_hint": "Required for account recovery and billing.",
   "auth.phone_digit_hint": "+998 followed by 9 digits.",
@@ -547,13 +566,19 @@ export const en: Translations = {
   "errors.not_found.home": "Go home",
   "apply.cv.remove_label": "Remove file",
   "apply.eyebrow_position": "Open position",
-  "apply.intro_subtitle": "Tell us a bit about yourself and share your CV. It takes under a minute.",
+  "apply.intro_subtitle":
+    "Tell us a bit about yourself and share your CV. It takes under a minute.",
   "apply.description_heading": "About this role",
   "apply.personal_heading": "Your information",
   "apply.continue": "Continue",
   "apply.min_value_short": "Min. {value}",
   "apply.field_required": "Required",
   "apply.footer_note": "Your information is used only to evaluate this application.",
+  "apply.time_estimate": "Takes about 60 seconds",
+  "apply.privacy_note": "Your CV stays with this employer",
+  "apply.next_step_label": "What happens next",
+  "apply.next_step_body":
+    "The HR team sees your CV, answers, and fit signals in TezHR. If there is a match, they will contact you by phone.",
   "apply.powered_by": "Powered by",
   "apply.secured_by": "Secured by Cloudflare",
   "common.saving": "Saving...",
@@ -589,8 +614,10 @@ export const en: Translations = {
   "applicants.requirements.required_label": "Required",
   "applicants.requirements.candidate_answer": "Answered",
   "applicants.requirements.analyze_anyway": "Analyze with AI anyway",
-  "applicants.requirements.analyze_anyway_intro": "Auto-analysis was skipped because this candidate didn't meet your hard requirements. You can still run AI analysis manually — it will use one CV credit.",
-  "applicants.requirements.analyze_anyway_quota": "You're out of CV analysis credits this trial period. Upgrade to run AI on this candidate.",
+  "applicants.requirements.analyze_anyway_intro":
+    "Auto-analysis was skipped because this candidate didn't meet your hard requirements. You can still run AI analysis manually — it will use one CV credit.",
+  "applicants.requirements.analyze_anyway_quota":
+    "You're out of CV analysis credits this trial period. Upgrade to run AI on this candidate.",
   "applicants.requirements.years_unit": "{value} year(s)",
   "applicants.requirements.boolean_yes": "Yes",
   "applicants.requirements.boolean_no": "No",
@@ -763,8 +790,7 @@ export const en: Translations = {
   "landing.showcase.feat_pdf_desc": "hh.uz, Word exports, templates — it reads them all.",
   "landing.showcase.feat_speed_label": "Per résumé",
   "landing.showcase.feat_speed_desc": "A batch of 200 — less than a minute.",
-  "landing.showcase.model_line":
-    "Model version {version} · last update April 12, 2026",
+  "landing.showcase.model_line": "Model version {version} · last update April 12, 2026",
   "landing.sourcing.section_tag": "SOURCING",
   "landing.sourcing.section_title": "— Outbound search",
   "landing.sourcing.section_meta": "POOL · HH.UZ · TELEGRAM",
@@ -779,8 +805,7 @@ export const en: Translations = {
   "landing.sourcing.src2_desc":
     "Uzbekistan's largest CV database, searched with the same role profile.",
   "landing.sourcing.src3_label": "Telegram",
-  "landing.sourcing.src3_desc":
-    "Public hiring channels where local candidates actually post.",
+  "landing.sourcing.src3_desc": "Public hiring channels where local candidates actually post.",
   "landing.sourcing.guarantee_kicker": "THE GUARANTEE",
   "landing.sourcing.guarantee_text":
     "Every sourced candidate provably meets every hard requirement — each match backed by a cited quote from their profile.",
@@ -870,8 +895,7 @@ export const en: Translations = {
   "landing.final.note_setup": "SETUP — 3 MINUTES",
   "landing.final.note_cancel": "CANCEL — ONE CLICK",
   "landing.final.note_support": "SUPPORT — IN YOUR LANGUAGE",
-  "landing.footer.tagline":
-    "AI résumé screening. Built in Tashkent for all of Central Asia.",
+  "landing.footer.tagline": "AI résumé screening. Built in Tashkent for all of Central Asia.",
   "landing.footer.col_product": "PRODUCT",
   "landing.footer.col_company": "COMPANY",
   "landing.footer.col_legal": "LEGAL",
@@ -908,14 +932,27 @@ export const en: Translations = {
   "landing.hero.cta_demo_button": "Watch demo",
   "landing.hero.pulse_today": "{count} processed today",
   "landing.hero.live_caption": "94 — best fit,\nready to hire",
+  "landing.hero.product_label": "AI hiring cockpit for Uzbekistan",
+  "landing.hero.proof_label": "PRODUCT FLOW",
+  "landing.hero.proof_title": "From link to shortlist to invite, without spreadsheet chaos.",
+  "landing.hero.proof_1_label": "COLLECT",
+  "landing.hero.proof_1_value":
+    "Public apply links, Telegram, hh, and uploaded CVs stay in one queue.",
+  "landing.hero.proof_2_label": "DECIDE",
+  "landing.hero.proof_2_value":
+    "Every score shows strengths, gaps, language fit, and hard-requirement signals.",
+  "landing.hero.proof_3_label": "ACT",
+  "landing.hero.proof_3_value":
+    "Invite strong matches, review edge cases, and keep the audit trail clean.",
+  "landing.hero.proof_footer":
+    "Company-isolated data · +998 phone format · RU / UZ / EN from day one",
   "landing.hero.demo_trigger_aria": "Open demo: how TezHR works",
   "landing.hero.demo_heading": "How it works",
   "landing.hero.demo_body":
     "Three steps — and you get a ranked list of 247 candidates. Use ← → to step through.",
   "landing.hero.demo_close": "Close",
   "landing.hero.demo_step_1_title": "Post a job",
-  "landing.hero.demo_step_1_body":
-    "Title, requirements, tags — and a public link at tezhr.uz/j/…",
+  "landing.hero.demo_step_1_body": "Title, requirements, tags — and a public link at tezhr.uz/j/…",
   "landing.hero.demo_step_2_title": "Upload CVs",
   "landing.hero.demo_step_2_body":
     "Drop PDFs or DOCX, or collect them via link — the AI starts reading immediately.",
@@ -1185,8 +1222,7 @@ export const en: Translations = {
   "landing.final.kicker_new": "YOUR NEXT HIRE",
   "landing.final.heading_a_new": "Faster.",
   "landing.final.heading_b_new": "Fairer",
-  "landing.final.sub_new":
-    "Start with 14 days free. No card, no sales calls, no commitment.",
+  "landing.final.sub_new": "Start with 14 days free. No card, no sales calls, no commitment.",
   "landing.final.cta_primary_new": "Create an account",
   "landing.final.cta_talk": "Talk to the team",
   "landing.final.note_setup_new": "setup in 5 minutes",
@@ -1232,16 +1268,12 @@ export const en: Translations = {
   "landing.cand.exp6": "5 yrs · Tashkent",
   "landing.cand.summary1":
     "Led the fintech dashboard redesign at Humans. Strong portfolio, relevant experience.",
-  "landing.cand.summary2":
-    "Worked at Click and uzum. Good cases, but lighter on enterprise.",
+  "landing.cand.summary2": "Worked at Click and uzum. Good cases, but lighter on enterprise.",
   "landing.cand.summary3":
     "Freelance portfolio with a strong UX process. Team experience needs confirming.",
-  "landing.cand.summary4":
-    "Solid mobile background. Gap: design systems and web interfaces.",
-  "landing.cand.summary5":
-    "Growing fast, but below the bar for product-team experience.",
-  "landing.cand.summary6":
-    "Graphic design, not product design. Does not meet the requirements.",
+  "landing.cand.summary4": "Solid mobile background. Gap: design systems and web interfaces.",
+  "landing.cand.summary5": "Growing fast, but below the bar for product-team experience.",
+  "landing.cand.summary6": "Graphic design, not product design. Does not meet the requirements.",
   "landing.cand.salary1": "18–22M",
   "landing.cand.salary2": "15–18M",
   "landing.cand.salary3": "14–17M",
@@ -1279,8 +1311,7 @@ export const en: Translations = {
     "Check the fields: name (2–120 chars), email, and message (10–2000 chars) are required.",
   "contact.form.err_too_many":
     "Too many messages from this IP. Try again in an hour or reach us on Telegram.",
-  "contact.form.err_generic":
-    "Couldn’t send. Try again or reach us on Telegram.",
+  "contact.form.err_generic": "Couldn’t send. Try again or reach us on Telegram.",
   "contact.telegram.kicker": "FAST LANE",
   "contact.telegram.title": "Message us on Telegram",
   "contact.telegram.body":
@@ -1373,8 +1404,7 @@ export const en: Translations = {
   "inbox.mark_all_read": "Mark all read",
   "inbox.reply_email": "Reply via email",
   "inbox.empty_unread_title": "All caught up",
-  "inbox.empty_unread_desc":
-    "No new messages. Take a breath — or browse the full history.",
+  "inbox.empty_unread_desc": "No new messages. Take a breath — or browse the full history.",
   "inbox.empty_all_title": "No messages yet",
   "inbox.empty_all_desc": "Messages from the /contact form will land here.",
   // --- hr portal redesign (TezHR Pro) ---
@@ -1384,6 +1414,25 @@ export const en: Translations = {
   "hr.nav.archive": "Archive",
   "hr.nav.section_workspace": "Workspace",
   "hr.nav.section_tools": "Tools",
+  "hr.chrome.search_placeholder": "Search jobs, candidates, actions",
+  "hr.palette.title": "HR search",
+  "hr.palette.subtitle": "Jobs, candidates, and actions in this company",
+  "hr.palette.placeholder": "Search a candidate, job, or action...",
+  "hr.palette.loading": "Searching...",
+  "hr.palette.empty_results": "No matches",
+  "hr.palette.empty_hint": "Type a name, role, or action",
+  "hr.palette.group.actions": "Actions",
+  "hr.palette.group.jobs": "Jobs",
+  "hr.palette.group.candidates": "Candidates",
+  "hr.palette.jump_dashboard": "Open dashboard",
+  "hr.palette.jump_jobs": "Open jobs",
+  "hr.palette.jump_candidates": "Open candidates",
+  "hr.palette.jump_new_job": "Create a job",
+  "hr.palette.jump_templates": "Open templates",
+  "hr.palette.jump_settings": "Open settings",
+  "hr.palette.hint.navigate": "navigate",
+  "hr.palette.hint.open": "open",
+  "hr.palette.hint.new_tab": "new tab",
   "hr.time.today": "today",
   "hr.time.yesterday": "yesterday",
   "hr.time.days_ago": "{days}d ago",
@@ -1666,14 +1715,14 @@ export const en: Translations = {
     "Click to insert at the cursor. Only variables shown are allowed — unknown tokens block save.",
   "hr.settings.templates.unknown_token":
     "Unknown tokens: {tokens}. Remove them or save will be rejected.",
-  "hr.settings.templates.parity_warning":
-    "This locale is missing a variable the others use.",
+  "hr.settings.templates.parity_warning": "This locale is missing a variable the others use.",
   "hr.settings.templates.save": "Save templates",
   "hr.settings.templates.saving": "Saving…",
   "hr.settings.templates.saved": "Saved",
   "hr.settings.templates.save_error": "Couldn't save — please retry.",
   "hr.settings.templates.reset": "Reset to default",
-  "hr.settings.templates.reset_confirm": "Reset this locale to the platform default? Your changes will be lost.",
+  "hr.settings.templates.reset_confirm":
+    "Reset this locale to the platform default? Your changes will be lost.",
   "hr.settings.templates.test_send": "Test send",
   "hr.settings.templates.test_send_dialog_title": "Send a test",
   "hr.settings.templates.test_send_dialog_body":
@@ -1683,8 +1732,7 @@ export const en: Translations = {
   "hr.settings.templates.test_send_rate_limited": "Too many test sends — try again in an hour.",
   "hr.settings.templates.test_send_queued": "Test send queued.",
   "hr.settings.profile.title": "Profile",
-  "hr.settings.profile.subtitle":
-    "How you show up across the workspace. Only you can edit this.",
+  "hr.settings.profile.subtitle": "How you show up across the workspace. Only you can edit this.",
   "hr.settings.profile.identity.role": "Role",
   "hr.settings.profile.identity.change_avatar": "Change avatar",
   "hr.settings.profile.identity.remove_avatar": "Remove",
@@ -1704,8 +1752,7 @@ export const en: Translations = {
   "hr.settings.profile.email.hint":
     "We'll send a confirmation link to both your current and new address.",
   "hr.settings.profile.email.submit": "Send confirmation",
-  "hr.settings.profile.email.sent":
-    "Confirmation sent. Click the link in both inboxes to finish.",
+  "hr.settings.profile.email.sent": "Confirmation sent. Click the link in both inboxes to finish.",
   "hr.settings.profile.email.invalid": "That doesn't look like a valid email.",
   "hr.settings.profile.email.unchanged": "That's already your email.",
   "hr.settings.profile.email.error": "Couldn't send the confirmation — please retry.",
@@ -1864,15 +1911,13 @@ export const en: Translations = {
   "hr.job.share.share_label": "Share to",
   "hr.job.share.copy_whatsapp":
     "{title} at {company}. Apply in 60 seconds — Russian, Uzbek, or English. {url}",
-  "hr.job.share.copy_telegram":
-    "We're hiring — {title} at {company}.\nApply with your CV: {url}",
+  "hr.job.share.copy_telegram": "We're hiring — {title} at {company}.\nApply with your CV: {url}",
   "hr.job.share.copy_linkedin":
     "{company} is hiring a {title}. Apply directly — no signup required: {url}",
   "hr.job.share.copy_email_subject": "{title} — {company}",
   "hr.job.share.copy_email_body":
     "Hi,\n\n{company} is hiring a {title}. The application form takes about a minute and supports Russian, Uzbek, and English.\n\nApply here: {url}\n\nThanks!",
-  "hr.job.share.seo_note":
-    "This posting is indexed for Google for Jobs with structured data.",
+  "hr.job.share.seo_note": "This posting is indexed for Google for Jobs with structured data.",
   "hr.job.share.btn_copy": "Copy link",
   "hr.job.share.btn_copied": "Copied",
   "hr.job.share.btn_telegram": "Telegram",
@@ -1889,12 +1934,9 @@ export const en: Translations = {
   "applicants.questions.generate_cta": "Generate questions",
   "applicants.questions.generating": "Drafting questions…",
   "applicants.questions.regenerate": "Regenerate",
-  "applicants.questions.regenerate_warning":
-    "Overwrites the current set with a fresh draft.",
-  "applicants.questions.loading_hint":
-    "This usually takes 10–20 seconds.",
-  "applicants.questions.rate_limited":
-    "Too many AI requests. Try again in an hour.",
+  "applicants.questions.regenerate_warning": "Overwrites the current set with a fresh draft.",
+  "applicants.questions.loading_hint": "This usually takes 10–20 seconds.",
+  "applicants.questions.rate_limited": "Too many AI requests. Try again in an hour.",
   "applicants.questions.quota_blocked":
     "You've used all 10 free interview drafts this month. Upgrade to Pro for unlimited.",
   "applicants.questions.error":
@@ -1909,8 +1951,7 @@ export const en: Translations = {
   "applicants.questions.copy_all_done": "Copied all",
   "applicants.questions.copy_sheet": "Copy as interview sheet",
   "applicants.questions.copy_sheet_done": "Sheet copied",
-  "applicants.questions.sheet_intro":
-    "Interview questions for {candidate} — {job}",
+  "applicants.questions.sheet_intro": "Interview questions for {candidate} — {job}",
   "applicants.questions.focus.strength_probe": "STRENGTH PROBE",
   "applicants.questions.focus.gap_probe": "GAP PROBE",
   "applicants.questions.focus.role_fit": "ROLE FIT",
@@ -1943,8 +1984,7 @@ export const en: Translations = {
   "interview.decline_reason_label":
     "Want to share what didn't work? (optional, helps us follow up)",
   "interview.decline_submit": "Send",
-  "interview.declined_body":
-    "Thanks for letting us know. We'll be in touch about other options.",
+  "interview.declined_body": "Thanks for letting us know. We'll be in touch about other options.",
   "interview.expired_heading": "This invitation has expired",
   "interview.expired_body":
     "The link is no longer active. Please reach out to the company directly if you'd still like to interview.",
@@ -1956,8 +1996,7 @@ export const en: Translations = {
     "This invitation is no longer accepting bookings. Please contact the team.",
   "interview.book_error":
     "Couldn't confirm that slot. Try again, or reach out to the team if it keeps failing.",
-  "interview.decline_error":
-    "Couldn't send your reply. Please try again.",
+  "interview.decline_error": "Couldn't send your reply. Please try again.",
   "interview.hr.status.pending": "Awaiting candidate",
   "interview.hr.status.booked": "Booked",
   "interview.hr.status.declined": "Declined",
@@ -1971,8 +2010,7 @@ export const en: Translations = {
     "Share this link with the candidate. They'll pick a slot and get an ICS file automatically.",
   "interview.hr.modal.duration_label": "Duration",
   "interview.hr.modal.location_label": "Where",
-  "interview.hr.modal.location_detail_placeholder":
-    "Optional detail (link, room, address)",
+  "interview.hr.modal.location_detail_placeholder": "Optional detail (link, room, address)",
   "interview.hr.modal.message_label": "Message to the candidate (optional)",
   "interview.hr.modal.message_placeholder":
     "Add a personal note about the role, the team, or what to expect.",
@@ -1986,13 +2024,10 @@ export const en: Translations = {
     "Invitation created. Send it to the candidate any way you like.",
   "interview.hr.modal.error.invalid_slots":
     "All slots must be valid future times, at least 30 minutes apart.",
-  "interview.hr.modal.error.slot_count":
-    "Propose between 3 and 6 slots.",
-  "interview.hr.modal.error.generic":
-    "Couldn't create the invitation. Try again.",
+  "interview.hr.modal.error.slot_count": "Propose between 3 and 6 slots.",
+  "interview.hr.modal.error.generic": "Couldn't create the invitation. Try again.",
   "interview.hr.block.title": "Scheduling",
-  "interview.hr.block.empty":
-    "No interview scheduled yet. Propose times when you're ready.",
+  "interview.hr.block.empty": "No interview scheduled yet. Propose times when you're ready.",
   "interview.hr.block.schedule_cta": "Schedule",
   "interview.hr.block.schedule_again": "Schedule another interview",
   "interview.hr.block.public_link": "PUBLIC LINK",
@@ -2122,7 +2157,8 @@ export const en: Translations = {
   "operator.notes.submit": "Add note",
   "operator.notes.loading": "Loading…",
   "operator.notes.save_failed": "Save failed",
-  "operator.notes.empty": "No notes yet. Drop context about this tenant so the next operator is on the same page.",
+  "operator.notes.empty":
+    "No notes yet. Drop context about this tenant so the next operator is on the same page.",
   "operator.notes.pin": "Pin",
   "operator.notes.unpin": "Unpin",
   "operator.notes.delete": "Delete note",
@@ -2136,7 +2172,8 @@ export const en: Translations = {
   "operator.danger.delete_help": "30-day grace period. Owner sees a banner. Irreversible after.",
   "operator.danger.delete_button": "Schedule delete…",
   "operator.danger.dialog_quota_title": "Override subscription quota",
-  "operator.danger.dialog_quota_desc": "Manually raise or lower CV, job, or sourcing limits. Applies immediately. Logged to audit_log.",
+  "operator.danger.dialog_quota_desc":
+    "Manually raise or lower CV, job, or sourcing limits. Applies immediately. Logged to audit_log.",
   "operator.danger.cv_quota_label": "CV quota limit",
   "operator.danger.job_quota_label": "Job quota limit",
   "operator.danger.sourcing_quota_label": "Sourcing search limit",
@@ -2146,8 +2183,9 @@ export const en: Translations = {
   "operator.danger.override_failed": "Override failed",
   "operator.danger.reversible": "✓ Reversible",
   "operator.danger.dialog_delete_title": "Schedule company deletion",
-  "operator.danger.dialog_delete_desc": "Marks {name} for deletion in 30 days. Owner sees a banner and can contact support to cancel. Hard-delete purge runs daily.",
-  "operator.danger.confirm_type_label": "Type \"{name}\" to confirm",
+  "operator.danger.dialog_delete_desc":
+    "Marks {name} for deletion in 30 days. Owner sees a banner and can contact support to cancel. Hard-delete purge runs daily.",
+  "operator.danger.confirm_type_label": 'Type "{name}" to confirm',
   "operator.danger.name_mismatch": "Name does not match",
   "operator.danger.schedule_delete": "Schedule delete",
   "operator.danger.delete_scheduled_toast": "Deletion scheduled (30-day grace)",
@@ -2163,7 +2201,8 @@ export const en: Translations = {
   "operator.promotions.toast_approved": "Approved",
   "operator.promotions.toast_rejected": "Rejected",
   "operator.promotions.failed": "Failed",
-  "operator.promotions.footer_note": "You cannot approve your own proposal. Both proposer and approver are audit-logged.",
+  "operator.promotions.footer_note":
+    "You cannot approve your own proposal. Both proposer and approver are audit-logged.",
   // --- operator incidents page ---
   "operator.incidents.eyebrow": "Platform",
   "operator.incidents.title": "Incidents",
@@ -2192,16 +2231,18 @@ export const en: Translations = {
   "operator.settings.tab.team": "Operator team",
   "operator.settings.tab.platform": "Platform",
   "operator.settings.prefs_title": "Preferences",
-  "operator.settings.prefs_help": "Theme and locale live in the top-bar avatar menu. Press ? for keyboard shortcuts.",
+  "operator.settings.prefs_help":
+    "Theme and locale live in the top-bar avatar menu. Press ? for keyboard shortcuts.",
   "operator.settings.team_title": "Operator team ({n})",
-  "operator.settings.team_note": "Promote / demote (flip is_operator) goes through the 2-operator approval flow in Users.",
+  "operator.settings.team_note":
+    "Promote / demote (flip is_operator) goes through the 2-operator approval flow in Users.",
   "operator.settings.restrict": "Restrict to read-only",
   "operator.settings.grant": "Grant write",
   "operator.settings.role_prompt": "Change {email} to {next}? Enter a reason (min 10 chars).",
   "operator.settings.role_updated": "Role updated",
   "operator.settings.role_failed": "Role change failed",
   "operator.settings.platform_title": "Platform toggles",
-  "operator.settings.save_prompt": "Change {key} to \"{value}\" — enter a reason (min 10 chars).",
+  "operator.settings.save_prompt": 'Change {key} to "{value}" — enter a reason (min 10 chars).',
   "operator.settings.saved": "Saved",
   "operator.settings.save_failed": "Save failed",
   "operator.settings.off": "off",
@@ -2303,12 +2344,14 @@ export const en: Translations = {
   "operator.users.pagination": "Page {page} of {total}",
   "operator.users.dialog.propose_promote_title": "Propose promotion — {email}",
   "operator.users.dialog.propose_demote_title": "Propose demotion — {email}",
-  "operator.users.dialog.propose_desc": "Submits a pending request. A second operator must approve from the Inbox before it takes effect. You cannot approve your own proposal.",
+  "operator.users.dialog.propose_desc":
+    "Submits a pending request. A second operator must approve from the Inbox before it takes effect. You cannot approve your own proposal.",
   "operator.users.dialog.reason_label": "Reason (required, min 10 chars)",
   "operator.users.dialog.cancel": "Cancel",
   "operator.users.dialog.submit": "Submit",
   "operator.users.dialog.impersonate_title": "Impersonate {email}",
-  "operator.users.dialog.impersonate_desc": "This will sign you into their session. All actions are logged under both user IDs.",
+  "operator.users.dialog.impersonate_desc":
+    "This will sign you into their session. All actions are logged under both user IDs.",
   "operator.users.dialog.impersonate_reason_label": "Reason (required)",
   "operator.users.dialog.impersonate_placeholder": "e.g. Support ticket #1234",
   "operator.users.dialog.start_session": "Start session",
@@ -2336,7 +2379,8 @@ export const en: Translations = {
   "operator.processing.col.error": "Error",
   // --- operator templates page ---
   "operator.templates.title": "Platform templates",
-  "operator.templates.description": "Operator-default Telegram invitation templates. Companies can override these under Settings > Templates.",
+  "operator.templates.description":
+    "Operator-default Telegram invitation templates. Companies can override these under Settings > Templates.",
   "operator.templates.save": "Save",
   "operator.templates.aria_save": "Save templates",
   "operator.templates.toast.saved": "Templates updated",
@@ -2378,7 +2422,8 @@ export const en: Translations = {
   "operator.company_detail.col.actions": "Actions",
   "operator.company_detail.impersonate": "Impersonate",
   "operator.company_detail.dialog.title": "Impersonate user",
-  "operator.company_detail.dialog.desc": "Starting an impersonation session for {email}. All actions during the session will be logged under both your and their user IDs.",
+  "operator.company_detail.dialog.desc":
+    "Starting an impersonation session for {email}. All actions during the session will be logged under both your and their user IDs.",
   "operator.company_detail.dialog.reason_label": "Reason (required)",
   "operator.company_detail.dialog.placeholder": "e.g. Support ticket #1234",
   "operator.company_detail.dialog.cancel": "Cancel",
@@ -2398,5 +2443,6 @@ export const en: Translations = {
   "operator.dashboard.movers.at_risk_primary": "score {score} · {reasons}",
   "operator.dashboard.activity.system_actor": "system",
   // --- operator dashboard error fallback ---
-  "operator.dashboard.error": "Dashboard unavailable — try refreshing. If the problem persists, check operator_daily_metrics and the cron refresh route.",
+  "operator.dashboard.error":
+    "Dashboard unavailable — try refreshing. If the problem persists, check operator_daily_metrics and the cron refresh route.",
 };

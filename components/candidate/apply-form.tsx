@@ -319,7 +319,7 @@ export function ApplyForm({
     <div className="flex flex-col gap-4">
       {/* Hero */}
       <Panel>
-        <div className="px-5 pb-6 pt-5 sm:px-6 sm:pb-7 sm:pt-6">
+        <div className="px-5 pt-5 pb-6 sm:px-6 sm:pt-6 sm:pb-7">
           <div className="mb-5 flex items-center gap-3">
             {company.logo_url ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -341,19 +341,30 @@ export function ApplyForm({
                 {company.name}
               </p>
               <p
-                className="text-ink-4 mt-0.5 text-[10.5px] font-semibold uppercase tracking-[0.12em]"
+                className="text-ink-4 mt-0.5 text-[10.5px] font-semibold tracking-[0.12em] uppercase"
                 style={{ fontFamily: "var(--font-tez-mono)" }}
               >
                 {t("apply.eyebrow_position")}
               </p>
             </div>
           </div>
-          <h1 className="text-ink mb-3 text-[28px] font-bold leading-[1.15] tracking-[-0.02em] sm:text-[34px]">
+          <h1 className="text-ink mb-3 text-[28px] leading-[1.15] font-bold tracking-[-0.02em] sm:text-[34px]">
             {posting.title}
           </h1>
           <p className="text-ink-3 max-w-prose text-[14.5px] leading-[1.6]">
             {t("apply.intro_subtitle")}
           </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <span
+              className="border-rule bg-bone-2 text-ink-3 rounded-[5px] border px-2.5 py-1 text-[12px] font-medium"
+              style={{ fontFamily: "var(--font-tez-mono)" }}
+            >
+              {t("apply.time_estimate")}
+            </span>
+            <span className="border-rule bg-bone-2 text-ink-3 rounded-[5px] border px-2.5 py-1 text-[12px] font-medium">
+              {t("apply.privacy_note")}
+            </span>
+          </div>
         </div>
       </Panel>
 

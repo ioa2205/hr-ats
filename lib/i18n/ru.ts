@@ -307,8 +307,10 @@ export const ru: Translations = {
   "hr.jobs.actions_label": "Действия",
   "hr.jobs.back_to_list": "К списку вакансий",
   "hr.job.title_placeholder": "Минимум 3 символа",
-  "hr.job.description_placeholder": "## О роли\n\nКраткий абзац о том, что делает специалист.\n\n## Что вы будете делать\n\n- Разрабатывать и выпускать функциональность\n- Работать с дизайном и продуктом\n\n## Кого мы ищем\n\n- Опыт от 3 лет\n- Умение чётко излагать мысли письменно",
-  "hr.job.description_hint": "Поддерживается markdown: ## для разделов, - для пунктов, **жирный**. Минимум 20 символов.",
+  "hr.job.description_placeholder":
+    "## О роли\n\nКраткий абзац о том, что делает специалист.\n\n## Что вы будете делать\n\n- Разрабатывать и выпускать функциональность\n- Работать с дизайном и продуктом\n\n## Кого мы ищем\n\n- Опыт от 3 лет\n- Умение чётко излагать мысли письменно",
+  "hr.job.description_hint":
+    "Поддерживается markdown: ## для разделов, - для пунктов, **жирный**. Минимум 20 символов.",
   "hr.job.skills_placeholder": "TypeScript, React, ...",
   "hr.job.save_changes": "Сохранить изменения",
   "hr.job.close_button": "Закрыть",
@@ -374,8 +376,10 @@ export const ru: Translations = {
   "auth.no_account": "Нет аккаунта?",
   "auth.forgot_password": "Забыли пароль?",
   "auth.verify_title": "Проверьте почту",
-  "auth.verify_body_with_email": "Мы отправили ссылку подтверждения на {email}. Нажмите её, чтобы активировать аккаунт.",
-  "auth.verify_body_no_email": "Мы отправили вам ссылку подтверждения. Нажмите её, чтобы активировать аккаунт.",
+  "auth.verify_body_with_email":
+    "Мы отправили ссылку подтверждения на {email}. Нажмите её, чтобы активировать аккаунт.",
+  "auth.verify_body_no_email":
+    "Мы отправили вам ссылку подтверждения. Нажмите её, чтобы активировать аккаунт.",
   "auth.verify_help": "Не пришло письмо? Проверьте папку «Спам». Ссылка действует 24 часа.",
   "auth.verify_resend_button": "Отправить письмо ещё раз",
   "auth.verify_resend_sending": "Отправляем…",
@@ -392,21 +396,25 @@ export const ru: Translations = {
   "notifications.email.subject_sourcing_complete": "Кандидаты найдены: {title}",
   "notifications.email.subject_sourcing_failed": "Поиск кандидатов не удался: {title}",
   "notifications.email.open_cta": "Открыть в TezHR",
-  "notifications.email.footer": "Вы получили это письмо, потому что уведомления включены для вашего аккаунта.",
+  "notifications.email.footer":
+    "Вы получили это письмо, потому что уведомления включены для вашего аккаунта.",
   "sourcing.notify.complete_title": "Кандидаты найдены",
   "sourcing.notify.complete_body": "{count} кандидатов в шорт-листе для «{job}»",
   "sourcing.notify.failed_title": "Поиск не удался",
-  "sourcing.notify.failed_body": "Не удалось завершить поиск кандидатов для «{job}». Попробуйте снова.",
+  "sourcing.notify.failed_body":
+    "Не удалось завершить поиск кандидатов для «{job}». Попробуйте снова.",
   "sourcing.find.button": "Найти кандидатов",
   "sourcing.find.searching": "Поиск…",
   "sourcing.find.inflight": "Поиск уже идёт",
   "sourcing.find.quota_exceeded": "Лимит поиска исчерпан",
   "sourcing.find.inactive": "Подписка неактивна",
   "sourcing.find.error": "Не удалось запустить поиск",
-  "sourcing.find.hint": "ИИ найдёт кандидатов из вашей базы и оценит каждого по требованиям вакансии.",
+  "sourcing.find.hint":
+    "ИИ найдёт кандидатов из вашей базы и оценит каждого по требованиям вакансии.",
   "sourcing.results.breadcrumb": "Поиск кандидатов",
   "sourcing.results.title": "Найденные кандидаты",
-  "sourcing.results.subtitle": "Каждый кандидат подтверждённо соответствует всем обязательным требованиям.",
+  "sourcing.results.subtitle":
+    "Каждый кандидат подтверждённо соответствует всем обязательным требованиям.",
   "sourcing.results.back_to_job": "К вакансии",
   "sourcing.results.rerun": "Повторить поиск",
   "sourcing.results.status_label": "Статус",
@@ -415,12 +423,16 @@ export const ru: Translations = {
   "sourcing.results.status.completed": "Завершён",
   "sourcing.results.status.partial": "Частично",
   "sourcing.results.status.failed": "Ошибка",
-  "sourcing.results.running_hint": "Поиск выполняется в фоне. Эта страница обновится, когда шорт-лист будет готов.",
+  "sourcing.results.running_hint":
+    "Поиск выполняется в фоне. Эта страница обновится, когда шорт-лист будет готов.",
   "sourcing.results.failed_hint": "Поиск не удался. Попробуйте запустить его снова.",
-  "sourcing.results.partial_note": "Часть источников была недоступна — показаны результаты из доступных.",
-  "sourcing.results.hh_reconnect_hint": "hh.uz недоступен. Подключите аккаунт работодателя HH заново и повторите поиск.",
+  "sourcing.results.partial_note":
+    "Часть источников была недоступна — показаны результаты из доступных.",
+  "sourcing.results.hh_reconnect_hint":
+    "hh.uz недоступен. Подключите аккаунт работодателя HH заново и повторите поиск.",
   "sourcing.results.empty_title": "Подходящих кандидатов не найдено",
-  "sourcing.results.empty_hint": "Никто из базы не прошёл все обязательные требования. Мы никогда не показываем тех, кто не соответствует.",
+  "sourcing.results.empty_hint":
+    "Никто из базы не прошёл все обязательные требования. Мы никогда не показываем тех, кто не соответствует.",
   "sourcing.results.count_summary": "{count} из 20 — по убыванию соответствия",
   "sourcing.results.stat.fetched": "Найдено",
   "sourcing.results.stat.deduped": "После дедупликации",
@@ -468,21 +480,24 @@ export const ru: Translations = {
   "sourcing.results.drop.gate": "не соответствуют всем жёстким требованиям",
   "sourcing.results.drop.score": "не оценены (лимит или ошибка)",
   "sourcing.results.drop.verify": "не подтверждены повторной проверкой",
-  "sourcing.results.degraded_note": "Некоторые источники не ответили и были пропущены: {sources}. Результаты неполные.",
+  "sourcing.results.degraded_note":
+    "Некоторые источники не ответили и были пропущены: {sources}. Результаты неполные.",
   "sourcing.runs.nav_label": "Поиск",
   "sourcing.runs.breadcrumb": "Запуски поиска",
   "sourcing.runs.title": "Запуски поиска",
   "sourcing.runs.subtitle": "Все запуски поиска кандидатов по этой вакансии, новые сверху.",
   "sourcing.runs.new": "Новый поиск",
   "sourcing.runs.empty_title": "Поисков ещё не было",
-  "sourcing.runs.empty_hint": "Запустите поиск, чтобы подобрать кандидатов из вашей базы по жёстким требованиям вакансии.",
+  "sourcing.runs.empty_hint":
+    "Запустите поиск, чтобы подобрать кандидатов из вашей базы по жёстким требованиям вакансии.",
   "sourcing.runs.funnel_summary": "найдено {fetched} → в шорт-листе {shortlisted}",
   "sourcing.config.title": "Настройка поиска",
   "sourcing.config.subtitle": "Выберите, где искать и что искать.",
   "sourcing.config.sources_label": "Источники",
   "sourcing.config.unavailable": "Недоступно",
   "sourcing.config.hh_connect": "Подключить hh.uz",
-  "sourcing.config.hh_unavailable": "Подключите аккаунт работодателя hh.uz, чтобы искать в базе резюме.",
+  "sourcing.config.hh_unavailable":
+    "Подключите аккаунт работодателя hh.uz, чтобы искать в базе резюме.",
   "sourcing.config.hh_options_label": "Параметры hh.uz",
   "sourcing.config.keywords_label": "Ключевые слова",
   "sourcing.config.keywords_hint": "Через запятую. Оставьте пустым — ИИ подберёт их по вакансии.",
@@ -505,7 +520,8 @@ export const ru: Translations = {
   "sourcing.hh.status_not_connected": "Не подключено",
   "sourcing.hh.status_needs_reconnect": "Требуется переподключение",
   "sourcing.hh.connected_as": "Подключено как {name}",
-  "sourcing.hh.employer_required": "Для поиска резюме нужен аккаунт работодателя hh.uz — аккаунт соискателя искать резюме не может.",
+  "sourcing.hh.employer_required":
+    "Для поиска резюме нужен аккаунт работодателя hh.uz — аккаунт соискателя искать резюме не может.",
   "sourcing.hh.connect": "Подключить hh.uz",
   "sourcing.hh.reconnect": "Переподключить",
   "sourcing.hh.disconnect": "Отключить",
@@ -525,20 +541,24 @@ export const ru: Translations = {
   "operator.sourcing.col.funnel": "Воронка",
   "operator.sourcing.col.sources": "Источники",
   "operator.hh.title": "Платформенное подключение hh.uz",
-  "operator.hh.subtitle": "Один общий аккаунт работодателя, через который ищут все тенанты — если у них нет своего подключения.",
+  "operator.hh.subtitle":
+    "Один общий аккаунт работодателя, через который ищут все тенанты — если у них нет своего подключения.",
   "operator.hh.status_connected": "Подключено",
   "operator.hh.status_not_connected": "Не подключено",
   "operator.hh.status_error": "Ошибка",
   "operator.hh.connected_as": "Подключено как {name}",
-  "operator.hh.employer_required": "Нужен аккаунт работодателя hh.uz. Одних client id/secret недостаточно — аккаунт соискателя не может искать резюме.",
-  "operator.hh.not_configured": "Задайте HH_CLIENT_ID и HH_CLIENT_SECRET (например, в Railway), чтобы включить.",
+  "operator.hh.employer_required":
+    "Нужен аккаунт работодателя hh.uz. Одних client id/secret недостаточно — аккаунт соискателя не может искать резюме.",
+  "operator.hh.not_configured":
+    "Задайте HH_CLIENT_ID и HH_CLIENT_SECRET (например, в Railway), чтобы включить.",
   "operator.hh.connect": "Подключить платформенный hh.uz",
   "operator.hh.reconnect": "Переподключить",
   "operator.hh.disconnect": "Отключить",
   "operator.hh.connected_toast": "Платформенный hh.uz подключён",
   "operator.hh.failed_toast": "Не удалось подключить платформенный hh.uz",
   "applicants.analysis.rate_limited_heading": "AI занят",
-  "applicants.analysis.rate_limited_body": "Gemini временно ограничен. Мы повторим анализ автоматически в течение нескольких минут — действия не требуются.",
+  "applicants.analysis.rate_limited_body":
+    "Gemini временно ограничен. Мы повторим анализ автоматически в течение нескольких минут — действия не требуются.",
   "auth.phone_change_number": "Изменить номер",
   "auth.phone_email_hint": "Нужен для восстановления доступа и биллинга.",
   "auth.phone_digit_hint": "+998, затем 9 цифр.",
@@ -555,6 +575,11 @@ export const ru: Translations = {
   "apply.min_value_short": "Мин. {value}",
   "apply.field_required": "Обязательно",
   "apply.footer_note": "Ваши данные используются только для рассмотрения этой заявки.",
+  "apply.time_estimate": "Займёт около 60 секунд",
+  "apply.privacy_note": "CV останется у этого работодателя",
+  "apply.next_step_label": "Что дальше",
+  "apply.next_step_body":
+    "HR-команда увидит ваше CV, ответы и сигналы соответствия в TezHR. Если есть совпадение, с вами свяжутся по телефону.",
   "apply.powered_by": "Работает на",
   "apply.secured_by": "Защищено Cloudflare",
   "common.saving": "Сохранение...",
@@ -591,8 +616,10 @@ export const ru: Translations = {
   "applicants.requirements.required_label": "Требуется",
   "applicants.requirements.candidate_answer": "Ответ",
   "applicants.requirements.analyze_anyway": "Всё равно проанализировать",
-  "applicants.requirements.analyze_anyway_intro": "Авто-анализ был пропущен, потому что кандидат не соответствует вашим жёстким требованиям. Вы можете запустить AI-анализ вручную — это потратит один кредит на резюме.",
-  "applicants.requirements.analyze_anyway_quota": "У вас закончились кредиты на анализ резюме в этом пробном периоде. Перейдите на платный план, чтобы запустить AI на этом кандидате.",
+  "applicants.requirements.analyze_anyway_intro":
+    "Авто-анализ был пропущен, потому что кандидат не соответствует вашим жёстким требованиям. Вы можете запустить AI-анализ вручную — это потратит один кредит на резюме.",
+  "applicants.requirements.analyze_anyway_quota":
+    "У вас закончились кредиты на анализ резюме в этом пробном периоде. Перейдите на платный план, чтобы запустить AI на этом кандидате.",
   "applicants.requirements.years_unit": "{value} лет",
   "applicants.requirements.boolean_yes": "Да",
   "applicants.requirements.boolean_no": "Нет",
@@ -615,7 +642,8 @@ export const ru: Translations = {
   "applicants.analysis.unavailable_heading": "ИИ временно недоступен",
   "applicants.analysis.unavailable_body":
     "Анализ ИИ приостановлен из-за сбоя на нашей стороне. Мы автоматически продолжим обработку этого кандидата после устранения проблемы — действий не требуется.",
-  "applicants.analysis.err_unavailable": "ИИ временно недоступен — мы повторим попытку автоматически",
+  "applicants.analysis.err_unavailable":
+    "ИИ временно недоступен — мы повторим попытку автоматически",
   "applicants.analysis.err_timeout": "Превышено время ожидания ответа ИИ. Попробуйте снова.",
   "applicants.analysis.err_job_missing": "Связанная вакансия не найдена.",
   "applicants.analysis.err_cv_access": "Не удалось открыть загруженный файл резюме.",
@@ -765,8 +793,7 @@ export const ru: Translations = {
   "landing.showcase.feat_pdf_desc": "hh.uz, Word-экспорт, шаблоны — всё читает.",
   "landing.showcase.feat_speed_label": "На одно резюме",
   "landing.showcase.feat_speed_desc": "Пакет из 200 штук — меньше минуты.",
-  "landing.showcase.model_line":
-    "Модель версии {version} · последнее обновление 12 апреля 2026",
+  "landing.showcase.model_line": "Модель версии {version} · последнее обновление 12 апреля 2026",
   "landing.sourcing.section_tag": "СОРСИНГ",
   "landing.sourcing.section_title": "— Активный поиск",
   "landing.sourcing.section_meta": "БАЗА · HH.UZ · TELEGRAM",
@@ -856,8 +883,7 @@ export const ru: Translations = {
   "landing.pricing.pro_price_line": "от {price}",
   "landing.pricing.pro_unit": "ПО ДОГОВОРУ · ОБСУДИМ",
   "landing.pricing.pro_cta": "Обсудить в Telegram",
-  "landing.pricing.pro_note":
-    "Цена зависит от объёма. Напишите нам в Telegram — обсудим детали.",
+  "landing.pricing.pro_note": "Цена зависит от объёма. Напишите нам в Telegram — обсудим детали.",
   "landing.pricing.pro_f1": "Безлимитные вакансии",
   "landing.pricing.pro_f2": "Безлимитные анализы",
   "landing.pricing.pro_f3": "Командная работа и роли",
@@ -872,8 +898,7 @@ export const ru: Translations = {
   "landing.final.note_setup": "НАСТРОЙКА — 3 МИНУТЫ",
   "landing.final.note_cancel": "ОТМЕНА — В КЛИК",
   "landing.final.note_support": "ПОДДЕРЖКА — НА РУССКОМ",
-  "landing.footer.tagline":
-    "ИИ-скрининг резюме. Сделано в Ташкенте для всей Центральной Азии.",
+  "landing.footer.tagline": "ИИ-скрининг резюме. Сделано в Ташкенте для всей Центральной Азии.",
   "landing.footer.col_product": "ПРОДУКТ",
   "landing.footer.col_company": "КОМПАНИЯ",
   "landing.footer.col_legal": "ПРАВОВОЕ",
@@ -910,6 +935,20 @@ export const ru: Translations = {
   "landing.hero.cta_demo_button": "Посмотреть демо",
   "landing.hero.pulse_today": "сегодня обработано {count}",
   "landing.hero.live_caption": "94 — лучшее совпадение,\nготов к найму",
+  "landing.hero.product_label": "AI-кокпит найма для Узбекистана",
+  "landing.hero.proof_label": "КАК РАБОТАЕТ",
+  "landing.hero.proof_title": "От ссылки до шортлиста и приглашения — без хаоса в таблицах.",
+  "landing.hero.proof_1_label": "СОБРАТЬ",
+  "landing.hero.proof_1_value":
+    "Публичные ссылки, Telegram, hh и загруженные CV попадают в одну очередь.",
+  "landing.hero.proof_2_label": "РЕШИТЬ",
+  "landing.hero.proof_2_value":
+    "Каждый балл показывает сильные стороны, пробелы, языки и обязательные требования.",
+  "landing.hero.proof_3_label": "ДЕЙСТВОВАТЬ",
+  "landing.hero.proof_3_value":
+    "Приглашайте сильных, проверяйте спорных и сохраняйте чистую историю решений.",
+  "landing.hero.proof_footer":
+    "Данные изолированы по компаниям · формат +998 · RU / UZ / EN с первого дня",
   "landing.hero.demo_trigger_aria": "Открыть демо: как работает TezHR",
   "landing.hero.demo_heading": "Как это работает",
   "landing.hero.demo_body":
@@ -1234,16 +1273,12 @@ export const ru: Translations = {
   "landing.cand.exp6": "5 лет · Ташкент",
   "landing.cand.summary1":
     "Вела редизайн финтех-дашборда в Humans. Сильное портфолио, релевантный опыт.",
-  "landing.cand.summary2":
-    "Работал в Click и uzum. Хорошие кейсы, но меньше опыта в enterprise.",
+  "landing.cand.summary2": "Работал в Click и uzum. Хорошие кейсы, но меньше опыта в enterprise.",
   "landing.cand.summary3":
     "Фриланс-портфолио с сильным UX-процессом. Нужно подтвердить командный опыт.",
-  "landing.cand.summary4":
-    "Крепкий мобильный опыт. Пробел: дизайн-системы и веб-интерфейсы.",
-  "landing.cand.summary5":
-    "Быстро растёт, но ниже порога по опыту в продуктовых командах.",
-  "landing.cand.summary6":
-    "Графический дизайн, не продуктовый. Не соответствует требованиям.",
+  "landing.cand.summary4": "Крепкий мобильный опыт. Пробел: дизайн-системы и веб-интерфейсы.",
+  "landing.cand.summary5": "Быстро растёт, но ниже порога по опыту в продуктовых командах.",
+  "landing.cand.summary6": "Графический дизайн, не продуктовый. Не соответствует требованиям.",
   "landing.cand.salary1": "18–22 млн",
   "landing.cand.salary2": "15–18 млн",
   "landing.cand.salary3": "14–17 млн",
@@ -1269,8 +1304,7 @@ export const ru: Translations = {
   "contact.form.message_label": "Сообщение",
   "contact.form.message_placeholder":
     "Расскажите, что у вас болит — и что бы вы хотели решить с помощью TezHR.",
-  "contact.form.message_hint":
-    "От 10 до 2000 символов. Чем конкретнее — тем точнее ответим.",
+  "contact.form.message_hint": "От 10 до 2000 символов. Чем конкретнее — тем точнее ответим.",
   "contact.form.submit": "Отправить сообщение",
   "contact.form.sending": "Отправляем…",
   "contact.form.success_title": "Отправлено.",
@@ -1281,8 +1315,7 @@ export const ru: Translations = {
     "Проверьте поля: имя (2–120 символов), email и сообщение (10–2000 символов) обязательны.",
   "contact.form.err_too_many":
     "Слишком много сообщений с этого IP. Попробуйте через час или напишите в Telegram.",
-  "contact.form.err_generic":
-    "Не удалось отправить. Попробуйте ещё раз или напишите в Telegram.",
+  "contact.form.err_generic": "Не удалось отправить. Попробуйте ещё раз или напишите в Telegram.",
   "contact.telegram.kicker": "БЫСТРЫЙ ПУТЬ",
   "contact.telegram.title": "Написать сразу в Telegram",
   "contact.telegram.body":
@@ -1375,8 +1408,7 @@ export const ru: Translations = {
   "inbox.mark_all_read": "Отметить все",
   "inbox.reply_email": "Ответить по email",
   "inbox.empty_unread_title": "Всё прочитано",
-  "inbox.empty_unread_desc":
-    "Новых сообщений нет. Отдохните — или откройте всю историю.",
+  "inbox.empty_unread_desc": "Новых сообщений нет. Отдохните — или откройте всю историю.",
   "inbox.empty_all_title": "Пока пусто",
   "inbox.empty_all_desc": "Сюда будут приходить сообщения с формы /contact.",
   // --- hr portal redesign (TezHR Pro) ---
@@ -1386,6 +1418,25 @@ export const ru: Translations = {
   "hr.nav.archive": "Архив",
   "hr.nav.section_workspace": "Рабочее",
   "hr.nav.section_tools": "Инструменты",
+  "hr.chrome.search_placeholder": "Поиск вакансий, кандидатов и действий",
+  "hr.palette.title": "Поиск HR",
+  "hr.palette.subtitle": "Вакансии, кандидаты и действия в этой компании",
+  "hr.palette.placeholder": "Найдите кандидата, вакансию или действие...",
+  "hr.palette.loading": "Ищем...",
+  "hr.palette.empty_results": "Ничего не найдено",
+  "hr.palette.empty_hint": "Введите имя, роль или действие",
+  "hr.palette.group.actions": "Действия",
+  "hr.palette.group.jobs": "Вакансии",
+  "hr.palette.group.candidates": "Кандидаты",
+  "hr.palette.jump_dashboard": "Открыть панель",
+  "hr.palette.jump_jobs": "Открыть вакансии",
+  "hr.palette.jump_candidates": "Открыть кандидатов",
+  "hr.palette.jump_new_job": "Создать вакансию",
+  "hr.palette.jump_templates": "Открыть шаблоны",
+  "hr.palette.jump_settings": "Открыть настройки",
+  "hr.palette.hint.navigate": "навигация",
+  "hr.palette.hint.open": "открыть",
+  "hr.palette.hint.new_tab": "новая вкладка",
   "hr.time.today": "сегодня",
   "hr.time.yesterday": "вчера",
   "hr.time.days_ago": "{days} дн. назад",
@@ -1480,8 +1531,7 @@ export const ru: Translations = {
   // --- hr settings shell ---
   "hr.settings.eyebrow": "Рабочее пространство",
   "hr.settings.title": "Настройки",
-  "hr.settings.subtitle":
-    "Управляйте профилем, компанией, командой, шаблонами и оплатой.",
+  "hr.settings.subtitle": "Управляйте профилем, компанией, командой, шаблонами и оплатой.",
   "hr.settings.group.personal": "Личное",
   "hr.settings.group.workspace": "Компания",
   "hr.settings.nav.profile": "Профиль",
@@ -1497,8 +1547,7 @@ export const ru: Translations = {
   "hr.settings.ai.auto_screen_desc":
     "Каждое новое CV оценивается за 30 секунд. Вы увидите сильные стороны, пробелы и однострочный вердикт.",
   "hr.settings.ai.auto_reject_title": "Авто-отказ ниже порога",
-  "hr.settings.ai.auto_reject_desc":
-    "Кандидаты ниже порога автоматически получают вежливый отказ.",
+  "hr.settings.ai.auto_reject_desc": "Кандидаты ниже порога автоматически получают вежливый отказ.",
   "hr.settings.ai.model_title": "Модель",
   "hr.settings.ai.provider_label": "Провайдер",
   "hr.settings.ai.provider_locked": "Провайдер управляется на уровне платформы.",
@@ -1538,8 +1587,7 @@ export const ru: Translations = {
   "hr.settings.notifications.event.new_application_desc":
     "Кандидат отправляет CV на одну из ваших вакансий.",
   "hr.settings.notifications.event.top_pick": "Топ-кандидат",
-  "hr.settings.notifications.event.top_pick_desc":
-    "ИИ отмечает кандидата с оценкой 80 или выше.",
+  "hr.settings.notifications.event.top_pick_desc": "ИИ отмечает кандидата с оценкой 80 или выше.",
   "hr.settings.notifications.event.interview_booked": "Интервью назначено",
   "hr.settings.notifications.event.interview_booked_desc":
     "Кандидат выбрал один из предложенных слотов интервью.",
@@ -1707,11 +1755,9 @@ export const ru: Translations = {
   "hr.settings.profile.email.current_label": "Вошли как",
   "hr.settings.profile.email.change_button": "Сменить email",
   "hr.settings.profile.email.new_label": "Новый email",
-  "hr.settings.profile.email.hint":
-    "Ссылку подтверждения пришлём на оба адреса.",
+  "hr.settings.profile.email.hint": "Ссылку подтверждения пришлём на оба адреса.",
   "hr.settings.profile.email.submit": "Отправить подтверждение",
-  "hr.settings.profile.email.sent":
-    "Подтверждение отправлено. Откройте ссылки из обоих писем.",
+  "hr.settings.profile.email.sent": "Подтверждение отправлено. Откройте ссылки из обоих писем.",
   "hr.settings.profile.email.invalid": "Неверный формат email.",
   "hr.settings.profile.email.unchanged": "Это ваш текущий email.",
   "hr.settings.profile.email.error": "Не удалось отправить — повторите попытку.",
@@ -1731,8 +1777,7 @@ export const ru: Translations = {
   "hr.settings.profile.password.disabled_oauth":
     "Вы вошли через Google — пароль управляется в аккаунте Google.",
   "hr.settings.profile.sessions.panel_title": "Активные сессии",
-  "hr.settings.profile.sessions.subtitle":
-    "Выход везде аннулирует все refresh-токены.",
+  "hr.settings.profile.sessions.subtitle": "Выход везде аннулирует все refresh-токены.",
   "hr.settings.profile.sessions.current_badge": "Это устройство",
   "hr.settings.profile.sessions.sign_out_everywhere": "Выйти везде",
   "hr.settings.profile.sessions.signing_out": "Выход…",
@@ -1865,13 +1910,11 @@ export const ru: Translations = {
   "hr.req.name_en_placeholder": "Название (en)",
   // --- branded share + OG (feature C) ---
   "hr.job.share.preview_label": "Превью ссылки",
-  "hr.job.share.preview_help":
-    "Так ссылка выглядит в Telegram, WhatsApp и LinkedIn.",
+  "hr.job.share.preview_help": "Так ссылка выглядит в Telegram, WhatsApp и LinkedIn.",
   "hr.job.share.share_label": "Поделиться через",
   "hr.job.share.copy_whatsapp":
     "{title} — {company}. Отклик за 60 секунд, на русском, узбекском или английском. {url}",
-  "hr.job.share.copy_telegram":
-    "Ищем — {title} в {company}.\nОткликнуться с CV: {url}",
+  "hr.job.share.copy_telegram": "Ищем — {title} в {company}.\nОткликнуться с CV: {url}",
   "hr.job.share.copy_linkedin":
     "{company} ищет {title}. Откликайтесь напрямую — без регистрации: {url}",
   "hr.job.share.copy_email_subject": "{title} — {company}",
@@ -1895,12 +1938,9 @@ export const ru: Translations = {
   "applicants.questions.generate_cta": "Сгенерировать вопросы",
   "applicants.questions.generating": "Готовим вопросы…",
   "applicants.questions.regenerate": "Перегенерировать",
-  "applicants.questions.regenerate_warning":
-    "Текущий список будет заменён новым.",
-  "applicants.questions.loading_hint":
-    "Обычно занимает 10–20 секунд.",
-  "applicants.questions.rate_limited":
-    "Слишком много запросов к ИИ. Попробуйте через час.",
+  "applicants.questions.regenerate_warning": "Текущий список будет заменён новым.",
+  "applicants.questions.loading_hint": "Обычно занимает 10–20 секунд.",
+  "applicants.questions.rate_limited": "Слишком много запросов к ИИ. Попробуйте через час.",
   "applicants.questions.quota_blocked":
     "Использованы все 10 бесплатных черновиков на месяц. Перейдите на Pro для безлимита.",
   "applicants.questions.error":
@@ -1915,8 +1955,7 @@ export const ru: Translations = {
   "applicants.questions.copy_all_done": "Скопированы все",
   "applicants.questions.copy_sheet": "Скопировать как лист для интервью",
   "applicants.questions.copy_sheet_done": "Лист скопирован",
-  "applicants.questions.sheet_intro":
-    "Вопросы для интервью с {candidate} — {job}",
+  "applicants.questions.sheet_intro": "Вопросы для интервью с {candidate} — {job}",
   "applicants.questions.focus.strength_probe": "ПРОВЕРКА СИЛЬНЫХ СТОРОН",
   "applicants.questions.focus.gap_probe": "ПРОВЕРКА ПРОБЕЛОВ",
   "applicants.questions.focus.role_fit": "СООТВЕТСТВИЕ РОЛИ",
@@ -1941,16 +1980,14 @@ export const ru: Translations = {
   "interview.confirm_slot": "Подтвердить время",
   "interview.confirming": "Подтверждаем…",
   "interview.confirmed_heading": "Готово!",
-  "interview.confirmed_body":
-    "Скоро мы свяжемся. Добавьте встречу в календарь кнопкой ниже.",
+  "interview.confirmed_body": "Скоро мы свяжемся. Добавьте встречу в календарь кнопкой ниже.",
   "interview.add_to_calendar": "Добавить в календарь",
   "interview.decline": "Не подходит ни одно из времён",
   "interview.decline_heading": "Хорошо",
   "interview.decline_reason_label":
     "Хотите рассказать, что не подошло? (по желанию — поможет нам предложить другое время)",
   "interview.decline_submit": "Отправить",
-  "interview.declined_body":
-    "Спасибо, что сообщили. Мы свяжемся с вами по другим вариантам.",
+  "interview.declined_body": "Спасибо, что сообщили. Мы свяжемся с вами по другим вариантам.",
   "interview.expired_heading": "Срок приглашения истёк",
   "interview.expired_body":
     "Ссылка больше не активна. Свяжитесь с компанией напрямую, если хотите пройти интервью.",
@@ -1962,8 +1999,7 @@ export const ru: Translations = {
     "Это приглашение больше не принимает бронирования. Свяжитесь с командой.",
   "interview.book_error":
     "Не удалось подтвердить время. Попробуйте ещё раз или свяжитесь с командой.",
-  "interview.decline_error":
-    "Не удалось отправить ответ. Попробуйте ещё раз.",
+  "interview.decline_error": "Не удалось отправить ответ. Попробуйте ещё раз.",
   "interview.hr.status.pending": "Ждём кандидата",
   "interview.hr.status.booked": "Забронировано",
   "interview.hr.status.declined": "Отказался",
@@ -1977,11 +2013,9 @@ export const ru: Translations = {
     "Отправьте кандидату эту ссылку — он выберет слот и получит .ics автоматически.",
   "interview.hr.modal.duration_label": "Длительность",
   "interview.hr.modal.location_label": "Где",
-  "interview.hr.modal.location_detail_placeholder":
-    "Доп. детали (ссылка, кабинет, адрес)",
+  "interview.hr.modal.location_detail_placeholder": "Доп. детали (ссылка, кабинет, адрес)",
   "interview.hr.modal.message_label": "Сообщение кандидату (по желанию)",
-  "interview.hr.modal.message_placeholder":
-    "Коротко расскажите о роли, команде или чего ожидать.",
+  "interview.hr.modal.message_placeholder": "Коротко расскажите о роли, команде или чего ожидать.",
   "interview.hr.modal.slots_label": "Предложенные слоты",
   "interview.hr.modal.add_slot": "Добавить слот",
   "interview.hr.modal.cta": "Отправить приглашение",
@@ -1992,13 +2026,10 @@ export const ru: Translations = {
     "Приглашение создано. Отправьте кандидату любым удобным способом.",
   "interview.hr.modal.error.invalid_slots":
     "Все слоты должны быть в будущем, минимум 30 минут друг от друга.",
-  "interview.hr.modal.error.slot_count":
-    "Предложите от 3 до 6 слотов.",
-  "interview.hr.modal.error.generic":
-    "Не удалось создать приглашение. Попробуйте ещё раз.",
+  "interview.hr.modal.error.slot_count": "Предложите от 3 до 6 слотов.",
+  "interview.hr.modal.error.generic": "Не удалось создать приглашение. Попробуйте ещё раз.",
   "interview.hr.block.title": "Расписание",
-  "interview.hr.block.empty":
-    "Интервью пока не назначено. Предложите время, когда будете готовы.",
+  "interview.hr.block.empty": "Интервью пока не назначено. Предложите время, когда будете готовы.",
   "interview.hr.block.schedule_cta": "Назначить",
   "interview.hr.block.schedule_again": "Назначить ещё одно интервью",
   "interview.hr.block.public_link": "ПУБЛИЧНАЯ ССЫЛКА",
@@ -2054,7 +2085,8 @@ export const ru: Translations = {
   "operator.pulse.incidents_title": "Инциденты",
   "operator.pulse.incidents_subtitle": "Активные и недавние события платформы",
   "operator.pulse.no_incidents": "Активных инцидентов нет.",
-  "operator.pulse.wiring_note": "Полная детекция будет подключена в §4.5 (incidents + alert rules).",
+  "operator.pulse.wiring_note":
+    "Полная детекция будет подключена в §4.5 (incidents + alert rules).",
   // --- operator dashboard (PR #2) ---
   "operator.dashboard.eyebrow": "Платформа",
   "operator.dashboard.title": "Панель оператора",
@@ -2128,7 +2160,8 @@ export const ru: Translations = {
   "operator.notes.submit": "Добавить заметку",
   "operator.notes.loading": "Загрузка…",
   "operator.notes.save_failed": "Не удалось сохранить",
-  "operator.notes.empty": "Заметок пока нет. Оставьте контекст об этом арендаторе, чтобы следующий оператор был в курсе.",
+  "operator.notes.empty":
+    "Заметок пока нет. Оставьте контекст об этом арендаторе, чтобы следующий оператор был в курсе.",
   "operator.notes.pin": "Закрепить",
   "operator.notes.unpin": "Открепить",
   "operator.notes.delete": "Удалить заметку",
@@ -2142,7 +2175,8 @@ export const ru: Translations = {
   "operator.danger.delete_help": "30 дней отсрочки. Владелец видит баннер. После необратимо.",
   "operator.danger.delete_button": "Запланировать удаление…",
   "operator.danger.dialog_quota_title": "Переопределение квот подписки",
-  "operator.danger.dialog_quota_desc": "Вручную увеличьте или уменьшите лимиты CV, вакансий или поиска. Применяется сразу. Записывается в audit_log.",
+  "operator.danger.dialog_quota_desc":
+    "Вручную увеличьте или уменьшите лимиты CV, вакансий или поиска. Применяется сразу. Записывается в audit_log.",
   "operator.danger.cv_quota_label": "Лимит CV",
   "operator.danger.job_quota_label": "Лимит вакансий",
   "operator.danger.sourcing_quota_label": "Лимит поисков кандидатов",
@@ -2152,7 +2186,8 @@ export const ru: Translations = {
   "operator.danger.override_failed": "Не удалось переопределить",
   "operator.danger.reversible": "✓ Обратимо",
   "operator.danger.dialog_delete_title": "Запланировать удаление компании",
-  "operator.danger.dialog_delete_desc": "Помечает {name} на удаление через 30 дней. Владелец увидит баннер и сможет связаться с поддержкой, чтобы отменить. Финальное удаление выполняется ежедневной задачей.",
+  "operator.danger.dialog_delete_desc":
+    "Помечает {name} на удаление через 30 дней. Владелец увидит баннер и сможет связаться с поддержкой, чтобы отменить. Финальное удаление выполняется ежедневной задачей.",
   "operator.danger.confirm_type_label": "Введите «{name}» для подтверждения",
   "operator.danger.name_mismatch": "Название не совпадает",
   "operator.danger.schedule_delete": "Запланировать",
@@ -2169,7 +2204,8 @@ export const ru: Translations = {
   "operator.promotions.toast_approved": "Утверждено",
   "operator.promotions.toast_rejected": "Отклонено",
   "operator.promotions.failed": "Не удалось",
-  "operator.promotions.footer_note": "Нельзя утвердить собственное предложение. Оба участника пишутся в audit_log.",
+  "operator.promotions.footer_note":
+    "Нельзя утвердить собственное предложение. Оба участника пишутся в audit_log.",
   // --- operator incidents page ---
   "operator.incidents.eyebrow": "Платформа",
   "operator.incidents.title": "Инциденты",
@@ -2198,16 +2234,20 @@ export const ru: Translations = {
   "operator.settings.tab.team": "Команда операторов",
   "operator.settings.tab.platform": "Платформа",
   "operator.settings.prefs_title": "Настройки",
-  "operator.settings.prefs_help": "Тема и язык — в меню аватара в шапке. Горячие клавиши — по нажатию ?.",
+  "operator.settings.prefs_help":
+    "Тема и язык — в меню аватара в шапке. Горячие клавиши — по нажатию ?.",
   "operator.settings.team_title": "Команда операторов ({n})",
-  "operator.settings.team_note": "Повышение / понижение (флаг is_operator) идёт через двойное утверждение в разделе «Пользователи».",
+  "operator.settings.team_note":
+    "Повышение / понижение (флаг is_operator) идёт через двойное утверждение в разделе «Пользователи».",
   "operator.settings.restrict": "Ограничить (read-only)",
   "operator.settings.grant": "Разрешить запись",
-  "operator.settings.role_prompt": "Сменить {email} → {next}? Введите причину (минимум 10 символов).",
+  "operator.settings.role_prompt":
+    "Сменить {email} → {next}? Введите причину (минимум 10 символов).",
   "operator.settings.role_updated": "Роль обновлена",
   "operator.settings.role_failed": "Не удалось сменить роль",
   "operator.settings.platform_title": "Платформенные переключатели",
-  "operator.settings.save_prompt": "Изменить {key} на «{value}» — введите причину (минимум 10 символов).",
+  "operator.settings.save_prompt":
+    "Изменить {key} на «{value}» — введите причину (минимум 10 символов).",
   "operator.settings.saved": "Сохранено",
   "operator.settings.save_failed": "Не удалось сохранить",
   "operator.settings.off": "выкл",
@@ -2309,12 +2349,14 @@ export const ru: Translations = {
   "operator.users.pagination": "Страница {page} из {total}",
   "operator.users.dialog.propose_promote_title": "Предложить повышение — {email}",
   "operator.users.dialog.propose_demote_title": "Предложить понижение — {email}",
-  "operator.users.dialog.propose_desc": "Создаёт заявку. Второй оператор должен одобрить её в Входящих, чтобы изменение вступило в силу. Свою заявку одобрить нельзя.",
+  "operator.users.dialog.propose_desc":
+    "Создаёт заявку. Второй оператор должен одобрить её в Входящих, чтобы изменение вступило в силу. Свою заявку одобрить нельзя.",
   "operator.users.dialog.reason_label": "Причина (обязательно, мин. 10 символов)",
   "operator.users.dialog.cancel": "Отмена",
   "operator.users.dialog.submit": "Отправить",
   "operator.users.dialog.impersonate_title": "Войти от имени {email}",
-  "operator.users.dialog.impersonate_desc": "Вы войдёте в сессию пользователя. Все действия логируются с обоими user ID.",
+  "operator.users.dialog.impersonate_desc":
+    "Вы войдёте в сессию пользователя. Все действия логируются с обоими user ID.",
   "operator.users.dialog.impersonate_reason_label": "Причина (обязательно)",
   "operator.users.dialog.impersonate_placeholder": "напр. Тикет поддержки #1234",
   "operator.users.dialog.start_session": "Начать сессию",
@@ -2342,11 +2384,13 @@ export const ru: Translations = {
   "operator.processing.col.error": "Ошибка",
   // --- operator templates page ---
   "operator.templates.title": "Платформенные шаблоны",
-  "operator.templates.description": "Шаблоны приглашений Telegram по умолчанию. Компании могут переопределить их в Настройки > Шаблоны.",
+  "operator.templates.description":
+    "Шаблоны приглашений Telegram по умолчанию. Компании могут переопределить их в Настройки > Шаблоны.",
   "operator.templates.save": "Сохранить",
   "operator.templates.aria_save": "Сохранить шаблоны",
   "operator.templates.toast.saved": "Шаблоны обновлены",
-  "operator.templates.toast.saved_desc": "Новые значения применяются к компаниям без переопределений.",
+  "operator.templates.toast.saved_desc":
+    "Новые значения применяются к компаниям без переопределений.",
   "operator.templates.toast.save_failed": "Не удалось сохранить",
   "operator.templates.toast.save_failed_desc": "Не удалось сохранить шаблоны",
   "operator.templates.lang.ru": "Русский",
@@ -2384,7 +2428,8 @@ export const ru: Translations = {
   "operator.company_detail.col.actions": "Действия",
   "operator.company_detail.impersonate": "Войти от имени",
   "operator.company_detail.dialog.title": "Войти от имени пользователя",
-  "operator.company_detail.dialog.desc": "Запуск сессии от имени {email}. Все действия во время сессии логируются с обоими user ID.",
+  "operator.company_detail.dialog.desc":
+    "Запуск сессии от имени {email}. Все действия во время сессии логируются с обоими user ID.",
   "operator.company_detail.dialog.reason_label": "Причина (обязательно)",
   "operator.company_detail.dialog.placeholder": "напр. Тикет поддержки #1234",
   "operator.company_detail.dialog.cancel": "Отмена",
@@ -2404,5 +2449,6 @@ export const ru: Translations = {
   "operator.dashboard.movers.at_risk_primary": "оценка {score} · {reasons}",
   "operator.dashboard.activity.system_actor": "система",
   // --- operator dashboard error fallback ---
-  "operator.dashboard.error": "Панель недоступна — попробуйте обновить. Если проблема сохраняется, проверьте operator_daily_metrics и cron обновления.",
+  "operator.dashboard.error":
+    "Панель недоступна — попробуйте обновить. Если проблема сохраняется, проверьте operator_daily_metrics и cron обновления.",
 };

@@ -34,15 +34,13 @@ interface PostingMetaRow {
   status: string;
   created_at: string;
   public_token: string;
-  companies:
-    | {
-        name: string;
-        logo_url: string | null;
-        status: string;
-        default_locale: string;
-        website_url?: string | null;
-      }
-    | null;
+  companies: {
+    name: string;
+    logo_url: string | null;
+    status: string;
+    default_locale: string;
+    website_url?: string | null;
+  } | null;
 }
 
 function isoDaysFromNow(days: number): string {
@@ -142,6 +140,10 @@ const APPLY_KEYS: TranslationKey[] = [
   "apply.min_value_short",
   "apply.field_required",
   "apply.footer_note",
+  "apply.time_estimate",
+  "apply.privacy_note",
+  "apply.next_step_label",
+  "apply.next_step_body",
   "apply.powered_by",
   "apply.secured_by",
 ];

@@ -12,6 +12,7 @@
     "test:watch": "vitest",
     "eval": "vitest run --config vitest.eval.config.ts",
     "test:e2e": "playwright test",
+    "check:mojibake": "node scripts/check-mojibake.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
