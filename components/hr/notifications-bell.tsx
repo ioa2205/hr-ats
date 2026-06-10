@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { Bell } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ru as ruLocale, enUS, uz } from "date-fns/locale";
@@ -38,6 +38,11 @@ export function NotificationsBell({
   const [items, setItems] = useState<NotifRow[]>([]);
   const [open, setOpen] = useState(false);
   const popoverRef = useRef<HTMLDivElement>(null);
+  // Unique per mount: the responsive shell renders a desktop and a mobile bell
+  // (one hidden via CSS at any breakpoint), and Supabase caches realtime
+  // channels by topic — a shared topic would throw "cannot add callbacks after
+  // subscribe()". A per-instance topic gives each its own channel.
+  const instanceId = useId();
 
   const unread = items.filter((n) => !n.read_at).length;
 
@@ -55,7 +60,7 @@ export function NotificationsBell({
 
     const supabase = createClient();
     const channel = supabase
-      .channel(`company:${companyId}:notifications`)
+      .channel(`company:${companyId}:notifications:${instanceId}`)
       .on(
         "postgres_changes",
         {
@@ -75,7 +80,7 @@ export function NotificationsBell({
       cancelled = true;
       void supabase.removeChannel(channel);
     };
-  }, [companyId, userId]);
+  }, [companyId, userId, instanceId]);
 
   useEffect(() => {
     if (!open) return;
@@ -112,11 +117,11 @@ export function NotificationsBell({
         aria-label={t("hr.notifications.bell.aria_label")}
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "border-rule bg-paper text-ink-3 hover:text-ink hover:bg-bone-2 relative inline-flex h-8 w-8 items-center justify-center rounded-[4px] border transition-colors",
-          open && "bg-bone-2 text-ink",
+          "relative inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-md)] text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-text)]",
+          open && "bg-[var(--color-surface-strong)] text-[var(--color-text)]",
         )}
       >
-        <Bell className="h-[15px] w-[15px]" />
+        <Bell className="h-[17px] w-[17px]" />
         {unread > 0 && (
           <span
             className="bg-persimmon text-paper absolute -right-1 -top-1 inline-flex h-[16px] min-w-[16px] items-center justify-center rounded-[8px] px-1 text-[10px] font-semibold tabular-nums"

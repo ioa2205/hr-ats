@@ -20,15 +20,12 @@ import {
   Panel,
   PanelHeader,
   PanelTitle,
-  SectionH,
-  StatusPill,
-  StatTile,
+  Button,
+  Badge,
   Avatar,
-  ScoreMini,
-  TezButton,
-  PublicLinkBlock,
-  SharePreview,
-} from "@/components/hr/design";
+  AIFitScore,
+} from "@/components/ui";
+import { PublicLinkBlock, SharePreview } from "@/components/hr/design";
 import { JobDetailTabs } from "@/components/hr/job-detail-tabs";
 import { StatusToggleButton } from "@/components/hr/status-toggle-button";
 import { FindCandidatesButton } from "@/components/hr/sourcing/find-candidates-button";
@@ -37,14 +34,13 @@ import { ShareButtons } from "@/components/hr/share-buttons";
 import { JobDescription } from "@/components/candidate/job-description";
 import { getLocale, t } from "@/lib/i18n";
 import { pickLocalized } from "@/lib/i18n/pick-localized";
+import type { Locale, TranslationKey } from "@/lib/i18n/types";
 import type { HardRequirement } from "@/types";
+import { cn } from "@/lib/utils";
 
-function daysAgoText(
-  iso: string,
-  locale: ReturnType<typeof getLocale> extends Promise<infer X> ? X : never,
-) {
+function daysAgoText(iso: string, locale: Locale) {
   const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
-  if (days === 0) return t("hr.time.today", locale);
+  if (days <= 0) return t("hr.time.today", locale);
   if (days === 1) return t("hr.time.yesterday", locale);
   return t("hr.time.days_ago", locale, { days: String(days) });
 }
@@ -176,26 +172,15 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   const ogEyebrow = t("apply.og.eyebrow", locale);
 
   const OverviewTab = (
-    <div
-      className="grid gap-6"
-      style={{ gridTemplateColumns: "minmax(0, 1fr) 320px" }}
-    >
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="flex flex-col gap-5">
         {/* Funnel */}
-        <div className="grid gap-2 grid-cols-2 md:grid-cols-5">
-          <StatTile label={t("hr.job.funnel.total", locale)} value={total} />
-          <StatTile
-            label={t("hr.job.funnel.new", locale)}
-            value={newCount}
-            accent={newCount > 0 ? "persimmon" : "ink"}
-          />
-          <StatTile label={t("hr.job.funnel.invited", locale)} value={invitedCount} />
-          <StatTile label={t("hr.job.funnel.rejected", locale)} value={rejectedCount} />
-          <StatTile
-            label={t("hr.job.funnel.errors", locale)}
-            value={failedCount}
-            accent={failedCount > 0 ? "red" : "ink"}
-          />
+        <div className="grid grid-cols-2 gap-2.5 md:grid-cols-5">
+          <Stat label={t("hr.job.funnel.total", locale)} value={total} />
+          <Stat label={t("hr.job.funnel.new", locale)} value={newCount} tone={newCount > 0 ? "accent" : "default"} />
+          <Stat label={t("hr.job.funnel.invited", locale)} value={invitedCount} />
+          <Stat label={t("hr.job.funnel.rejected", locale)} value={rejectedCount} />
+          <Stat label={t("hr.job.funnel.errors", locale)} value={failedCount} tone={failedCount > 0 ? "danger" : "default"} />
         </div>
 
         {/* Description */}
@@ -216,19 +201,16 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                 {t("hr.job.requirements_label", locale)}
               </PanelTitle>
             </PanelHeader>
-            <ul className="m-0 list-none p-0">
+            <ul className="m-0 list-none divide-y divide-[var(--color-line)] p-0">
               {requirements.map((req) => (
-                <li
-                  key={req.id}
-                  className="border-rule flex items-center gap-3 border-b px-5 py-3 last:border-b-0"
-                >
+                <li key={req.id} className="flex items-center gap-3 px-5 py-3">
                   <span
                     aria-hidden
-                    className="border-rule-2 bg-bone flex h-6 w-6 shrink-0 items-center justify-center rounded-full border"
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--color-success-container)]"
                   >
-                    <Check className="text-ink-3 h-3 w-3" strokeWidth={2.5} />
+                    <Check className="h-3 w-3 text-[var(--color-success)]" strokeWidth={2.5} />
                   </span>
-                  <span className="text-ink-2 flex-1 text-[13.5px] leading-[1.45]">
+                  <span className="flex-1 text-[13.5px] leading-[1.45] text-[var(--color-text)]">
                     {pickLocalized(
                       { ru: req.label_ru, uz: req.label_uz, en: req.label_en },
                       locale,
@@ -236,13 +218,8 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                     )}
                   </span>
                   {req.type === "number" && req.min_value != null && (
-                    <span
-                      className="border-rule bg-bone text-ink-4 shrink-0 rounded-[3px] border px-1.5 py-0.5 text-[11px]"
-                      style={{ fontFamily: "var(--font-tez-mono)" }}
-                    >
-                      {t("hr.jobs.detail.min_value", locale, {
-                        value: String(req.min_value),
-                      })}
+                    <span className="data-mono shrink-0 rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] px-1.5 py-0.5 text-[11px] text-[var(--color-text-muted)]">
+                      {t("hr.jobs.detail.min_value", locale, { value: String(req.min_value) })}
                     </span>
                   )}
                 </li>
@@ -263,8 +240,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               {job.required_skills.map((skill: string) => (
                 <span
                   key={skill}
-                  className="border-rule bg-bone text-ink-3 rounded-[4px] border px-2 py-0.5 text-[11.5px]"
-                  style={{ fontFamily: "var(--font-tez-mono)" }}
+                  className="data-mono rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] px-2 py-0.5 text-[11.5px] text-[var(--color-text-muted)]"
                 >
                   {skill}
                 </span>
@@ -276,50 +252,53 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         {/* Top picks preview */}
         <Panel>
           <PanelHeader>
-            <PanelTitle count={topCount}>
-              {t("hr.job.top_picks_title", locale)}
-            </PanelTitle>
+            <PanelTitle count={topCount}>{t("hr.job.top_picks_title", locale)}</PanelTitle>
             <Link
               href={`/hr/jobs/${id}/applicants`}
-              className="text-ink-4 hover:text-ink hover:bg-bone-2 flex items-center gap-1.5 rounded-[4px] px-1.5 py-1 text-[11.5px]"
+              className="inline-flex items-center gap-1 rounded-[var(--radius-sm)] px-1.5 py-1 text-[11.5px] text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)]"
             >
               {t("hr.dashboard.view_all", locale)}
               <ArrowRight className="h-3 w-3" />
             </Link>
           </PanelHeader>
           {(topList.data ?? []).length === 0 ? (
-            <div className="text-ink-5 px-5 py-8 text-center text-[12px]">
+            <p className="px-5 py-8 text-center text-[12px] text-[var(--color-text-subtle)]">
               {t("hr.dashboard.top_picks.empty", locale)}
-            </div>
+            </p>
           ) : (
-            <div>
+            <ul className="divide-y divide-[var(--color-line)]">
               {(topList.data ?? []).map((c) => (
-                <Link
-                  key={c.id}
-                  href={`/hr/jobs/${id}/applicants?candidate=${c.id}`}
-                  className="border-rule hover:bg-bone flex items-center gap-3 border-b px-5 py-3 transition-colors last:border-b-0"
-                >
-                  <Avatar name={c.full_name} persimmon />
-                  <div className="min-w-0 flex-1">
-                    <div className="text-ink text-[13.5px] font-semibold">
-                      {c.full_name}
+                <li key={c.id}>
+                  <Link
+                    href={`/hr/jobs/${id}/applicants?candidate=${c.id}`}
+                    className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-[var(--color-surface-subtle)]"
+                  >
+                    <Avatar name={c.full_name} accent size="sm" />
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[13.5px] font-semibold text-[var(--color-text)]">
+                        {c.full_name}
+                      </div>
+                      <div className="mt-[2px] line-clamp-1 text-[12px] text-[var(--color-text-muted)]">
+                        {pickLocalized(
+                          {
+                            ru: c.one_line_summary,
+                            uz: c.one_line_summary_uz,
+                            en: c.one_line_summary_en,
+                          },
+                          locale,
+                          c.one_line_summary ?? "—",
+                        )}
+                      </div>
                     </div>
-                    <div className="text-ink-4 mt-[2px] line-clamp-1 text-[12px]">
-                      {pickLocalized(
-                        {
-                          ru: c.one_line_summary,
-                          uz: c.one_line_summary_uz,
-                          en: c.one_line_summary_en,
-                        },
-                        locale,
-                        c.one_line_summary ?? "—",
-                      )}
-                    </div>
-                  </div>
-                  <ScoreMini score={c.match_score ?? 0} persimmon />
-                </Link>
+                    <AIFitScore
+                      score={c.match_score ?? 0}
+                      label={t("hr.job.top_picks_title", locale)}
+                      variant="compact"
+                    />
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
         </Panel>
       </div>
@@ -332,22 +311,19 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           </PanelHeader>
           <div className="p-4">
             {ownerName ? (
-              <>
-                <div className="flex items-center gap-3">
-                  <Avatar name={ownerName} size="lg" />
-                  <div>
-                    <div className="text-[13.5px] font-semibold">{ownerName}</div>
-                    <div
-                      className="text-ink-5 text-[11px]"
-                      style={{ fontFamily: "var(--font-tez-mono)" }}
-                    >
-                      {owner?.email ?? ""}
-                    </div>
+              <div className="flex items-center gap-3">
+                <Avatar name={ownerName} size="lg" />
+                <div className="min-w-0">
+                  <div className="truncate text-[13.5px] font-semibold text-[var(--color-text)]">
+                    {ownerName}
+                  </div>
+                  <div className="data-mono truncate text-[11px] text-[var(--color-text-subtle)]">
+                    {owner?.email ?? ""}
                   </div>
                 </div>
-              </>
+              </div>
             ) : (
-              <div className="text-ink-5 text-[12px]">—</div>
+              <div className="text-[12px] text-[var(--color-text-subtle)]">—</div>
             )}
           </div>
         </Panel>
@@ -366,26 +342,20 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             <PanelTitle>{t("hr.dashboard.activity.title", locale)}</PanelTitle>
           </PanelHeader>
           {(activity ?? []).length === 0 ? (
-            <div className="text-ink-5 px-4 py-6 text-center text-[12px]">
+            <p className="px-4 py-6 text-center text-[12px] text-[var(--color-text-subtle)]">
               {t("hr.dashboard.activity.empty", locale)}
-            </div>
+            </p>
           ) : (
-            <div>
+            <ul className="divide-y divide-[var(--color-line)]">
               {(activity ?? []).map((a, i) => (
-                <div
-                  key={i}
-                  className="border-rule flex items-center justify-between border-t px-4 py-2.5 text-[12px] first:border-t-0"
-                >
-                  <span className="text-ink-2 truncate">{a.actor}</span>
-                  <span
-                    className="text-ink-5 text-[10.5px]"
-                    style={{ fontFamily: "var(--font-tez-mono)" }}
-                  >
+                <li key={i} className="flex items-center justify-between gap-3 px-4 py-2.5 text-[12px]">
+                  <span className="truncate text-[var(--color-text)]">{a.actor}</span>
+                  <span className="data-mono shrink-0 text-[10.5px] text-[var(--color-text-subtle)]">
                     {daysAgoText(a.created_at, locale)}
                   </span>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
         </Panel>
       </aside>
@@ -394,20 +364,19 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
 
   const ApplicantsTab = (
     <div className="flex flex-col items-center gap-3 py-10 text-center">
-      <Link
-        href={`/hr/jobs/${id}/applicants`}
-        className="bg-ink text-paper shadow-tez-1 hover:bg-ink-2 inline-flex h-[34px] items-center gap-1.5 rounded-[4px] px-3.5 text-[13px] font-medium"
-      >
-        {t("hr.job.open_ranked_list", locale)} <ArrowRight className="h-3.5 w-3.5" />
-      </Link>
+      <Button asChild>
+        <Link href={`/hr/jobs/${id}/applicants`}>
+          {t("hr.job.open_ranked_list", locale)} <ArrowRight className="h-4 w-4" />
+        </Link>
+      </Button>
     </div>
   );
 
-  const stages = [
-    { label: t("hr.dashboard.pipeline.stage.applied", locale), count: total, accent: "ink" as const },
-    { label: t("hr.dashboard.pipeline.stage.top", locale), count: topCount, accent: "persimmon" as const },
-    { label: t("hr.dashboard.pipeline.stage.invited", locale), count: invitedCount, accent: "ink" as const },
-    { label: t("hr.dashboard.pipeline.stage.rejected", locale), count: rejectedCount, accent: "ink" as const },
+  const stages: { key: string; count: number; accent: boolean }[] = [
+    { key: "applied", count: total, accent: false },
+    { key: "top", count: topCount, accent: true },
+    { key: "invited", count: invitedCount, accent: false },
+    { key: "rejected", count: rejectedCount, accent: false },
   ];
 
   const PipelineTab = (
@@ -415,13 +384,13 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
       <PanelHeader>
         <PanelTitle>{t("hr.dashboard.pipeline.title", locale)}</PanelTitle>
       </PanelHeader>
-      <div className="grid gap-2 p-5 grid-cols-2 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2.5 p-5 md:grid-cols-4">
         {stages.map((s) => (
-          <StatTile
-            key={s.label}
-            label={s.label}
+          <Stat
+            key={s.key}
+            label={t(`hr.dashboard.pipeline.stage.${s.key}` as TranslationKey, locale)}
             value={s.count}
-            accent={s.count > 0 ? s.accent : "ink"}
+            tone={s.accent && s.count > 0 ? "accent" : "default"}
           />
         ))}
       </div>
@@ -429,14 +398,14 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   );
 
   const ShareTab = (
-    <div className="grid gap-6" style={{ gridTemplateColumns: "minmax(0, 1fr) 320px" }}>
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="flex flex-col gap-4">
         <Panel>
           <PanelHeader>
             <PanelTitle>{t("hr.job.share.preview_label", locale)}</PanelTitle>
           </PanelHeader>
           <div className="flex flex-col gap-3 p-5">
-            <p className="text-ink-4 text-[12.5px]">
+            <p className="text-[12.5px] text-[var(--color-text-muted)]">
               {t("hr.job.share.preview_help", locale)}
             </p>
             <div className="max-w-[560px]">
@@ -458,23 +427,16 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             <PanelTitle>{t("hr.job.share.public_page", locale)}</PanelTitle>
           </PanelHeader>
           <div className="p-5">
-            <p className="text-ink-3 mb-3.5 text-[13px]">
+            <p className="mb-3.5 text-[13px] text-[var(--color-text-muted)]">
               {t("hr.job.share.trilingual_note", locale)}
             </p>
-            <SectionH title="URL" />
+            <SectionLabel>URL</SectionLabel>
             <PublicLinkBlock url={publicUrl} layout="inline" />
             <div className="mt-5">
-              <SectionH title={t("hr.job.share.share_label", locale)} />
-              <ShareButtons
-                url={publicUrl}
-                title={shownTitle}
-                company={company?.name ?? ""}
-              />
+              <SectionLabel>{t("hr.job.share.share_label", locale)}</SectionLabel>
+              <ShareButtons url={publicUrl} title={shownTitle} company={company?.name ?? ""} />
             </div>
-            <div
-              className="text-ink-5 mt-5 text-[10.5px] uppercase tracking-[0.08em]"
-              style={{ fontFamily: "var(--font-tez-mono)" }}
-            >
+            <div className="data-mono mt-5 text-[10.5px] tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
               {t("hr.job.share.seo_note", locale)}
             </div>
           </div>
@@ -487,10 +449,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         </PanelHeader>
         <div className="flex flex-col items-center p-5">
           <PublicLinkBlock url={publicUrl} />
-          <div
-            className="text-ink-5 mt-2.5 text-[10.5px] uppercase tracking-[0.08em]"
-            style={{ fontFamily: "var(--font-tez-mono)" }}
-          >
+          <div className="data-mono mt-2.5 text-[10.5px] tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
             {t("hr.job.share.print_hint", locale)}
           </div>
         </div>
@@ -499,94 +458,81 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   );
 
   const SettingsTab = (
-    <div className="text-ink-4 px-6 py-12 text-center text-[13px]">
+    <p className="px-6 py-12 text-center text-[13px] text-[var(--color-text-muted)]">
       {t("hr.job.settings_coming", locale)}
-    </div>
+    </p>
   );
 
+  const statusActive = job.status === "active";
+
   return (
-    <div>
+    <div className="flex flex-col gap-5">
       {/* Breadcrumb */}
-      <div
-        className="text-ink-5 mb-2 flex items-center gap-1.5 text-[11px] font-medium"
-      >
+      <div className="flex items-center gap-1.5 text-[11px] font-medium text-[var(--color-text-subtle)]">
         <Link
           href="/hr/jobs"
-          className="text-ink-4 hover:bg-bone-2 inline-flex items-center gap-1 rounded-[4px] px-1.5 py-1 text-[11.5px]"
+          className="inline-flex items-center gap-1 rounded-[var(--radius-sm)] px-1.5 py-1 text-[11.5px] text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)]"
         >
           <ChevronLeft className="h-3 w-3" />
           {t("hr.nav.jobs", locale)}
         </Link>
         <span>/</span>
-        <span className="text-ink-3 truncate">{shownTitle}</span>
+        <span className="truncate text-[var(--color-text-muted)]">{shownTitle}</span>
       </div>
 
       {/* Header */}
-      <div className="mb-6 flex items-start justify-between gap-6">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
-          <h1 className="text-ink text-[28px] font-semibold leading-[1.1] tracking-[-0.018em]">
+          <h1 className="text-[clamp(1.5rem,4vw,1.85rem)] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--color-text)]">
             {shownTitle}
           </h1>
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <StatusPill
-              status={job.status}
-              label={t(
-                job.status === "active" ? "hr.job.status.active" : "hr.job.status.closed",
-                locale,
-              )}
-            />
-            <span
-              className="bg-rule h-3.5 w-px"
-              aria-hidden
-            />
-            <span className="text-ink-3 flex items-center gap-1.5 text-[12.5px]">
-              <Building2 className="text-ink-5 h-3 w-3" />
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+            <Badge tone={statusActive ? "success" : "neutral"} variant={statusActive ? "dot" : "default"}>
+              {t(statusActive ? "hr.job.status.active" : "hr.job.status.closed", locale)}
+            </Badge>
+            <span className="hidden h-3.5 w-px bg-[var(--color-line)] sm:block" aria-hidden />
+            <span className="flex items-center gap-1.5 text-[12.5px] text-[var(--color-text-muted)]">
+              <Building2 className="h-3 w-3 text-[var(--color-text-subtle)]" />
               {t("hr.job.company_label", locale)}
             </span>
-            <span className="text-ink-3 flex items-center gap-1.5 text-[12.5px]">
-              <MapPin className="text-ink-5 h-3 w-3" />
+            <span className="flex items-center gap-1.5 text-[12.5px] text-[var(--color-text-muted)]">
+              <MapPin className="h-3 w-3 text-[var(--color-text-subtle)]" />
               {t("hr.job.remote_label", locale)}
             </span>
-            <span
-              className="text-ink-5 text-[11px]"
-              style={{ fontFamily: "var(--font-tez-mono)" }}
-            >
+            <span className="data-mono text-[11px] text-[var(--color-text-subtle)]">
               {t("hr.job.posted_prefix", locale)} {daysAgoText(job.created_at, locale)}
             </span>
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <Link href={`/hr/jobs/${id}/edit`}>
-            <TezButton
-              variant="secondary"
-              leadingIcon={<Pencil className="h-3 w-3" />}
-              disabled={!writable}
-              title={!writable ? t("quota.subscription_inactive_short", locale) : undefined}
-            >
+
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          {writable ? (
+            <Button asChild variant="secondary">
+              <Link href={`/hr/jobs/${id}/edit`}>
+                <Pencil className="h-4 w-4" />
+                {t("hr.jobs.edit", locale)}
+              </Link>
+            </Button>
+          ) : (
+            <Button variant="secondary" disabled title={t("quota.subscription_inactive_short", locale)}>
+              <Pencil className="h-4 w-4" />
               {t("hr.jobs.edit", locale)}
-            </TezButton>
-          </Link>
+            </Button>
+          )}
           <StatusToggleButton jobId={id} status={job.status} canWrite={writable} />
-          <Link href={`/hr/jobs/${id}/sourcing`}>
-            <TezButton variant="secondary" leadingIcon={<Radar className="h-3 w-3" />}>
+          <Button asChild variant="secondary">
+            <Link href={`/hr/jobs/${id}/sourcing`}>
+              <Radar className="h-4 w-4" />
               {t("sourcing.runs.nav_label", locale)}
-            </TezButton>
-          </Link>
-          <FindCandidatesButton
-            jobId={id}
-            variant="secondary"
-            disabled={!writable}
-            availableSources={availableSources}
-          />
-          <Link href={`/hr/jobs/${id}/applicants`}>
-            <TezButton
-              variant="primary"
-              leadingIcon={<Users className="h-3 w-3" />}
-            >
-              {total}{" "}
-              {t("hr.jobs.detail.candidates_heading", locale).toLowerCase()}
-            </TezButton>
-          </Link>
+            </Link>
+          </Button>
+          <FindCandidatesButton jobId={id} variant="secondary" disabled={!writable} availableSources={availableSources} />
+          <Button asChild>
+            <Link href={`/hr/jobs/${id}/applicants`}>
+              <Users className="h-4 w-4" />
+              {total} {t("hr.jobs.detail.candidates_heading", locale).toLowerCase()}
+            </Link>
+          </Button>
         </div>
       </div>
 
@@ -598,6 +544,41 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         share={ShareTab}
         settings={SettingsTab}
       />
+    </div>
+  );
+}
+
+// --- small presentational helpers ---
+
+function Stat({
+  label,
+  value,
+  tone = "default",
+}: {
+  label: string;
+  value: number;
+  tone?: "default" | "accent" | "danger";
+}) {
+  const valueColor =
+    tone === "accent"
+      ? "text-[var(--color-accent)]"
+      : tone === "danger"
+        ? "text-[var(--color-danger)]"
+        : "text-[var(--color-text)]";
+  return (
+    <div className="flex flex-col gap-1 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)] px-3.5 py-3">
+      <span className="text-[11px] font-medium text-[var(--color-text-muted)]">{label}</span>
+      <span className={cn("text-[26px] font-bold leading-none tracking-[-0.02em] tabular-nums", valueColor)}>
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mb-2.5 data-mono text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
+      {children}
     </div>
   );
 }

@@ -80,17 +80,17 @@ export async function signInViaUI(
 ): Promise<Page> {
   const page = await ctx.newPage();
   await page.goto("/auth/login");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
-  await page.getByRole("button", { name: /sign in/i }).click();
+  await page.locator('input[name="email"]').fill(email);
+  await page.locator('input[name="password"]').fill(password);
+  await page.locator('form button[type="submit"]').click();
   await page.waitForURL(/\/hr\/dashboard|\/onboarding/, { timeout: 15_000 });
   return page;
 }
 
 export async function signInOnPage(page: Page, email: string, password: string): Promise<void> {
   await page.goto("/auth/login");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
-  await page.getByRole("button", { name: /sign in/i }).click();
+  await page.locator('input[name="email"]').fill(email);
+  await page.locator('input[name="password"]').fill(password);
+  await page.locator('form button[type="submit"]').click();
   await page.waitForURL(/\/hr\/dashboard|\/onboarding/, { timeout: 15_000 });
 }

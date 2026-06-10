@@ -113,13 +113,13 @@ export function OperatorShell({ email, fullName, children }: Props) {
       <div
         suppressHydrationWarning
         data-theme={theme}
-        className={`operator-shell-root tezhr ${theme === "dark" ? "dark" : ""} flex min-h-screen bg-[var(--color-bone)] text-[var(--color-ink)]`}
+        className={`operator-shell-root tezhr ${theme === "dark" ? "dark" : ""} block min-h-screen bg-[var(--color-canvas)] text-[var(--color-text)] md:flex`}
       >
         <OperatorSidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <OperatorTopBar email={email} fullName={fullName} />
           <main className="flex-1 overflow-y-auto">
-            <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">{children}</div>
+            <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">{children}</div>
           </main>
         </div>
       </div>

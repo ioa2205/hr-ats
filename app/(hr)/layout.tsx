@@ -6,6 +6,21 @@ import { requireUser } from "@/lib/auth/guards";
 import { getLocale } from "@/lib/i18n";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+/**
+ * Runs before React hydrates. Reads the recruiter's stored theme (or system
+ * preference) and stamps <html data-hr-theme> so the shell and any Radix
+ * portals render dark immediately — no light-mode flash on load.
+ */
+const THEME_PRIMER = `
+try {
+  var t = localStorage.getItem('tezhr-hr-theme');
+  if (t !== 'dark' && t !== 'light') {
+    t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  document.documentElement.setAttribute('data-hr-theme', t);
+} catch (e) {}
+`;
+
 async function getSidebarCounts(companyId: string | undefined) {
   if (!companyId) return undefined;
   const admin = createAdminClient();
@@ -56,6 +71,7 @@ export default async function HRLayout({ children }: { children: React.ReactNode
 
   return (
     <ToastProvider>
+      <script dangerouslySetInnerHTML={{ __html: THEME_PRIMER }} />
       <HRShell
         email={user.email ?? ""}
         fullName={profile?.full_name ?? null}

@@ -15,7 +15,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={() => setTheme(next)}
-      className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-sm)] text-[var(--color-ink-3)] hover:bg-[var(--color-bone-2)]"
+      className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-md)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-text)]"
       aria-label={label}
       title={label}
     >

@@ -38,103 +38,102 @@ export default async function Image() {
 
   const allText = [hl1, hl2, hlPrefix, hlNum, hlUnit, tagline, cta, "TezHR"].join(" ");
 
-  const [serif, mono, sans] = await Promise.all([
-    loadGoogleFont("Instrument Serif", 400, allText),
+  const [mono, sans, display] = await Promise.all([
     loadGoogleFont("JetBrains Mono", 500, allText),
     loadGoogleFont("Manrope", 600, allText),
+    loadGoogleFont("Manrope", 800, allText),
   ]);
 
   const fonts: Array<{
     name: string;
     data: ArrayBuffer;
-    weight: 400 | 500 | 600;
+    weight: 500 | 600 | 800;
     style: "normal";
   }> = [];
-  if (serif) fonts.push({ name: "Instrument Serif", data: serif, weight: 400, style: "normal" });
   if (mono) fonts.push({ name: "JetBrains Mono", data: mono, weight: 500, style: "normal" });
   if (sans) fonts.push({ name: "Manrope", data: sans, weight: 600, style: "normal" });
+  if (display) fonts.push({ name: "Manrope", data: display, weight: 800, style: "normal" });
 
   return new ImageResponse(
-    (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        background: "#f6f3ec",
+        padding: "56px 72px 48px",
+        position: "relative",
+      }}
+    >
       <div
         style={{
-          width: "100%",
-          height: "100%",
           display: "flex",
-          flexDirection: "column",
+          alignItems: "center",
           justifyContent: "space-between",
-          background: "#efe8db",
-          padding: "56px 72px 48px",
-          position: "relative",
+          fontFamily: "JetBrains Mono, monospace",
+          fontSize: 18,
+          letterSpacing: "0.2em",
+          color: "#4f5963",
+          borderBottom: "2px solid #171a1f",
+          paddingBottom: 20,
         }}
       >
+        <span>TEZHR · TASHKENT</span>
+        <span>HR / РЕКРУТИНГ / ИИ</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <div
           style={{
+            fontFamily: "Manrope, sans-serif",
+            fontWeight: 800,
+            fontSize: 132,
+            lineHeight: 0.88,
+            letterSpacing: "-0.045em",
+            color: "#171a1f",
             display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            fontFamily: "JetBrains Mono, monospace",
-            fontSize: 18,
-            letterSpacing: "0.2em",
-            color: "#302b25",
-            borderBottom: "2px solid #141210",
-            paddingBottom: 20,
+            flexDirection: "column",
           }}
         >
-          <span>TEZHR · TASHKENT</span>
-          <span>HR / РЕКРУТИНГ / ИИ</span>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div
-            style={{
-              fontFamily: "Instrument Serif, serif",
-              fontSize: 132,
-              lineHeight: 0.88,
-              letterSpacing: "-0.045em",
-              color: "#141210",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <span>{hl1}</span>
-            <span>{hl2}</span>
-            <span>
-              <span style={{ color: "#5a5147" }}>{hlPrefix}</span>
-              <em style={{ fontStyle: "italic", color: "#c1440e" }}>{hlNum}</em>
-              <span style={{ color: "#5a5147", fontStyle: "italic" }}>{hlUnit}</span>
-            </span>
-          </div>
-          <div
-            style={{
-              marginTop: 20,
-              fontFamily: "Manrope, sans-serif",
-              fontSize: 26,
-              color: "#302b25",
-              maxWidth: 960,
-              lineHeight: 1.4,
-            }}
-          >
-            {tagline}
-          </div>
+          <span>{hl1}</span>
+          <span>{hl2}</span>
+          <span>
+            <span style={{ color: "#4f5963" }}>{hlPrefix}</span>
+            <em style={{ fontStyle: "normal", color: "#0b57a3" }}>{hlNum}</em>
+            <span style={{ color: "#4f5963" }}>{hlUnit}</span>
+          </span>
         </div>
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            borderTop: "1.5px solid #141210",
-            paddingTop: 20,
-            fontFamily: "JetBrains Mono, monospace",
-            fontSize: 18,
-            color: "#302b25",
-            letterSpacing: "0.12em",
+            marginTop: 20,
+            fontFamily: "Manrope, sans-serif",
+            fontSize: 26,
+            color: "#4f5963",
+            maxWidth: 960,
+            lineHeight: 1.4,
           }}
         >
-          <span>tezhr.uz</span>
-          <span style={{ color: "#c1440e" }}>{cta} →</span>
+          {tagline}
         </div>
       </div>
-    ),
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          borderTop: "1.5px solid #171a1f",
+          paddingTop: 20,
+          fontFamily: "JetBrains Mono, monospace",
+          fontSize: 18,
+          color: "#4f5963",
+          letterSpacing: "0.12em",
+        }}
+      >
+        <span>tezhr.uz</span>
+        <span style={{ color: "#c1440e" }}>{cta} →</span>
+      </div>
+    </div>,
     { ...size, fonts: fonts.length ? fonts : undefined },
   );
 }

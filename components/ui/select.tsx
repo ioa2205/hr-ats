@@ -11,22 +11,27 @@ export const SelectValue = SelectPrimitive.Value;
 
 export const SelectTrigger = forwardRef<
   HTMLButtonElement,
-  ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+  ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> & { invalid?: boolean }
+>(({ className, children, invalid, ...props }, ref) => (
   <SelectPrimitive.Trigger
     ref={ref}
+    aria-invalid={invalid || undefined}
     className={cn(
-      "border-outline-variant bg-surface text-on-surface flex h-10 w-full items-center justify-between rounded-[var(--radius-md)] border px-3 text-sm",
-      "placeholder:text-on-surface-variant/60",
-      "focus:border-primary focus:outline-none",
-      "disabled:cursor-not-allowed disabled:opacity-50",
+      "flex h-10 w-full items-center justify-between gap-2 rounded-[var(--radius-md)] border bg-[var(--color-surface)] px-3 text-sm text-[var(--color-text)]",
+      "transition-colors duration-150 ease-[var(--ease-standard)]",
+      "data-[placeholder]:text-[var(--color-text-subtle)]",
+      "focus:border-[var(--color-focus)]",
+      "disabled:cursor-not-allowed disabled:opacity-60",
+      invalid
+        ? "border-[var(--color-danger)]"
+        : "border-[var(--color-line-strong)]",
       className,
     )}
     {...props}
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDown className="text-on-surface-variant h-4 w-4" />
+      <ChevronDown className="h-4 w-4 shrink-0 text-[var(--color-text-muted)]" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -40,7 +45,7 @@ export const SelectContent = forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       className={cn(
-        "border-outline-variant bg-surface shadow-level-2 relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-[var(--radius-md)] border",
+        "relative z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)] text-[var(--color-text)] shadow-level-2",
         "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
         "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
         position === "popper" && "data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1",
@@ -70,8 +75,9 @@ export const SelectItem = forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={cn(
-      "text-on-surface relative flex w-full cursor-pointer items-center rounded-[var(--radius-sm)] py-1.5 pr-2 pl-8 text-sm outline-none select-none",
-      "data-[highlighted]:bg-surface-container",
+      "relative flex w-full cursor-pointer items-center rounded-[var(--radius-sm)] py-1.5 pr-2 pl-8 text-sm text-[var(--color-text)] outline-none select-none",
+      "data-[highlighted]:bg-[var(--color-surface-subtle)] data-[highlighted]:text-[var(--color-text)]",
+      "data-[state=checked]:font-medium",
       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className,
     )}
@@ -79,7 +85,7 @@ export const SelectItem = forwardRef<
   >
     <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
       <SelectPrimitive.ItemIndicator>
-        <Check className="text-primary h-4 w-4" />
+        <Check className="h-4 w-4 text-[var(--color-primary)]" />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
@@ -93,8 +99,20 @@ export const SelectLabel = forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn("text-on-surface-variant py-1.5 pr-2 pl-8 text-xs font-medium", className)}
+    className={cn("py-1.5 pr-2 pl-8 text-xs font-medium text-[var(--color-text-muted)]", className)}
     {...props}
   />
 ));
 SelectLabel.displayName = "SelectLabel";
+
+export const SelectSeparator = forwardRef<
+  HTMLDivElement,
+  ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>
+>(({ className, ...props }, ref) => (
+  <SelectPrimitive.Separator
+    ref={ref}
+    className={cn("-mx-1 my-1 h-px bg-[var(--color-line)]", className)}
+    {...props}
+  />
+));
+SelectSeparator.displayName = "SelectSeparator";

@@ -1,19 +1,38 @@
 "use client";
 
-import { forwardRef, useEffect, useRef, type TextareaHTMLAttributes } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useId,
+  useRef,
+  type TextareaHTMLAttributes,
+} from "react";
 import { cn } from "@/lib/utils";
+import { FieldMessage, Label } from "./field";
 
 export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
+  helperText?: string;
   error?: string;
   autoGrow?: boolean;
+  maxCharacters?: number;
+  currentLength?: number;
 }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, label, error, autoGrow, id, onChange, ...props }, ref) => {
+  (
+    { className, label, helperText, error, autoGrow, maxCharacters, currentLength, id, onChange, ...props },
+    ref,
+  ) => {
     const internalRef = useRef<HTMLTextAreaElement | null>(null);
-    const textareaId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
+    const generatedId = useId();
+    const textareaId = id ?? generatedId;
     const hasError = Boolean(error);
+    const describedBy = hasError
+      ? `${textareaId}-error`
+      : helperText
+        ? `${textareaId}-helper`
+        : undefined;
 
     useEffect(() => {
       if (autoGrow && internalRef.current) {
@@ -25,11 +44,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 
     return (
       <div className="flex flex-col gap-1.5">
-        {label && (
-          <label htmlFor={textareaId} className="text-on-surface text-sm font-medium">
-            {label}
-          </label>
-        )}
+        {label && <Label htmlFor={textareaId}>{label}</Label>}
         <textarea
           ref={(node) => {
             internalRef.current = node;
@@ -38,15 +53,18 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           }}
           id={textareaId}
           className={cn(
-            "bg-surface text-on-surface w-full rounded-[var(--radius-md)] border px-3 py-2 text-sm outline-none",
-            "placeholder:text-on-surface-variant/60",
-            "transition-colors duration-200 ease-[var(--ease-standard)]",
-            hasError ? "border-danger" : "border-outline-variant focus:border-primary",
+            "w-full rounded-[var(--radius-md)] border bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)]",
+            "placeholder:text-[var(--color-text-subtle)] outline-none",
+            "transition-colors duration-150 ease-[var(--ease-standard)]",
+            "disabled:cursor-not-allowed disabled:opacity-60",
+            hasError
+              ? "border-[var(--color-danger)]"
+              : "border-[var(--color-line-strong)] focus:border-[var(--color-focus)]",
             autoGrow ? "resize-none overflow-hidden" : "min-h-[80px] resize-y",
             className,
           )}
-          aria-invalid={hasError}
-          aria-describedby={hasError ? `${textareaId}-error` : undefined}
+          aria-invalid={hasError || undefined}
+          aria-describedby={describedBy}
           onChange={(e) => {
             if (autoGrow) {
               e.target.style.height = "auto";
@@ -56,10 +74,30 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           }}
           {...props}
         />
-        {hasError && (
-          <p id={`${textareaId}-error`} className="text-danger text-xs" role="alert">
-            {error}
-          </p>
+        {(hasError || helperText || maxCharacters !== undefined) && (
+          <div className="flex items-center justify-between gap-2">
+            {hasError ? (
+              <FieldMessage tone="error" id={`${textareaId}-error`}>
+                {error}
+              </FieldMessage>
+            ) : helperText ? (
+              <FieldMessage id={`${textareaId}-helper`}>{helperText}</FieldMessage>
+            ) : (
+              <span />
+            )}
+            {maxCharacters !== undefined && (
+              <span
+                className={cn(
+                  "data-mono text-xs",
+                  (currentLength ?? 0) > maxCharacters
+                    ? "text-[var(--color-danger)]"
+                    : "text-[var(--color-text-subtle)]",
+                )}
+              >
+                {currentLength ?? 0}/{maxCharacters}
+              </span>
+            )}
+          </div>
         )}
       </div>
     );

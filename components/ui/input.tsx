@@ -1,7 +1,8 @@
 "use client";
 
-import { forwardRef, type InputHTMLAttributes, type ReactNode } from "react";
+import { forwardRef, useId, type InputHTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { FieldMessage, Label } from "./field";
 
 export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   label?: string;
@@ -11,6 +12,8 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   endAdornment?: ReactNode;
   maxCharacters?: number;
   currentLength?: number;
+  /** Visual sizing. `lg` is a 44px touch target for important mobile fields. */
+  inputSize?: "md" | "lg";
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -24,63 +27,80 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       endAdornment,
       maxCharacters,
       currentLength,
+      inputSize = "md",
       id,
       ...props
     },
     ref,
   ) => {
-    const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
     const hasError = Boolean(error);
+    const describedBy = hasError
+      ? `${inputId}-error`
+      : helperText
+        ? `${inputId}-helper`
+        : undefined;
 
     return (
       <div className="flex flex-col gap-1.5">
-        {label && (
-          <label htmlFor={inputId} className="text-on-surface text-sm font-medium">
-            {label}
-          </label>
-        )}
+        {label && <Label htmlFor={inputId}>{label}</Label>}
         <div
           className={cn(
-            "bg-surface flex items-center gap-2 rounded-[var(--radius-md)] border px-3",
-            "transition-colors duration-200 ease-[var(--ease-standard)]",
-            hasError ? "border-danger" : "border-outline-variant focus-within:border-primary",
+            "flex items-center gap-2 rounded-[var(--radius-md)] border bg-[var(--color-surface)] px-3",
+            "transition-colors duration-150 ease-[var(--ease-standard)]",
+            hasError
+              ? "border-[var(--color-danger)]"
+              : "border-[var(--color-line-strong)] focus-within:border-[var(--color-focus)]",
+            "has-[input:disabled]:opacity-60",
             className,
           )}
         >
-          {startAdornment && <span className="text-on-surface-variant">{startAdornment}</span>}
+          {startAdornment && (
+            <span className="shrink-0 text-[var(--color-text-muted)]">{startAdornment}</span>
+          )}
           <input
             ref={ref}
             id={inputId}
             className={cn(
-              "text-on-surface h-10 w-full bg-transparent text-sm outline-none",
-              "placeholder:text-on-surface-variant/60",
+              "w-full bg-transparent text-sm text-[var(--color-text)] outline-none",
+              "placeholder:text-[var(--color-text-subtle)]",
+              "disabled:cursor-not-allowed",
+              inputSize === "lg" ? "h-11" : "h-10",
             )}
-            aria-invalid={hasError}
-            aria-describedby={
-              hasError ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined
-            }
+            aria-invalid={hasError || undefined}
+            aria-describedby={describedBy}
             {...props}
           />
-          {endAdornment && <span className="text-on-surface-variant">{endAdornment}</span>}
-        </div>
-        <div className="flex items-center justify-between">
-          {hasError ? (
-            <p id={`${inputId}-error`} className="text-danger text-xs" role="alert">
-              {error}
-            </p>
-          ) : helperText ? (
-            <p id={`${inputId}-helper`} className="text-on-surface-variant text-xs">
-              {helperText}
-            </p>
-          ) : (
-            <span />
-          )}
-          {maxCharacters !== undefined && (
-            <span className="nums text-on-surface-variant text-xs">
-              {currentLength ?? 0}/{maxCharacters}
-            </span>
+          {endAdornment && (
+            <span className="shrink-0 text-[var(--color-text-muted)]">{endAdornment}</span>
           )}
         </div>
+        {(hasError || helperText || maxCharacters !== undefined) && (
+          <div className="flex items-center justify-between gap-2">
+            {hasError ? (
+              <FieldMessage tone="error" id={`${inputId}-error`}>
+                {error}
+              </FieldMessage>
+            ) : helperText ? (
+              <FieldMessage id={`${inputId}-helper`}>{helperText}</FieldMessage>
+            ) : (
+              <span />
+            )}
+            {maxCharacters !== undefined && (
+              <span
+                className={cn(
+                  "data-mono text-xs",
+                  (currentLength ?? 0) > maxCharacters
+                    ? "text-[var(--color-danger)]"
+                    : "text-[var(--color-text-subtle)]",
+                )}
+              >
+                {currentLength ?? 0}/{maxCharacters}
+              </span>
+            )}
+          </div>
+        )}
       </div>
     );
   },

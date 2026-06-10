@@ -51,22 +51,24 @@ export function TagInput({
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={inputId} className="text-on-surface text-sm font-medium">
+        <label htmlFor={inputId} className="text-sm font-medium text-[var(--color-text)]">
           {label}
         </label>
       )}
       <div
         className={cn(
-          "bg-surface flex flex-wrap items-center gap-1.5 rounded-[var(--radius-md)] border px-3 py-2",
-          "transition-colors duration-200 ease-[var(--ease-standard)]",
-          hasError ? "border-danger" : "border-outline-variant focus-within:border-primary",
+          "flex min-h-11 flex-wrap items-center gap-1.5 rounded-[var(--radius-md)] border bg-[var(--color-surface)] px-3 py-2",
+          "transition-colors duration-150 ease-[var(--ease-standard)]",
+          hasError
+            ? "border-[var(--color-danger)]"
+            : "border-[var(--color-line-strong)] focus-within:border-[var(--color-focus)]",
         )}
         onClick={() => inputRef.current?.focus()}
       >
         {value.map((tag, i) => (
           <span
             key={tag}
-            className="bg-primary-container text-on-primary-container inline-flex items-center gap-1 rounded-[var(--radius-full)] px-2.5 py-0.5 text-xs font-medium"
+            className="inline-flex items-center gap-1 rounded-[var(--radius-full)] bg-[var(--color-primary-container)] px-2.5 py-0.5 text-xs font-medium text-[var(--color-on-primary-container)]"
           >
             {tag}
             <button
@@ -75,7 +77,7 @@ export function TagInput({
                 e.stopPropagation();
                 removeTag(i);
               }}
-              className="hover:bg-on-primary-container/10 rounded-full p-0.5"
+              className="rounded-full p-0.5 transition-colors hover:bg-[color-mix(in_srgb,var(--color-on-primary-container)_15%,transparent)]"
               aria-label={t("hr.tag.remove_label", { tag })}
             >
               <X className="h-3 w-3" />
@@ -90,12 +92,12 @@ export function TagInput({
           onKeyDown={handleKeyDown}
           onBlur={addTag}
           placeholder={value.length === 0 ? effectivePlaceholder : ""}
-          aria-label={label}
-          className="text-on-surface placeholder:text-on-surface-variant/60 min-w-[120px] flex-1 bg-transparent text-sm outline-none"
+          aria-label={label ?? effectivePlaceholder}
+          className="min-w-[120px] flex-1 bg-transparent text-sm text-[var(--color-text)] outline-none placeholder:text-[var(--color-text-subtle)]"
         />
       </div>
       {hasError && (
-        <p className="text-danger text-xs" role="alert">
+        <p className="text-xs text-[var(--color-danger)]" role="alert">
           {error}
         </p>
       )}

@@ -1,12 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Send } from "lucide-react";
-import { TezButton } from "@/components/hr/design";
+import { Check, Send, UserX } from "lucide-react";
+import {
+  Button,
+  DetailActionBar,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  InlineMessage,
+} from "@/components/ui";
 import { InviteModal } from "./invite-modal";
-import { relativeDate } from "@/lib/time";
 import type { Candidate } from "@/types";
 import { useTranslation } from "@/lib/i18n/provider";
+import { relativeCandidateTime } from "@/lib/applicants/presentation";
 
 interface InviteSectionProps {
   candidate: Candidate;
@@ -22,45 +32,92 @@ export function InviteSection({
   onUpdate,
 }: InviteSectionProps) {
   const { t } = useTranslation();
-  const [modalOpen, setModalOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [rejecting, setRejecting] = useState(false);
+  const [rejectError, setRejectError] = useState(false);
 
-  if (candidate.status === "invited") {
-    return (
-      <div className="border-rule bg-bone-2/60 shrink-0 border-t px-4 py-3">
-        <div className="border-rule bg-paper flex items-center gap-2.5 rounded-[5px] border px-3 py-2">
-          <span className="bg-ink text-paper flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-            <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
-          </span>
-          <span className="text-ink text-[13px] font-medium">
-            {t("applicants.status_line.invited_prefix", {
-              date: candidate.invited_at ? relativeDate(candidate.invited_at) : "",
-            })}
-          </span>
-        </div>
-      </div>
-    );
+  async function rejectCandidate() {
+    setRejecting(true);
+    setRejectError(false);
+    try {
+      const response = await fetch(`/api/hr/candidates/${candidate.id}/reject`, {
+        method: "POST",
+      });
+      if (!response.ok) {
+        setRejectError(true);
+        return;
+      }
+      onUpdate(candidate.id, { status: "rejected" });
+      setRejectOpen(false);
+    } catch {
+      setRejectError(true);
+    } finally {
+      setRejecting(false);
+    }
   }
 
   return (
-    <div className="border-rule bg-bone-2/60 shrink-0 border-t px-4 py-3">
-      <TezButton
-        variant="accent"
-        size="lg"
-        onClick={() => setModalOpen(true)}
-        leadingIcon={<Send className="h-3.5 w-3.5" />}
-        className="h-[38px] w-full justify-center text-[13px] font-semibold"
-      >
-        {t("applicants.invite.invite_button")}
-      </TezButton>
+    <>
+      <DetailActionBar className="flex-wrap">
+        <div className="mr-auto min-w-0">
+          <p className="text-xs font-bold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
+            {t("applicants.actions.human")}
+          </p>
+          {candidate.status === "invited" && (
+            <p className="mt-1 flex items-center gap-1.5 text-xs font-medium text-[var(--color-success)]">
+              <Check className="h-3.5 w-3.5" />
+              {t("applicants.status_line.invited_prefix", {
+                date: candidate.invited_at ? relativeCandidateTime(candidate.invited_at, t) : "",
+              })}
+            </p>
+          )}
+        </div>
+        {candidate.status !== "rejected" && candidate.status !== "rejected_screening" && (
+          <Button variant="secondary" size="lg" onClick={() => setRejectOpen(true)}>
+            <UserX className="h-4 w-4" />
+            {t("applicants.actions.reject")}
+          </Button>
+        )}
+        {candidate.status !== "invited" && (
+          <Button size="lg" onClick={() => setInviteOpen(true)}>
+            <Send className="h-4 w-4" />
+            {t("applicants.invite.invite_button")}
+          </Button>
+        )}
+      </DetailActionBar>
 
       <InviteModal
-        open={modalOpen}
-        onOpenChange={setModalOpen}
+        open={inviteOpen}
+        onOpenChange={setInviteOpen}
         candidate={candidate}
         postingTitle={postingTitle}
         templates={templates}
         onUpdate={onUpdate}
       />
-    </div>
+
+      <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("applicants.reject.title", { name: candidate.full_name })}</DialogTitle>
+            <DialogDescription>{t("applicants.reject.description")}</DialogDescription>
+          </DialogHeader>
+          {rejectError && (
+            <div className="px-6 pt-4">
+              <InlineMessage tone="danger">{t("applicants.reject.error")}</InlineMessage>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setRejectOpen(false)} disabled={rejecting}>
+              {t("common.cancel")}
+            </Button>
+            <Button variant="danger" onClick={rejectCandidate} loading={rejecting}>
+              <UserX className="h-4 w-4" />
+              {t("applicants.actions.confirm_reject")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

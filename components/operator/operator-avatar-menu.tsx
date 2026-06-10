@@ -30,7 +30,7 @@ export function OperatorAvatarMenu({ email, fullName }: Props) {
         <button
           type="button"
           aria-label={t("operator.chrome.account")}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-persimmon-tint)] text-[11px] font-semibold text-[var(--color-persimmon-2)] hover:bg-[var(--color-persimmon-tint-2)]"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-primary-container)] text-[11px] font-semibold text-[var(--color-on-primary-container)] hover:bg-[color-mix(in_srgb,var(--color-primary-container)_88%,var(--color-text))]"
         >
           {initials}
         </button>
@@ -38,9 +38,9 @@ export function OperatorAvatarMenu({ email, fullName }: Props) {
       <DropdownMenuContent align="end" className="min-w-[220px]">
         <DropdownMenuLabel>
           <div className="flex flex-col gap-0.5">
-            <span className="text-[13px] font-medium text-[var(--color-ink)]">{name}</span>
+            <span className="text-[13px] font-medium text-[var(--color-text)]">{name}</span>
             {fullName && (
-              <span className="text-[11px] text-[var(--color-ink-4)]">{email}</span>
+              <span className="text-[11px] text-[var(--color-text-muted)]">{email}</span>
             )}
           </div>
         </DropdownMenuLabel>

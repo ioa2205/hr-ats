@@ -2,169 +2,239 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  /* Typography */
-  --font-sans: "Roboto Flex", system-ui, -apple-system, sans-serif;
-  --font-mono: "Roboto Mono", ui-monospace, monospace;
+  /* Typography: Manrope for product/brand, JetBrains Mono for data only. */
+  --font-sans: var(--font-manrope), "Manrope", system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
+  --font-tez-sans: var(--font-sans);
+  --font-tez-serif: var(--font-sans);
+  --font-tez-mono: var(--font-mono);
 
-  /* TezHR design system (Pro) — HR portal */
-  --font-tez-sans: "Manrope", "Inter", system-ui, -apple-system, sans-serif;
-  --font-tez-serif: "Instrument Serif", "Times New Roman", serif;
-  --font-tez-mono: "JetBrains Mono", "Roboto Mono", ui-monospace, monospace;
+  /* Unified semantic roles. */
+  --color-canvas: #f6f3ec;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #fbf9f4;
+  --color-surface-raised: #ffffff;
+  --color-surface-strong: #ece7dd;
+  --color-text: #171a1f;
+  --color-text-muted: #4f5963;
+  --color-text-subtle: #65707a;
+  --color-line: #d7d1c5;
+  --color-line-strong: #918b81;
 
-  /* Neutrals — warm stone */
-  --color-bone: #fafaf7;
-  --color-bone-2: #f3f2ec;
-  --color-bone-3: #e8e6dd;
-  --color-paper: #ffffff;
-  --color-ink: #15130f;
-  --color-ink-2: #232019;
-  --color-ink-3: #3d3830;
-  --color-ink-4: #6b6557;
-  --color-ink-5: #97907f;
-  --color-ink-6: #bfb9a8;
-  --color-rule: #e7e4d8;
-  --color-rule-2: #d8d4c4;
-
-  /* Brand accent */
-  --color-persimmon: #d9480f;
-  --color-persimmon-2: #b83a0a;
-  --color-persimmon-tint: #fbe5d6;
-  --color-persimmon-tint-2: #f4cdb1;
-
-  /* Functional */
-  --color-tez-green: #1f7a3a;
-  --color-tez-green-tint: #e2eede;
-  --color-tez-amber: #b16a0a;
-  --color-tez-amber-tint: #f4e4c2;
-  --color-tez-red: #b23b2d;
-  --color-tez-red-tint: #f1d5cf;
-  --color-tez-blue: #1f4fa0;
-  --color-tez-blue-tint: #dbe3f1;
-
-  /* Tez elevation — soft, neutral */
-  --shadow-tez-1: 0 1px 2px rgba(20, 17, 13, 0.04), 0 1px 1px rgba(20, 17, 13, 0.03);
-  --shadow-tez-2:
-    0 2px 6px -2px rgba(20, 17, 13, 0.08), 0 4px 16px -8px rgba(20, 17, 13, 0.1);
-  --shadow-tez-3: 0 8px 32px -12px rgba(20, 17, 13, 0.18);
-
-  /* Brand — Material 3-inspired, solid Google feel */
-  --color-primary: #0b57d0;
-  --color-primary-hover: #0842a0;
-  --color-primary-container: #d3e3fd;
+  /* Tez Lapis: action, selection, links, focus, intelligence. */
+  --color-primary: #0b57a3;
+  --color-primary-hover: #07467f;
+  --color-primary-container: #d9eaf8;
   --color-on-primary: #ffffff;
-  --color-on-primary-container: #001d35;
+  --color-on-primary-container: #0a3158;
+  --color-focus: #0b57a3;
 
-  --color-secondary: #00639b;
-  --color-secondary-container: #cfe5ff;
+  /* Persimmon Signal: restrained priority and newly arrived information. */
+  --color-accent: #c84e18;
+  --color-accent-strong: #96370f;
+  --color-on-accent: #ffffff;
+  --color-accent-container: #f8dfd2;
+  --color-on-accent-container: #5b210c;
 
-  --color-tertiary: #7b4ea8;
-  --color-tertiary-container: #eddcfe;
+  /* Strict semantic status colors. */
+  --color-success: #19713a;
+  --color-success-container: #dcefe1;
+  --color-on-success-container: #0d4322;
+  --color-warning: #815500;
+  --color-warning-container: #f4e5bf;
+  --color-on-warning-container: #4a3000;
+  --color-danger: #b4232c;
+  --color-on-danger: #ffffff;
+  --color-danger-container: #f6dddf;
+  --color-on-danger-container: #65131a;
+  --color-info: #0b667a;
+  --color-info-container: #d8edf2;
+  --color-on-info-container: #073e49;
 
-  /* Semantic */
-  --color-success: #146c2e;
-  --color-success-container: #c8f7c5;
-  --color-warning: #9a6700;
-  --color-warning-container: #fff1c2;
-  --color-danger: #b3261e;
-  --color-danger-container: #f9dedc;
+  /* Compatibility aliases: keep unmigrated bone/ink and Material consumers safe. */
+  --color-bone: var(--color-canvas);
+  --color-bone-2: var(--color-surface-subtle);
+  --color-bone-3: var(--color-surface-strong);
+  --color-paper: var(--color-surface);
+  --color-ink: var(--color-text);
+  --color-ink-2: var(--color-text);
+  --color-ink-3: var(--color-text-muted);
+  --color-ink-4: var(--color-text-muted);
+  --color-ink-5: var(--color-text-subtle);
+  --color-ink-6: var(--color-line-strong);
+  --color-rule: var(--color-line);
+  --color-rule-2: var(--color-line-strong);
+  --color-persimmon: var(--color-accent);
+  --color-persimmon-2: var(--color-accent-strong);
+  --color-persimmon-tint: var(--color-accent-container);
+  --color-persimmon-tint-2: var(--color-accent-container);
+  --color-tez-green: var(--color-success);
+  --color-tez-green-tint: var(--color-success-container);
+  --color-tez-amber: var(--color-warning);
+  --color-tez-amber-tint: var(--color-warning-container);
+  --color-tez-red: var(--color-danger);
+  --color-tez-red-tint: var(--color-danger-container);
+  --color-tez-blue: var(--color-primary);
+  --color-tez-blue-tint: var(--color-primary-container);
 
-  /* Surface — Material 3 neutral palette */
-  --color-background: #fbfcfe;
-  --color-surface: #f8fafd;
-  --color-surface-container: #f0f4f9;
-  --color-surface-container-high: #e7eef6;
-  --color-on-surface: #1a1c1e;
-  --color-on-surface-variant: #43474e;
-  --color-outline: #74777f;
-  --color-outline-variant: #c4c7c5;
+  /* Legacy Material role aliases. */
+  --color-background: var(--color-canvas);
+  --color-surface-container: var(--color-surface-subtle);
+  --color-surface-container-high: var(--color-surface-strong);
+  --color-on-surface: var(--color-text);
+  --color-on-surface-variant: var(--color-text-muted);
+  --color-outline: var(--color-line-strong);
+  --color-outline-variant: var(--color-line);
+  --color-secondary: var(--color-info);
+  --color-secondary-container: var(--color-info-container);
+  --color-tertiary: var(--color-accent);
+  --color-tertiary-container: var(--color-accent-container);
 
-  /* Radius */
+  /* Shape and elevation. */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
-  --radius-xl: 20px;
+  --radius-xl: 16px;
   --radius-full: 9999px;
+  --shadow-level-1: 0 1px 2px rgb(23 26 31 / 0.08), 0 1px 3px rgb(23 26 31 / 0.05);
+  --shadow-level-2: 0 4px 14px -5px rgb(23 26 31 / 0.18);
+  --shadow-level-3: 0 16px 40px -18px rgb(23 26 31 / 0.28);
+  --shadow-tez-1: var(--shadow-level-1);
+  --shadow-tez-2: var(--shadow-level-2);
+  --shadow-tez-3: var(--shadow-level-3);
 
-  /* Elevation (Material 3) */
-  --shadow-level-1: 0px 1px 2px 0px rgb(0 0 0 / 0.1), 0px 1px 3px 1px rgb(0 0 0 / 0.08);
-  --shadow-level-2: 0px 1px 2px 0px rgb(0 0 0 / 0.12), 0px 2px 6px 2px rgb(0 0 0 / 0.08);
-  --shadow-level-3: 0px 4px 8px 3px rgb(0 0 0 / 0.1), 0px 1px 3px 0px rgb(0 0 0 / 0.12);
-
-  /* Motion — Material 3 easings */
+  /* Fast, functional motion. */
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --ease-emphasized: cubic-bezier(0.3, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Base */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --duration-fast: 120ms;
+  --duration-standard: 200ms;
+  --duration-emphasized: 320ms;
+  color-scheme: light;
+}
+
+.theme-dark,
+.tezhr.dark,
+html[data-theme="dark"],
+html[data-operator-theme="dark"],
+html[data-hr-theme="dark"] {
+  --color-canvas: #111416;
+  --color-surface: #181c1f;
+  --color-surface-subtle: #1d2226;
+  --color-surface-raised: #23292e;
+  --color-surface-strong: #2a3035;
+  --color-text: #f5f3ee;
+  --color-text-muted: #c1c6c9;
+  --color-text-subtle: #a7afb4;
+  --color-line: #353c42;
+  --color-line-strong: #737d84;
+  --color-primary: #79b9f2;
+  --color-primary-hover: #9dccf5;
+  --color-primary-container: #173b5d;
+  --color-on-primary: #06233e;
+  --color-on-primary-container: #ddeeff;
+  --color-focus: #79b9f2;
+  --color-accent: #ff8c55;
+  --color-accent-strong: #ffaf86;
+  --color-on-accent: #3b080c;
+  --color-accent-container: #572a18;
+  --color-on-accent-container: #ffe7db;
+  --color-success: #70d28e;
+  --color-success-container: #183c25;
+  --color-on-success-container: #cff4da;
+  --color-warning: #f1c064;
+  --color-warning-container: #473713;
+  --color-on-warning-container: #fae7b5;
+  --color-danger: #ff9a9e;
+  --color-on-danger: #3b080c;
+  --color-danger-container: #552126;
+  --color-on-danger-container: #ffe0e1;
+  --color-info: #6fcbe0;
+  --color-info-container: #173b44;
+  --color-on-info-container: #d1f3fa;
+  --shadow-level-1: 0 1px 2px rgb(0 0 0 / 0.28), 0 1px 3px rgb(0 0 0 / 0.2);
+  --shadow-level-2: 0 6px 18px -7px rgb(0 0 0 / 0.55);
+  --shadow-level-3: 0 18px 48px -20px rgb(0 0 0 / 0.72);
+  color-scheme: dark;
+}
+
 html,
 body {
   font-family: var(--font-sans);
 }
 
 body {
-  background: var(--color-background);
-  color: var(--color-on-surface);
+  background: var(--color-canvas);
+  color: var(--color-text);
 }
 
-/* Focus ring — Google-style */
+::selection {
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
 :focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
 }
 
-/* Tabular numbers */
-.nums {
+.nums,
+.data-mono,
+.text-mono {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 
-/* ==================== TezHR Pro — HR portal scope ==================== */
 .tezhr {
-  font-family: var(--font-tez-sans);
-  color: var(--color-ink);
-  background: var(--color-bone);
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-canvas);
   font-size: 13px;
   line-height: 1.45;
-  font-feature-settings: "ss01", "cv11", "tnum";
-  font-variant-numeric: tabular-nums;
+  font-feature-settings: "ss01", "cv11";
 }
+
 .tezhr ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
+
 .tezhr ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .tezhr ::-webkit-scrollbar-thumb {
-  background: var(--color-rule-2);
-  border-radius: 4px;
+  background: var(--color-line);
+  border-radius: var(--radius-full);
 }
+
 .tezhr ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-ink-6);
+  background: var(--color-line-strong);
 }
 
-/* Text utilities — available inside .tezhr */
-.tezhr .text-mono {
-  font-family: var(--font-tez-mono);
-}
+/* Temporary compatibility: old serif utility now resolves to the product face. */
 .tezhr .text-serif {
-  font-family: var(--font-tez-serif);
-  font-style: italic;
-  font-weight: 400;
-}
-.tezhr :focus-visible {
-  outline: 2px solid var(--color-ink);
-  outline-offset: 2px;
+  font-family: var(--font-sans);
+  font-style: normal;
 }
 
-/* Inputs/Textareas inside operator scope — neutralise the Material blue focus
-   border on the wrapper and keep focus styling on-brand (ink, not M3 primary). */
 .tezhr .focus-within\:border-primary:focus-within,
 html[data-operator-theme="dark"] .focus-within\:border-primary:focus-within,
 html[data-hr-theme="dark"] .focus-within\:border-primary:focus-within {
-  border-color: var(--color-ink-3);
+  border-color: var(--color-focus);
 }
+
 .tezhr input,
 .tezhr textarea,
 .tezhr select,
@@ -174,21 +244,19 @@ html[data-operator-theme="dark"] select,
 html[data-hr-theme="dark"] input,
 html[data-hr-theme="dark"] textarea,
 html[data-hr-theme="dark"] select {
-  color: var(--color-ink);
-  background-color: var(--color-paper);
+  color: var(--color-text);
+  background-color: var(--color-surface);
 }
+
 .tezhr input::placeholder,
 .tezhr textarea::placeholder,
 html[data-operator-theme="dark"] input::placeholder,
 html[data-operator-theme="dark"] textarea::placeholder,
 html[data-hr-theme="dark"] input::placeholder,
 html[data-hr-theme="dark"] textarea::placeholder {
-  color: var(--color-ink-5);
+  color: var(--color-text-subtle);
 }
-/* Inputs inside the tezhr scope get a single-source focus ring — a solid
-   border change in ink-3, no offset outline. Prevents the "double halo /
-   overflowing" artefact that `:focus-visible outline + outline-offset` was
-   producing on top of wrapper borders. */
+
 .tezhr select:focus-visible,
 .tezhr input:focus-visible,
 .tezhr textarea:focus-visible,
@@ -198,109 +266,39 @@ html[data-operator-theme="dark"] textarea:focus-visible,
 html[data-hr-theme="dark"] select:focus-visible,
 html[data-hr-theme="dark"] input:focus-visible,
 html[data-hr-theme="dark"] textarea:focus-visible {
-  outline: none;
-  border-color: var(--color-ink-3);
-  box-shadow: 0 0 0 1px var(--color-ink-3);
+  outline: 2px solid var(--color-focus);
+  outline-offset: 1px;
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus) 24%, transparent);
 }
 
-/* ==================== TezHR Pro — dark mode (operator scope) ==================== */
-/* Two selectors, same rules:
-   - `.tezhr.dark`            — in-shell content (sidebar, top bar, main).
-   - `html[data-operator-theme="dark"]` — covers Radix portals (Dialog,
-     DropdownMenu, Tooltip) that render to document.body outside `.tezhr`.
-   OperatorShell mirrors the theme onto <html> on mount and clears it on
-   unmount, so HR/landing/auth surfaces are never affected. */
-.tezhr.dark,
-html[data-operator-theme="dark"],
-html[data-hr-theme="dark"] {
-  --color-bone: #141210;
-  --color-bone-2: #1c1a16;
-  --color-bone-3: #26221c;
-  --color-paper: #1a1714;
-  --color-ink: #faf8f2;
-  --color-ink-2: #ece8dd;
-  --color-ink-3: #c8c2b1;
-  --color-ink-4: #9d978a;
-  --color-ink-5: #76716a;
-  --color-ink-6: #514d47;
-  --color-rule: #2a2621;
-  --color-rule-2: #3a352e;
-
-  /* Persimmon brightened for contrast on dark backgrounds */
-  --color-persimmon: #ff7a3c;
-  --color-persimmon-2: #ff6122;
-  --color-persimmon-tint: #3a1a0c;
-  --color-persimmon-tint-2: #4e2310;
-
-  --color-tez-green: #4cbf6e;
-  --color-tez-green-tint: #1a2d1e;
-  --color-tez-amber: #f0a64e;
-  --color-tez-amber-tint: #3a2c15;
-  --color-tez-red: #e16558;
-  --color-tez-red-tint: #3a1a18;
-  --color-tez-blue: #6a96ea;
-  --color-tez-blue-tint: #17223a;
-
-  /* --- Material 3 surfaces (dark) ---
-     Most existing operator pages still use M3 tokens (bg-surface,
-     text-on-surface, border-outline-variant, bg-danger-container, …). We
-     flip them here inside the `.tezhr.dark` scope so the whole content tree
-     picks up dark-mode values without touching per-page code. Pages get
-     rebuilt to bone/ink in PR #2+ — until then this is what carries dark
-     mode for the legacy surfaces. */
-  --color-background: #0f1113;
-  --color-surface: #15181c;
-  --color-surface-container: #1c2025;
-  --color-surface-container-high: #252a30;
-  --color-on-surface: #e5e2dd;
-  --color-on-surface-variant: #b2afa9;
-  --color-outline: #6e6b67;
-  --color-outline-variant: #3a3834;
-
-  --color-primary: #a8c8ff;
-  --color-primary-hover: #bfd5ff;
-  --color-primary-container: #003d73;
-  --color-on-primary: #00315b;
-  --color-on-primary-container: #d6e3ff;
-
-  --color-secondary: #a3cbf4;
-  --color-secondary-container: #00446c;
-
-  --color-tertiary: #d3baf1;
-  --color-tertiary-container: #5d3f83;
-
-  --color-success: #7ed991;
-  --color-success-container: #0d4a1a;
-  --color-warning: #ffd275;
-  --color-warning-container: #4d3700;
-  --color-danger: #f2b8b5;
-  --color-danger-container: #601410;
-
-  color-scheme: dark;
-}
-
-.tezhr.dark :focus-visible,
-html[data-operator-theme="dark"] :focus-visible,
-html[data-hr-theme="dark"] :focus-visible {
-  outline-color: var(--color-ink-2);
-}
-
-/* Backstop: elements inside the dark operator scope that don't opt into a
-   token (e.g. a stray `bg-white`) should still look right. Tailwind utilities
-   win via specificity, so this only kicks in for raw <html>-inherited
-   defaults. The body backstop also covers scroll-bounce edges. */
-.tezhr.dark {
-  color: var(--color-ink);
-  background: var(--color-bone);
-}
 html[data-operator-theme="dark"] body,
-html[data-hr-theme="dark"] body {
-  background: var(--color-bone);
+html[data-hr-theme="dark"] body,
+html[data-theme="dark"] body {
+  background: var(--color-canvas);
 }
 
-/* Impersonation banner gutter — when the fixed banner is present, push the
-   operator/HR shell down by its height so the sticky top bar stays below it. */
+/* App-shell sticky offset. Defaults to 0; the fixed 44px impersonation banner
+   raises it so sticky rails and top bars pin *below* the banner instead of
+   being obscured by it (WCAG 2.4.11 — focus/nav not hidden by sticky chrome). */
+.hr-shell-root,
+.operator-shell-root {
+  --app-sticky-top: 0px;
+}
+
 body:has([data-testid="impersonation-banner"]) .operator-shell-root,
 body:has([data-testid="impersonation-banner"]) .hr-shell-root {
   padding-top: 44px;
+  --app-sticky-top: 44px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

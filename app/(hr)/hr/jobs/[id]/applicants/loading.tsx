@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui";
 
 export default function ApplicantsLoading() {
   return (
-    <div className="flex h-[calc(100vh-48px)] flex-col">
+    <div className="flex h-[calc(100dvh-6.5rem)] min-h-[620px] flex-col">
       {/* Header skeleton */}
       <div className="shrink-0 space-y-4 pb-4">
         <div className="flex items-start justify-between gap-4">
@@ -20,9 +20,9 @@ export default function ApplicantsLoading() {
       </div>
 
       {/* Split view skeleton */}
-      <div className="flex min-h-0 flex-1">
+      <div className="flex min-h-0 flex-1 overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)]">
         {/* Left panel */}
-        <div className="border-outline-variant w-[400px] shrink-0 space-y-1 border-r p-2">
+        <div className="w-full shrink-0 space-y-1 border-r border-[var(--color-line)] p-2 xl:w-[430px]">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="flex h-14 items-center gap-3 px-4">
               <Skeleton className="h-4 w-6" />

@@ -9,8 +9,8 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
+  Button,
 } from "@/components/ui";
-import { TezButton } from "@/components/hr/design";
 import { cn } from "@/lib/utils";
 import type { Candidate } from "@/types";
 import { useTranslation } from "@/lib/i18n/provider";
@@ -110,14 +110,14 @@ export function InviteModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="tezhr bg-paper border-rule !max-w-[520px] border p-0 sm:rounded-[8px]"
+        className="!max-w-[520px] border border-[var(--color-line)] bg-[var(--color-surface)] p-0"
         style={{ fontSize: "13.5px" }}
       >
-        <DialogHeader className="border-rule gap-1 border-b p-5 pb-4">
-          <DialogTitle className="text-ink text-[17px] font-semibold tracking-[-0.01em]">
+        <DialogHeader className="gap-1 border-b border-[var(--color-line)] p-5 pb-4">
+          <DialogTitle className="text-[17px] font-semibold tracking-[-0.01em] text-[var(--color-text)]">
             {t("applicants.invite.title", { name: candidate.full_name })}
           </DialogTitle>
-          <DialogDescription className="text-ink-4 text-[12.5px]">
+          <DialogDescription className="text-[12.5px] text-[var(--color-text-muted)]">
             {t("applicants.invite.description")}
           </DialogDescription>
         </DialogHeader>
@@ -126,13 +126,12 @@ export function InviteModal({
           {/* Language segment */}
           <div className="flex items-center justify-between gap-3">
             <span
-              className="text-ink-4 text-[10.5px] font-semibold uppercase tracking-[0.1em]"
-              style={{ fontFamily: "var(--font-tez-mono)" }}
+              className="data-mono text-[10.5px] font-semibold tracking-[0.1em] text-[var(--color-text-muted)] uppercase"
             >
               {t("applicants.invite.copy_message")}
             </span>
             <div
-              className="border-rule bg-bone-2 flex gap-0.5 rounded-[5px] border p-0.5"
+              className="flex gap-0.5 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] p-0.5"
               role="group"
               aria-label="Language"
             >
@@ -147,10 +146,9 @@ export function InviteModal({
                     className={cn(
                       "rounded-[3px] px-2.5 py-[3px] text-[10.5px] font-semibold tracking-[0.04em] transition-colors",
                       active
-                        ? "bg-ink text-paper"
-                        : "text-ink-4 hover:bg-bone hover:text-ink",
+                        ? "bg-[var(--color-primary)] text-[var(--color-on-primary)]"
+                        : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-text)]",
                     )}
-                    style={{ fontFamily: "var(--font-tez-mono)" }}
                   >
                     {l.label}
                   </button>
@@ -160,64 +158,57 @@ export function InviteModal({
           </div>
 
           {/* Message preview */}
-          <div className="border-rule bg-bone-2/60 whitespace-pre-wrap rounded-[5px] border px-3.5 py-3 text-[13px] leading-[1.55] text-ink-2">
+          <div className="whitespace-pre-wrap rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] px-3.5 py-3 text-[13px] leading-[1.55] text-[var(--color-text)]">
             {renderedMessage || (
-              <span className="text-ink-5 italic">—</span>
+              <span className="text-[var(--color-text-subtle)] italic">—</span>
             )}
           </div>
 
           {/* Candidate contact line */}
-          <div className="border-rule flex items-center justify-between gap-3 rounded-[5px] border px-3.5 py-2.5">
+          <div className="flex items-center justify-between gap-3 rounded-[var(--radius-md)] border border-[var(--color-line)] px-3.5 py-2.5">
             <div className="min-w-0">
-              <div className="text-ink-4 text-[10.5px] font-semibold uppercase tracking-[0.1em]"
-                style={{ fontFamily: "var(--font-tez-mono)" }}>
+              <div className="data-mono text-[10.5px] font-semibold tracking-[0.1em] text-[var(--color-text-muted)] uppercase">
                 Telegram
               </div>
               <div
-                className="text-ink truncate text-[13px]"
-                style={{ fontFamily: "var(--font-tez-mono)" }}
+                className="data-mono truncate text-[13px] text-[var(--color-text)]"
               >
                 {candidate.phone_number}
               </div>
             </div>
             <div className="flex shrink-0 gap-2">
-              <TezButton
+              <Button
                 type="button"
                 variant="secondary"
                 size="sm"
                 onClick={handleCopy}
-                leadingIcon={
-                  copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />
-                }
+                aria-label={t("applicants.invite.copy_message")}
               >
+                {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
                 {copied ? t("common.copied") : t("common.copy")}
-              </TezButton>
-              <a href={telegramLink} target="_blank" rel="noopener noreferrer">
-                <TezButton
-                  type="button"
-                  variant="accent"
-                  size="sm"
-                  leadingIcon={<Send className="h-3 w-3" />}
-                >
+              </Button>
+              <Button asChild variant="primary" size="sm">
+                <a href={telegramLink} target="_blank" rel="noopener noreferrer">
+                  <Send className="h-3 w-3" />
                   {t("applicants.invite.open_telegram")}
-                </TezButton>
-              </a>
+                </a>
+              </Button>
             </div>
           </div>
         </div>
 
-        <DialogFooter className="border-rule flex justify-end gap-2 border-t px-5 py-3">
-          <TezButton variant="ghost" onClick={() => onOpenChange(false)} disabled={marking}>
+        <DialogFooter className="flex justify-end gap-2 border-t border-[var(--color-line)] px-5 py-3">
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={marking}>
             {t("common.cancel")}
-          </TezButton>
-          <TezButton
+          </Button>
+          <Button
             variant="primary"
             onClick={handleMarkInvited}
             disabled={marking}
-            leadingIcon={marking ? <Loader2 className="h-3 w-3 animate-spin" /> : undefined}
           >
+            {marking ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
             {t("applicants.invite.mark_invited")}
-          </TezButton>
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

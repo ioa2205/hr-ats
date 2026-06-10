@@ -64,9 +64,9 @@ async function seedTenant(admin: SupabaseClient): Promise<Tenant> {
 
 async function signIn(page: Page, email: string, password: string) {
   await page.goto("/auth/login");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
-  await page.getByRole("button", { name: /sign in/i }).click();
+  await page.locator('input[name="email"]').fill(email);
+  await page.locator('input[name="password"]').fill(password);
+  await page.locator('form button[type="submit"]').click();
   await page.waitForURL(/\/operator|\/hr|\/onboarding/, { timeout: 15_000 });
 }
 
@@ -100,8 +100,9 @@ test.describe("Operator console shell", () => {
       await signIn(page, operator.email, operator.password);
       await page.goto("/operator");
 
-      await expect(page.getByText("TezHR", { exact: false })).toBeVisible();
-      await expect(page.getByText(/Operator/i).first()).toBeVisible();
+      const sidebar = page.locator("aside:visible");
+      await expect(sidebar.getByText("TezHR", { exact: true })).toBeVisible();
+      await expect(sidebar.getByText(/Operator/i)).toBeVisible();
 
       // Three section labels
       await expect(page.locator("aside").getByText(/Overview|Обзор/i)).toBeVisible();
@@ -183,9 +184,10 @@ test.describe("Operator console shell", () => {
 
       const afterToggle = await shell.getAttribute("data-theme");
       await page.reload();
-      await expect(
-        page.locator(".operator-shell-root").first(),
-      ).toHaveAttribute("data-theme", afterToggle ?? "");
+      await expect(page.locator(".operator-shell-root").first()).toHaveAttribute(
+        "data-theme",
+        afterToggle ?? "",
+      );
     } finally {
       await ctx.close();
     }

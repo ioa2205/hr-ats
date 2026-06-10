@@ -2,10 +2,18 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { Search, Filter, Plus, Lock, Briefcase } from "lucide-react";
+import { Plus, Lock, Briefcase, Rows3, Rows2 } from "lucide-react";
 import { format } from "date-fns";
 import { JobActionsDropdown } from "@/components/hr/job-actions-dropdown";
-import { Panel, StatusPill, Chip, Seg } from "@/components/hr/design";
+import {
+  Panel,
+  Button,
+  Badge,
+  SearchField,
+  FilterChip,
+  SegmentedControl,
+  EmptyState,
+} from "@/components/ui";
 import { useTranslation } from "@/lib/i18n/provider";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +38,7 @@ interface JobsListClientProps {
 
 type Sort = "new" | "total" | "created";
 type StatusFilter = "all" | "active" | "closed";
+type Density = "comfortable" | "compact";
 
 function daysAgo(iso: string, now = Date.now()): { n: number; key: "today" | "yesterday" | "d" } {
   const days = Math.floor((now - new Date(iso).getTime()) / 86400000);
@@ -47,16 +56,22 @@ export function JobsListClient({
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<StatusFilter>(initialStatusFilter);
   const [sort, setSort] = useState<Sort>("new");
-  const [density, setDensity] = useState<"comfortable" | "compact">("comfortable");
+  const [density, setDensity] = useState<Density>("comfortable");
   const { t } = useTranslation();
 
-  const counts = useMemo(() => {
-    return {
+  const counts = useMemo(
+    () => ({
       all: jobs.length,
       active: jobs.filter((j) => j.status === "active").length,
       closed: jobs.filter((j) => j.status === "closed").length,
-    };
-  }, [jobs]);
+    }),
+    [jobs],
+  );
+
+  const totalNew = useMemo(
+    () => jobs.reduce((a, j) => a + (j.qualified_count ?? 0), 0),
+    [jobs],
+  );
 
   const filtered = useMemo(() => {
     const trimmed = query.trim().toLowerCase();
@@ -70,259 +85,307 @@ export function JobsListClient({
       });
   }, [jobs, query, filter, sort]);
 
-  const rowPad = density === "compact" ? "py-1.5" : "py-2";
+  const rowPad = density === "compact" ? "py-1.5" : "py-2.5";
+
+  function postedLabel(iso: string) {
+    const posted = daysAgo(iso);
+    return posted.key === "today"
+      ? t("hr.time.today")
+      : posted.key === "yesterday"
+        ? t("hr.time.yesterday")
+        : t("hr.time.days_ago", { days: String(posted.n) });
+  }
 
   return (
-    <div>
-      {/* Page header row */}
-      <div className="mb-4 flex items-end justify-between gap-6">
-        <div>
-          <div className="text-ink-5 mb-1.5 flex items-center gap-1.5 text-[11px] font-medium">
-            <span>
-              {counts.active} {t("hr.jobs.header.active_suffix")} ·{" "}
-              {jobs.reduce((a, j) => a + (j.qualified_count ?? 0), 0)}{" "}
-              {t("hr.jobs.header.new_suffix")}
-            </span>
-          </div>
-          <h1 className="text-ink text-[28px] font-semibold leading-[1.1] tracking-[-0.018em]">
-            {t("hr.jobs.title")}.
+    <div className="flex flex-col gap-4">
+      {/* Page header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <p className="mb-1.5 font-[var(--font-mono)] text-[10.5px] font-semibold tracking-[0.12em] text-[var(--color-text-subtle)] uppercase">
+            {counts.active} {t("hr.jobs.header.active_suffix")} · {totalNew}{" "}
+            {t("hr.jobs.header.new_suffix")}
+          </p>
+          <h1 className="text-[clamp(1.5rem,4vw,1.85rem)] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--color-text)]">
+            {t("hr.jobs.title")}
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <div className="border-rule-2 bg-paper shadow-tez-1 flex h-[30px] w-[280px] items-center rounded-[4px] border px-2">
-            <Search className="text-ink-5 h-3.5 w-3.5 shrink-0" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={t("hr.jobs.search")}
-              className="flex-1 border-0 bg-transparent px-1.5 text-[12.5px] outline-none"
-            />
-          </div>
-          <button
-            type="button"
-            className="border-rule-2 bg-paper text-ink-2 shadow-tez-1 hover:bg-bone inline-flex h-[30px] items-center gap-1.5 rounded-[4px] border px-2.5 text-[12.5px] font-medium"
-          >
-            <Filter className="h-3 w-3" />
-            {t("hr.jobs.filter")}
-          </button>
+          <SearchField
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onClear={() => setQuery("")}
+            clearLabel={t("common.clear")}
+            placeholder={t("hr.jobs.search")}
+            aria-label={t("hr.jobs.search")}
+            className="w-full sm:w-[260px]"
+          />
           {canWrite ? (
-            <Link
-              href="/hr/jobs/new"
-              className="bg-ink text-paper shadow-tez-1 hover:bg-ink-2 inline-flex h-[30px] items-center gap-1.5 rounded-[4px] px-2.5 text-[12.5px] font-medium"
-            >
-              <Plus className="h-3 w-3" />
-              {t("hr.jobs.create")}
-            </Link>
+            <Button asChild className="shrink-0">
+              <Link href="/hr/jobs/new">
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">{t("hr.jobs.create")}</span>
+              </Link>
+            </Button>
           ) : (
-            <button
-              type="button"
+            <Button
               disabled
+              className="shrink-0"
               title={t("quota.subscription_inactive_short")}
-              className="bg-ink text-paper inline-flex h-[30px] items-center gap-1.5 rounded-[4px] px-2.5 text-[12.5px] font-medium opacity-60"
             >
-              <Lock className="h-3 w-3" />
-              {t("hr.jobs.create")}
-            </button>
+              <Lock className="h-4 w-4" />
+              <span className="hidden sm:inline">{t("hr.jobs.create")}</span>
+            </Button>
           )}
         </div>
       </div>
 
-      {/* Filter + sort + density row */}
-      <div className="mb-3.5 flex flex-wrap items-center gap-2">
-        <Chip
-          active={filter === "all"}
-          count={counts.all}
-          onClick={() => setFilter("all")}
-        >
-          {t("hr.jobs.filter.all")}
-        </Chip>
-        <Chip
-          active={filter === "active"}
-          count={counts.active}
-          onClick={() => setFilter("active")}
-        >
-          {t("hr.job.status.active")}
-        </Chip>
-        <Chip
-          active={filter === "closed"}
-          count={counts.closed}
-          onClick={() => setFilter("closed")}
-        >
-          {t("hr.job.status.closed")}
-        </Chip>
+      {/* Filter + sort + density */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="-mx-1 flex items-center gap-2 overflow-x-auto px-1 py-0.5">
+          <FilterChip active={filter === "all"} count={counts.all} onClick={() => setFilter("all")}>
+            {t("hr.jobs.filter.all")}
+          </FilterChip>
+          <FilterChip
+            active={filter === "active"}
+            count={counts.active}
+            onClick={() => setFilter("active")}
+          >
+            {t("hr.job.status.active")}
+          </FilterChip>
+          <FilterChip
+            active={filter === "closed"}
+            count={counts.closed}
+            onClick={() => setFilter("closed")}
+          >
+            {t("hr.job.status.closed")}
+          </FilterChip>
+        </div>
 
         <div className="ml-auto flex items-center gap-2.5">
-          <span
-            className="text-ink-5 text-[10.5px] uppercase tracking-[0.08em]"
-            style={{ fontFamily: "var(--font-tez-mono)" }}
-          >
+          <span className="hidden font-[var(--font-mono)] text-[10.5px] tracking-[0.08em] text-[var(--color-text-subtle)] uppercase sm:inline">
             {t("hr.jobs.sort_label")}
           </span>
-          <Seg<Sort>
+          <SegmentedControl<Sort>
+            size="sm"
             value={sort}
             onChange={setSort}
+            aria-label={t("hr.jobs.sort_label")}
             options={[
               { value: "new", label: t("hr.dashboard.column.new") },
               { value: "total", label: t("hr.dashboard.column.total") },
               { value: "created", label: t("hr.dashboard.column.posted") },
             ]}
           />
-          <Seg
-            value={density}
-            onChange={(v) => setDensity(v)}
-            options={[
-              { value: "comfortable" as const, label: "≡", title: t("hr.jobs.density.comfortable") },
-              { value: "compact" as const, label: "≣", title: t("hr.jobs.density.compact") },
-            ]}
-          />
+          <div className="hidden sm:block">
+            <SegmentedControl<Density>
+              size="sm"
+              value={density}
+              onChange={setDensity}
+              aria-label={t("hr.jobs.density.comfortable")}
+              options={[
+                {
+                  value: "comfortable",
+                  label: <Rows3 className="h-3.5 w-3.5" />,
+                  ariaLabel: t("hr.jobs.density.comfortable"),
+                },
+                {
+                  value: "compact",
+                  label: <Rows2 className="h-3.5 w-3.5" />,
+                  ariaLabel: t("hr.jobs.density.compact"),
+                },
+              ]}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Table */}
-      <Panel>
-        {filtered.length === 0 ? (
-          <div className="text-ink-5 flex flex-col items-center gap-2.5 px-6 py-12 text-center">
-            <Briefcase className="text-ink-6 h-8 w-8" />
-            <div className="text-ink-3 text-[13px] font-medium">
-              {t("hr.jobs.empty_title")}
-            </div>
-            <p className="max-w-sm text-[12px]">{t("hr.jobs.empty_body")}</p>
-            <Link
-              href="/hr/jobs/new"
-              className="bg-ink text-paper hover:bg-ink-2 mt-1 inline-flex h-[30px] items-center gap-1.5 rounded-[4px] px-3 text-[12.5px] font-medium"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              {t("hr.jobs.create")}
-            </Link>
-          </div>
-        ) : (
-          <table className="w-full border-collapse text-[12.5px]">
-            <thead>
-              <tr>
-                <Th style={{ width: 36 }} />
-                <Th>{t("hr.jobs.column.title")}</Th>
-                <Th>{t("hr.jobs.column.status")}</Th>
-                <Th align="right">{t("hr.dashboard.column.new")}</Th>
-                <Th align="right">{t("hr.jobs.column.candidates")}</Th>
-                <Th align="right">{t("hr.jobs.column.screened_out")}</Th>
-                <Th>{t("hr.dashboard.column.posted")}</Th>
-                <Th style={{ width: 40 }} />
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((j) => {
-                const posted = daysAgo(j.created_at);
-                return (
-                  <tr
-                    key={j.id}
-                    className="border-rule hover:bg-bone border-t transition-colors first:border-t-0"
-                  >
-                    <td className={cn("pl-3.5", rowPad)}>
-                      <div className="border-rule bg-bone-2 grid h-7 w-7 place-items-center rounded-md border">
-                        <Briefcase className="text-ink-4 h-3 w-3" />
-                      </div>
-                    </td>
-                    <td className={cn("px-3.5", rowPad)}>
-                      <Link
-                        href={`/hr/jobs/${j.id}`}
-                        className="text-ink text-[12.5px] font-semibold tracking-[-0.008em] hover:underline"
-                      >
-                        {j.title}
-                      </Link>
-                    </td>
-                    <td className={cn("px-3.5", rowPad)}>
-                      <StatusPill
-                        status={j.status}
-                        label={t(
-                          j.status === "active" ? "hr.job.status.active" : "hr.job.status.closed",
-                        )}
-                      />
-                    </td>
-                    <td
-                      className={cn("px-3.5 text-right", rowPad)}
-                      style={{ fontFamily: "var(--font-tez-mono)", fontSize: 11.5 }}
-                    >
-                      {j.qualified_count > 0 ? (
-                        <span className="text-persimmon inline-flex items-center gap-1 font-semibold">
-                          <span
-                            className="bg-persimmon h-[5px] w-[5px] rounded-full"
-                            aria-hidden
-                          />
-                          {j.qualified_count}
-                        </span>
-                      ) : (
-                        <span className="text-ink-5">—</span>
-                      )}
-                    </td>
-                    <td
-                      className={cn("px-3.5 text-right text-ink-2", rowPad)}
-                      style={{ fontFamily: "var(--font-tez-mono)", fontSize: 11.5 }}
-                    >
-                      {j.total_count ?? (j.qualified_count + j.screened_out_count)}
-                    </td>
-                    <td
-                      className={cn("px-3.5 text-right text-ink-2", rowPad)}
-                      style={{ fontFamily: "var(--font-tez-mono)", fontSize: 11.5 }}
-                    >
-                      {j.screened_out_count}
-                    </td>
-                    <td
-                      className={cn("px-3.5 text-ink-5", rowPad)}
-                      style={{ fontFamily: "var(--font-tez-mono)", fontSize: 11.5 }}
-                    >
-                      {posted.key === "today"
-                        ? t("hr.time.today")
-                        : posted.key === "yesterday"
-                          ? t("hr.time.yesterday")
-                          : t("hr.time.days_ago", { days: String(posted.n) })}{" "}
-                      <span className="text-ink-6 text-[10.5px]">
-                        · {format(new Date(j.created_at), "dd.MM.yy")}
-                      </span>
-                    </td>
-                    <td className={cn("pr-3.5 text-right", rowPad)}>
-                      <JobActionsDropdown
-                        jobId={j.id}
-                        token={j.public_token}
-                        status={j.status}
-                        appUrl={appUrl}
-                        canWrite={canWrite}
-                      />
-                    </td>
+      {/* List */}
+      {filtered.length === 0 ? (
+        <Panel>
+          <EmptyState
+            icon={<Briefcase />}
+            title={t("hr.jobs.empty_title")}
+            description={t("hr.jobs.empty_body")}
+            action={
+              canWrite ? (
+                <Button asChild variant="secondary" size="sm">
+                  <Link href="/hr/jobs/new">
+                    <Plus className="h-3.5 w-3.5" />
+                    {t("hr.jobs.create")}
+                  </Link>
+                </Button>
+              ) : undefined
+            }
+          />
+        </Panel>
+      ) : (
+        <>
+          {/* Desktop / tablet table */}
+          <Panel className="hidden sm:block">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-[var(--color-line)]">
+                    <Th className="w-9" />
+                    <Th>{t("hr.jobs.column.title")}</Th>
+                    <Th>{t("hr.jobs.column.status")}</Th>
+                    <Th align="right">{t("hr.dashboard.column.new")}</Th>
+                    <Th align="right">{t("hr.jobs.column.candidates")}</Th>
+                    <Th align="right">{t("hr.jobs.column.screened_out")}</Th>
+                    <Th>{t("hr.dashboard.column.posted")}</Th>
+                    <Th className="w-10" />
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        )}
-      </Panel>
+                </thead>
+                <tbody>
+                  {filtered.map((j) => (
+                    <tr
+                      key={j.id}
+                      className="border-b border-[var(--color-line)] transition-colors last:border-0 hover:bg-[var(--color-surface-subtle)]"
+                    >
+                      <td className={cn("pl-4", rowPad)}>
+                        <span className="grid h-7 w-7 place-items-center rounded-[var(--radius-sm)] bg-[var(--color-surface-strong)] text-[var(--color-text-subtle)]">
+                          <Briefcase className="h-3.5 w-3.5" />
+                        </span>
+                      </td>
+                      <td className={cn("px-3", rowPad)}>
+                        <div className="max-w-[clamp(160px,32vw,440px)] truncate">
+                          <Link
+                            href={`/hr/jobs/${j.id}`}
+                            className="font-semibold tracking-[-0.008em] text-[var(--color-text)] hover:text-[var(--color-primary)]"
+                          >
+                            {j.title}
+                          </Link>
+                        </div>
+                      </td>
+                      <td className={cn("px-3", rowPad)}>
+                        <Badge
+                          tone={j.status === "active" ? "success" : "neutral"}
+                          variant={j.status === "active" ? "dot" : "default"}
+                        >
+                          {t(j.status === "active" ? "hr.job.status.active" : "hr.job.status.closed")}
+                        </Badge>
+                      </td>
+                      <td className={cn("px-3 text-right font-[var(--font-mono)] text-[11.5px]", rowPad)}>
+                        {j.qualified_count > 0 ? (
+                          <span className="inline-flex items-center gap-1 font-semibold text-[var(--color-accent)]">
+                            <span className="h-[5px] w-[5px] rounded-full bg-[var(--color-accent)]" aria-hidden />
+                            {j.qualified_count}
+                          </span>
+                        ) : (
+                          <span className="text-[var(--color-text-subtle)]">—</span>
+                        )}
+                      </td>
+                      <td className={cn("px-3 text-right font-[var(--font-mono)] text-[11.5px] text-[var(--color-text)]", rowPad)}>
+                        {j.total_count ?? j.qualified_count + j.screened_out_count}
+                      </td>
+                      <td className={cn("px-3 text-right font-[var(--font-mono)] text-[11.5px] text-[var(--color-text-muted)]", rowPad)}>
+                        {j.screened_out_count}
+                      </td>
+                      <td className={cn("px-3 font-[var(--font-mono)] text-[11.5px] text-[var(--color-text-subtle)]", rowPad)}>
+                        <span className="whitespace-nowrap">{postedLabel(j.created_at)}</span>{" "}
+                        <span className="whitespace-nowrap text-[10.5px] opacity-70">
+                          · {format(new Date(j.created_at), "dd.MM.yy")}
+                        </span>
+                      </td>
+                      <td className={cn("pr-3 text-right", rowPad)}>
+                        <JobActionsDropdown
+                          jobId={j.id}
+                          token={j.public_token}
+                          status={j.status}
+                          appUrl={appUrl}
+                          canWrite={canWrite}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Panel>
 
-      <div
-        className="text-ink-4 mt-2.5 flex justify-between text-[11.5px]"
-        style={{ fontFamily: "var(--font-tez-mono)" }}
-      >
-        <span>
-          {filtered.length} / {jobs.length}
-        </span>
-      </div>
+          {/* Mobile cards */}
+          <ul className="flex flex-col gap-2.5 sm:hidden">
+            {filtered.map((j) => (
+              <li
+                key={j.id}
+                className="rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)] p-4"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <Link
+                    href={`/hr/jobs/${j.id}`}
+                    className="min-w-0 flex-1 text-[14px] font-semibold tracking-[-0.008em] text-[var(--color-text)]"
+                  >
+                    {j.title}
+                  </Link>
+                  <JobActionsDropdown
+                    jobId={j.id}
+                    token={j.public_token}
+                    status={j.status}
+                    appUrl={appUrl}
+                    canWrite={canWrite}
+                  />
+                </div>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <Badge
+                    tone={j.status === "active" ? "success" : "neutral"}
+                    variant={j.status === "active" ? "dot" : "default"}
+                  >
+                    {t(j.status === "active" ? "hr.job.status.active" : "hr.job.status.closed")}
+                  </Badge>
+                  {j.qualified_count > 0 && (
+                    <Badge tone="accent" variant="dot">
+                      {j.qualified_count} {t("hr.dashboard.column.new").toLowerCase()}
+                    </Badge>
+                  )}
+                </div>
+                <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]">
+                  <CardStat
+                    label={t("hr.jobs.column.candidates")}
+                    value={String(j.total_count ?? j.qualified_count + j.screened_out_count)}
+                  />
+                  <CardStat label={t("hr.jobs.column.screened_out")} value={String(j.screened_out_count)} />
+                  <CardStat label={t("hr.dashboard.column.posted")} value={postedLabel(j.created_at)} />
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <p className="font-[var(--font-mono)] text-[11.5px] text-[var(--color-text-muted)]">
+            {filtered.length} / {jobs.length}
+          </p>
+        </>
+      )}
     </div>
   );
 }
 
 function Th({
   children,
-  align,
-  style,
+  align = "left",
+  className,
 }: {
   children?: React.ReactNode;
   align?: "left" | "right";
-  style?: React.CSSProperties;
+  className?: string;
 }) {
   return (
     <th
-      style={{ textAlign: align ?? "left", ...style }}
-      className="text-ink-4 bg-bone border-rule border-b px-3.5 py-2 text-[10.5px] font-semibold"
+      className={cn(
+        "px-3 py-2.5 text-[11px] font-semibold text-[var(--color-text-muted)]",
+        className,
+      )}
+      style={{ textAlign: align }}
     >
       {children}
     </th>
+  );
+}
+
+function CardStat({ label, value }: { label: string; value: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <span className="text-[var(--color-text-subtle)]">{label}</span>
+      <span className="text-[var(--color-text)]">{value}</span>
+    </span>
   );
 }

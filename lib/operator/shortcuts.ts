@@ -115,17 +115,11 @@ export function matchShortcut(state: ChordState, event: KeyEvent, nowMs: number)
     return { nextChord: chord, matched: null };
   }
 
-  if (event.key === "?") {
+  if (event.key === "?" || (event.key === "/" && event.shiftKey)) {
     return { nextChord: initialChordState(), matched: shortcutById("cheatsheet") };
   }
 
-  if (
-    !chord.pending &&
-    event.key === "g" &&
-    !event.metaKey &&
-    !event.ctrlKey &&
-    !event.altKey
-  ) {
+  if (!chord.pending && event.key === "g" && !event.metaKey && !event.ctrlKey && !event.altKey) {
     return { nextChord: { pending: "g", pendingAt: nowMs }, matched: null };
   }
 

@@ -1,7 +1,14 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
-import { ArrowRight, Sparkles, RefreshCw, Plus } from "lucide-react";
+import {
+  ArrowRight,
+  Sparkles,
+  Plus,
+  Inbox,
+  RotateCcw,
+  Briefcase,
+} from "lucide-react";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireCompanyAccess } from "@/lib/auth/guards";
 import { getQuotaState } from "@/lib/companies/quota";
@@ -13,14 +20,13 @@ import {
   Panel,
   PanelHeader,
   PanelTitle,
-  PanelAction,
-  KpiBar,
+  Button,
   Avatar,
-  Pill,
-  ScoreMini,
-  TezButton,
-  type KpiCellData,
-} from "@/components/hr/design";
+  Badge,
+  EmptyState,
+  AIFitScore,
+} from "@/components/ui";
+import { cn } from "@/lib/utils";
 
 interface OwnerRow {
   id: string;
@@ -31,13 +37,12 @@ function formatEyebrow(locale: Locale) {
   const today = new Date();
   const bcp = locale === "uz" ? "uz-Latn-UZ" : locale === "ru" ? "ru-RU" : "en-GB";
   try {
-    const text = new Intl.DateTimeFormat(bcp, {
+    return new Intl.DateTimeFormat(bcp, {
       weekday: "long",
       day: "numeric",
       month: "long",
       year: "numeric",
     }).format(today);
-    return text;
   } catch {
     return today.toISOString().slice(0, 10);
   }
@@ -45,11 +50,8 @@ function formatEyebrow(locale: Locale) {
 
 function daysAgoLabel(iso: string | null, locale: Locale): string {
   if (!iso) return "—";
-  const d = new Date(iso);
-  const now = new Date();
-  const ms = now.getTime() - d.getTime();
-  const days = Math.floor(ms / 86400000);
-  if (days === 0) return t("hr.time.today", locale);
+  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+  if (days <= 0) return t("hr.time.today", locale);
   if (days === 1) return t("hr.time.yesterday", locale);
   return t("hr.time.days_ago", locale, { days: String(days) });
 }
@@ -74,39 +76,33 @@ export default async function DashboardPage() {
   if (jobIds.length === 0) {
     const quota = await getQuotaState(companyId);
     return (
-      <div>
-        <div className="text-ink-5 mb-1.5 text-[11px] font-medium">
+      <div className="flex flex-col gap-4">
+        <p className="font-[var(--font-mono)] text-[10.5px] font-semibold tracking-[0.12em] text-[var(--color-text-subtle)] uppercase">
           {t("hr.dashboard.eyebrow", locale, { date: formatEyebrow(locale) })}
-        </div>
+        </p>
         <Panel>
-          <div className="flex flex-col items-center gap-3 px-6 py-14 text-center">
-            <span className="border-rule-2 bg-bone flex h-12 w-12 items-center justify-center rounded-full border">
-              <Sparkles className="text-persimmon h-5 w-5" />
-            </span>
-            <h1 className="text-ink text-[22px] font-semibold tracking-[-0.012em]">
-              {t("hr.dashboard.first_run.title", locale)}
-            </h1>
-            <p className="text-ink-4 max-w-[420px] text-[13px] leading-[1.5]">
-              {t("hr.dashboard.first_run.body", locale)}
+          <EmptyState
+            icon={<Sparkles />}
+            title={t("hr.dashboard.first_run.title", locale)}
+            description={t("hr.dashboard.first_run.body", locale)}
+            action={
+              <Button asChild>
+                <Link href="/hr/jobs/new">
+                  <Plus className="h-4 w-4" />
+                  {t("hr.jobs.create", locale)}
+                </Link>
+              </Button>
+            }
+          />
+          {quota && quota.status === "trialing" && (
+            <p className="border-t border-[var(--color-line)] px-6 py-3 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-subtle)]">
+              {t("hr.dashboard.first_run.trial", locale, {
+                days: String(quota.daysRemaining),
+                jobs: String(quota.jobQuotaLimit),
+                cv: String(quota.cvQuotaLimit),
+              })}
             </p>
-            <Link href="/hr/jobs/new" className="mt-1">
-              <TezButton variant="primary" leadingIcon={<Plus className="h-3.5 w-3.5" />}>
-                {t("hr.jobs.create", locale)}
-              </TezButton>
-            </Link>
-            {quota && quota.status === "trialing" && (
-              <p
-                className="text-ink-5 mt-1 text-[11px]"
-                style={{ fontFamily: "var(--font-tez-mono)" }}
-              >
-                {t("hr.dashboard.first_run.trial", locale, {
-                  days: String(quota.daysRemaining),
-                  jobs: String(quota.jobQuotaLimit),
-                  cv: String(quota.cvQuotaLimit),
-                })}
-              </p>
-            )}
-          </div>
+          )}
         </Panel>
       </div>
     );
@@ -238,9 +234,11 @@ export default async function DashboardPage() {
     );
   }
 
-  // Job-level "new" candidate counts — one query, bucketed in-memory
+  // Job-level "new"/"top" counts + a platform-wide failed count — one query,
+  // bucketed in-memory (no extra round trips).
   const newByJob: Record<string, number> = {};
   const topByJob: Record<string, number> = {};
+  let failedTotal = 0;
   if (jobIds.length) {
     const { data: pending } = await supabaseAdmin
       .from("candidates")
@@ -256,6 +254,7 @@ export default async function DashboardPage() {
       ) {
         topByJob[c.job_posting_id] = (topByJob[c.job_posting_id] ?? 0) + 1;
       }
+      if (c.status === "analysis_failed") failedTotal += 1;
     }
   }
 
@@ -282,22 +281,19 @@ export default async function DashboardPage() {
   ];
   const maxStage = Math.max(...pipelineStages.map((s) => s.count), 1);
 
-  const kpiCells: KpiCellData[] = [
-    {
-      label: t("hr.dashboard.kpi.active_jobs", locale),
-      value: activeJobsCount,
-    },
+  const activity = activityRes.data ?? [];
+  const topList = topPicksList.data ?? [];
+  const hasQueue = newCandidates > 0 || topPicks > 0 || failedTotal > 0;
+
+  const kpis: { label: string; value: string; delta?: string; deltaTone?: "up" | "down" | "flat"; accent?: boolean }[] = [
+    { label: t("hr.dashboard.kpi.active_jobs", locale), value: String(activeJobsCount) },
     {
       label: t("hr.dashboard.kpi.applicants_week", locale),
-      value: weekCount,
+      value: String(weekCount),
       delta: weekDelta > 0 ? `+${weekDelta}%` : `${weekDelta}%`,
       deltaTone: weekDelta > 0 ? "up" : weekDelta < 0 ? "down" : "flat",
     },
-    {
-      label: t("hr.dashboard.kpi.top_picks", locale),
-      value: topPicks,
-      valueAccent: "persimmon",
-    },
+    { label: t("hr.dashboard.kpi.top_picks", locale), value: String(topPicks), accent: true },
     {
       label: t("hr.dashboard.kpi.median_time", locale),
       value: "—",
@@ -306,324 +302,494 @@ export default async function DashboardPage() {
     },
   ];
 
-  const activity = activityRes.data ?? [];
-  const todayEyebrow = formatEyebrow(locale);
-
   return (
-    <div>
-      {/* Eyebrow */}
-      <div
-        className="text-ink-5 mb-1.5 flex items-center gap-1.5 text-[11px] font-medium"
-      >
-        <span>{t("hr.dashboard.eyebrow", locale, { date: todayEyebrow })}</span>
-      </div>
-
-      {/* Hero */}
-      <section className="mb-5 pb-5">
-        <h1 className="text-ink max-w-[680px] text-[28px] font-semibold leading-[1.15] tracking-[-0.018em]">
-          <span className="text-persimmon tabular-nums">{newCandidates}</span>{" "}
-          {t("hr.dashboard.hero.lede_b", locale)}
-        </h1>
-        <p className="text-ink-4 mt-1.5 max-w-[580px] text-[13px] leading-[1.5]">
-          {t("hr.dashboard.hero.sub", locale)}
-        </p>
-        <div className="mt-4 flex gap-2">
-          <Link href="/hr/candidates">
-            <TezButton
-              variant="primary"
-              leadingIcon={<Sparkles className="h-3.5 w-3.5" />}
-            >
-              {t("hr.dashboard.hero.open_queue", locale)}
-            </TezButton>
-          </Link>
-          <Link href="/hr/jobs">
-            <TezButton variant="secondary">
-              {t("hr.dashboard.hero.view_jobs", locale)}
-            </TezButton>
-          </Link>
-        </div>
-
-        <KpiBar cells={kpiCells} />
-      </section>
-
-      {/* Two-col: active jobs + activity */}
-      <div
-        className="mb-6 grid gap-6"
-        style={{ gridTemplateColumns: "minmax(0, 1fr) 360px" }}
-      >
-        <Panel>
-          <PanelHeader>
-            <PanelTitle count={activeJobsCount}>
-              {t("hr.dashboard.active_jobs", locale)}
-            </PanelTitle>
-            <Link
-              href="/hr/jobs"
-              className="text-ink-4 hover:text-ink hover:bg-bone-2 flex items-center gap-1.5 rounded-[4px] px-1.5 py-1 text-[11.5px]"
-            >
-              {t("hr.dashboard.view_all", locale)}
-              <ArrowRight className="h-3 w-3" />
-            </Link>
-          </PanelHeader>
-          {activeJobs.length === 0 ? (
-            <div className="flex flex-col items-center gap-2.5 px-4 py-8 text-center">
-              <p className="text-ink-5 text-[12px]">{t("hr.dashboard.empty_jobs", locale)}</p>
-              <Link href="/hr/jobs/new">
-                <TezButton variant="secondary" leadingIcon={<Plus className="h-3 w-3" />}>
-                  {t("hr.jobs.create", locale)}
-                </TezButton>
-              </Link>
-            </div>
-          ) : (
-            <table className="w-full border-collapse text-[12px]">
-              <thead>
-                <tr>
-                  <ThSmall>{t("hr.jobs.column.title", locale)}</ThSmall>
-                  <ThSmall>{t("hr.dashboard.column.owner", locale)}</ThSmall>
-                  <ThSmall align="right">{t("hr.dashboard.column.new", locale)}</ThSmall>
-                  <ThSmall align="right">{t("hr.dashboard.column.total", locale)}</ThSmall>
-                  <ThSmall align="right">{t("hr.dashboard.column.top_picks", locale)}</ThSmall>
-                  <ThSmall align="right" pad={14}>
-                    {t("hr.dashboard.column.posted", locale)}
-                  </ThSmall>
-                </tr>
-              </thead>
-              <tbody>
-                {activeJobs.map((j) => {
-                  const ownerName = (j.created_by && owners[j.created_by]) || "";
-                  const newN = newByJob[j.id ?? ""] ?? 0;
-                  const topN = topByJob[j.id ?? ""] ?? 0;
-                  return (
-                    <tr
-                      key={j.id ?? ""}
-                      className="hover:bg-bone border-rule border-t first:border-t-0 transition-colors"
-                    >
-                      <Td>
-                        <Link
-                          href={`/hr/jobs/${j.id}`}
-                          className="flex items-center gap-2.5"
-                        >
-                          <span className="text-ink text-[12.5px] font-semibold tracking-[-0.008em]">
-                            {pickLocalized(
-                              { ru: j.title_ru, uz: j.title_uz, en: j.title_en },
-                              locale,
-                              j.title ?? "",
-                            )}
-                          </span>
-                          {newN > 5 && (
-                            <Pill tone="persimmon">
-                              +{newN} {t("hr.dashboard.new_suffix", locale)}
-                            </Pill>
-                          )}
-                        </Link>
-                      </Td>
-                      <Td>
-                        {ownerName ? (
-                          <span className="flex items-center gap-2">
-                            <Avatar name={ownerName} size="sm" />
-                            <span className="text-ink-3 text-[12px]">
-                              {ownerName.split(/\s+/)[0]}
-                            </span>
-                          </span>
-                        ) : (
-                          <span className="text-ink-5">—</span>
-                        )}
-                      </Td>
-                      <Td align="right" mono>
-                        {newN || "—"}
-                      </Td>
-                      <Td align="right" mono>
-                        {j.total_count ?? 0}
-                      </Td>
-                      <Td align="right" mono>
-                        {topN > 0 ? (
-                          <span className="text-persimmon font-semibold">{topN}</span>
-                        ) : (
-                          "—"
-                        )}
-                      </Td>
-                      <Td align="right" pad={14} mono muted>
-                        {daysAgoLabel(j.created_at, locale)}
-                      </Td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
-        </Panel>
-
-        {/* Activity stream */}
-        <Panel>
-          <PanelHeader>
-            <PanelTitle>{t("hr.dashboard.activity.title", locale)}</PanelTitle>
-            <PanelAction aria-label={t("hr.dashboard.refresh", locale)}>
-              <RefreshCw className="h-3 w-3" />
-            </PanelAction>
-          </PanelHeader>
-          <div className="max-h-[380px] overflow-y-auto">
-            {activity.length === 0 ? (
-              <EmptyRow message={t("hr.dashboard.activity.empty", locale)} />
+    <div className="flex flex-col gap-7">
+      {/* Header */}
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <p className="mb-1.5 font-[var(--font-mono)] text-[10.5px] font-semibold tracking-[0.12em] text-[var(--color-text-subtle)] uppercase">
+            {t("hr.dashboard.eyebrow", locale, { date: formatEyebrow(locale) })}
+          </p>
+          <h1 className="max-w-[640px] text-[clamp(1.5rem,4vw,1.85rem)] font-bold leading-[1.12] tracking-[-0.02em] text-[var(--color-text)]">
+            {newCandidates > 0 ? (
+              <>
+                <span className="tabular-nums text-[var(--color-accent)]">{newCandidates}</span>{" "}
+                {t("hr.dashboard.hero.lede_b", locale)}
+              </>
             ) : (
-              activity.map((a) => (
-                <div
-                  key={a.id}
-                  className="border-rule flex gap-2.5 border-b px-4 py-3 text-[12.5px] leading-[1.45] last:border-b-0"
-                >
-                  <div className="flex-1" style={{ color: "var(--color-ink-2)" }}>
-                    <strong className="text-ink font-semibold">{a.actor}</strong>{" "}
-                    <span className="text-ink-4">
-                      {t(actionLabelKey(a.action), locale)}
-                    </span>{" "}
-                    <span className="text-ink-3">{a.entity_type}</span>
-                    <div
-                      className="text-ink-5 mt-1 text-[10.5px]"
-                      style={{ fontFamily: "var(--font-tez-mono)" }}
-                    >
-                      {relativeTime(a.created_at, locale)}
-                    </div>
-                  </div>
-                </div>
-              ))
+              t("hr.dashboard.queue.all_clear", locale)
+            )}
+          </h1>
+          <p className="mt-1.5 max-w-[560px] text-[13px] leading-[1.5] text-[var(--color-text-muted)]">
+            {t("hr.dashboard.hero.sub", locale)}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2 sm:shrink-0">
+          <Button asChild>
+            <Link href="/hr/candidates">
+              <Sparkles className="h-4 w-4" />
+              {t("hr.dashboard.hero.open_queue", locale)}
+            </Link>
+          </Button>
+          <Button asChild variant="secondary">
+            <Link href="/hr/jobs">{t("hr.dashboard.hero.view_jobs", locale)}</Link>
+          </Button>
+        </div>
+      </header>
+
+      {/* Needs attention — the daily queue */}
+      <section className="flex flex-col gap-3">
+        <SectionLabel>{t("hr.dashboard.queue.title", locale)}</SectionLabel>
+        {hasQueue ? (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <QueueCard
+              href="/hr/candidates"
+              icon={<Inbox />}
+              tone="priority"
+              count={newCandidates}
+              label={t("hr.dashboard.queue.new", locale)}
+              hint={t("hr.dashboard.queue.new_hint", locale)}
+            />
+            <QueueCard
+              href="/hr/candidates"
+              icon={<Sparkles />}
+              tone="intelligence"
+              count={topPicks}
+              label={t("hr.dashboard.kpi.top_picks", locale)}
+              hint={t("hr.dashboard.queue.top_hint", locale)}
+            />
+            {failedTotal > 0 && (
+              <QueueCard
+                href="/hr/candidates"
+                icon={<RotateCcw />}
+                tone="warning"
+                count={failedTotal}
+                label={t("hr.dashboard.queue.failed", locale)}
+                hint={t("hr.dashboard.queue.failed_hint", locale)}
+              />
             )}
           </div>
-        </Panel>
-      </div>
+        ) : (
+          <Panel>
+            <EmptyState
+              icon={<Sparkles />}
+              title={t("hr.dashboard.queue.all_clear", locale)}
+              description={t("hr.dashboard.queue.all_clear_hint", locale)}
+              compact
+            />
+          </Panel>
+        )}
+      </section>
 
-      {/* Pipeline + Top picks */}
-      <div className="grid gap-6 md:grid-cols-2">
+      {/* Active jobs + AI top picks */}
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
         <Panel>
           <PanelHeader>
-            <PanelTitle>{t("hr.dashboard.pipeline.title", locale)}</PanelTitle>
-            <span
-              className="text-ink-5 text-[10.5px] uppercase tracking-[0.08em]"
-              style={{ fontFamily: "var(--font-tez-mono)" }}
-            >
-              {new Intl.DateTimeFormat(locale === "uz" ? "uz-Latn-UZ" : locale, {
-                month: "long",
-              }).format(new Date())}
-            </span>
+            <PanelTitle count={activeJobsCount}>{t("hr.dashboard.active_jobs", locale)}</PanelTitle>
+            <ViewAllLink href="/hr/jobs" locale={locale} />
           </PanelHeader>
-          <div className="px-4 py-4">
-            {pipelineStages.map((s, i) => {
-              const pct = Math.round((s.count / maxStage) * 100);
-              const color =
-                i === 0
-                  ? "var(--color-ink)"
-                  : i < 2
-                    ? "var(--color-ink-3)"
-                    : i === 2
-                      ? "var(--color-persimmon)"
-                      : i === 3
-                        ? "var(--color-ink-3)"
-                        : "var(--color-ink-4)";
-              return (
-                <div
-                  key={s.key}
-                  className="mb-2.5 grid items-center gap-3 last:mb-0"
-                  style={{ gridTemplateColumns: "120px 1fr 60px" }}
-                >
-                  <span className="text-ink-3 text-[12px] font-medium">
-                    {t(`hr.dashboard.pipeline.stage.${s.key}` as TranslationKey, locale)}
-                  </span>
-                  <div
-                    className="bg-bone-2 relative h-[22px] overflow-hidden rounded-[4px]"
-                  >
-                    <div
-                      className="absolute inset-y-0 left-0 rounded-[4px]"
-                      style={{ width: `${pct}%`, background: color }}
-                    />
-                  </div>
-                  <span
-                    className="text-ink-2 text-right text-[12px]"
-                    style={{ fontFamily: "var(--font-tez-mono)" }}
-                  >
-                    {s.count}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </Panel>
-
-        <Panel>
-          <PanelHeader>
-            <PanelTitle count={topPicks}>
-              {t("hr.dashboard.top_picks.title", locale)}
-            </PanelTitle>
-            <Link
-              href="/hr/candidates"
-              className="text-ink-4 hover:text-ink hover:bg-bone-2 flex items-center gap-1.5 rounded-[4px] px-1.5 py-1 text-[11.5px]"
-            >
-              {t("hr.dashboard.view_all", locale)}
-              <ArrowRight className="h-3 w-3" />
-            </Link>
-          </PanelHeader>
-          {(topPicksList.data ?? []).length === 0 ? (
-            <EmptyRow message={t("hr.dashboard.top_picks.empty", locale)} />
+          {activeJobs.length === 0 ? (
+            <EmptyState
+              icon={<Briefcase />}
+              title={t("hr.dashboard.empty_jobs", locale)}
+              action={
+                <Button asChild variant="secondary" size="sm">
+                  <Link href="/hr/jobs/new">
+                    <Plus className="h-3.5 w-3.5" />
+                    {t("hr.jobs.create", locale)}
+                  </Link>
+                </Button>
+              }
+              compact
+            />
           ) : (
-            <table className="w-full border-collapse text-[12px]">
-              <tbody>
-                {(topPicksList.data ?? []).map((c) => (
-                  <tr
-                    key={c.id}
-                    className="hover:bg-bone border-rule border-t first:border-t-0 transition-colors"
-                  >
-                    <Td>
-                      <Link
-                        href={`/hr/jobs/${c.job_posting_id}/applicants#${c.id}`}
-                        className="flex items-center gap-2.5"
-                      >
-                        <Avatar name={c.full_name} persimmon size="sm" />
-                        <div>
-                          <div className="text-ink text-[12.5px] font-semibold">
-                            {c.full_name}
-                          </div>
-                          <div className="text-ink-4 mt-[1px] text-[11px]">
-                            {pickLocalized(
-                              {
-                                ru: c.one_line_summary,
-                                uz: c.one_line_summary_uz,
-                                en: c.one_line_summary_en,
-                              },
-                              locale,
-                              c.one_line_summary ?? "—",
+            <>
+              {/* Desktop / tablet table */}
+              <div className="hidden overflow-x-auto sm:block">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-[var(--color-line)]">
+                      <Th>{t("hr.jobs.column.title", locale)}</Th>
+                      <Th>{t("hr.dashboard.column.owner", locale)}</Th>
+                      <Th align="right">{t("hr.dashboard.column.new", locale)}</Th>
+                      <Th align="right">{t("hr.dashboard.column.total", locale)}</Th>
+                      <Th align="right">{t("hr.dashboard.column.top_picks", locale)}</Th>
+                      <Th align="right">{t("hr.dashboard.column.posted", locale)}</Th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {activeJobs.map((j) => {
+                      const ownerName = (j.created_by && owners[j.created_by]) || "";
+                      const newN = newByJob[j.id ?? ""] ?? 0;
+                      const topN = topByJob[j.id ?? ""] ?? 0;
+                      const title = pickLocalized(
+                        { ru: j.title_ru, uz: j.title_uz, en: j.title_en },
+                        locale,
+                        j.title ?? "",
+                      );
+                      return (
+                        <tr
+                          key={j.id ?? ""}
+                          className="border-b border-[var(--color-line)] transition-colors last:border-0 hover:bg-[var(--color-surface-subtle)]"
+                        >
+                          <Td>
+                            <Link
+                              href={`/hr/jobs/${j.id}`}
+                              className="inline-flex items-center gap-2 font-semibold tracking-[-0.008em] text-[var(--color-text)] hover:text-[var(--color-primary)]"
+                            >
+                              <span className="truncate">{title}</span>
+                              {newN > 5 && (
+                                <Badge tone="accent" size="sm" variant="dot">
+                                  +{newN} {t("hr.dashboard.new_suffix", locale)}
+                                </Badge>
+                              )}
+                            </Link>
+                          </Td>
+                          <Td>
+                            {ownerName ? (
+                              <span className="flex items-center gap-2">
+                                <Avatar name={ownerName} size="xs" />
+                                <span className="text-[var(--color-text-muted)]">
+                                  {ownerName.split(/\s+/)[0]}
+                                </span>
+                              </span>
+                            ) : (
+                              <span className="text-[var(--color-text-subtle)]">—</span>
                             )}
-                          </div>
+                          </Td>
+                          <Td align="right" mono>
+                            {newN > 0 ? (
+                              <span className="font-semibold text-[var(--color-accent)]">{newN}</span>
+                            ) : (
+                              <span className="text-[var(--color-text-subtle)]">—</span>
+                            )}
+                          </Td>
+                          <Td align="right" mono>
+                            {j.total_count ?? 0}
+                          </Td>
+                          <Td align="right" mono>
+                            {topN > 0 ? (
+                              <span className="font-semibold text-[var(--color-primary)]">{topN}</span>
+                            ) : (
+                              <span className="text-[var(--color-text-subtle)]">—</span>
+                            )}
+                          </Td>
+                          <Td align="right" mono subtle>
+                            {daysAgoLabel(j.created_at, locale)}
+                          </Td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile cards */}
+              <ul className="flex flex-col divide-y divide-[var(--color-line)] sm:hidden">
+                {activeJobs.map((j) => {
+                  const newN = newByJob[j.id ?? ""] ?? 0;
+                  const topN = topByJob[j.id ?? ""] ?? 0;
+                  const title = pickLocalized(
+                    { ru: j.title_ru, uz: j.title_uz, en: j.title_en },
+                    locale,
+                    j.title ?? "",
+                  );
+                  return (
+                    <li key={j.id ?? ""}>
+                      <Link
+                        href={`/hr/jobs/${j.id}`}
+                        className="flex flex-col gap-2 px-4 py-3 transition-colors hover:bg-[var(--color-surface-subtle)]"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="truncate font-semibold text-[var(--color-text)]">
+                            {title}
+                          </span>
+                          {newN > 0 && (
+                            <Badge tone="accent" size="sm" variant="dot">
+                              +{newN}
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]">
+                          <MetaStat label={t("hr.dashboard.column.total", locale)} value={String(j.total_count ?? 0)} />
+                          <MetaStat
+                            label={t("hr.dashboard.column.top_picks", locale)}
+                            value={String(topN)}
+                            tone={topN > 0 ? "primary" : undefined}
+                          />
+                          <MetaStat label={t("hr.dashboard.column.posted", locale)} value={daysAgoLabel(j.created_at, locale)} />
                         </div>
                       </Link>
-                    </Td>
-                    <Td align="right" pad={14}>
-                      <ScoreMini score={c.match_score ?? 0} persimmon />
-                    </Td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
+          )}
+        </Panel>
+
+        {/* AI top picks */}
+        <Panel>
+          <PanelHeader>
+            <PanelTitle count={topPicks}>{t("hr.dashboard.top_picks.title", locale)}</PanelTitle>
+            <ViewAllLink href="/hr/candidates" locale={locale} />
+          </PanelHeader>
+          {topList.length === 0 ? (
+            <EmptyState
+              icon={<Sparkles />}
+              title={t("hr.dashboard.top_picks.empty", locale)}
+              compact
+            />
+          ) : (
+            <ul className="divide-y divide-[var(--color-line)]">
+              {topList.map((c) => (
+                <li key={c.id}>
+                  <Link
+                    href={`/hr/jobs/${c.job_posting_id}/applicants?candidate=${c.id}`}
+                    className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-[var(--color-surface-subtle)]"
+                  >
+                    <Avatar name={c.full_name} accent size="sm" />
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-[13px] font-semibold text-[var(--color-text)]">
+                        {c.full_name}
+                      </div>
+                      <div className="truncate text-[11.5px] text-[var(--color-text-muted)]">
+                        {pickLocalized(
+                          {
+                            ru: c.one_line_summary,
+                            uz: c.one_line_summary_uz,
+                            en: c.one_line_summary_en,
+                          },
+                          locale,
+                          c.one_line_summary ?? "—",
+                        )}
+                      </div>
+                    </div>
+                    <AIFitScore
+                      score={c.match_score ?? 0}
+                      label={t("hr.dashboard.kpi.top_picks", locale)}
+                      variant="compact"
+                    />
+                  </Link>
+                </li>
+              ))}
+            </ul>
           )}
         </Panel>
       </div>
+
+      {/* Secondary analytics */}
+      <section className="flex flex-col gap-3">
+        <SectionLabel>{t("hr.dashboard.overview", locale)}</SectionLabel>
+
+        {/* KPI strip */}
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {kpis.map((k, i) => (
+            <div
+              key={i}
+              className="flex flex-col gap-1.5 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)] px-4 py-3.5"
+            >
+              <span className="text-[11px] font-medium text-[var(--color-text-muted)]">{k.label}</span>
+              <span className="flex items-baseline gap-1.5">
+                <span
+                  className={cn(
+                    "text-[22px] font-bold leading-none tracking-[-0.02em] tabular-nums",
+                    k.accent ? "text-[var(--color-primary)]" : "text-[var(--color-text)]",
+                  )}
+                >
+                  {k.value}
+                </span>
+                {k.delta && (
+                  <span
+                    className={cn(
+                      "font-[var(--font-mono)] text-[10.5px] font-medium",
+                      k.deltaTone === "up"
+                        ? "text-[var(--color-success)]"
+                        : k.deltaTone === "down"
+                          ? "text-[var(--color-danger)]"
+                          : "text-[var(--color-text-subtle)]",
+                    )}
+                  >
+                    {k.delta}
+                  </span>
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
+          {/* Pipeline */}
+          <Panel>
+            <PanelHeader>
+              <PanelTitle>{t("hr.dashboard.pipeline.title", locale)}</PanelTitle>
+            </PanelHeader>
+            <div className="flex flex-col gap-2.5 p-4">
+              {pipelineStages.map((s, i) => {
+                const pct = Math.round((s.count / maxStage) * 100);
+                const fill = i === 2 ? "bg-[var(--color-accent)]" : "bg-[var(--color-primary)]";
+                return (
+                  <div
+                    key={s.key}
+                    className="grid items-center gap-3"
+                    style={{ gridTemplateColumns: "minmax(72px,110px) 1fr 36px" }}
+                  >
+                    <span className="text-[12px] font-medium text-[var(--color-text-muted)]">
+                      {t(`hr.dashboard.pipeline.stage.${s.key}` as TranslationKey, locale)}
+                    </span>
+                    <span className="relative h-[22px] overflow-hidden rounded-[var(--radius-sm)] bg-[var(--color-surface-strong)]">
+                      <span
+                        className={cn("absolute inset-y-0 left-0 rounded-[var(--radius-sm)]", fill)}
+                        style={{ width: `${Math.max(pct, s.count > 0 ? 4 : 0)}%` }}
+                      />
+                    </span>
+                    <span className="text-right font-[var(--font-mono)] text-[12px] text-[var(--color-text)]">
+                      {s.count}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </Panel>
+
+          {/* Activity */}
+          <Panel>
+            <PanelHeader>
+              <PanelTitle>{t("hr.dashboard.activity.title", locale)}</PanelTitle>
+            </PanelHeader>
+            {activity.length === 0 ? (
+              <p className="px-4 py-8 text-center text-[12px] text-[var(--color-text-subtle)]">
+                {t("hr.dashboard.activity.empty", locale)}
+              </p>
+            ) : (
+              <ul className="max-h-[360px] divide-y divide-[var(--color-line)] overflow-y-auto">
+                {activity.map((a) => (
+                  <li key={a.id} className="px-4 py-3 text-[12.5px] leading-[1.45]">
+                    <span className="text-[var(--color-text)]">
+                      <strong className="font-semibold">{a.actor}</strong>{" "}
+                      <span className="text-[var(--color-text-muted)]">
+                        {t(actionLabelKey(a.action), locale)}
+                      </span>{" "}
+                      <span className="text-[var(--color-text-muted)]">{a.entity_type}</span>
+                    </span>
+                    <div className="mt-1 font-[var(--font-mono)] text-[10.5px] text-[var(--color-text-subtle)]">
+                      {relativeTime(a.created_at, locale)}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
+        </div>
+      </section>
     </div>
   );
 }
 
 // --- small presentational helpers ---
 
-function ThSmall({
-  children,
-  align,
-  pad,
+function SectionLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="font-[var(--font-mono)] text-[10.5px] font-semibold tracking-[0.12em] text-[var(--color-text-subtle)] uppercase">
+      {children}
+    </h2>
+  );
+}
+
+function ViewAllLink({ href, locale }: { href: string; locale: Locale }) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex items-center gap-1 rounded-[var(--radius-sm)] px-1.5 py-1 text-[11.5px] text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)]"
+    >
+      {t("hr.dashboard.view_all", locale)}
+      <ArrowRight className="h-3 w-3" />
+    </Link>
+  );
+}
+
+const queueTone = {
+  priority: {
+    icon: "bg-[var(--color-accent-container)] text-[var(--color-on-accent-container)]",
+    num: "text-[var(--color-accent)]",
+  },
+  intelligence: {
+    icon: "bg-[var(--color-primary-container)] text-[var(--color-on-primary-container)]",
+    num: "text-[var(--color-primary)]",
+  },
+  warning: {
+    icon: "bg-[var(--color-warning-container)] text-[var(--color-on-warning-container)]",
+    num: "text-[var(--color-text)]",
+  },
+} as const;
+
+function QueueCard({
+  href,
+  icon,
+  count,
+  label,
+  hint,
+  tone,
 }: {
-  children: React.ReactNode;
+  href: string;
+  icon: React.ReactNode;
+  count: number;
+  label: string;
+  hint: string;
+  tone: keyof typeof queueTone;
+}) {
+  const styles = queueTone[tone];
+  return (
+    <Link
+      href={href}
+      className="group flex items-start gap-3 rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-surface)] p-4 transition-all duration-150 ease-[var(--ease-standard)] hover:border-[var(--color-line-strong)] hover:shadow-level-1"
+    >
+      <span
+        className={cn(
+          "relative grid h-10 w-10 shrink-0 place-items-center rounded-[var(--radius-md)] [&>svg]:h-5 [&>svg]:w-5",
+          styles.icon,
+        )}
+        aria-hidden="true"
+      >
+        {icon}
+        {tone === "priority" && count > 0 && (
+          <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[var(--color-surface)] bg-[var(--color-accent)]" />
+        )}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className={cn("text-2xl font-bold leading-none tracking-[-0.02em] tabular-nums", count > 0 ? styles.num : "text-[var(--color-text-subtle)]")}>
+          {count}
+        </div>
+        <div className="mt-1.5 text-[13px] font-semibold text-[var(--color-text)]">{label}</div>
+        <div className="text-[11.5px] text-[var(--color-text-muted)]">{hint}</div>
+      </div>
+      <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 -translate-x-1 text-[var(--color-text-subtle)] opacity-0 transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100 motion-reduce:translate-x-0" />
+    </Link>
+  );
+}
+
+function MetaStat({ label, value, tone }: { label: string; value: string; tone?: "primary" }) {
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span className="text-[var(--color-text-subtle)]">{label}</span>
+      <span className={tone === "primary" ? "font-semibold text-[var(--color-primary)]" : "text-[var(--color-text)]"}>
+        {value}
+      </span>
+    </span>
+  );
+}
+
+function Th({
+  children,
+  align = "left",
+}: {
+  children?: React.ReactNode;
   align?: "left" | "right";
-  pad?: number;
 }) {
   return (
     <th
-      className="text-ink-4 bg-bone border-rule border-b px-3.5 py-2 text-[10.5px] font-semibold"
-      style={{
-        textAlign: align ?? "left",
-        paddingRight: pad ? pad + 10 : undefined,
-      }}
+      className="px-3 py-2 text-[11px] font-semibold text-[var(--color-text-muted)]"
+      style={{ textAlign: align }}
     >
       {children}
     </th>
@@ -632,35 +798,27 @@ function ThSmall({
 
 function Td({
   children,
-  align,
-  pad,
+  align = "left",
   mono,
-  muted,
+  subtle,
 }: {
   children: React.ReactNode;
   align?: "left" | "right";
-  pad?: number;
   mono?: boolean;
-  muted?: boolean;
+  subtle?: boolean;
 }) {
   return (
     <td
-      className="px-3.5 py-1.5 align-middle"
-      style={{
-        textAlign: align ?? "left",
-        paddingRight: pad ? pad + 10 : undefined,
-        fontFamily: mono ? "var(--font-tez-mono)" : undefined,
-        fontSize: mono ? "11.5px" : undefined,
-        color: muted ? "var(--color-ink-5)" : "var(--color-ink-2)",
-      }}
+      className={cn(
+        "px-3 py-2.5 align-middle text-[12.5px]",
+        mono && "font-[var(--font-mono)] text-[11.5px]",
+        subtle ? "text-[var(--color-text-subtle)]" : "text-[var(--color-text)]",
+      )}
+      style={{ textAlign: align }}
     >
       {children}
     </td>
   );
-}
-
-function EmptyRow({ message }: { message: string }) {
-  return <div className="text-ink-5 px-4 py-8 text-center text-[12px]">{message}</div>;
 }
 
 function relativeTime(iso: string, locale: Locale): string {
@@ -676,7 +834,6 @@ function relativeTime(iso: string, locale: Locale): string {
 }
 
 function actionLabelKey(action: string): TranslationKey {
-  // Map common audit actions to translation keys; unknown actions fall back to raw action.
   const map: Record<string, TranslationKey> = {
     "job.created": "hr.dashboard.activity.action.job_created",
     "job.updated": "hr.dashboard.activity.action.job_updated",

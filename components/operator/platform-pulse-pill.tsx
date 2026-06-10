@@ -63,10 +63,10 @@ export function PlatformPulsePill() {
     firing === 0 ? "ok" : incidents.some((i) => i.severity === "critical") ? "red" : "amber";
   const dotClass =
     state === "red"
-      ? "bg-[var(--color-tez-red)]"
+      ? "bg-[var(--color-danger)]"
       : state === "amber"
-        ? "bg-[var(--color-tez-amber)]"
-        : "bg-[var(--color-tez-green)]";
+        ? "bg-[var(--color-warning)]"
+        : "bg-[var(--color-success)]";
   const label =
     firing === 0
       ? t("operator.pulse.all_normal")
@@ -80,7 +80,7 @@ export function PlatformPulsePill() {
         type="button"
         onClick={() => setOpen(true)}
         data-testid="platform-pulse-pill"
-        className="flex items-center gap-2 rounded-[var(--radius-full)] border border-[var(--color-rule-2)] bg-[var(--color-bone)] px-2.5 py-1 text-[11px] font-medium text-[var(--color-ink-3)] hover:bg-[var(--color-bone-2)]"
+        className="flex items-center gap-2 rounded-[var(--radius-full)] border border-[var(--color-line)] bg-[var(--color-surface)] px-2.5 py-1 text-[11px] font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-subtle)]"
         aria-label={t("operator.pulse.open_drawer")}
       >
         <span className="relative flex h-2 w-2">

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Copy, Check, Download } from "lucide-react";
 import QRCode from "qrcode";
 import { useTranslation } from "@/lib/i18n/provider";
-import { TezButton } from "./button";
+import { Button } from "@/components/ui";
 
 interface PublicLinkBlockProps {
   url: string;
@@ -33,30 +33,30 @@ export function PublicLinkBlock({ url, layout = "stacked" }: PublicLinkBlockProp
   return (
     <div className={layout === "inline" ? "flex items-start gap-4" : undefined}>
       <div className="flex-1">
-        <div className="flex gap-1.5">
+        <div className="flex gap-2">
           <input
             readOnly
             value={url}
-            className="border-rule-2 bg-paper text-ink h-[32px] min-w-0 flex-1 rounded-[4px] border px-2.5 text-[12px]"
-            style={{ fontFamily: "var(--font-tez-mono)" }}
+            aria-label={t("hr.job.public_link_title")}
+            className="data-mono h-10 min-w-0 flex-1 rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)] px-3 text-[12px] text-[var(--color-text)] outline-none focus:border-[var(--color-focus)]"
           />
-          <TezButton
-            variant="ink"
+          <Button
             onClick={handleCopy}
-            leadingIcon={copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+            className="shrink-0"
           >
+            {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             {copied ? t("common.copied") : t("common.copy")}
-          </TezButton>
+          </Button>
         </div>
       </div>
       {qrSvg && layout === "stacked" && (
-        <div className="border-rule bg-bone mt-3.5 flex justify-center rounded-md border p-3.5">
-          <div className="w-[120px]" dangerouslySetInnerHTML={{ __html: qrSvg }} />
+        <div className="mt-3.5 flex justify-center rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] p-3.5">
+          <div className="w-[120px] [&_svg]:h-auto [&_svg]:w-full" dangerouslySetInnerHTML={{ __html: qrSvg }} />
         </div>
       )}
       {qrSvg && layout === "inline" && (
-        <div className="border-rule bg-bone shrink-0 rounded-md border p-2.5">
-          <div className="w-[88px]" dangerouslySetInnerHTML={{ __html: qrSvg }} />
+        <div className="shrink-0 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] p-2.5">
+          <div className="w-[88px] [&_svg]:h-auto [&_svg]:w-full" dangerouslySetInnerHTML={{ __html: qrSvg }} />
         </div>
       )}
       {qrSvg && layout === "stacked" && (
@@ -64,9 +64,9 @@ export function PublicLinkBlock({ url, layout = "stacked" }: PublicLinkBlockProp
           <a
             href={`data:image/svg+xml;utf8,${encodeURIComponent(qrSvg)}`}
             download="apply-qr.svg"
-            className="border-rule-2 bg-paper text-ink-2 shadow-tez-1 hover:bg-bone inline-flex h-6 flex-1 items-center justify-center gap-1 rounded-[4px] border px-2 text-[11.5px] font-medium"
+            className="inline-flex h-8 flex-1 items-center justify-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--color-line-strong)] bg-[var(--color-surface)] px-2 text-[11.5px] font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)]"
           >
-            <Download className="h-3 w-3" />
+            <Download className="h-3.5 w-3.5" />
             QR
           </a>
         </div>

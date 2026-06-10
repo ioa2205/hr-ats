@@ -7,7 +7,8 @@ import "./landing.css";
 import { setLocale as setLocaleAction } from "@/lib/i18n/actions";
 import { useTranslation } from "@/lib/i18n/provider";
 import type { Locale } from "@/lib/i18n/types";
-import { Icon, Wordmark } from "./mockups";
+import { TezSignalWordmark } from "@/components/brand/tez-signal";
+import { Icon } from "./mockups";
 import { LOGIN_HREF, SIGNUP_HREF, TELEGRAM_URL } from "./constants";
 
 export { LOGIN_HREF, SIGNUP_HREF, TELEGRAM_URL };
@@ -101,7 +102,7 @@ export function PublicHeader({
         }}
       >
         <Link href="/" style={{ display: "inline-flex", alignItems: "center" }}>
-          <Wordmark size={28} />
+          <TezSignalWordmark size={22} />
         </Link>
         <div
           style={{
@@ -210,7 +211,7 @@ export function PublicFooter({
           }}
         >
           <div>
-            <Wordmark size={36} />
+            <TezSignalWordmark size={28} />
             <p
               className="serif"
               style={{

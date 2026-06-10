@@ -115,6 +115,7 @@ test.describe("Applicants page", () => {
   test.beforeAll(async () => {
     admin = getAdminClient();
     tenant = await createTenant(admin, { tag: "apps" });
+    await admin.from("profiles").update({ locale: "en" }).eq("id", tenant.userId);
     testData = await seedTestData(admin, tenant.companyId);
   });
 
@@ -192,6 +193,71 @@ test.describe("Applicants page", () => {
     await expect(page).toHaveURL(new RegExp(`candidate=${candidateId}`));
   });
 
+  test("search, filters, and sort are preserved in the URL", async ({ page }) => {
+    test.skip(!testData, "No test data seeded");
+
+    await page.goto(`/hr/jobs/${testData!.job.id}/applicants`);
+    const search = page.getByRole("searchbox", { name: /Search candidates/ });
+    await search.fill("Charos");
+    await page.getByRole("button", { name: "Search", exact: true }).click();
+
+    await expect(page).toHaveURL(/q=Charos/);
+    await expect(page.getByRole("button", { name: /Charos Mirzaeva/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Alisher Karimov/ })).toHaveCount(0);
+
+    await page.getByRole("button", { name: /All/ }).click();
+    await page.getByLabel("Sort candidates").selectOption("newest");
+    await expect(page).toHaveURL(/sort=newest/);
+  });
+
+  test("compares up to three candidates using evidence, strengths, gaps, and requirements", async ({
+    page,
+  }) => {
+    test.skip(!testData, "No test data seeded");
+
+    await page.goto(`/hr/jobs/${testData!.job.id}/applicants`);
+    await page.getByLabel("Select Alisher Karimov for comparison").click();
+    await expect(page).toHaveURL(new RegExp(`compare=${testData!.candidates[0].id}`));
+    await page.getByLabel("Select Charos Mirzaeva for comparison").click();
+    await expect(page).toHaveURL(/compare=.+%2C|compare=.+,/);
+    await page.getByRole("button", { name: "Compare" }).click();
+
+    await expect(page).toHaveURL(/view=compare/);
+    await expect(page.getByRole("heading", { name: "Compare candidates" })).toBeVisible();
+    await expect(page.getByText("Evidence summary").first()).toBeVisible();
+    await expect(page.getByText("React expertise").first()).toBeVisible();
+    await expect(page.getByText("No DevOps experience").first()).toBeVisible();
+  });
+
+  test("opens an explicit full-page candidate view", async ({ page }) => {
+    test.skip(!testData, "No test data seeded");
+
+    const candidateId = testData!.candidates[0].id;
+    await page.goto(`/hr/jobs/${testData!.job.id}/applicants?candidate=${candidateId}`);
+    await page.getByRole("button", { name: "Open full-page candidate view" }).click();
+
+    await expect(page).toHaveURL(/view=full/);
+    await expect(page.locator("h2", { hasText: "Alisher Karimov" })).toBeVisible();
+    await expect(page.getByText("Recruiter actions")).toBeVisible();
+  });
+
+  test("uses a tablet detail sheet and a mobile full-screen detail with sticky actions", async ({
+    page,
+  }) => {
+    test.skip(!testData, "No test data seeded");
+    const candidateId = testData!.candidates[0].id;
+
+    await page.setViewportSize({ width: 900, height: 900 });
+    await page.goto(`/hr/jobs/${testData!.job.id}/applicants?candidate=${candidateId}`);
+    await expect(page.getByRole("dialog", { name: "Alisher Karimov" })).toBeVisible();
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.reload();
+    await expect(page.getByRole("button", { name: "Back" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Invite to interview" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Reject" })).toBeVisible();
+  });
+
   test("AI Analysis tab shows score, strengths, and gaps", async ({ page }) => {
     test.skip(!testData, "No test data seeded");
 
@@ -254,12 +320,7 @@ test.describe("Applicants page", () => {
     // Mark as invited
     await page.getByRole("button", { name: "Mark as invited" }).click();
 
-    // The detail-panel Invite button is replaced with a disabled "Invited" pill.
-    // Scope to disabled buttons to avoid matching the list-row button (which
-    // also contains "Invited" but remains enabled as a row selector).
-    const invitedButton = page.locator("button[disabled]").filter({ hasText: /Invited/ }).first();
-    await expect(invitedButton).toBeVisible({ timeout: 10000 });
-    await expect(invitedButton).toBeDisabled();
+    await expect(page.getByText(/Invited/).first()).toBeVisible({ timeout: 10000 });
   });
 
   test("chip counts are displayed correctly", async ({ page }) => {
@@ -270,8 +331,7 @@ test.describe("Applicants page", () => {
     // Wait for candidates to load before checking counts
     await expect(page.getByRole("button", { name: /Karimov/ })).toBeVisible({ timeout: 15000 });
 
-    // Check counts are visible
-    await expect(page.getByText(/\d+ total/)).toBeVisible();
-    await expect(page.getByText(/\d+ analyzed/)).toBeVisible();
+    await expect(page.getByRole("button", { name: /All\s+5/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Top picks\s+2/ })).toBeVisible();
   });
 });

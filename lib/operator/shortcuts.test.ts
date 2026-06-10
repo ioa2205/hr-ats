@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  CHORD_WINDOW_MS,
-  initialChordState,
-  matchShortcut,
-  type KeyEvent,
-} from "./shortcuts";
+import { CHORD_WINDOW_MS, initialChordState, matchShortcut, type KeyEvent } from "./shortcuts";
 
 function ev(overrides: Partial<KeyEvent>): KeyEvent {
   return {
@@ -36,6 +31,11 @@ describe("matchShortcut", () => {
 
   it("fires cheatsheet on ?", () => {
     const result = matchShortcut(initialChordState(), ev({ key: "?" }), 0);
+    expect(result.matched?.id).toBe("cheatsheet");
+  });
+
+  it("fires cheatsheet for the browser Shift+/ key event", () => {
+    const result = matchShortcut(initialChordState(), ev({ key: "/", shiftKey: true }), 0);
     expect(result.matched?.id).toBe("cheatsheet");
   });
 

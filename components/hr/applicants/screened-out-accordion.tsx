@@ -13,10 +13,10 @@ interface ScreenedOutAccordionProps {
 export function ScreenedOutAccordion({ screenedOut }: ScreenedOutAccordionProps) {
   const { t } = useTranslation();
   return (
-    <Accordion.Root type="single" collapsible className="border-outline-variant border-t">
+    <Accordion.Root type="single" collapsible className="border-t border-[var(--color-line)]">
       <Accordion.Item value="screened-out">
         <Accordion.Header>
-          <Accordion.Trigger className="group text-on-surface-variant hover:bg-surface-container flex w-full items-center justify-between px-4 py-2.5 text-sm font-medium">
+          <Accordion.Trigger className="group flex min-h-11 w-full items-center justify-between px-4 py-2.5 text-sm font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-subtle)]">
             {t("applicants.screened_out_accordion", { count: String(screenedOut.length) })}
             <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
           </Accordion.Trigger>
@@ -25,8 +25,8 @@ export function ScreenedOutAccordion({ screenedOut }: ScreenedOutAccordionProps)
           <div className="space-y-0">
             {screenedOut.map((c) => (
               <div key={c.id} className="flex items-center justify-between px-4 py-2 text-sm">
-                <span className="text-on-surface">{c.full_name}</span>
-                <span className="text-on-surface-variant text-xs">
+                <span className="text-[var(--color-text)]">{c.full_name}</span>
+                <span className="text-xs text-[var(--color-text-muted)]">
                   {relativeDate(c.created_at)}
                 </span>
               </div>

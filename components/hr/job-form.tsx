@@ -4,15 +4,18 @@ import { forwardRef, useState, type InputHTMLAttributes } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { Sparkles, Loader2, Wand2, Globe } from "lucide-react";
-import { useToast } from "@/components/ui";
-import { TagInput } from "@/components/hr/tag-input";
-import { HardRequirementsEditor } from "@/components/hr/hard-requirements-editor";
 import {
+  useToast,
   Panel,
   PanelHeader,
   PanelTitle,
-  TezButton,
-} from "@/components/hr/design";
+  Button,
+  Textarea,
+  FieldMessage,
+  SegmentedControl,
+} from "@/components/ui";
+import { TagInput } from "@/components/hr/tag-input";
+import { HardRequirementsEditor } from "@/components/hr/hard-requirements-editor";
 import type { HardRequirement } from "@/types";
 import type { Locale } from "@/lib/i18n/types";
 import { logger } from "@/lib/logger";
@@ -57,7 +60,6 @@ export function JobForm({ mode, jobId, defaultValues }: JobFormProps) {
     control,
     setValue,
     watch,
-    formState: { errors },
   } = useForm<JobFormValues>({
     defaultValues: {
       title_ru: defaultValues?.title_ru ?? "",
@@ -166,8 +168,7 @@ export function JobForm({ mode, jobId, defaultValues }: JobFormProps) {
       // `title` and `description` are the legacy primary columns: use
       // whichever locale the user filled first (ru priority) as the canonical.
       const primaryTitle = data.title_ru || data.title_uz || data.title_en;
-      const primaryDesc =
-        data.description_ru || data.description_uz || data.description_en;
+      const primaryDesc = data.description_ru || data.description_uz || data.description_en;
 
       const payload = {
         title: primaryTitle,
@@ -210,57 +211,48 @@ export function JobForm({ mode, jobId, defaultValues }: JobFormProps) {
   const hasAnyContent = Boolean(anyTitle) || Boolean(anyDesc);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-      {/* AI assistant panel — dismissible after use */}
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+      {/* AI assistant — dismissed while drafting once there is content */}
       {!hasAnyContent || !aiBusy ? (
         <Panel>
           <PanelHeader>
             <PanelTitle>
-              <Sparkles className="text-persimmon h-3.5 w-3.5" />
+              <Sparkles className="h-3.5 w-3.5 text-[var(--color-primary)]" />
               {t("hr.job.ai.panel_title")}
             </PanelTitle>
-            <span
-              className="text-ink-5 text-[10px] uppercase tracking-[0.08em]"
-              style={{ fontFamily: "var(--font-tez-mono)" }}
-            >
+            <span className="data-mono text-[10px] tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
               {t("hr.job.ai.model_tag")}
             </span>
           </PanelHeader>
           <div className="p-4">
-            <p className="text-ink-4 mb-3 text-[12.5px] leading-[1.5]">
+            <p className="mb-3 text-[12.5px] leading-[1.5] text-[var(--color-text-muted)]">
               {t("hr.job.ai.panel_help")}
             </p>
-            <textarea
+            <Textarea
               value={brief}
               onChange={(e) => setBrief(e.target.value)}
               placeholder={t("hr.job.ai.brief_placeholder")}
               rows={3}
               maxLength={2000}
-              className="border-rule-2 bg-paper text-ink placeholder:text-ink-5 focus:border-ink w-full resize-y rounded-[4px] border px-3 py-2 text-[13px] leading-[1.5] outline-none transition-colors"
+              maxCharacters={2000}
+              currentLength={brief.length}
               disabled={aiBusy}
+              aria-label={t("hr.job.ai.panel_title")}
             />
-            <div className="mt-2 flex items-center justify-between gap-3">
-              <span
-                className="text-ink-5 text-[11px]"
-                style={{ fontFamily: "var(--font-tez-mono)" }}
-              >
-                {brief.length} / 2000
-              </span>
-              <TezButton
+            <div className="mt-2 flex justify-end">
+              <Button
                 type="button"
-                variant="primary"
                 onClick={generateFromBrief}
+                loading={aiBusy}
                 disabled={aiBusy || brief.trim().length < 4}
-                leadingIcon={
-                  aiBusy ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Wand2 className="h-3.5 w-3.5" />
-                  )
-                }
               >
+                {aiBusy ? (
+                  <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" />
+                ) : (
+                  <Wand2 className="h-4 w-4" />
+                )}
                 {aiBusy ? t("hr.job.ai.generating") : t("hr.job.ai.generate")}
-              </TezButton>
+              </Button>
             </div>
           </div>
         </Panel>
@@ -270,13 +262,10 @@ export function JobForm({ mode, jobId, defaultValues }: JobFormProps) {
       <Panel>
         <PanelHeader>
           <PanelTitle>
-            <Globe className="text-ink-4 h-3.5 w-3.5" />
+            <Globe className="h-3.5 w-3.5 text-[var(--color-text-muted)]" />
             {t("hr.job.title_label")}
           </PanelTitle>
-          <span
-            className="text-ink-5 text-[10.5px] uppercase tracking-[0.08em]"
-            style={{ fontFamily: "var(--font-tez-mono)" }}
-          >
+          <span className="data-mono text-[10.5px] tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
             {t("hr.job.trilingual_hint")}
           </span>
         </PanelHeader>
@@ -287,14 +276,15 @@ export function JobForm({ mode, jobId, defaultValues }: JobFormProps) {
                 key={loc.code}
                 localeLabel={loc.label}
                 placeholder={t("hr.job.title_placeholder")}
+                aria-label={`${t("hr.job.title_label")} (${loc.label})`}
                 {...register(`title_${loc.code}` as const)}
               />
             ))}
           </div>
-          {!anyTitle && errors && (
-            <p className="text-[color:var(--color-tez-red)] mt-2 text-[11px]">
+          {!anyTitle && (
+            <FieldMessage tone="error" className="mt-2">
               {t("hr.job.error.title_too_short")}
-            </p>
+            </FieldMessage>
           )}
         </div>
       </Panel>
@@ -303,29 +293,16 @@ export function JobForm({ mode, jobId, defaultValues }: JobFormProps) {
       <Panel>
         <PanelHeader>
           <PanelTitle>
-            <Globe className="text-ink-4 h-3.5 w-3.5" />
+            <Globe className="h-3.5 w-3.5 text-[var(--color-text-muted)]" />
             {t("hr.job.description_label")}
           </PanelTitle>
-          <div
-            className="border-rule-2 bg-bone inline-flex h-[26px] items-center rounded-[4px] border p-[1px]"
-          >
-            {LOCALES.map((loc) => (
-              <button
-                key={loc.code}
-                type="button"
-                onClick={() => setDescTab(loc.code)}
-                className={cn(
-                  "rounded-[3px] px-2.5 text-[11px] font-medium transition-colors",
-                  descTab === loc.code
-                    ? "bg-paper text-ink shadow-tez-1"
-                    : "text-ink-4 hover:text-ink",
-                )}
-                style={{ fontFamily: "var(--font-tez-mono)" }}
-              >
-                {loc.label}
-              </button>
-            ))}
-          </div>
+          <SegmentedControl<Locale>
+            size="sm"
+            value={descTab}
+            onChange={setDescTab}
+            aria-label={t("hr.job.description_label")}
+            options={LOCALES.map((loc) => ({ value: loc.code, label: loc.label }))}
+          />
         </PanelHeader>
         <div className="p-4">
           {LOCALES.map((loc) => {
@@ -333,23 +310,20 @@ export function JobForm({ mode, jobId, defaultValues }: JobFormProps) {
             const val = loc.code === "ru" ? descRu : loc.code === "uz" ? descUz : descEn;
             return (
               <div key={loc.code} className={cn(isActive ? "block" : "hidden")}>
-                <textarea
+                <Textarea
                   {...register(`description_${loc.code}` as const)}
                   rows={8}
                   placeholder={t("hr.job.description_placeholder")}
-                  className="border-rule-2 bg-paper text-ink placeholder:text-ink-5 focus:border-ink w-full resize-y rounded-[4px] border px-3 py-2 text-[13px] leading-[1.55] outline-none transition-colors"
+                  aria-label={`${t("hr.job.description_label")} (${loc.label})`}
                 />
-                <div
-                  className="text-ink-5 mt-1 flex justify-end text-[11px]"
-                  style={{ fontFamily: "var(--font-tez-mono)" }}
-                >
+                <div className="mt-1 flex justify-end font-[var(--font-mono)] text-[11px] text-[var(--color-text-subtle)]">
                   {val?.length ?? 0}
                 </div>
               </div>
             );
           })}
           {!anyDesc && (
-            <p className="text-ink-5 text-[11px]">{t("hr.job.description_hint")}</p>
+            <FieldMessage className="mt-1">{t("hr.job.description_hint")}</FieldMessage>
           )}
         </div>
       </Panel>
@@ -358,10 +332,7 @@ export function JobForm({ mode, jobId, defaultValues }: JobFormProps) {
       <Panel>
         <PanelHeader>
           <PanelTitle>{t("hr.job.skills_label")}</PanelTitle>
-          <span
-            className="text-ink-5 text-[10.5px] uppercase tracking-[0.08em]"
-            style={{ fontFamily: "var(--font-tez-mono)" }}
-          >
+          <span className="data-mono text-[10.5px] tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
             {t("hr.job.skills_shared_hint")}
           </span>
         </PanelHeader>
@@ -400,31 +371,19 @@ export function JobForm({ mode, jobId, defaultValues }: JobFormProps) {
       </Panel>
 
       {/* Footer */}
-      <div className="border-rule flex items-center justify-between gap-3 border-t pt-5">
-        <p className="text-ink-5 max-w-md text-[11.5px] leading-[1.4]">
+      <div className="flex flex-col gap-3 border-t border-[var(--color-line)] pt-5 sm:flex-row sm:items-center sm:justify-between">
+        <p className="max-w-md text-[11.5px] leading-[1.4] text-[var(--color-text-subtle)]">
           {t("hr.job.save_autotranslate_hint")}
         </p>
         <div className="flex gap-2">
-          <TezButton
-            type="button"
-            variant="ghost"
-            onClick={() => router.back()}
-            disabled={submitting}
-          >
+          <Button type="button" variant="ghost" onClick={() => router.back()} disabled={submitting}>
             {t("common.cancel")}
-          </TezButton>
-          <TezButton
-            type="submit"
-            variant="primary"
-            disabled={submitting}
-            leadingIcon={
-              submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : undefined
-            }
-          >
+          </Button>
+          <Button type="submit" loading={submitting}>
             {submitting
               ? t("common.saving")
               : t(mode === "create" ? "hr.jobs.create" : "hr.job.save_changes")}
-          </TezButton>
+          </Button>
         </div>
       </div>
     </form>
@@ -438,18 +397,15 @@ interface LocaleInputProps extends InputHTMLAttributes<HTMLInputElement> {
 const LocaleInput = forwardRef<HTMLInputElement, LocaleInputProps>(
   ({ localeLabel, className, ...rest }, ref) => {
     return (
-      <div className="border-rule-2 bg-paper flex h-[36px] items-center overflow-hidden rounded-[4px] border focus-within:border-[color:var(--color-ink)]">
-        <span
-          className="bg-bone text-ink-5 border-rule flex h-full w-9 shrink-0 items-center justify-center border-r text-[10px] font-semibold uppercase tracking-[0.08em]"
-          style={{ fontFamily: "var(--font-tez-mono)" }}
-        >
+      <div className="flex h-11 items-center overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)] transition-colors focus-within:border-[var(--color-focus)]">
+        <span className="data-mono flex h-full w-9 shrink-0 items-center justify-center border-r border-[var(--color-line)] bg-[var(--color-surface-subtle)] text-[10px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
           {localeLabel}
         </span>
         <input
           ref={ref}
           type="text"
           className={cn(
-            "min-w-0 flex-1 border-0 bg-transparent px-3 text-[13px] outline-none",
+            "min-w-0 flex-1 bg-transparent px-3 text-sm text-[var(--color-text)] outline-none placeholder:text-[var(--color-text-subtle)]",
             className,
           )}
           {...rest}

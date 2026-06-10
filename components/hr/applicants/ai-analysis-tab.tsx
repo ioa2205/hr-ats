@@ -1,9 +1,22 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { CheckCircle, AlertTriangle, Globe, RotateCw, Flag, Sparkles } from "lucide-react";
-import { Badge, Button, Card, CardContent, Skeleton } from "@/components/ui";
-import { ScoreCircle } from "./score-circle";
+import { AlertTriangle, Globe, RotateCw, Flag, Sparkles } from "lucide-react";
+import {
+  AIAssessmentLabel,
+  AIFitScore,
+  Alert,
+  AnalysisStatus,
+  AssessmentList,
+  AssessmentRow,
+  Badge,
+  Button,
+  Panel,
+  PanelBody,
+  PanelHeader,
+  PanelTitle,
+  Skeleton,
+} from "@/components/ui";
 import { InterviewQuestionsBlock } from "./interview-questions-block";
 import { SchedulingBlock } from "./scheduling-block";
 import type {
@@ -75,6 +88,12 @@ export function AiAnalysisTab({ candidate, jobTitle, appUrl, onUpdate }: AiAnaly
     locale,
     candidate.gaps ?? [],
   );
+  const requirementRows = buildRequirementsTable(
+    candidate.requirements_snapshot as RequirementSnapshot | null,
+    candidate.requirements_responses as RequirementResponses | null,
+    locale,
+    t,
+  );
 
   const handleRetry = useCallback(async () => {
     setRetrying(true);
@@ -123,50 +142,12 @@ export function AiAnalysisTab({ candidate, jobTitle, appUrl, onUpdate }: AiAnaly
   // CV is uploaded but AI was skipped to save quota. HR can review the CV
   // and either move on or click "Analyze with AI anyway" to spend a credit.
   if (candidate.status === "unscored") {
-    const rows = buildRequirementsTable(
-      candidate.requirements_snapshot as RequirementSnapshot | null,
-      candidate.requirements_responses as RequirementResponses | null,
-      locale,
-      t,
-    );
-    const unmet = rows.filter((r) => !r.met);
+    const unmet = requirementRows.filter((r) => !r.met);
     return (
-      <div className="border-danger/30 bg-danger-container/30 space-y-4 rounded-[var(--radius-lg)] border p-4">
-        <div className="flex items-start gap-3">
-          <Flag className="text-danger mt-0.5 h-5 w-5 shrink-0" />
-          <div className="space-y-2">
-            <p className="text-danger text-sm font-medium">
-              {t("applicants.status_line.below_requirements")}
-            </p>
-            <p className="text-on-surface-variant text-xs">
-              {t("applicants.requirements.analyze_anyway_intro")}
-            </p>
-          </div>
-        </div>
-        {unmet.length > 0 && (
-          <ul className="space-y-1.5 pl-8">
-            {unmet.map((row) => (
-              <li
-                key={row.id}
-                className="text-on-surface flex items-baseline justify-between gap-3 text-xs"
-              >
-                <span className="truncate font-medium">{row.label}</span>
-                <span className="text-on-surface-variant shrink-0">
-                  {t("applicants.requirements.required_label")}: {row.requiredText}
-                  <span className="text-danger ml-2">
-                    {t("applicants.requirements.candidate_answer")}: {row.answerText}
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        )}
-        {analyzeAnywayError && (
-          <p className="text-danger pl-8 text-xs" role="alert">
-            {analyzeAnywayError}
-          </p>
-        )}
-        <div className="pl-8">
+      <Alert
+        tone="warning"
+        title={t("applicants.status_line.below_requirements")}
+        action={
           <Button
             variant="secondary"
             size="sm"
@@ -177,8 +158,30 @@ export function AiAnalysisTab({ candidate, jobTitle, appUrl, onUpdate }: AiAnaly
             <Sparkles className="h-3.5 w-3.5" />
             {t("applicants.requirements.analyze_anyway")}
           </Button>
+        }
+      >
+        <div className="space-y-3">
+          <p>{t("applicants.requirements.analyze_anyway_intro")}</p>
+          {unmet.length > 0 && (
+            <AssessmentList>
+              {unmet.map((row) => (
+                <AssessmentRow key={row.id} kind="requirement-unmet">
+                  <span className="font-medium">{row.label}</span>
+                  <span className="mt-0.5 block text-xs">
+                    {t("applicants.requirements.required_label")}: {row.requiredText}.{" "}
+                    {t("applicants.requirements.candidate_answer")}: {row.answerText}
+                  </span>
+                </AssessmentRow>
+              ))}
+            </AssessmentList>
+          )}
+          {analyzeAnywayError && (
+            <p className="text-xs text-[var(--color-danger)]" role="alert">
+              {analyzeAnywayError}
+            </p>
+          )}
         </div>
-      </div>
+      </Alert>
     );
   }
 
@@ -190,14 +193,24 @@ export function AiAnalysisTab({ candidate, jobTitle, appUrl, onUpdate }: AiAnaly
       candidate.status === "pending_analysis" && candidate.ai_error === "ai_unavailable";
     return (
       <div className="space-y-6">
+        <div className="flex justify-center">
+          <AnalysisStatus
+            status={candidate.status === "analyzing" ? "processing" : "queued"}
+            label={t(
+              candidate.status === "analyzing"
+                ? "applicants.analysis.status_processing"
+                : "applicants.analysis.status_waiting",
+            )}
+          />
+        </div>
         {isRateLimited && (
           <div className="border-warning/40 bg-warning-container/30 flex items-start gap-3 rounded-[var(--radius-lg)] border p-4">
-            <AlertTriangle className="text-warning mt-0.5 h-5 w-5 shrink-0" />
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-warning)]" />
             <div className="space-y-1">
               <p className="text-on-surface text-sm font-medium">
                 {t("applicants.analysis.rate_limited_heading")}
               </p>
-              <p className="text-on-surface-variant text-xs">
+              <p className="text-xs text-[var(--color-text-muted)]">
                 {t("applicants.analysis.rate_limited_body")}
               </p>
             </div>
@@ -205,12 +218,12 @@ export function AiAnalysisTab({ candidate, jobTitle, appUrl, onUpdate }: AiAnaly
         )}
         {isUnavailable && (
           <div className="border-warning/40 bg-warning-container/30 flex items-start gap-3 rounded-[var(--radius-lg)] border p-4">
-            <AlertTriangle className="text-warning mt-0.5 h-5 w-5 shrink-0" />
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-warning)]" />
             <div className="space-y-1">
               <p className="text-on-surface text-sm font-medium">
                 {t("applicants.analysis.unavailable_heading")}
               </p>
-              <p className="text-on-surface-variant text-xs">
+              <p className="text-xs text-[var(--color-text-muted)]">
                 {t("applicants.analysis.unavailable_body")}
               </p>
             </div>
@@ -239,44 +252,44 @@ export function AiAnalysisTab({ candidate, jobTitle, appUrl, onUpdate }: AiAnaly
   // ── Failed ────────────────────────────────────────────────────
   if (candidate.status === "analysis_failed") {
     return (
-      <div className="border-danger/30 bg-danger-container/30 rounded-[var(--radius-lg)] border p-4">
-        <div className="flex items-start gap-3">
-          <AlertTriangle className="text-danger mt-0.5 h-5 w-5 shrink-0" />
-          <div className="space-y-2">
-            <p className="text-danger text-sm font-medium">
-              {t("applicants.analysis.failed_heading")}
-            </p>
+      <Alert
+        tone="danger"
+        title={t("applicants.analysis.failed_heading")}
+        action={
+          candidate.retry_count < 3 ? (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleRetry}
+              disabled={retrying}
+              loading={retrying}
+            >
+              <RotateCw className="h-3.5 w-3.5" />
+              {t("applicants.analysis.retry")}
+            </Button>
+          ) : undefined
+        }
+      >
+        <div className="space-y-2">
             {candidate.ai_error && (
-              <p className="text-on-surface-variant text-xs">
+              <p className="text-xs">
                 {t(aiErrorKey[candidate.ai_error] ?? "applicants.analysis.err_generic")}
               </p>
             )}
-            {candidate.retry_count < 3 ? (
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleRetry}
-                disabled={retrying}
-                loading={retrying}
-              >
-                <RotateCw className="h-3.5 w-3.5" />
-                {t("applicants.analysis.retry")}
-              </Button>
-            ) : (
-              <p className="text-on-surface-variant text-xs font-medium">
+            {candidate.retry_count >= 3 && (
+              <p className="text-xs font-medium">
                 {t("applicants.analysis.max_retries")}
               </p>
             )}
-          </div>
         </div>
-      </div>
+      </Alert>
     );
   }
 
   // ── Analyzed (or invited — they have analysis data) ───────────
   if (candidate.status !== "analyzed" && candidate.status !== "invited") {
     return (
-      <p className="text-on-surface-variant py-8 text-center text-sm">
+      <p className="py-8 text-center text-sm text-[var(--color-text-muted)]">
         {t("applicants.analysis.no_data")}
       </p>
     );
@@ -284,80 +297,115 @@ export function AiAnalysisTab({ candidate, jobTitle, appUrl, onUpdate }: AiAnaly
 
   return (
     <div className="space-y-6">
-      {/* Score circle */}
-      {candidate.match_score !== null && (
-        <div className="flex justify-center">
-          <ScoreCircle score={candidate.match_score} />
-        </div>
-      )}
+      <Panel className="border-[var(--color-primary)]">
+        <PanelBody className="flex flex-col gap-5 sm:flex-row sm:items-center">
+          {candidate.match_score !== null && (
+            <AIFitScore
+              score={candidate.match_score}
+              label={t("applicants.analysis.ai_fit_score")}
+            />
+          )}
+          <div className="min-w-0 flex-1 space-y-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <AIAssessmentLabel>{t("applicants.analysis.advisory_label")}</AIAssessmentLabel>
+              <AnalysisStatus
+                status="complete"
+                label={t("applicants.analysis.status_ready")}
+              />
+              {candidate.language_detected && (
+                <Badge tone="neutral" size="sm">
+                  <Globe className="h-3.5 w-3.5" />
+                  {languageLabelKey[candidate.language_detected]
+                    ? t(languageLabelKey[candidate.language_detected])
+                    : candidate.language_detected}
+                </Badge>
+              )}
+            </div>
+            <p className="text-xs leading-5 text-[var(--color-text-muted)]">
+              {t("applicants.analysis.advisory_note")}
+            </p>
+            {localizedSummary && (
+              <div>
+                <p className="mb-1 text-xs font-bold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
+                  {t("applicants.analysis.evidence")}
+                </p>
+                <p className="text-sm leading-6 text-[var(--color-text)]">{localizedSummary}</p>
+              </div>
+            )}
+          </div>
+        </PanelBody>
+      </Panel>
 
-      {/* Language badge */}
-      {candidate.language_detected && (
-        <div className="flex items-center justify-center gap-2">
-          <Globe className="text-on-surface-variant h-4 w-4" />
-          <Badge tone="neutral" size="sm">
-            {languageLabelKey[candidate.language_detected]
-              ? t(languageLabelKey[candidate.language_detected])
-              : candidate.language_detected}
-          </Badge>
-        </div>
-      )}
-
-      {/* Summary */}
-      {localizedSummary && (
-        <Card>
-          <CardContent className="py-3">
-            <p className="text-on-surface-variant text-sm">{localizedSummary}</p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Strengths and Gaps */}
       <div className="grid gap-4 sm:grid-cols-2">
-        {/* Strengths */}
-        <div className="space-y-2">
-          <div className="text-success flex items-center gap-1.5 text-sm font-medium">
-            <CheckCircle className="h-4 w-4" />
-            {t("applicants.analysis.strengths")}
-          </div>
-          {localizedStrengths.length > 0 ? (
-            <ul className="space-y-1.5">
-              {localizedStrengths.map((s, i) => (
-                <li key={i} className="text-on-surface flex items-start gap-2 text-sm">
-                  <span className="bg-success mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" />
-                  {s}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-on-surface-variant text-xs">
-              {t("applicants.analysis.none_identified")}
-            </p>
-          )}
-        </div>
-
-        {/* Gaps */}
-        <div className="space-y-2">
-          <div className="text-warning flex items-center gap-1.5 text-sm font-medium">
-            <AlertTriangle className="h-4 w-4" />
-            {t("applicants.analysis.gaps")}
-          </div>
-          {localizedGaps.length > 0 ? (
-            <ul className="space-y-1.5">
-              {localizedGaps.map((g, i) => (
-                <li key={i} className="text-on-surface flex items-start gap-2 text-sm">
-                  <span className="bg-warning mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" />
-                  {g}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-on-surface-variant text-xs">
-              {t("applicants.analysis.none_identified")}
-            </p>
-          )}
-        </div>
+        <Panel>
+          <PanelHeader>
+            <PanelTitle>{t("applicants.analysis.strengths")}</PanelTitle>
+          </PanelHeader>
+          <PanelBody>
+            {localizedStrengths.length > 0 ? (
+              <AssessmentList>
+                {localizedStrengths.map((strength, index) => (
+                  <AssessmentRow key={index} kind="strength">
+                    {strength}
+                  </AssessmentRow>
+                ))}
+              </AssessmentList>
+            ) : (
+              <p className="text-xs text-[var(--color-text-subtle)]">
+                {t("applicants.analysis.none_identified")}
+              </p>
+            )}
+          </PanelBody>
+        </Panel>
+        <Panel>
+          <PanelHeader>
+            <PanelTitle>{t("applicants.analysis.gaps")}</PanelTitle>
+          </PanelHeader>
+          <PanelBody>
+            {localizedGaps.length > 0 ? (
+              <AssessmentList>
+                {localizedGaps.map((gap, index) => (
+                  <AssessmentRow key={index} kind="gap">
+                    {gap}
+                  </AssessmentRow>
+                ))}
+              </AssessmentList>
+            ) : (
+              <p className="text-xs text-[var(--color-text-subtle)]">
+                {t("applicants.analysis.none_identified")}
+              </p>
+            )}
+          </PanelBody>
+        </Panel>
       </div>
+
+      <Panel>
+        <PanelHeader>
+          <PanelTitle>{t("applicants.requirements.heading")}</PanelTitle>
+        </PanelHeader>
+        <PanelBody>
+          {requirementRows.length > 0 ? (
+            <AssessmentList>
+              {requirementRows.map((row) => (
+                <AssessmentRow
+                  key={row.id}
+                  kind={row.met ? "requirement-met" : "requirement-unmet"}
+                >
+                  <span className="font-medium">{row.label}</span>
+                  <span className="mt-0.5 block text-xs text-[var(--color-text-muted)]">
+                    {t("applicants.requirements.required_label")}: {row.requiredText}.{" "}
+                    {t("applicants.requirements.candidate_answer")}: {row.answerText}
+                  </span>
+                </AssessmentRow>
+              ))}
+            </AssessmentList>
+          ) : (
+            <p className="text-sm text-[var(--color-text-muted)]">
+              {t("applicants.requirements.met_caption")}
+            </p>
+          )}
+        </PanelBody>
+      </Panel>
 
       <InterviewQuestionsBlock
         candidateId={candidate.id}

@@ -52,7 +52,7 @@ export function ScoreCircle({ score }: ScoreCircleProps) {
         >
           {score}
         </span>
-        <span className="text-on-surface-variant text-xs">
+        <span className="text-xs text-[var(--color-text-muted)]">
           {t("applicants.analysis.match_score")}
         </span>
       </div>

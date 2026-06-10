@@ -1,23 +1,23 @@
 .tezhr-landing {
-  --paper: #efe8db;
-  --paper-2: #e6dfd0;
-  --paper-3: #f7f2e6;
-  --ink: #141210;
-  --ink-2: #302b25;
-  --ink-3: #5a5147;
-  --ink-4: #8b8275;
-  --rule: #2a241e;
-
-  --persimmon: #e55934;
-  --persimmon-2: #c1440e;
-  --ikat: #0b6e6e;
-  --ikat-2: #114e51;
-  --saffron: #f2b232;
-  --grape: #6b2c5f;
-  --leaf: #5a7a3a;
-
-  --night: #141210;
-  --night-2: #1f1b17;
+  /* Compatibility aliases until the public surface is migrated in Phase 10. */
+  --paper: var(--color-canvas);
+  --paper-2: var(--color-surface-strong);
+  --paper-3: var(--color-surface);
+  --ink: var(--color-text);
+  --ink-2: var(--color-text);
+  --ink-3: var(--color-text-muted);
+  --ink-4: var(--color-text-subtle);
+  --rule: var(--color-line-strong);
+  --persimmon: var(--color-accent);
+  --persimmon-2: var(--color-accent-strong);
+  --ikat: var(--color-primary);
+  --ikat-2: var(--color-on-primary-container);
+  --saffron: var(--color-warning);
+  --grape: var(--color-info);
+  --leaf: var(--color-success);
+  --night: var(--color-text);
+  --night-2: var(--color-text-muted);
+  --font-instrument-serif: var(--font-manrope);
 
   background: var(--paper);
   color: var(--ink);
@@ -42,8 +42,8 @@
 }
 
 .tezhr-landing .serif {
-  font-family: var(--font-instrument-serif), "Times New Roman", serif;
-  font-weight: 400;
+  font-family: var(--font-manrope), sans-serif;
+  font-weight: 500;
   letter-spacing: -0.01em;
 }
 
@@ -53,8 +53,8 @@
 }
 
 .tezhr-landing ::selection {
-  background: var(--persimmon);
-  color: var(--paper);
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
 }
 
 .tezhr-landing .paper-grain {
@@ -196,10 +196,10 @@
   scroll-margin-top: 80px;
 }
 
-/* Focus ring: persimmon outline matching the editorial palette. */
+/* Tez Lapis is the single focus role across every surface. */
 .tezhr-landing :focus-visible {
-  outline: 2px solid var(--persimmon);
-  outline-offset: 2px;
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
 }
 
 .tezhr-landing .pen-circle {

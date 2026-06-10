@@ -2,20 +2,25 @@
 
 import { useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { ChevronRight, RotateCw } from "lucide-react";
-import { Avatar, ScoreMini, VerdictPill, TezButton } from "@/components/hr/design";
+import { ChevronRight, RotateCw, Users } from "lucide-react";
+import {
+  AIFitScore,
+  AnalysisStatus,
+  Avatar,
+  Button,
+  Checkbox,
+  EmptyState,
+  Pagination,
+} from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { relativeDate } from "@/lib/time";
 import { ScreenedOutAccordion } from "./screened-out-accordion";
-import type {
-  Candidate,
-  RequirementResponses,
-  RequirementSnapshot,
-} from "@/types";
+import type { Candidate, RequirementResponses, RequirementSnapshot } from "@/types";
 import { useTranslation } from "@/lib/i18n/provider";
 import type { Locale, TranslationKey } from "@/lib/i18n/types";
 import { pickLocalized } from "@/lib/i18n/pick-localized";
 import { buildMismatchSummary } from "@/lib/applicants/requirements-display";
+import { candidateVerdict, relativeCandidateTime } from "@/lib/applicants/presentation";
+import { CandidateStatusBadge } from "./candidate-status-badge";
 
 interface CandidateListProps {
   candidates: Candidate[];
@@ -29,71 +34,51 @@ interface CandidateListProps {
   failedCount: number;
   retrying: boolean;
   onRetryAll: () => void;
-}
-
-function verdictOf(c: Candidate): "recommend" | "review" | "reject" | "mismatch" | "none" {
-  if (c.status === "unscored") return "mismatch";
-  if (c.status === "rejected_screening") return "reject";
-  const s = c.match_score ?? -1;
-  if (s < 0) return "none";
-  if (s >= 80 && (c.status === "analyzed" || c.status === "invited")) return "recommend";
-  if (s >= 60 && s < 80) return "review";
-  if (s < 60 && c.status === "analyzed") return "reject";
-  return "none";
+  compareIds: string[];
+  onToggleCompare: (candidate: Candidate) => void;
 }
 
 function getStatusLine(
-  c: Candidate,
-  t: (k: TranslationKey, vars?: Record<string, string>) => string,
+  candidate: Candidate,
+  t: (key: TranslationKey, vars?: Record<string, string>) => string,
   locale: Locale,
-): { text: string; tone: "muted" | "warn" | "danger" | "ok" } {
-  switch (c.status) {
-    case "analyzed": {
-      const summary = pickLocalized(
-        {
-          ru: c.one_line_summary,
-          uz: c.one_line_summary_uz,
-          en: c.one_line_summary_en,
-        },
-        locale,
-        c.one_line_summary ?? "",
-      );
-      return {
-        text: summary ? summary.slice(0, 72) : t("applicants.status.analyzed"),
-        tone: "muted",
-      };
-    }
-    case "pending_analysis":
-    case "analyzing":
-      return { text: t("applicants.status_line.analyzing"), tone: "warn" };
-    case "analysis_failed":
-      return { text: t("applicants.status_line.analysis_failed"), tone: "danger" };
-    case "invited":
-      return {
-        text: t("applicants.status_line.invited_prefix", {
-          date: c.invited_at ? relativeDate(c.invited_at) : "",
-        }),
-        tone: "ok",
-      };
-    case "unscored": {
-      // Show the specific gaps inline so HR can scan the list without opening
-      // the detail panel. Falls back to a generic label when we can't compute.
-      const summary = buildMismatchSummary(
-        c.requirements_snapshot as RequirementSnapshot | null,
-        c.requirements_responses as RequirementResponses | null,
+): string {
+  if (candidate.status === "unscored") {
+    return (
+      buildMismatchSummary(
+        candidate.requirements_snapshot as RequirementSnapshot | null,
+        candidate.requirements_responses as RequirementResponses | null,
         locale,
         t,
-      );
-      return {
-        text: summary ?? t("applicants.status_line.below_requirements"),
-        tone: "danger",
-      };
-    }
-    case "rejected":
-      return { text: t("applicants.status.rejected"), tone: "muted" };
-    default:
-      return { text: c.status, tone: "muted" };
+      ) ?? t("applicants.status_line.below_requirements")
+    );
   }
+  if (candidate.status === "pending_analysis" || candidate.status === "analyzing") {
+    return t("applicants.status_line.analyzing");
+  }
+  if (candidate.status === "analysis_failed") return t("applicants.status_line.analysis_failed");
+  if (candidate.status === "invited") {
+    return t("applicants.status_line.invited_prefix", {
+      date: candidate.invited_at ? relativeCandidateTime(candidate.invited_at, t) : "",
+    });
+  }
+  if (candidate.status === "rejected") return t("applicants.status.rejected");
+
+  return pickLocalized(
+    {
+      ru: candidate.one_line_summary,
+      uz: candidate.one_line_summary_uz,
+      en: candidate.one_line_summary_en,
+    },
+    locale,
+    candidate.one_line_summary ?? t("applicants.analysis.no_data"),
+  );
+}
+
+function analysisStatus(candidate: Candidate) {
+  if (candidate.status === "analysis_failed") return "failed" as const;
+  if (candidate.status === "analyzing") return "processing" as const;
+  return "queued" as const;
 }
 
 export function CandidateList({
@@ -108,6 +93,8 @@ export function CandidateList({
   failedCount,
   retrying,
   onRetryAll,
+  compareIds,
+  onToggleCompare,
 }: CandidateListProps) {
   const { t, locale } = useTranslation();
   const parentRef = useRef<HTMLDivElement>(null);
@@ -115,111 +102,123 @@ export function CandidateList({
   const virtualizer = useVirtualizer({
     count: candidates.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 64,
+    estimateSize: () => 92,
     enabled: useVirtual,
   });
 
-  const retryButton = failedCount > 0 && (
-    <div className="border-rule border-b px-4 py-2">
-      <TezButton
-        variant="secondary"
-        size="sm"
-        onClick={onRetryAll}
-        disabled={retrying}
-        leadingIcon={<RotateCw className="h-3 w-3" />}
-      >
-        {t("applicants.retry_all")}
-      </TezButton>
-    </div>
-  );
-
-  const renderRow = (c: Candidate, index: number) => {
-    const selected = c.id === selectedId;
+  const renderRow = (candidate: Candidate, index: number) => {
+    const selected = candidate.id === selectedId;
+    const compared = compareIds.includes(candidate.id);
     const rank = (page - 1) * 25 + index + 1;
-    const v = verdictOf(c);
-    const statusLine = getStatusLine(c, t, locale);
-    const isNew = c.status === "pending_analysis" || c.status === "analyzing";
+    const verdict = candidateVerdict(candidate);
+    const statusLine = getStatusLine(candidate, t, locale);
+    const isNew = candidate.status === "pending_analysis" || candidate.status === "analyzing";
 
     return (
-      <button
-        key={c.id}
-        onClick={() => onSelect(c.id)}
+      <div
+        key={candidate.id}
         className={cn(
-          "border-rule hover:bg-bone flex w-full items-center gap-3 border-b px-3.5 py-2.5 text-left transition-colors last:border-b-0",
-          selected && "bg-bone-2",
+          "group flex min-h-[88px] items-stretch border-b border-[var(--color-line)] transition-colors last:border-b-0 hover:bg-[var(--color-surface-subtle)]",
+          selected && "bg-[var(--color-primary-container)]",
         )}
       >
-        {selected && (
-          <span
-            className="bg-ink -ml-3.5 h-[52px] w-[3px] shrink-0 rounded-r-[1px]"
-            aria-hidden
+        <div className="flex w-10 shrink-0 items-center justify-center">
+          <Checkbox
+            checked={compared}
+            onChange={() => onToggleCompare(candidate)}
+            disabled={!compared && compareIds.length >= 3}
+            aria-label={t("applicants.compare.select", { name: candidate.full_name })}
+            className="min-h-0"
           />
-        )}
-        <span
-          className="text-ink-5 w-7 shrink-0 text-[11px]"
-          style={{ fontFamily: "var(--font-tez-mono)" }}
-        >
-          {String(rank).padStart(2, "0")}
-        </span>
-        <Avatar
-          name={c.full_name}
-          persimmon={v === "recommend" && index < 3}
-          size="md"
-        />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
-            <span className="text-ink truncate text-[12.5px] font-semibold tracking-[-0.008em]">
-              {c.full_name}
-            </span>
-            {isNew && (
-              <span
-                className="bg-persimmon h-[5px] w-[5px] shrink-0 rounded-full"
-                aria-hidden
-              />
-            )}
-          </div>
-          <div
-            className={cn(
-              "mt-[1px] truncate text-[11px]",
-              statusLine.tone === "muted" && "text-ink-4",
-              statusLine.tone === "warn" && "text-[color:var(--color-tez-amber)]",
-              statusLine.tone === "danger" && "text-[color:var(--color-tez-red)]",
-              statusLine.tone === "ok" && "text-[color:var(--color-tez-green)]",
-            )}
-          >
-            {statusLine.text}
-          </div>
         </div>
-        <div className="flex shrink-0 flex-col items-end gap-1">
-          {v !== "none" && (
-            <VerdictPill
-              verdict={v}
-              labels={{
-                recommend: t("hr.applicants.verdict.recommend"),
-                review: t("hr.applicants.verdict.review"),
-                reject: t("hr.applicants.verdict.reject"),
-                mismatch: t("hr.applicants.verdict.mismatch"),
-              }}
+        <button
+          type="button"
+          onClick={() => onSelect(candidate.id)}
+          aria-current={selected ? "true" : undefined}
+          className="relative flex min-w-0 flex-1 items-center gap-3 px-2 py-3 text-left"
+        >
+          {selected && (
+            <span
+              className="absolute inset-y-2 left-0 w-[3px] rounded-r-full bg-[var(--color-primary)]"
+              aria-hidden="true"
             />
           )}
-          {c.match_score !== null && c.status !== "unscored" && (
-            <ScoreMini score={c.match_score} persimmon={v === "recommend"} />
-          )}
-        </div>
-        <ChevronRight className="text-ink-5 h-4 w-4 shrink-0" />
-      </button>
+          <span className="data-mono w-7 shrink-0 text-[11px] text-[var(--color-text-subtle)]">
+            {String(rank).padStart(2, "0")}
+          </span>
+          <Avatar
+            name={candidate.full_name}
+            accent={verdict === "recommend" && index < 3}
+            size="md"
+          />
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 items-center gap-1.5">
+              <span className="truncate text-[13px] font-bold tracking-[-0.008em] text-[var(--color-text)]">
+                {candidate.full_name}
+              </span>
+              {isNew && (
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-accent)]" aria-hidden />
+              )}
+            </div>
+            <p className="mt-1 line-clamp-2 text-xs leading-5 text-[var(--color-text-muted)]">
+              {statusLine}
+            </p>
+            <CandidateStatusBadge status={candidate.status} className="mt-1.5" />
+          </div>
+          <div className="flex shrink-0 flex-col items-end gap-2">
+            {candidate.match_score !== null && candidate.status !== "unscored" ? (
+              <AIFitScore
+                score={candidate.match_score}
+                label={t("applicants.analysis.ai_fit_score")}
+                variant="compact"
+              />
+            ) : (
+              <AnalysisStatus
+                status={analysisStatus(candidate)}
+                label={t(
+                  candidate.status === "analysis_failed"
+                    ? "applicants.analysis.status_failed"
+                    : candidate.status === "analyzing"
+                      ? "applicants.analysis.status_processing"
+                      : "applicants.analysis.status_waiting",
+                )}
+              />
+            )}
+            <ChevronRight className="h-4 w-4 text-[var(--color-text-subtle)]" />
+          </div>
+        </button>
+      </div>
     );
   };
 
   return (
     <div className="flex h-full flex-col">
-      {retryButton}
+      {failedCount > 0 && (
+        <div className="border-b border-[var(--color-line)] px-3 py-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={onRetryAll}
+            loading={retrying}
+            disabled={retrying}
+          >
+            <RotateCw className="h-3.5 w-3.5" />
+            {t("applicants.retry_all")}
+          </Button>
+        </div>
+      )}
 
-      <div ref={parentRef} className="min-h-0 flex-1 overflow-y-auto">
+      <div
+        ref={parentRef}
+        aria-busy={loading}
+        className={cn("min-h-0 flex-1 overflow-y-auto", loading && "opacity-60")}
+      >
         {candidates.length === 0 ? (
-          <div className="flex h-full items-center justify-center p-8 text-center">
-            <p className="text-ink-5 text-sm">{t("applicants.empty")}</p>
-          </div>
+          <EmptyState
+            icon={<Users />}
+            title={t("applicants.empty")}
+            description={t("applicants.search_empty")}
+          />
         ) : useVirtual ? (
           <div
             style={{
@@ -228,53 +227,40 @@ export function CandidateList({
               position: "relative",
             }}
           >
-            {virtualizer.getVirtualItems().map((vi) => (
+            {virtualizer.getVirtualItems().map((item) => (
               <div
-                key={vi.key}
+                key={item.key}
                 style={{
                   position: "absolute",
                   top: 0,
                   left: 0,
                   width: "100%",
-                  height: `${vi.size}px`,
-                  transform: `translateY(${vi.start}px)`,
+                  height: `${item.size}px`,
+                  transform: `translateY(${item.start}px)`,
                 }}
               >
-                {renderRow(candidates[vi.index], vi.index)}
+                {renderRow(candidates[item.index], item.index)}
               </div>
             ))}
           </div>
         ) : (
-          candidates.map((c, i) => renderRow(c, i))
+          candidates.map(renderRow)
         )}
       </div>
 
       {screenedOut.length > 0 && <ScreenedOutAccordion screenedOut={screenedOut} />}
 
       {totalPages > 1 && (
-        <div className="border-rule flex items-center justify-between border-t px-3.5 py-2">
-          <TezButton
-            variant="ghost"
-            size="sm"
-            onClick={() => onPageChange(page - 1)}
-            disabled={page <= 1 || loading}
-          >
-            {t("common.previous")}
-          </TezButton>
-          <span
-            className="text-ink-5 text-[11px]"
-            style={{ fontFamily: "var(--font-tez-mono)" }}
-          >
-            {page} / {totalPages}
-          </span>
-          <TezButton
-            variant="ghost"
-            size="sm"
-            onClick={() => onPageChange(page + 1)}
-            disabled={page >= totalPages || loading}
-          >
-            {t("common.next")}
-          </TezButton>
+        <div className="flex justify-center border-t border-[var(--color-line)] px-3 py-2">
+          <Pagination
+            page={page}
+            pageCount={totalPages}
+            onPageChange={onPageChange}
+            labels={{
+              previous: t("common.previous"),
+              next: t("common.next"),
+            }}
+          />
         </div>
       )}
     </div>

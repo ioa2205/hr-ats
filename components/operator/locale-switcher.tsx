@@ -35,18 +35,18 @@ export function LocaleSwitcher() {
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex h-8 items-center gap-1.5 rounded-[var(--radius-sm)] px-2 text-[12px] font-medium text-[var(--color-ink-3)] hover:bg-[var(--color-bone-2)]"
+          className="flex h-8 items-center gap-1.5 rounded-[var(--radius-md)] px-2.5 text-[12px] font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-text)]"
           aria-label={t("operator.chrome.locale")}
         >
           <Globe className="h-3.5 w-3.5" />
-          <span className="font-[var(--font-tez-mono)]">{locale.toUpperCase()}</span>
+          <span className="font-[var(--font-mono)]">{locale.toUpperCase()}</span>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {LOCALES.map((l) => (
           <DropdownMenuItem key={l.code} onSelect={() => pick(l.code)}>
             <span className="flex w-full items-center justify-between gap-3">
-              <span className="font-[var(--font-tez-mono)]">{l.label}</span>
+              <span className="font-[var(--font-mono)]">{l.label}</span>
               {l.code === locale && <Check className="h-3.5 w-3.5" />}
             </span>
           </DropdownMenuItem>

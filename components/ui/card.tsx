@@ -10,9 +10,9 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     <div
       ref={ref}
       className={cn(
-        "border-outline-variant bg-surface rounded-[var(--radius-lg)] border",
+        "rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-surface)]",
         hoverable &&
-          "hover:shadow-level-1 transition-shadow duration-200 ease-[var(--ease-standard)]",
+          "transition-shadow duration-150 ease-[var(--ease-standard)] hover:shadow-level-1",
         className,
       )}
       {...props}
@@ -30,7 +30,11 @@ CardHeader.displayName = "CardHeader";
 
 export const CardTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...props }, ref) => (
-    <h3 ref={ref} className={cn("text-on-surface text-lg font-semibold", className)} {...props} />
+    <h3
+      ref={ref}
+      className={cn("text-lg font-semibold text-[var(--color-text)]", className)}
+      {...props}
+    />
   ),
 );
 CardTitle.displayName = "CardTitle";
@@ -39,7 +43,7 @@ export const CardDescription = forwardRef<
   HTMLParagraphElement,
   HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <p ref={ref} className={cn("text-on-surface-variant text-sm", className)} {...props} />
+  <p ref={ref} className={cn("text-sm text-[var(--color-text-muted)]", className)} {...props} />
 ));
 CardDescription.displayName = "CardDescription";
 

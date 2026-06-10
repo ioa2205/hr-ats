@@ -1,16 +1,26 @@
 "use client";
 
-import { ArrowLeft, X, Phone } from "lucide-react";
-import { Badge, Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui";
+import { ArrowLeft, ExternalLink, Phone, X } from "lucide-react";
+import {
+  DetailBody,
+  DetailHeader,
+  DetailPane,
+  IconButton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui";
 import { cn, formatPhone } from "@/lib/utils";
-import { relativeDate, absoluteDate } from "@/lib/time";
+import { absoluteDate } from "@/lib/time";
 import { CvTab } from "./cv-tab";
 import { AiAnalysisTab } from "./ai-analysis-tab";
 import { NotesTab } from "./notes-tab";
 import { InviteSection } from "./invite-section";
+import { CandidateStatusBadge } from "./candidate-status-badge";
 import type { Candidate } from "@/types";
 import { useTranslation } from "@/lib/i18n/provider";
-import type { TranslationKey } from "@/lib/i18n/types";
+import { relativeCandidateTime } from "@/lib/applicants/presentation";
 
 interface CandidateDetailProps {
   candidate: Candidate;
@@ -18,34 +28,11 @@ interface CandidateDetailProps {
   appUrl: string;
   templates: Record<string, string>;
   onClose: () => void;
+  onOpenFullPage?: () => void;
   onUpdate: (id: string, updates: Partial<Candidate>) => void;
   mobile?: boolean;
-}
-
-function statusBadge(
-  candidate: Candidate,
-  t: (key: TranslationKey, vars?: Record<string, string>) => string,
-) {
-  const map: Record<
-    string,
-    { tone: "success" | "warning" | "danger" | "info" | "neutral"; labelKey: TranslationKey }
-  > = {
-    analyzed: { tone: "success", labelKey: "applicants.status.analyzed" },
-    pending_analysis: { tone: "warning", labelKey: "applicants.status.pending" },
-    analyzing: { tone: "warning", labelKey: "applicants.status.analyzing" },
-    analysis_failed: { tone: "danger", labelKey: "applicants.status.failed" },
-    invited: { tone: "info", labelKey: "applicants.status.invited" },
-    rejected: { tone: "neutral", labelKey: "applicants.status.rejected" },
-    rejected_screening: { tone: "neutral", labelKey: "applicants.status.screened_out" },
-    unscored: { tone: "danger", labelKey: "applicants.status.unscored" },
-  };
-  const s = map[candidate.status];
-  const label = s ? t(s.labelKey) : candidate.status;
-  return (
-    <Badge tone={s?.tone ?? "neutral"} variant={candidate.status === "analyzing" ? "pulse" : "dot"}>
-      {label}
-    </Badge>
-  );
+  tablet?: boolean;
+  fullPage?: boolean;
 }
 
 export function CandidateDetail({
@@ -54,66 +41,87 @@ export function CandidateDetail({
   appUrl,
   templates,
   onClose,
+  onOpenFullPage,
   onUpdate,
   mobile,
+  tablet,
+  fullPage,
 }: CandidateDetailProps) {
   const { t } = useTranslation();
+  const compact = mobile || tablet;
+
   return (
-    <div className="flex h-full flex-col">
-      {/* ── Top bar ─────────────────────────────────────────────── */}
-      <div className="border-outline-variant flex items-start justify-between border-b p-4">
-        <div className="min-w-0 space-y-1">
-          {mobile && (
-            <button
-              onClick={onClose}
-              className="text-primary mb-1 flex items-center gap-1 text-sm hover:underline"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              {t("common.back")}
-            </button>
-          )}
-          <h2 className="text-on-surface truncate text-xl font-medium">{candidate.full_name}</h2>
-          <div className="flex items-center gap-2">
+    <DetailPane
+      className={cn(
+        "h-full w-full rounded-none border-0",
+        fullPage && "mx-auto max-w-[1180px] rounded-[var(--radius-lg)] border",
+      )}
+    >
+      <DetailHeader
+        className="items-start py-4"
+        title={
+          <div className="flex min-w-0 flex-col gap-2">
+            <h2 className="truncate text-lg font-bold tracking-[-0.02em] text-[var(--color-text)]">
+              {candidate.full_name}
+            </h2>
+            <div className="flex flex-wrap items-center gap-2">
+              <CandidateStatusBadge status={candidate.status} />
+              <span className="text-xs font-medium text-[var(--color-text-subtle)]">
+                {t("applicants.workflow_status")}
+              </span>
+            </div>
+          </div>
+        }
+        subtitle={
+          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
             <a
               href={`tel:${candidate.phone_number}`}
-              className="nums text-primary flex items-center gap-1 text-sm hover:underline"
+              className="data-mono inline-flex items-center gap-1.5 text-xs font-medium text-[var(--color-primary)] hover:underline"
             >
               <Phone className="h-3.5 w-3.5" />
               {formatPhone(candidate.phone_number)}
             </a>
+            <span
+              className="text-xs text-[var(--color-text-subtle)]"
+              title={absoluteDate(candidate.created_at)}
+            >
+              {t("applicants.applied_prefix", { date: relativeCandidateTime(candidate.created_at, t) })}
+            </span>
           </div>
-          <div
-            className="text-on-surface-variant text-xs"
-            title={absoluteDate(candidate.created_at)}
-          >
-            {t("applicants.applied_prefix", { date: relativeDate(candidate.created_at) })}
-          </div>
-          <div className="pt-1">{statusBadge(candidate, t)}</div>
-        </div>
-        {!mobile && (
-          <button
-            onClick={onClose}
-            className="text-on-surface-variant hover:bg-surface-container rounded-[var(--radius-sm)] p-1"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        )}
-      </div>
+        }
+        actions={
+          <>
+            {onOpenFullPage && !fullPage && !mobile && (
+              <IconButton
+                aria-label={t("applicants.open_full_page")}
+                variant="ghost"
+                size="md"
+                onClick={onOpenFullPage}
+              >
+                <ExternalLink className="h-4 w-4" />
+              </IconButton>
+            )}
+            <IconButton
+              aria-label={compact || fullPage ? t("common.back") : t("applicants.close_detail")}
+              variant="ghost"
+              size="md"
+              onClick={onClose}
+            >
+              {compact || fullPage ? <ArrowLeft className="h-4 w-4" /> : <X className="h-4 w-4" />}
+            </IconButton>
+          </>
+        }
+      />
 
-      {/* ── Tabs ────────────────────────────────────────────────── */}
       <Tabs defaultValue="analysis" className="flex min-h-0 flex-1 flex-col">
-        <TabsList className={cn("shrink-0 px-4")}>
-          <TabsTrigger value="cv">{t("applicants.tabs.cv")}</TabsTrigger>
+        <TabsList className="shrink-0 overflow-x-auto px-2 sm:px-4">
           <TabsTrigger value="analysis">{t("applicants.tabs.analysis")}</TabsTrigger>
+          <TabsTrigger value="cv">{t("applicants.tabs.cv")}</TabsTrigger>
           <TabsTrigger value="notes">{t("applicants.tabs.notes")}</TabsTrigger>
         </TabsList>
 
-        <div className="min-h-0 flex-1 overflow-y-auto">
-          <TabsContent value="cv" className="px-4 pb-4">
-            <CvTab candidateId={candidate.id} />
-          </TabsContent>
-
-          <TabsContent value="analysis" className="px-4 pb-4">
+        <DetailBody className="p-4 sm:p-5">
+          <TabsContent value="analysis" className="mt-0">
             <AiAnalysisTab
               candidate={candidate}
               jobTitle={postingTitle}
@@ -122,19 +130,22 @@ export function CandidateDetail({
             />
           </TabsContent>
 
-          <TabsContent value="notes" className="px-4 pb-4">
+          <TabsContent value="cv" className="mt-0">
+            <CvTab candidateId={candidate.id} />
+          </TabsContent>
+
+          <TabsContent value="notes" className="mt-0">
             <NotesTab candidateId={candidate.id} initialNotes={candidate.hr_notes ?? ""} />
           </TabsContent>
-        </div>
+        </DetailBody>
       </Tabs>
 
-      {/* ── Invite section ──────────────────────────────────────── */}
       <InviteSection
         candidate={candidate}
         postingTitle={postingTitle}
         templates={templates}
         onUpdate={onUpdate}
       />
-    </div>
+    </DetailPane>
   );
 }

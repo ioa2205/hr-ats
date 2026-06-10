@@ -27,27 +27,27 @@ export function OperatorTopBar({ email, fullName }: Props) {
   return (
     <header
       data-testid="operator-top-bar"
-      className="sticky top-0 z-30 flex h-12 items-center gap-3 border-b border-[var(--color-rule)] bg-[var(--color-bone)]/90 px-4 backdrop-blur-sm"
+      className="sticky top-[var(--app-sticky-top)] z-30 flex h-12 items-center gap-3 border-b border-[var(--color-line)] bg-[color-mix(in_srgb,var(--color-canvas)_88%,transparent)] px-4 backdrop-blur-sm"
     >
       <button
         type="button"
         onClick={() => setPaletteOpen(true)}
         data-testid="open-palette"
-        className="flex h-8 max-w-md flex-1 items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--color-rule-2)] bg-[var(--color-paper)] px-3 text-left text-[12px] text-[var(--color-ink-4)] hover:border-[var(--color-ink-5)]"
+        className="hidden h-8 max-w-md min-w-0 flex-1 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)] px-3 text-left text-[12px] text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-line-strong)] sm:flex"
         aria-label={t("operator.palette.title")}
       >
-        <Search className="h-3.5 w-3.5" />
+        <Search className="h-3.5 w-3.5 shrink-0" />
         <span className="flex-1 truncate">{t("operator.chrome.search_placeholder")}</span>
-        <kbd className="font-[var(--font-tez-mono)] rounded-[var(--radius-sm)] border border-[var(--color-rule-2)] bg-[var(--color-bone)] px-1.5 py-0.5 text-[10px] leading-none text-[var(--color-ink-3)]">
+        <kbd className="shrink-0 rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] px-1.5 py-0.5 text-[10px] leading-none font-[var(--font-mono)] text-[var(--color-text-subtle)]">
           {mac ? "⌘K" : "Ctrl+K"}
         </kbd>
       </button>
 
-      <div className="hidden flex-1 md:block" aria-hidden="true" />
+      <div className="flex-1" aria-hidden="true" />
 
       <div className="flex items-center gap-2">
         <PlatformPulsePill />
-        <span className="h-4 w-px bg-[var(--color-rule-2)]" aria-hidden="true" />
+        <span className="h-4 w-px bg-[var(--color-line)]" aria-hidden="true" />
         <LocaleSwitcher />
         <ThemeToggle />
         <OperatorAvatarMenu email={email} fullName={fullName} />

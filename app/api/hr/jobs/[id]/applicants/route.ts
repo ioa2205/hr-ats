@@ -36,6 +36,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const url = new URL(req.url);
     const page = Math.max(1, parseInt(url.searchParams.get("page") ?? "1", 10));
     const sort = (url.searchParams.get("sort") ?? "score") as SortOption;
+    const queryText = url.searchParams.get("q")?.trim();
+    const verdictFilter = url.searchParams.get("filter");
     const statusFilter = url.searchParams.getAll("status");
     const scoreMin = url.searchParams.get("scoreMin");
     const scoreMax = url.searchParams.get("scoreMax");
@@ -92,6 +94,20 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     }
     if (dateTo) {
       query = query.lte("created_at", dateTo);
+    }
+    if (queryText) {
+      query = query.ilike("full_name", `%${queryText}%`);
+    }
+    if (verdictFilter === "new") {
+      query = query.in("status", ["pending_analysis", "analyzing"]);
+    } else if (verdictFilter === "recommend") {
+      query = query.in("status", ["analyzed", "invited"]).gte("match_score", 80);
+    } else if (verdictFilter === "review") {
+      query = query.gte("match_score", 60).lt("match_score", 80);
+    } else if (verdictFilter === "reject") {
+      query = query.eq("status", "analyzed").lt("match_score", 60);
+    } else if (verdictFilter === "mismatch") {
+      query = query.eq("status", "unscored");
     }
 
     // Sort

@@ -69,7 +69,7 @@ export function CvTab({ candidateId }: CvTabProps) {
     <div className="space-y-3">
       <iframe
         src={url}
-        className="border-outline-variant bg-surface-container h-[720px] w-full rounded-[var(--radius-md)] border"
+        className="h-[min(720px,68dvh)] w-full rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)]"
         title={t("hr.applicants.cv_title")}
       />
       <div className="flex gap-2">

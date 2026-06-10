@@ -17,7 +17,7 @@ export const DialogOverlay = forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-black/40 backdrop-blur-sm",
+      "fixed inset-0 z-50 bg-[color-mix(in_srgb,#000_50%,transparent)] backdrop-blur-sm",
       "data-[state=open]:animate-in data-[state=open]:fade-in-0",
       "data-[state=closed]:animate-out data-[state=closed]:fade-out-0",
       className,
@@ -29,15 +29,15 @@ DialogOverlay.displayName = "DialogOverlay";
 
 export const DialogContent = forwardRef<
   HTMLDivElement,
-  ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => (
+  ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { hideClose?: boolean }
+>(({ className, children, hideClose, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "bg-surface shadow-level-3 fixed z-50 w-full",
-        "max-sm:inset-x-0 max-sm:bottom-0 max-sm:max-h-[85vh] max-sm:rounded-t-[var(--radius-xl)]",
+        "fixed z-50 w-full bg-[var(--color-surface)] text-[var(--color-text)] shadow-level-3",
+        "max-sm:inset-x-0 max-sm:bottom-0 max-sm:max-h-[90vh] max-sm:overflow-y-auto max-sm:rounded-t-[var(--radius-xl)]",
         "sm:top-1/2 sm:left-1/2 sm:max-w-md sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[var(--radius-xl)]",
         "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",
         "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
@@ -48,10 +48,14 @@ export const DialogContent = forwardRef<
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="text-on-surface-variant absolute top-4 right-4 rounded-[var(--radius-sm)] p-1 opacity-70 transition-opacity hover:opacity-100">
-        <X className="h-4 w-4" />
-        <span className="sr-only">Close</span>
-      </DialogPrimitive.Close>
+      {!hideClose && (
+        <DialogPrimitive.Close
+          className="absolute top-4 right-4 grid h-8 w-8 place-items-center rounded-[var(--radius-sm)] text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)]"
+          aria-label="Close"
+        >
+          <X className="h-4 w-4" />
+        </DialogPrimitive.Close>
+      )}
     </DialogPrimitive.Content>
   </DialogPortal>
 ));
@@ -70,7 +74,7 @@ export const DialogTitle = forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn("text-on-surface text-lg font-semibold", className)}
+    className={cn("text-lg font-semibold text-[var(--color-text)]", className)}
     {...props}
   />
 ));
@@ -82,7 +86,7 @@ export const DialogDescription = forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn("text-on-surface-variant text-sm", className)}
+    className={cn("text-sm text-[var(--color-text-muted)]", className)}
     {...props}
   />
 ));
@@ -90,7 +94,11 @@ DialogDescription.displayName = "DialogDescription";
 
 export const DialogFooter = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex justify-end gap-2 p-6 pt-4", className)} {...props} />
+    <div
+      ref={ref}
+      className={cn("flex flex-col-reverse gap-2 p-6 pt-4 sm:flex-row sm:justify-end", className)}
+      {...props}
+    />
   ),
 );
 DialogFooter.displayName = "DialogFooter";

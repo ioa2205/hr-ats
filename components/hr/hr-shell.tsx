@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, useSyncExternalStore, type ReactNode 
 import { HRChromeProvider, type HRChromeValue, type Theme } from "./hr-chrome-context";
 import { Sidebar } from "./sidebar";
 import { HRTopBar } from "./top-bar";
+import { HRMobileChrome, HRBottomNav } from "./mobile-nav";
 import { HRCommandPalette } from "./command-palette";
 import type { CompanyOption } from "./company-switcher";
 import type { Locale } from "@/lib/i18n/types";
@@ -46,7 +47,7 @@ export function HRShell({
   const [paletteOpen, setPaletteOpen] = useState(false);
 
   // Mirror the theme onto <html data-hr-theme> so Radix portals (Dialog,
-  // DropdownMenu, Tooltip) — which render outside the `.tezhr` subtree —
+  // DropdownMenu, Tooltip, Sheet) — which render outside the `.tezhr` subtree —
   // pick up the flipped tokens. The attribute is cleared on unmount so
   // leaving the HR route restores light mode for other surfaces.
   useEffect(() => {
@@ -68,13 +69,14 @@ export function HRShell({
   }, []);
 
   const value: HRChromeValue = { theme, setTheme, paletteOpen, setPaletteOpen };
+  const notifications = currentCompany ? { companyId: currentCompany.id, userId } : null;
 
   return (
     <HRChromeProvider value={value}>
       <div
         suppressHydrationWarning
         data-theme={theme}
-        className={`hr-shell-root tezhr ${theme === "dark" ? "dark" : ""} flex min-h-screen bg-[var(--color-bone)] text-[var(--color-ink)]`}
+        className={`hr-shell-root tezhr ${theme === "dark" ? "dark" : ""} flex min-h-screen bg-[var(--color-canvas)] text-[var(--color-text)]`}
       >
         <Sidebar
           locale={locale}
@@ -84,16 +86,23 @@ export function HRShell({
           counts={counts}
         />
         <div className="flex min-w-0 flex-1 flex-col">
-          <HRTopBar
+          <HRTopBar email={email} fullName={fullName} notifications={notifications} />
+          <HRMobileChrome
             email={email}
             fullName={fullName}
-            notifications={currentCompany ? { companyId: currentCompany.id, userId } : null}
+            notifications={notifications}
+            currentCompany={currentCompany}
+            companies={companies}
+            quotaBanner={quotaBanner}
           />
           <main className="flex-1 overflow-y-auto">
-            <div className="mx-auto max-w-[1280px] px-7 pt-6 pb-14">{children}</div>
+            <div className="mx-auto max-w-[1280px] px-4 pt-5 pb-24 sm:px-6 md:pb-14 lg:px-7">
+              {children}
+            </div>
           </main>
         </div>
       </div>
+      <HRBottomNav counts={counts} />
       <HRCommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
     </HRChromeProvider>
   );

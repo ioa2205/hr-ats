@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { FileText, Users, Layers, Link2, Settings as SettingsIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui";
 import { useTranslation } from "@/lib/i18n/provider";
 
 export type JobDetailTabId = "overview" | "applicants" | "pipeline" | "share" | "settings";
@@ -24,58 +24,49 @@ export function JobDetailTabs({
   share,
   settings,
 }: JobDetailTabsProps) {
-  const [tab, setTab] = useState<JobDetailTabId>("overview");
   const { t } = useTranslation();
 
   const tabs = [
-    { id: "overview" as const, label: t("hr.job.tabs.overview"), icon: FileText },
-    { id: "applicants" as const, label: t("hr.job.tabs.applicants"), icon: Users, count: candidateCount },
-    { id: "pipeline" as const, label: t("hr.job.tabs.pipeline"), icon: Layers },
-    { id: "share" as const, label: t("hr.job.tabs.share"), icon: Link2 },
-    { id: "settings" as const, label: t("hr.job.tabs.settings"), icon: SettingsIcon },
+    { id: "overview" as const, label: t("hr.job.tabs.overview"), icon: FileText, content: overview },
+    {
+      id: "applicants" as const,
+      label: t("hr.job.tabs.applicants"),
+      icon: Users,
+      count: candidateCount,
+      content: applicants,
+    },
+    { id: "pipeline" as const, label: t("hr.job.tabs.pipeline"), icon: Layers, content: pipeline },
+    { id: "share" as const, label: t("hr.job.tabs.share"), icon: Link2, content: share },
+    { id: "settings" as const, label: t("hr.job.tabs.settings"), icon: SettingsIcon, content: settings },
   ];
 
   return (
-    <>
-      <div className="border-rule mb-4 flex items-center gap-[2px] border-b">
+    <Tabs defaultValue="overview">
+      <TabsList className="overflow-x-auto">
         {tabs.map((ti) => {
           const Icon = ti.icon;
-          const active = tab === ti.id;
           return (
-            <button
+            <TabsTrigger
               key={ti.id}
-              type="button"
-              onClick={() => setTab(ti.id)}
-              className={cn(
-                "-mb-px inline-flex items-center gap-1.5 border-b-2 px-3 py-2 text-[12.5px] font-medium tracking-[-0.005em] transition-colors",
-                active
-                  ? "text-ink border-ink font-semibold"
-                  : "text-ink-4 hover:text-ink border-transparent",
-              )}
+              value={ti.id}
+              className="gap-1.5 px-3 whitespace-nowrap sm:px-4"
             >
-              <Icon className="h-3 w-3" />
+              <Icon className="h-3.5 w-3.5" aria-hidden="true" />
               {ti.label}
               {ti.count != null && (
-                <span
-                  className={cn(
-                    "text-[10px]",
-                    active ? "text-ink-3" : "text-ink-5",
-                  )}
-                  style={{ fontFamily: "var(--font-tez-mono)" }}
-                >
+                <span className="data-mono text-[10px] text-[var(--color-text-subtle)]">
                   {ti.count}
                 </span>
               )}
-            </button>
+            </TabsTrigger>
           );
         })}
-      </div>
-
-      {tab === "overview" && overview}
-      {tab === "applicants" && applicants}
-      {tab === "pipeline" && pipeline}
-      {tab === "share" && share}
-      {tab === "settings" && settings}
-    </>
+      </TabsList>
+      {tabs.map((ti) => (
+        <TabsContent key={ti.id} value={ti.id}>
+          {ti.content}
+        </TabsContent>
+      ))}
+    </Tabs>
   );
 }

@@ -47,15 +47,15 @@ test.describe("Full E2E Flow", () => {
     await expect(page.getByRole("heading", { name: "Создать вакансию" })).toBeVisible();
 
     const uniqueTitle = `E2E Test Position ${Date.now()}`;
-    await page.getByLabel("Название вакансии").fill(uniqueTitle);
+    await page.getByLabel("Название вакансии (RU)", { exact: true }).fill(uniqueTitle);
     await page
-      .locator("textarea#description")
+      .locator('textarea[name="description_ru"]')
       .fill(
         "Full-stack developer position. Requires experience with TypeScript and React. Must have strong communication skills.",
       );
 
     // Skills
-    const skillInput = page.getByLabel("Необходимые навыки");
+    const skillInput = page.getByRole("textbox", { name: "TypeScript, React, ..." });
     await skillInput.fill("TypeScript");
     await skillInput.press("Enter");
     await skillInput.fill("React");
@@ -72,9 +72,8 @@ test.describe("Full E2E Flow", () => {
     const secondReq = page.getByTestId("hard-req-row").nth(1);
     await secondReq.getByPlaceholder("Название (рус)").fill("Опыт работы (лет)");
     await secondReq.getByPlaceholder("Название (узб)").fill("Ish tajribasi (yil)");
-    await secondReq.locator("button[role=combobox]").click();
-    await page.getByRole("option", { name: "Мин. число" }).click();
-    await secondReq.getByPlaceholder("Мин.").fill("1");
+    await secondReq.locator("label", { hasText: "Мин. число" }).click();
+    await secondReq.getByPlaceholder("3").fill("1");
 
     // Submit
     await page.getByRole("button", { name: /создать вакансию/i }).click();

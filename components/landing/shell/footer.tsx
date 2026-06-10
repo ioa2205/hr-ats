@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getT } from "@/lib/i18n/server";
-import { TelegramIcon, Wordmark } from "../icons";
+import { TezSignalWordmark } from "@/components/brand/tez-signal";
+import { TelegramIcon } from "../icons";
 import { TELEGRAM_URL } from "../constants";
 import { LocaleSwitcher } from "./locale-switcher";
 import { StatusPill } from "./status-pill";
@@ -14,10 +15,7 @@ interface FooterLink {
 function Col({ title, items }: { title: string; items: FooterLink[] }) {
   return (
     <div>
-      <div
-        className="mono mb-4 text-[10px] tracking-[0.2em]"
-        style={{ color: "var(--ink-3)" }}
-      >
+      <div className="mono mb-4 text-[10px] tracking-[0.2em]" style={{ color: "var(--ink-3)" }}>
         {title}
       </div>
       <ul className="m-0 flex list-none flex-col gap-3 p-0">
@@ -82,9 +80,9 @@ export async function LandingFooter() {
       <div className="mx-auto" style={{ maxWidth: 1360 }}>
         <div className="grid gap-10 md:grid-cols-[1.8fr_1fr_1fr_1fr]">
           <div className="flex max-w-[360px] flex-col gap-4">
-            <Wordmark size={38} />
+            <TezSignalWordmark size={30} />
             <p
-              className="serif m-0 text-[16px] italic leading-[1.5]"
+              className="serif m-0 text-[16px] leading-[1.5] italic"
               style={{ color: "var(--ink-3)" }}
             >
               {t("landing.footer.tagline")}
@@ -103,10 +101,7 @@ export async function LandingFooter() {
           style={{ borderColor: "var(--ink)" }}
         >
           <div className="flex flex-wrap items-center gap-5">
-            <span
-              className="mono text-[11px] tracking-[0.1em]"
-              style={{ color: "var(--ink-3)" }}
-            >
+            <span className="mono text-[11px] tracking-[0.1em]" style={{ color: "var(--ink-3)" }}>
               {t("landing.footer.copy")}
             </span>
             <Link

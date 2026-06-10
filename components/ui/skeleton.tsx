@@ -13,8 +13,8 @@ export function Skeleton({ variant = "text", className, width, height }: Skeleto
   return (
     <div
       className={cn(
-        "bg-surface-container animate-pulse",
-        variant === "text" && "h-[1em] w-full rounded-[var(--radius-md)]",
+        "animate-pulse bg-[var(--color-surface-strong)] motion-reduce:animate-none",
+        variant === "text" && "h-[1em] w-full rounded-[var(--radius-sm)]",
         variant === "rect" && "rounded-[var(--radius-md)]",
         variant === "circle" && "rounded-full",
         className,

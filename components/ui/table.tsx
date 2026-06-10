@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 export const Table = forwardRef<HTMLTableElement, HTMLAttributes<HTMLTableElement>>(
   ({ className, ...props }, ref) => (
-    <div className="w-full overflow-auto">
+    <div className="w-full overflow-x-auto">
       <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
     </div>
   ),
@@ -21,7 +21,7 @@ export const TableHeader = forwardRef<
 >(({ className, ...props }, ref) => (
   <thead
     ref={ref}
-    className={cn("[&_tr]:border-outline-variant [&_tr]:border-b", className)}
+    className={cn("[&_tr]:border-b [&_tr]:border-[var(--color-line)]", className)}
     {...props}
   />
 ));
@@ -40,7 +40,7 @@ export const TableRow = forwardRef<HTMLTableRowElement, HTMLAttributes<HTMLTable
     <tr
       ref={ref}
       className={cn(
-        "border-outline-variant hover:bg-surface-container border-b transition-colors",
+        "border-b border-[var(--color-line)] transition-colors hover:bg-[var(--color-surface-subtle)] data-[state=selected]:bg-[var(--color-primary-container)]",
         className,
       )}
       {...props}
@@ -54,7 +54,7 @@ export const TableHead = forwardRef<HTMLTableCellElement, ThHTMLAttributes<HTMLT
     <th
       ref={ref}
       className={cn(
-        "text-on-surface-variant h-10 px-4 text-left align-middle text-xs font-medium",
+        "h-10 px-4 text-left align-middle text-xs font-semibold text-[var(--color-text-muted)]",
         className,
       )}
       {...props}
@@ -67,7 +67,7 @@ export const TableCell = forwardRef<HTMLTableCellElement, TdHTMLAttributes<HTMLT
   ({ className, ...props }, ref) => (
     <td
       ref={ref}
-      className={cn("text-on-surface px-4 py-3 align-middle text-sm", className)}
+      className={cn("px-4 py-3 align-middle text-sm text-[var(--color-text)]", className)}
       {...props}
     />
   ),

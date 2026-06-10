@@ -1,5 +1,5 @@
 import { getT } from "@/lib/i18n/server";
-import { Wordmark } from "../icons";
+import { TezSignalWordmark } from "@/components/brand/tez-signal";
 import { LOGIN_HREF, SIGNUP_HREF } from "../constants";
 import { ScrollSpyNav } from "./scroll-spy-nav";
 
@@ -32,8 +32,8 @@ export async function LandingNav() {
       }}
       signupHref={SIGNUP_HREF}
       loginHref={LOGIN_HREF}
-      brand={<Wordmark size={28} />}
-      brandMobile={<Wordmark size={24} />}
+      brand={<TezSignalWordmark size={22} />}
+      brandMobile={<TezSignalWordmark size={20} />}
       homeHref="/"
     />
   );

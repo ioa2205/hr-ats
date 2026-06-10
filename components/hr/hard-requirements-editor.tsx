@@ -19,7 +19,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, X, Plus, CheckSquare, Hash } from "lucide-react";
-import { TezButton, SectionH } from "@/components/hr/design";
+import { Button, SegmentedControl } from "@/components/ui";
 import type { HardRequirement } from "@/types";
 import { useTranslation } from "@/lib/i18n/provider";
 import { cn } from "@/lib/utils";
@@ -65,11 +65,11 @@ function SortableRequirement({
       ref={setNodeRef}
       style={style}
       data-testid="hard-req-row"
-      className="border-rule bg-paper shadow-tez-1 flex items-stretch gap-0 rounded-md border"
+      className="flex items-stretch gap-0 overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)]"
     >
       <button
         type="button"
-        className="border-rule text-ink-5 hover:bg-bone-2 hover:text-ink flex shrink-0 cursor-grab touch-none items-center justify-center border-r px-2 transition-colors active:cursor-grabbing"
+        className="flex shrink-0 cursor-grab touch-none items-center justify-center border-r border-[var(--color-line)] px-2 text-[var(--color-text-subtle)] transition-colors hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)] active:cursor-grabbing"
         {...attributes}
         {...listeners}
         aria-label={t("hr.req.drag_handle")}
@@ -80,39 +80,28 @@ function SortableRequirement({
       <div className="flex flex-1 flex-col gap-2 p-3">
         {/* Type + value row */}
         <div className="flex flex-wrap items-center gap-2">
-          <div
-            className="border-rule-2 bg-bone inline-flex h-[26px] items-center rounded-[4px] border p-[1px]"
-          >
-            <button
-              type="button"
-              onClick={() => onUpdate(index, "type", "boolean")}
-              className={cn(
-                "inline-flex items-center gap-1 rounded-[3px] px-2 text-[11.5px] font-medium transition-colors",
-                isBool ? "bg-paper text-ink shadow-tez-1" : "text-ink-4 hover:text-ink",
-              )}
-            >
-              <CheckSquare className="h-3 w-3" />
-              {t("hr.req.type_boolean")}
-            </button>
-            <button
-              type="button"
-              onClick={() => onUpdate(index, "type", "number")}
-              className={cn(
-                "inline-flex items-center gap-1 rounded-[3px] px-2 text-[11.5px] font-medium transition-colors",
-                !isBool ? "bg-paper text-ink shadow-tez-1" : "text-ink-4 hover:text-ink",
-              )}
-            >
-              <Hash className="h-3 w-3" />
-              {t("hr.req.type_min")}
-            </button>
-          </div>
+          <SegmentedControl<"boolean" | "number">
+            size="sm"
+            value={requirement.type}
+            onChange={(v) => onUpdate(index, "type", v)}
+            aria-label={t("hr.job.requirements_label")}
+            options={[
+              {
+                value: "boolean",
+                label: t("hr.req.type_boolean"),
+                icon: <CheckSquare className="h-3 w-3" />,
+              },
+              {
+                value: "number",
+                label: t("hr.req.type_min"),
+                icon: <Hash className="h-3 w-3" />,
+              },
+            ]}
+          />
 
           {!isBool && (
             <div className="flex items-center gap-1.5">
-              <label
-                className="text-ink-5 text-[10.5px] uppercase tracking-[0.08em]"
-                style={{ fontFamily: "var(--font-tez-mono)" }}
-              >
+              <label className="data-mono text-[10.5px] tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
                 {t("hr.req.min_placeholder")}
               </label>
               <input
@@ -121,17 +110,14 @@ function SortableRequirement({
                 placeholder="3"
                 value={requirement.min_value ?? ""}
                 onChange={(e) =>
-                  onUpdate(
-                    index,
-                    "min_value",
-                    e.target.value ? Number(e.target.value) : null,
-                  )
+                  onUpdate(index, "min_value", e.target.value ? Number(e.target.value) : null)
                 }
                 className={cn(
-                  "border-rule-2 bg-paper h-7 w-16 rounded-[4px] border px-2 text-center text-[12.5px]",
-                  error && !isBool && !requirement.min_value && "border-[color:var(--color-tez-red)]",
+                  "data-mono h-8 w-16 rounded-[var(--radius-sm)] border bg-[var(--color-surface)] px-2 text-center text-[12.5px] text-[var(--color-text)] outline-none focus:border-[var(--color-focus)]",
+                  error && !requirement.min_value
+                    ? "border-[var(--color-danger)]"
+                    : "border-[var(--color-line-strong)]",
                 )}
-                style={{ fontFamily: "var(--font-tez-mono)" }}
               />
             </div>
           )}
@@ -139,7 +125,7 @@ function SortableRequirement({
           <button
             type="button"
             onClick={() => onRemove(index)}
-            className="text-ink-5 hover:bg-[color:var(--color-tez-red-tint)] hover:text-[color:var(--color-tez-red)] ml-auto rounded-[4px] p-1.5 transition-colors"
+            className="ml-auto rounded-[var(--radius-sm)] p-1.5 text-[var(--color-text-subtle)] transition-colors hover:bg-[var(--color-danger-container)] hover:text-[var(--color-danger)]"
             aria-label={t("hr.req.delete_label")}
           >
             <X className="h-3.5 w-3.5" />
@@ -188,11 +174,13 @@ function LabeledInput({
   error?: boolean;
 }) {
   return (
-    <div className="border-rule-2 bg-paper flex h-[32px] items-center overflow-hidden rounded-[4px] border focus-within:border-[color:var(--color-ink)]">
-      <span
-        className="bg-bone text-ink-5 border-rule flex h-full w-8 shrink-0 items-center justify-center border-r text-[10px] font-semibold uppercase tracking-[0.08em]"
-        style={{ fontFamily: "var(--font-tez-mono)" }}
-      >
+    <div
+      className={cn(
+        "flex h-9 items-center overflow-hidden rounded-[var(--radius-sm)] border bg-[var(--color-surface)] transition-colors focus-within:border-[var(--color-focus)]",
+        error ? "border-[var(--color-danger)]" : "border-[var(--color-line-strong)]",
+      )}
+    >
+      <span className="data-mono flex h-full w-8 shrink-0 items-center justify-center border-r border-[var(--color-line)] bg-[var(--color-surface-subtle)] text-[10px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
         {localeLabel}
       </span>
       <input
@@ -200,10 +188,7 @@ function LabeledInput({
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={cn(
-          "min-w-0 flex-1 border-0 bg-transparent px-2.5 text-[12.5px] outline-none",
-          error && "text-[color:var(--color-tez-red)]",
-        )}
+        className="min-w-0 flex-1 bg-transparent px-2.5 text-[12.5px] text-[var(--color-text)] outline-none placeholder:text-[var(--color-text-subtle)]"
       />
     </div>
   );
@@ -270,9 +255,7 @@ export function HardRequirementsEditor({
 
   return (
     <div className="flex flex-col gap-3">
-      <SectionH title={t("hr.job.requirements_label")} />
-
-      <p className="text-ink-4 -mt-2 text-[12px]">{t("hr.job.requirements_hint")}</p>
+      <p className="text-[12px] text-[var(--color-text-muted)]">{t("hr.job.requirements_hint")}</p>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={value.map((r) => r.id)} strategy={verticalListSortingStrategy}>
@@ -291,16 +274,10 @@ export function HardRequirementsEditor({
         </SortableContext>
       </DndContext>
 
-      <TezButton
-        type="button"
-        variant="secondary"
-        size="sm"
-        onClick={addRequirement}
-        leadingIcon={<Plus className="h-3 w-3" />}
-        className="self-start"
-      >
+      <Button type="button" variant="secondary" size="sm" onClick={addRequirement} className="self-start">
+        <Plus className="h-3.5 w-3.5" />
         {t("hr.job.add_requirement")}
-      </TezButton>
+      </Button>
     </div>
   );
 }

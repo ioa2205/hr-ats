@@ -12,7 +12,7 @@ export const TabsList = forwardRef<
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.List
     ref={ref}
-    className={cn("border-outline-variant flex border-b", className)}
+    className={cn("flex border-b border-[var(--color-line)]", className)}
     {...props}
   />
 ));
@@ -25,13 +25,14 @@ export const TabsTrigger = forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "text-on-surface-variant relative inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium",
-      "transition-colors duration-200 ease-[var(--ease-standard)]",
-      "hover:text-on-surface",
-      "data-[state=active]:text-primary",
+      "relative inline-flex min-h-11 items-center justify-center px-4 py-2.5 text-sm font-medium text-[var(--color-text-muted)]",
+      "transition-colors duration-150 ease-[var(--ease-standard)]",
+      "hover:text-[var(--color-text)]",
+      "disabled:pointer-events-none disabled:opacity-50",
+      "data-[state=active]:text-[var(--color-primary)]",
       "after:absolute after:right-0 after:bottom-0 after:left-0 after:h-0.5",
-      "after:bg-primary after:origin-center after:scale-x-0",
-      "after:transition-transform after:duration-200 after:ease-[var(--ease-emphasized)]",
+      "after:origin-center after:scale-x-0 after:bg-[var(--color-primary)]",
+      "after:transition-transform after:duration-200 after:ease-[var(--ease-emphasized)] motion-reduce:after:transition-none",
       "data-[state=active]:after:scale-x-100",
       className,
     )}
