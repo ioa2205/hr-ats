@@ -2,15 +2,16 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Radar } from "lucide-react";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireCompanyAccess } from "@/lib/auth/guards";
 import { getLocale, t } from "@/lib/i18n";
 import { pickLocalized } from "@/lib/i18n/pick-localized";
-import { Panel, PanelHeader, PanelTitle } from "@/components/hr/design";
+import { Badge, EmptyState, Panel, PanelHeader, PanelTitle } from "@/components/ui";
 import { FindCandidatesButton } from "@/components/hr/sourcing/find-candidates-button";
 import { SourcingAutoRefresh } from "@/components/hr/sourcing/sourcing-auto-refresh";
 import { availableSourcesForCompany } from "@/lib/sourcing/availability";
+import type { BadgeTone } from "@/components/ui";
 import type { TranslationKey } from "@/lib/i18n/types";
 import type { SourcingStats, SourcingStatus } from "@/lib/sourcing/types";
 
@@ -22,12 +23,12 @@ const STATUS_KEY: Record<SourcingStatus, TranslationKey> = {
   failed: "sourcing.results.status.failed",
 };
 
-const STATUS_TONE: Record<SourcingStatus, string> = {
-  queued: "bg-bone text-ink-3 border-rule",
-  running: "bg-amber-50 text-amber-700 border-amber-200",
-  completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  partial: "bg-amber-50 text-amber-700 border-amber-200",
-  failed: "bg-red-50 text-red-600 border-red-200",
+const STATUS_TONE: Record<SourcingStatus, BadgeTone> = {
+  queued: "neutral",
+  running: "info",
+  completed: "success",
+  partial: "warning",
+  failed: "danger",
 };
 
 export default async function SourcingRunsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -67,25 +68,25 @@ export default async function SourcingRunsPage({ params }: { params: Promise<{ i
       <SourcingAutoRefresh active={hasInflight} />
 
       {/* Breadcrumb */}
-      <div className="text-ink-5 mb-2 flex items-center gap-1.5 text-[11px] font-medium">
+      <div className="mb-2 flex items-center gap-1.5 text-[11px] font-medium text-[var(--color-text-subtle)]">
         <Link
           href={`/hr/jobs/${jobId}`}
-          className="text-ink-4 hover:bg-bone-2 inline-flex items-center gap-1 rounded-[4px] px-1.5 py-1 text-[11.5px]"
+          className="inline-flex items-center gap-1 rounded-[var(--radius-sm)] px-1.5 py-1 text-[11.5px] text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)]"
         >
           <ChevronLeft className="h-3 w-3" />
           {jobTitle}
         </Link>
-        <span>/</span>
-        <span className="text-ink-3 truncate">{t("sourcing.runs.breadcrumb", locale)}</span>
+        <span aria-hidden>/</span>
+        <span className="truncate text-[var(--color-text)]">{t("sourcing.runs.breadcrumb", locale)}</span>
       </div>
 
       {/* Header */}
-      <div className="mb-5 flex items-start justify-between gap-6">
+      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
         <div className="min-w-0">
-          <h1 className="text-ink text-[26px] font-semibold leading-[1.1] tracking-[-0.018em]">
+          <h1 className="text-[clamp(1.5rem,4vw,1.65rem)] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--color-text)]">
             {t("sourcing.runs.title", locale)}
           </h1>
-          <p className="text-ink-4 mt-1.5 max-w-[640px] text-[13px]">
+          <p className="mt-1.5 max-w-[640px] text-[13px] text-[var(--color-text-muted)]">
             {t("sourcing.runs.subtitle", locale)}
           </p>
         </div>
@@ -104,32 +105,26 @@ export default async function SourcingRunsPage({ params }: { params: Promise<{ i
           <PanelTitle count={rows.length}>{t("sourcing.runs.title", locale)}</PanelTitle>
         </PanelHeader>
         {rows.length === 0 ? (
-          <div className="px-5 py-12 text-center">
-            <div className="text-ink-2 text-[14px] font-semibold">
-              {t("sourcing.runs.empty_title", locale)}
-            </div>
-            <p className="text-ink-5 mx-auto mt-1.5 max-w-[420px] text-[12.5px]">
-              {t("sourcing.runs.empty_hint", locale)}
-            </p>
-          </div>
+          <EmptyState
+            icon={<Radar />}
+            title={t("sourcing.runs.empty_title", locale)}
+            description={t("sourcing.runs.empty_hint", locale)}
+            compact
+          />
         ) : (
           <ul>
             {rows.map((run) => {
               const status = run.status as SourcingStatus;
               const stats = (run.stats ?? {}) as Partial<SourcingStats>;
               return (
-                <li key={run.id} className="border-rule border-b last:border-b-0">
+                <li key={run.id} className="border-b border-[var(--color-line)] last:border-b-0">
                   <Link
                     href={`/hr/jobs/${jobId}/sourcing/${run.id}`}
-                    className="hover:bg-bone-2 flex items-center justify-between gap-4 px-5 py-3.5 transition-colors"
+                    className="flex min-h-[56px] items-center justify-between gap-4 px-4 py-3 transition-colors hover:bg-[var(--color-surface-subtle)] sm:px-5"
                   >
                     <div className="flex min-w-0 items-center gap-3">
-                      <span
-                        className={`inline-flex shrink-0 items-center rounded-[4px] border px-2 py-0.5 text-[11px] font-medium ${STATUS_TONE[status]}`}
-                      >
-                        {t(STATUS_KEY[status], locale)}
-                      </span>
-                      <span className="text-ink-3 text-[12.5px] whitespace-nowrap">
+                      <Badge tone={STATUS_TONE[status]}>{t(STATUS_KEY[status], locale)}</Badge>
+                      <span className="text-[12.5px] whitespace-nowrap text-[var(--color-text-muted)]">
                         {new Date(run.created_at).toLocaleString(locale, {
                           day: "2-digit",
                           month: "short",
@@ -139,22 +134,16 @@ export default async function SourcingRunsPage({ params }: { params: Promise<{ i
                       </span>
                     </div>
                     <div className="flex items-center gap-4">
-                      <span
-                        className="text-ink-5 hidden text-[11.5px] sm:inline"
-                        style={{ fontFamily: "var(--font-tez-mono)" }}
-                      >
+                      <span className="data-mono hidden text-[11.5px] text-[var(--color-text-subtle)] sm:inline">
                         {t("sourcing.runs.funnel_summary", locale, {
                           fetched: String(stats.fetched ?? 0),
                           shortlisted: String(stats.shortlisted ?? 0),
                         })}
                       </span>
-                      <span
-                        className="text-ink-5 text-[11px]"
-                        style={{ fontFamily: "var(--font-tez-mono)" }}
-                      >
+                      <span className="data-mono text-[11px] text-[var(--color-text-subtle)]">
                         ${Number(run.cost_usd ?? 0).toFixed(4)}
                       </span>
-                      <ChevronRight className="text-ink-5 h-4 w-4 shrink-0" />
+                      <ChevronRight className="h-4 w-4 shrink-0 text-[var(--color-text-subtle)]" />
                     </div>
                   </Link>
                 </li>

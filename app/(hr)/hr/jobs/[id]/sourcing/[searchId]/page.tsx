@@ -2,12 +2,13 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Radar } from "lucide-react";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireCompanyAccess } from "@/lib/auth/guards";
 import { getLocale, t } from "@/lib/i18n";
 import { pickLocalized } from "@/lib/i18n/pick-localized";
-import { Panel, PanelHeader, PanelTitle, StatTile } from "@/components/hr/design";
+import { Alert, Badge, EmptyState, Panel, PanelHeader, PanelTitle } from "@/components/ui";
+import type { BadgeTone } from "@/components/ui";
 import { funnelDrops, type FunnelDrop } from "@/lib/sourcing/summary";
 import { safeHttpUrl } from "@/lib/utils";
 import { FindCandidatesButton } from "@/components/hr/sourcing/find-candidates-button";
@@ -62,12 +63,12 @@ const DROP_KEPT_KEY: Record<FunnelDrop["stage"], TranslationKey> = {
   verify: "sourcing.results.stat.verified",
 };
 
-const STATUS_TONE: Record<SourcingStatus, string> = {
-  queued: "bg-bone text-ink-3 border-rule",
-  running: "bg-amber-50 text-amber-700 border-amber-200",
-  completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  partial: "bg-amber-50 text-amber-700 border-amber-200",
-  failed: "bg-red-50 text-red-600 border-red-200",
+const STATUS_TONE: Record<SourcingStatus, BadgeTone> = {
+  queued: "neutral",
+  running: "info",
+  completed: "success",
+  partial: "warning",
+  failed: "danger",
 };
 
 export default async function SourcingResultsPage({
@@ -206,38 +207,33 @@ export default async function SourcingResultsPage({
       <SourcingAutoRefresh active={isRunning} />
 
       {/* Breadcrumb */}
-      <div className="text-ink-5 mb-2 flex items-center gap-1.5 text-[11px] font-medium">
+      <div className="mb-2 flex items-center gap-1.5 text-[11px] font-medium text-[var(--color-text-subtle)]">
         <Link
           href={`/hr/jobs/${jobId}`}
-          className="text-ink-4 hover:bg-bone-2 inline-flex items-center gap-1 rounded-[4px] px-1.5 py-1 text-[11.5px]"
+          className="inline-flex items-center gap-1 rounded-[var(--radius-sm)] px-1.5 py-1 text-[11.5px] text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)]"
         >
           <ChevronLeft className="h-3 w-3" />
           {jobTitle}
         </Link>
-        <span>/</span>
-        <span className="text-ink-3 truncate">{t("sourcing.results.breadcrumb", locale)}</span>
+        <span aria-hidden>/</span>
+        <span className="truncate text-[var(--color-text)]">{t("sourcing.results.breadcrumb", locale)}</span>
       </div>
 
       {/* Header */}
-      <div className="mb-5 flex items-start justify-between gap-6">
+      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
         <div className="min-w-0">
-          <h1 className="text-ink text-[26px] font-semibold leading-[1.1] tracking-[-0.018em]">
+          <h1 className="text-[clamp(1.5rem,4vw,1.65rem)] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--color-text)]">
             {t("sourcing.results.title", locale)}
           </h1>
-          <p className="text-ink-4 mt-1.5 max-w-[640px] text-[13px]">
+          <p className="mt-1.5 max-w-[640px] text-[13px] text-[var(--color-text-muted)]">
             {t("sourcing.results.subtitle", locale)}
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-3">
-            <span
-              className={`inline-flex items-center rounded-[4px] border px-2 py-0.5 text-[11.5px] font-medium ${STATUS_TONE[status]}`}
-            >
+            <Badge tone={STATUS_TONE[status]} variant={isRunning ? "pulse" : "default"}>
               {t("sourcing.results.status_label", locale)}: {t(STATUS_KEY[status], locale)}
-            </span>
+            </Badge>
             {search.cost_usd != null && (
-              <span
-                className="text-ink-5 text-[11px]"
-                style={{ fontFamily: "var(--font-tez-mono)" }}
-              >
+              <span className="data-mono text-[11px] text-[var(--color-text-subtle)]">
                 {t("sourcing.results.cost_label", locale)} ${Number(search.cost_usd).toFixed(4)} ·{" "}
                 {(search.input_tokens ?? 0) + (search.output_tokens ?? 0)} tok
               </span>
@@ -257,14 +253,20 @@ export default async function SourcingResultsPage({
         </div>
       </div>
 
-      {/* Stats */}
+      {/* Stats — funnel counts at a glance */}
       <div className="mb-5 grid grid-cols-3 gap-2 md:grid-cols-6">
         {statTiles.map((tile) => (
-          <StatTile
+          <div
             key={tile.key}
-            label={t(tile.labelKey, locale)}
-            value={stats[tile.key] ?? 0}
-          />
+            className="flex flex-col gap-1 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)] px-3.5 py-3"
+          >
+            <span className="text-[11px] font-medium text-[var(--color-text-muted)]">
+              {t(tile.labelKey, locale)}
+            </span>
+            <span className="text-[22px] font-bold leading-none tracking-[-0.02em] tabular-nums text-[var(--color-text)]">
+              {stats[tile.key] ?? 0}
+            </span>
+          </div>
         ))}
       </div>
 
@@ -275,23 +277,16 @@ export default async function SourcingResultsPage({
           <PanelHeader>
             <PanelTitle>{t("sourcing.config.searched_title", locale)}</PanelTitle>
           </PanelHeader>
-          <div className="space-y-3 px-5 py-3.5">
+          <div className="space-y-3 px-4 py-3.5 sm:px-5">
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-ink-4 mr-1 text-[11.5px]">
+              <span className="mr-1 text-[11.5px] text-[var(--color-text-muted)]">
                 {t("sourcing.config.sources_label", locale)}:
               </span>
               {searchedSources.map((src) => {
                 const degraded = degradedBySource.get(src);
                 const count = perSource[src];
                 return (
-                  <span
-                    key={src}
-                    className={`inline-flex items-center gap-1.5 rounded-[4px] border px-2 py-0.5 text-[11.5px] ${
-                      degraded
-                        ? "border-red-200 bg-red-50 text-red-600"
-                        : "border-rule bg-bone text-ink-3"
-                    }`}
-                  >
+                  <Badge key={src} tone={degraded ? "danger" : "neutral"}>
                     {t(SOURCE_KEY[src], locale)}
                     {degraded ? (
                       <span className="text-[11px]">
@@ -299,14 +294,9 @@ export default async function SourcingResultsPage({
                           t("sourcing.config.source_failed", locale)}
                       </span>
                     ) : (
-                      <span
-                        className="text-ink-5"
-                        style={{ fontFamily: "var(--font-tez-mono)" }}
-                      >
-                        {count ?? 0}
-                      </span>
+                      <span className="data-mono">{count ?? 0}</span>
                     )}
-                  </span>
+                  </Badge>
                 );
               })}
             </div>
@@ -314,28 +304,26 @@ export default async function SourcingResultsPage({
             {showHhConfig && (
               <div className="space-y-1.5 text-[12px]">
                 <div className="flex flex-wrap items-baseline gap-1.5">
-                  <span className="text-ink-4 text-[11.5px]">
+                  <span className="text-[11.5px] text-[var(--color-text-muted)]">
                     {t("sourcing.config.keywords_used", locale)}:
                   </span>
-                  <span className="text-ink-2" style={{ fontFamily: "var(--font-tez-mono)" }}>
-                    {hhQuery || "—"}
-                  </span>
-                  <span className="text-ink-5 text-[11px]">
+                  <span className="data-mono text-[var(--color-text)]">{hhQuery || "—"}</span>
+                  <span className="text-[11px] text-[var(--color-text-subtle)]">
                     {overrodeKeywords
                       ? t("sourcing.config.tag_yours", locale)
                       : t("sourcing.config.tag_ai", locale)}
                   </span>
                 </div>
                 {overrodeKeywords && aiKeywords.length > 0 && (
-                  <div className="text-ink-5 text-[11px]">
+                  <div className="text-[11px] text-[var(--color-text-subtle)]">
                     {t("sourcing.config.ai_suggested", locale)}: {joinKeywords(aiKeywords)}
                   </div>
                 )}
                 <div className="flex flex-wrap items-baseline gap-1.5">
-                  <span className="text-ink-4 text-[11.5px]">
+                  <span className="text-[11.5px] text-[var(--color-text-muted)]">
                     {t("sourcing.config.region_label", locale)}:
                   </span>
-                  <span className="text-ink-2">{hhRegionLabel}</span>
+                  <span className="text-[var(--color-text)]">{hhRegionLabel}</span>
                 </div>
               </div>
             )}
@@ -349,29 +337,29 @@ export default async function SourcingResultsPage({
         <Panel className="mb-5">
           <PanelHeader>
             <PanelTitle>{t("sourcing.results.funnel_title", locale)}</PanelTitle>
-            <span className="text-ink-5 text-[11.5px]">
+            <span className="text-[11.5px] text-[var(--color-text-subtle)]">
               {t("sourcing.results.funnel_subtitle", locale)}
             </span>
           </PanelHeader>
-          <ul className="divide-rule divide-y">
+          <ul className="divide-y divide-[var(--color-line)]">
             {drops.map((rung) => (
               <li
                 key={rung.stage}
-                className="flex items-center justify-between gap-4 px-5 py-2.5 text-[12.5px]"
+                className="flex items-center justify-between gap-4 px-4 py-2.5 text-[12.5px] sm:px-5"
               >
-                <span className="text-ink-3">
+                <span className="text-[var(--color-text)]">
                   {t(DROP_KEPT_KEY[rung.stage], locale)}
-                  <span className="text-ink-5 ml-2" style={{ fontFamily: "var(--font-tez-mono)" }}>
+                  <span className="data-mono ml-2 text-[var(--color-text-subtle)]">
                     {rung.entered} → {rung.kept}
                   </span>
                 </span>
                 {rung.dropped > 0 ? (
-                  <span className="text-ink-4 text-right text-[11.5px]">
+                  <span className="text-right text-[11.5px] text-[var(--color-text-muted)]">
                     {t("sourcing.results.drop_count", locale, { count: String(rung.dropped) })}{" "}
                     {t(DROP_REASON_KEY[rung.stage], locale)}
                   </span>
                 ) : (
-                  <span className="text-ink-5 text-[11.5px]">
+                  <span className="text-[11.5px] text-[var(--color-text-subtle)]">
                     {t("sourcing.results.drop_none", locale)}
                   </span>
                 )}
@@ -382,29 +370,30 @@ export default async function SourcingResultsPage({
       )}
 
       {status === "partial" && (
-        <div className="mb-4 rounded-[6px] border border-amber-200 bg-amber-50 px-4 py-2.5 text-[12.5px] text-amber-800">
-          <div>{t("sourcing.results.partial_note", locale)}</div>
-          {degradedSources.length > 0 && (
-            <div className="mt-1">
-              {t("sourcing.results.degraded_note", locale, {
-                sources: degradedSources.map((s) => t(SOURCE_KEY[s], locale)).join(", "),
-              })}
+        <Alert tone="warning" className="mb-4" title={t("sourcing.results.partial_note", locale)}>
+          {(degradedSources.length > 0 || hasHhDegraded) && (
+            <div className="flex flex-col gap-1">
+              {degradedSources.length > 0 && (
+                <span>
+                  {t("sourcing.results.degraded_note", locale, {
+                    sources: degradedSources.map((s) => t(SOURCE_KEY[s], locale)).join(", "),
+                  })}
+                </span>
+              )}
+              {hasHhDegraded && <span>{t("sourcing.results.hh_reconnect_hint", locale)}</span>}
             </div>
           )}
-          {hasHhDegraded && (
-            <div className="mt-1">{t("sourcing.results.hh_reconnect_hint", locale)}</div>
-          )}
-        </div>
+        </Alert>
       )}
       {status === "failed" && (
-        <div className="mb-4 rounded-[6px] border border-red-200 bg-red-50 px-4 py-2.5 text-[12.5px] text-red-700">
+        <Alert tone="danger" className="mb-4">
           {t("sourcing.results.failed_hint", locale)}
-        </div>
+        </Alert>
       )}
       {isRunning && (
-        <div className="border-rule bg-bone text-ink-3 mb-4 rounded-[6px] border px-4 py-2.5 text-[12.5px]">
+        <Alert tone="info" className="mb-4">
           {t("sourcing.results.running_hint", locale)}
-        </div>
+        </Alert>
       )}
 
       {/* Results */}
@@ -412,22 +401,22 @@ export default async function SourcingResultsPage({
         <PanelHeader>
           <PanelTitle count={cards.length}>{t("sourcing.results.title", locale)}</PanelTitle>
           {cards.length > 0 && (
-            <span className="text-ink-5 text-[11.5px]">
+            <span className="text-[11.5px] text-[var(--color-text-subtle)]">
               {t("sourcing.results.count_summary", locale, { count: String(cards.length) })}
             </span>
           )}
         </PanelHeader>
         {cards.length === 0 ? (
-          <div className="px-5 py-12 text-center">
-            <div className="text-ink-2 text-[14px] font-semibold">
-              {isRunning ? t("sourcing.results.status.running", locale) : t("sourcing.results.empty_title", locale)}
-            </div>
-            {!isRunning && (
-              <p className="text-ink-5 mx-auto mt-1.5 max-w-[420px] text-[12.5px]">
-                {t("sourcing.results.empty_hint", locale)}
-              </p>
-            )}
-          </div>
+          <EmptyState
+            icon={<Radar />}
+            title={
+              isRunning
+                ? t("sourcing.results.status.running", locale)
+                : t("sourcing.results.empty_title", locale)
+            }
+            description={isRunning ? undefined : t("sourcing.results.empty_hint", locale)}
+            compact
+          />
         ) : (
           <div>
             {cards.map((card) => (

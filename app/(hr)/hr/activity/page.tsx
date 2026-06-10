@@ -1,8 +1,9 @@
 export const dynamic = "force-dynamic";
 
+import { Activity } from "lucide-react";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireCompanyAccess } from "@/lib/auth/guards";
-import { Panel } from "@/components/hr/design";
+import { EmptyState, Panel } from "@/components/ui";
 import { getLocale, t } from "@/lib/i18n";
 import type { Locale, TranslationKey } from "@/lib/i18n/types";
 
@@ -60,38 +61,39 @@ export default async function ActivityPage() {
   const list = events ?? [];
 
   return (
-    <div>
-      <div className="text-ink-5 mb-1.5 flex items-center gap-1.5 text-[11px] font-medium">
-        {t("hr.activity.eyebrow", locale, { count: String(eventsLast24h ?? 0) })}
+    <div className="flex flex-col gap-4">
+      <div>
+        <p className="data-mono mb-1.5 text-[10.5px] font-semibold tracking-[0.12em] text-[var(--color-text-subtle)] uppercase">
+          {t("hr.activity.eyebrow", locale, { count: String(eventsLast24h ?? 0) })}
+        </p>
+        <h1 className="text-[clamp(1.5rem,4vw,1.85rem)] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--color-text)]">
+          {t("hr.activity.title", locale)}
+        </h1>
       </div>
-      <h1 className="text-ink mb-6 text-[28px] font-semibold leading-[1.1] tracking-[-0.018em]">
-        {t("hr.activity.title", locale)}.
-      </h1>
 
       <Panel>
         {list.length === 0 ? (
-          <div className="text-ink-5 px-6 py-12 text-center text-[13px]">
-            {t("hr.dashboard.activity.empty", locale)}
-          </div>
+          <EmptyState
+            icon={<Activity />}
+            title={t("hr.dashboard.activity.empty", locale)}
+            compact
+          />
         ) : (
           <div>
             {list.map((a) => (
               <div
                 key={a.id}
-                className="border-rule flex gap-3.5 border-b px-[18px] py-3.5 text-[13px] last:border-b-0"
+                className="flex gap-3.5 border-b border-[var(--color-line)] px-4 py-3.5 text-[13px] last:border-b-0 sm:px-[18px]"
               >
-                <span
-                  className="text-ink-5 w-20 shrink-0 text-[11px]"
-                  style={{ fontFamily: "var(--font-tez-mono)" }}
-                >
+                <span className="data-mono w-20 shrink-0 text-[11px] text-[var(--color-text-subtle)]">
                   {relativeTime(a.created_at, locale)}
                 </span>
                 <div className="flex-1">
-                  <strong className="text-ink font-semibold">{a.actor}</strong>{" "}
-                  <span className="text-ink-4">
+                  <strong className="font-semibold text-[var(--color-text)]">{a.actor}</strong>{" "}
+                  <span className="text-[var(--color-text-muted)]">
                     {t(actionLabelKey(a.action), locale)}
                   </span>{" "}
-                  <strong className="text-ink">{a.entity_type}</strong>
+                  <strong className="text-[var(--color-text)]">{a.entity_type}</strong>
                 </div>
               </div>
             ))}

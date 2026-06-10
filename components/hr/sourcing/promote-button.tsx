@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { UserPlus, Check } from "lucide-react";
-import { Button, useToast } from "@/components/ui";
+import { Badge, Button, useToast } from "@/components/ui";
 import { useTranslation } from "@/lib/i18n/provider";
 import { logger } from "@/lib/logger";
 
@@ -46,10 +46,10 @@ export function PromoteButton({
 
   if (promoted) {
     return (
-      <span className="border-rule bg-bone text-ink-3 inline-flex items-center gap-1 rounded-[4px] border px-2 py-1 text-[12px]">
-        <Check className="h-3 w-3" strokeWidth={2.5} />
+      <Badge tone="success">
+        <Check className="h-3 w-3" strokeWidth={2.5} aria-hidden="true" />
         {t("sourcing.results.promoted")}
-      </span>
+      </Badge>
     );
   }
 

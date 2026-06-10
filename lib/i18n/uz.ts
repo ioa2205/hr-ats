@@ -2092,6 +2092,7 @@ export const uz: Translations = {
   "interview.hr.modal.message_placeholder": "Rol, jamoa yoki nimani kutish haqida qisqacha yozing.",
   "interview.hr.modal.slots_label": "Taklif qilingan vaqtlar",
   "interview.hr.modal.add_slot": "Yana vaqt qo‘shish",
+  "interview.hr.modal.remove_slot": "Vaqtni olib tashlash",
   "interview.hr.modal.cta": "Taklifni yuborish",
   "interview.hr.modal.expiry_hint": "HAVOLA 7 KUN AMAL QILADI",
   "interview.hr.modal.quota_blocked":
@@ -2111,6 +2112,11 @@ export const uz: Translations = {
   "interview.hr.block.copied": "Nusxa olindi",
   "interview.hr.block.send_telegram": "Telegram",
   "interview.hr.block.cancel": "Bekor qilish",
+  "interview.hr.block.cancel_confirm_title": "Ushbu suhbat bekor qilinsinmi?",
+  "interview.hr.block.cancel_confirm_body":
+    "Nomzodning yozilish havolasi ishlamay qoladi. Keyinroq yangi suhbat belgilashingiz mumkin.",
+  "interview.hr.block.cancel_keep": "Suhbatni qoldirish",
+  "interview.hr.block.cancel_confirm": "Suhbatni bekor qilish",
   "interview.hr.block.expires_at": "{when} da tugaydi",
   "interview.hr.share.telegram_body": "Suhbat uchun vaqtni tanlang:",
   "interview.hr.share.whatsapp_body": "Suhbat uchun vaqtni tanlang:",

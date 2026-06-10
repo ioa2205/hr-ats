@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { Check, Copy, Mail, Send } from "lucide-react";
-import { TezButton } from "@/components/hr/design";
+import { Button } from "@/components/ui";
 import { useTranslation } from "@/lib/i18n/provider";
 import { shareHref, type ShareChannel } from "@/lib/share/messages";
 
@@ -23,10 +23,10 @@ interface ChannelMeta {
 }
 
 const CHANNELS: ChannelMeta[] = [
-  { channel: "telegram", labelKey: "hr.job.share.btn_telegram", icon: <Send className="h-3 w-3" /> },
-  { channel: "whatsapp", labelKey: "hr.job.share.btn_whatsapp", icon: <Send className="h-3 w-3" /> },
-  { channel: "linkedin", labelKey: "hr.job.share.btn_linkedin", icon: <Send className="h-3 w-3" /> },
-  { channel: "email", labelKey: "hr.job.share.btn_email", icon: <Mail className="h-3 w-3" /> },
+  { channel: "telegram", labelKey: "hr.job.share.btn_telegram", icon: <Send className="h-4 w-4" /> },
+  { channel: "whatsapp", labelKey: "hr.job.share.btn_whatsapp", icon: <Send className="h-4 w-4" /> },
+  { channel: "linkedin", labelKey: "hr.job.share.btn_linkedin", icon: <Send className="h-4 w-4" /> },
+  { channel: "email", labelKey: "hr.job.share.btn_email", icon: <Mail className="h-4 w-4" /> },
 ];
 
 export function ShareButtons({ url, title, company }: ShareButtonsProps) {
@@ -52,25 +52,25 @@ export function ShareButtons({ url, title, company }: ShareButtonsProps) {
 
   return (
     <div className="flex flex-wrap gap-2">
-      <TezButton
-        variant="primary"
-        size="md"
-        onClick={handleCopy}
-        leadingIcon={copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-      >
+      <Button variant="primary" onClick={handleCopy}>
+        {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
         {copied ? t("hr.job.share.btn_copied") : t("hr.job.share.btn_copy")}
-      </TezButton>
+      </Button>
       {CHANNELS.map(({ channel, labelKey, icon }) => (
-        <a
+        <Button
           key={channel}
-          href={shareHref(channel, { url, title, company, locale }, t)}
-          target={channel === "email" ? "_self" : "_blank"}
-          rel="noopener noreferrer"
+          asChild
+          variant="secondary"
         >
-          <TezButton variant="secondary" size="md" leadingIcon={icon}>
+          <a
+            href={shareHref(channel, { url, title, company, locale }, t)}
+            target={channel === "email" ? "_self" : "_blank"}
+            rel="noopener noreferrer"
+          >
+            {icon}
             {t(labelKey)}
-          </TezButton>
-        </a>
+          </a>
+        </Button>
       ))}
     </div>
   );

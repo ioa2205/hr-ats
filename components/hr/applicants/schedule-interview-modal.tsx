@@ -1,26 +1,29 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { CalendarPlus, Check, Copy, Plus, Send, Trash2 } from "lucide-react";
 import {
-  CalendarPlus,
-  Check,
-  Copy,
-  Loader2,
-  Plus,
-  Send,
-  Trash2,
-} from "lucide-react";
-import {
+  Alert,
+  Badge,
+  Button,
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Field,
+  IconButton,
+  Input,
+  SegmentedControl,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Textarea,
 } from "@/components/ui";
-import { Pill, Seg, TezButton } from "@/components/hr/design";
 import { useTranslation } from "@/lib/i18n/provider";
-import { cn } from "@/lib/utils";
 import {
   DURATION_MINUTES,
   LOCATION_KINDS,
@@ -210,26 +213,24 @@ export function ScheduleInterviewModal({
   }, [publicUrl]);
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent
-        className="tezhr bg-paper border-rule !max-w-[560px] border p-0 sm:rounded-[8px]"
-        style={{ fontSize: "13.5px" }}
-      >
-        <DialogHeader className="border-rule gap-1 border-b p-5 pb-4">
-          <DialogTitle className="text-ink text-[17px] font-semibold tracking-[-0.01em]">
+    <Dialog open={open} onOpenChange={(next) => (submitting ? undefined : handleClose(next))}>
+      <DialogContent className="sm:max-w-[560px]">
+        <DialogHeader>
+          <DialogTitle>
             {created
               ? t("interview.hr.modal.sent_title")
               : t("interview.hr.modal.title", { name: candidateName })}
           </DialogTitle>
-          <DialogDescription className="text-ink-4 text-[12.5px]">
+          <DialogDescription>
             {created ? t("interview.hr.modal.sent_sub") : t("interview.hr.modal.sub")}
           </DialogDescription>
         </DialogHeader>
 
         {!created ? (
-          <div className="flex max-h-[68vh] flex-col gap-4 overflow-y-auto px-5 py-4">
+          <div className="flex max-h-[60vh] flex-col gap-4 overflow-y-auto px-6 py-2">
             <Field label={t("interview.hr.modal.duration_label")}>
-              <Seg<"15" | "30" | "45" | "60">
+              <SegmentedControl<"15" | "30" | "45" | "60">
+                aria-label={t("interview.hr.modal.duration_label")}
                 value={String(duration) as "15" | "30" | "45" | "60"}
                 options={DURATION_MINUTES.map((d) => ({
                   value: String(d) as "15" | "30" | "45" | "60",
@@ -240,223 +241,146 @@ export function ScheduleInterviewModal({
             </Field>
 
             <Field label={t("interview.hr.modal.location_label")}>
-              <div className="flex flex-wrap gap-1.5">
-                {LOCATION_KINDS.map((kind) => {
-                  const active = kind === locationKind;
-                  return (
-                    <button
-                      key={kind}
-                      type="button"
-                      onClick={() => setLocationKind(kind)}
-                      className={cn(
-                        "rounded-[4px] border px-2.5 py-[5px] text-[12px] font-medium transition-colors",
-                        active
-                          ? "bg-ink text-paper border-ink"
-                          : "bg-paper text-ink-3 border-rule-2 hover:bg-bone-2",
-                      )}
-                    >
+              <Select value={locationKind} onValueChange={(v) => setLocationKind(v as LocationKind)}>
+                <SelectTrigger aria-label={t("interview.hr.modal.location_label")}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {LOCATION_KINDS.map((kind) => (
+                    <SelectItem key={kind} value={kind}>
                       {t(`interview.location.${kind}`)}
-                    </button>
-                  );
-                })}
-              </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
 
-            <Field label={t("interview.hr.modal.location_detail_placeholder")}>
-              <input
-                value={locationDetail}
-                onChange={(e) => setLocationDetail(e.target.value)}
-                placeholder={t("interview.hr.modal.location_detail_placeholder")}
-                maxLength={200}
-                className="border-rule bg-paper text-ink placeholder:text-ink-5 focus:border-ink h-[36px] w-full rounded-[5px] border px-3 text-[13px] focus:outline-none"
-              />
-            </Field>
+            <Input
+              label={t("interview.hr.modal.location_detail_placeholder")}
+              value={locationDetail}
+              onChange={(e) => setLocationDetail(e.target.value)}
+              placeholder={t("interview.hr.modal.location_detail_placeholder")}
+              maxLength={200}
+            />
 
-            <Field label={t("interview.hr.modal.message_label")}>
-              <textarea
-                value={hrMessage}
-                onChange={(e) => setHrMessage(e.target.value)}
-                placeholder={t("interview.hr.modal.message_placeholder")}
-                maxLength={500}
-                rows={3}
-                className="border-rule bg-paper text-ink placeholder:text-ink-5 focus:border-ink min-h-[78px] w-full resize-none rounded-[5px] border px-3 py-2 text-[13px] leading-[1.5] focus:outline-none"
-              />
-              <div
-                className="text-ink-5 mt-1 text-right text-[10.5px]"
-                style={{ fontFamily: "var(--font-tez-mono)" }}
-              >
-                {hrMessage.length}/500
-              </div>
-            </Field>
+            <Textarea
+              label={t("interview.hr.modal.message_label")}
+              value={hrMessage}
+              onChange={(e) => setHrMessage(e.target.value)}
+              placeholder={t("interview.hr.modal.message_placeholder")}
+              maxLength={500}
+              maxCharacters={500}
+              currentLength={hrMessage.length}
+              rows={3}
+            />
 
             <Field
               label={t("interview.hr.modal.slots_label")}
-              hint={t("interview.timezone_note")}
+              helperText={t("interview.timezone_note")}
             >
               <ul className="flex flex-col gap-1.5">
                 {slots.map((slot, idx) => (
-                  <li
-                    key={slot.key}
-                    className="border-rule bg-bone-2/40 flex items-center gap-2 rounded-[5px] border px-2 py-1.5"
-                  >
-                    <span
-                      className="text-ink-4 w-[26px] text-right text-[10.5px] font-semibold"
-                      style={{ fontFamily: "var(--font-tez-mono)" }}
-                    >
+                  <li key={slot.key} className="flex items-center gap-2">
+                    <span className="data-mono w-[26px] shrink-0 text-right text-[10.5px] font-semibold text-[var(--color-text-muted)]">
                       {String(idx + 1).padStart(2, "0")}
                     </span>
-                    <input
-                      type="datetime-local"
-                      value={slot.value}
-                      onChange={(e) => updateSlot(slot.key, e.target.value)}
-                      className="border-rule bg-paper text-ink focus:border-ink h-[32px] flex-1 rounded-[4px] border px-2 text-[13px] focus:outline-none"
-                    />
-                    <button
-                      type="button"
+                    <div className="flex-1">
+                      <Input
+                        type="datetime-local"
+                        value={slot.value}
+                        onChange={(e) => updateSlot(slot.key, e.target.value)}
+                      />
+                    </div>
+                    <IconButton
+                      variant="ghost"
+                      size="md"
                       onClick={() => removeSlot(slot.key)}
                       disabled={slots.length <= 3}
-                      aria-label="Remove slot"
-                      className="text-ink-5 hover:bg-bone-2 hover:text-persimmon-2 rounded-[4px] p-1 transition-colors disabled:opacity-30"
+                      aria-label={t("interview.hr.modal.remove_slot")}
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
+                      <Trash2 />
+                    </IconButton>
                   </li>
                 ))}
               </ul>
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={addSlot}
                 disabled={slots.length >= 6}
-                className="text-ink-3 hover:bg-bone-2 mt-1.5 inline-flex items-center gap-1.5 rounded-[4px] border-none bg-transparent px-2 py-1 text-[12px] font-medium transition-colors disabled:opacity-40"
+                className="mt-1.5 self-start"
               >
-                <Plus className="h-3 w-3" />
+                <Plus className="h-4 w-4" />
                 {t("interview.hr.modal.add_slot")}
-              </button>
+              </Button>
             </Field>
 
-            {errMsg && (
-              <div
-                role="alert"
-                className="border-persimmon bg-persimmon-tint text-persimmon-2 rounded-[5px] border px-3 py-2 text-[12.5px] font-medium"
-              >
-                {errMsg}
-              </div>
-            )}
+            {errMsg && <Alert tone="danger">{errMsg}</Alert>}
 
-            <div
-              className="text-ink-5 text-[10.5px] uppercase tracking-[0.08em]"
-              style={{ fontFamily: "var(--font-tez-mono)" }}
-            >
+            <p className="data-mono text-[10.5px] tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
               {t("interview.hr.modal.expiry_hint")}
-            </div>
+            </p>
           </div>
         ) : (
-          <div className="flex flex-col gap-3 px-5 py-5">
-            <div className="border-rule bg-bone-2/60 rounded-[5px] border px-3 py-2.5">
-              <div
-                className="text-ink-5 text-[10.5px] font-semibold uppercase tracking-[0.1em]"
-                style={{ fontFamily: "var(--font-tez-mono)" }}
-              >
+          <div className="flex flex-col gap-3 px-6 py-2">
+            <div className="rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] px-3 py-2.5">
+              <div className="data-mono text-[10.5px] font-semibold tracking-[0.1em] text-[var(--color-text-subtle)] uppercase">
                 {t("interview.hr.block.public_link")}
               </div>
-              <div
-                className="text-ink mt-0.5 truncate text-[13px]"
-                style={{ fontFamily: "var(--font-tez-mono)" }}
-              >
+              <div className="data-mono mt-0.5 truncate text-[13px] text-[var(--color-text)]">
                 {publicUrl}
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              <TezButton
-                variant="primary"
-                size="md"
-                onClick={handleCopy}
-                leadingIcon={
-                  copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />
-                }
-              >
+              <Button variant="primary" onClick={handleCopy}>
+                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 {copied ? t("interview.hr.block.copied") : t("interview.hr.block.copy_link")}
-              </TezButton>
-              <a
-                href={`https://t.me/share/url?url=${encodeURIComponent(publicUrl)}&text=${encodeURIComponent(t("interview.hr.share.telegram_body"))}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <TezButton variant="secondary" size="md" leadingIcon={<Send className="h-3 w-3" />}>
+              </Button>
+              <Button asChild variant="secondary">
+                <a
+                  href={`https://t.me/share/url?url=${encodeURIComponent(publicUrl)}&text=${encodeURIComponent(t("interview.hr.share.telegram_body"))}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Send className="h-4 w-4" />
                   {t("interview.hr.block.send_telegram")}
-                </TezButton>
-              </a>
-              <a
-                href={`https://wa.me/?text=${encodeURIComponent(t("interview.hr.share.whatsapp_body") + " " + publicUrl)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <TezButton variant="secondary" size="md" leadingIcon={<Send className="h-3 w-3" />}>
+                </a>
+              </Button>
+              <Button asChild variant="secondary">
+                <a
+                  href={`https://wa.me/?text=${encodeURIComponent(t("interview.hr.share.whatsapp_body") + " " + publicUrl)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Send className="h-4 w-4" />
                   WhatsApp
-                </TezButton>
-              </a>
+                </a>
+              </Button>
             </div>
-            <Pill tone="success" dot>
+            <Badge tone="success" variant="dot" className="self-start">
               {t("interview.hr.modal.confirmed_inline")}
-            </Pill>
+            </Badge>
           </div>
         )}
 
-        <DialogFooter className="border-rule flex justify-end gap-2 border-t px-5 py-3">
+        <DialogFooter>
           {!created ? (
             <>
-              <TezButton variant="ghost" onClick={() => handleClose(false)} disabled={submitting}>
+              <Button variant="ghost" onClick={() => handleClose(false)} disabled={submitting}>
                 {t("common.cancel")}
-              </TezButton>
-              <TezButton
-                variant="accent"
-                onClick={handleSubmit}
-                disabled={submitting}
-                leadingIcon={
-                  submitting ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <CalendarPlus className="h-3 w-3" />
-                  )
-                }
-              >
+              </Button>
+              <Button variant="accent" onClick={handleSubmit} loading={submitting}>
+                <CalendarPlus className="h-4 w-4" />
                 {t("interview.hr.modal.cta")}
-              </TezButton>
+              </Button>
             </>
           ) : (
-            <TezButton variant="primary" onClick={() => handleClose(false)}>
+            <Button variant="primary" onClick={() => handleClose(false)}>
               {t("common.cancel")}
-            </TezButton>
+            </Button>
           )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function Field({
-  label,
-  hint,
-  children,
-}: {
-  label: string;
-  hint?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-ink text-[12.5px] font-semibold tracking-[-0.005em]">
-        {label}
-      </label>
-      {children}
-      {hint && (
-        <p
-          className="text-ink-5 text-[10.5px] uppercase tracking-[0.08em]"
-          style={{ fontFamily: "var(--font-tez-mono)" }}
-        >
-          {hint}
-        </p>
-      )}
-    </div>
   );
 }

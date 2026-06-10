@@ -2079,6 +2079,7 @@ export const en: Translations = {
     "Add a personal note about the role, the team, or what to expect.",
   "interview.hr.modal.slots_label": "Proposed time slots",
   "interview.hr.modal.add_slot": "Add another slot",
+  "interview.hr.modal.remove_slot": "Remove slot",
   "interview.hr.modal.cta": "Send invitation",
   "interview.hr.modal.expiry_hint": "LINK EXPIRES IN 7 DAYS",
   "interview.hr.modal.quota_blocked":
@@ -2098,6 +2099,11 @@ export const en: Translations = {
   "interview.hr.block.copied": "Copied",
   "interview.hr.block.send_telegram": "Telegram",
   "interview.hr.block.cancel": "Cancel",
+  "interview.hr.block.cancel_confirm_title": "Cancel this interview?",
+  "interview.hr.block.cancel_confirm_body":
+    "The candidate's scheduling link will stop working. You can schedule another interview afterward.",
+  "interview.hr.block.cancel_keep": "Keep interview",
+  "interview.hr.block.cancel_confirm": "Cancel interview",
   "interview.hr.block.expires_at": "Expires {when}",
   "interview.hr.share.telegram_body": "Pick a time for your interview:",
   "interview.hr.share.whatsapp_body": "Pick a time for your interview:",

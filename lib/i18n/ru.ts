@@ -2081,6 +2081,7 @@ export const ru: Translations = {
   "interview.hr.modal.message_placeholder": "Коротко расскажите о роли, команде или чего ожидать.",
   "interview.hr.modal.slots_label": "Предложенные слоты",
   "interview.hr.modal.add_slot": "Добавить слот",
+  "interview.hr.modal.remove_slot": "Удалить слот",
   "interview.hr.modal.cta": "Отправить приглашение",
   "interview.hr.modal.expiry_hint": "ССЫЛКА ДЕЙСТВУЕТ 7 ДНЕЙ",
   "interview.hr.modal.quota_blocked":
@@ -2100,6 +2101,11 @@ export const ru: Translations = {
   "interview.hr.block.copied": "Скопировано",
   "interview.hr.block.send_telegram": "Telegram",
   "interview.hr.block.cancel": "Отменить",
+  "interview.hr.block.cancel_confirm_title": "Отменить это интервью?",
+  "interview.hr.block.cancel_confirm_body":
+    "Ссылка для записи у кандидата перестанет работать. Позже можно назначить новое интервью.",
+  "interview.hr.block.cancel_keep": "Оставить интервью",
+  "interview.hr.block.cancel_confirm": "Отменить интервью",
   "interview.hr.block.expires_at": "Истекает {when}",
   "interview.hr.share.telegram_body": "Выберите время для интервью:",
   "interview.hr.share.whatsapp_body": "Выберите время для интервью:",

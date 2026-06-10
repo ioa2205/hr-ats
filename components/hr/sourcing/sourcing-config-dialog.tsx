@@ -3,9 +3,27 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Search, X } from "lucide-react";
-import { Button, useToast } from "@/components/ui";
-import { TezButton } from "@/components/hr/design";
+import { Search } from "lucide-react";
+import {
+  Button,
+  Checkbox,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  Field,
+  InlineMessage,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Textarea,
+  useToast,
+} from "@/components/ui";
 import { useTranslation } from "@/lib/i18n/provider";
 import type { TranslationKey } from "@/lib/i18n/types";
 import { logger } from "@/lib/logger";
@@ -139,169 +157,119 @@ export function SourcingConfigDialog({
   }
 
   return (
-    <>
-      <Button
-        variant={variant}
-        onClick={() => setOpen(true)}
-        disabled={disabled}
-        title={disabled ? t("sourcing.find.hint") : undefined}
-      >
-        <Search className="h-4 w-4" />
-        {label ?? t("sourcing.find.button")}
-      </Button>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        // Never let an in-flight submit be interrupted by an accidental dismiss.
+        if (loading) return;
+        setOpen(next);
+      }}
+    >
+      <DialogTrigger asChild>
+        <Button variant={variant} disabled={disabled} title={disabled ? t("sourcing.find.hint") : undefined}>
+          <Search className="h-4 w-4" />
+          {label ?? t("sourcing.find.button")}
+        </Button>
+      </DialogTrigger>
 
-      {open && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="bg-ink/40 fixed inset-0 z-50 flex items-center justify-center p-4"
-          onClick={(e) => {
-            if (e.target === e.currentTarget && !loading) setOpen(false);
-          }}
-        >
-          <div className="border-rule bg-paper shadow-tez-3 max-h-[88vh] w-full max-w-[480px] overflow-y-auto rounded-[6px] border p-5">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="text-ink text-[16px] font-semibold">
-                  {t("sourcing.config.title")}
-                </div>
-                <p className="text-ink-4 mt-1 text-[12.5px] leading-[1.5]">
-                  {t("sourcing.config.subtitle")}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => !loading && setOpen(false)}
-                className="text-ink-5 hover:bg-bone-2 -mr-1 -mt-1 rounded-[4px] p-1"
-                aria-label={t("common.cancel")}
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle>{t("sourcing.config.title")}</DialogTitle>
+          <DialogDescription>{t("sourcing.config.subtitle")}</DialogDescription>
+        </DialogHeader>
 
-            {/* Sources */}
-            <div className="mt-4">
-              <div className="text-ink-2 text-[11.5px] font-semibold">
-                {t("sourcing.config.sources_label")}
-              </div>
-              <div className="mt-2 flex flex-col gap-1.5">
-                {SELECTABLE.map((kind) => {
-                  const isAvailable =
-                    kind === "internal_pool" || availableSources.includes(kind);
-                  const checked = selected.has(kind) && isAvailable;
-                  return (
-                    <label
-                      key={kind}
-                      className={`border-rule flex items-center gap-2.5 rounded-[4px] border px-3 py-2 text-[12.5px] ${
-                        isAvailable ? "bg-paper cursor-pointer" : "bg-bone-2 cursor-not-allowed"
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={checked}
-                        disabled={!isAvailable}
-                        onChange={() => toggle(kind)}
-                        className="accent-ink h-3.5 w-3.5"
-                      />
-                      <span className={isAvailable ? "text-ink-2" : "text-ink-5"}>
-                        {t(SOURCE_LABEL_KEY[kind])}
-                      </span>
-                      {!isAvailable && kind === "hh" && (
-                        <Link
-                          href="/hr/settings/company"
-                          className="text-persimmon-2 ml-auto text-[11px] font-medium hover:underline"
-                        >
-                          {t("sourcing.config.hh_connect")}
-                        </Link>
-                      )}
-                      {!isAvailable && kind === "telegram" && (
-                        <span className="text-ink-5 ml-auto text-[11px]">
-                          {t("sourcing.config.unavailable")}
-                        </span>
-                      )}
-                    </label>
-                  );
-                })}
-              </div>
-              {!hhAvailable && (
-                <p className="text-ink-5 mt-2 text-[11px] leading-[1.5]">
-                  {t("sourcing.config.hh_unavailable")}
-                </p>
-              )}
-            </div>
-
-            {/* hh.uz query options */}
-            {hhAvailable && (
-              <div className={`mt-4 ${hhChecked ? "" : "pointer-events-none opacity-50"}`}>
-                <div className="text-ink-2 text-[11.5px] font-semibold">
-                  {t("sourcing.config.hh_options_label")}
-                </div>
-
-                <div className="mt-2">
-                  <label className="text-ink-3 text-[11px]">
-                    {t("sourcing.config.keywords_label")}
-                  </label>
-                  <textarea
-                    value={keywords}
-                    onChange={(e) => setKeywords(e.target.value)}
-                    disabled={!hhChecked}
-                    rows={2}
-                    placeholder={t("sourcing.config.keywords_placeholder")}
-                    className="border-rule-2 bg-paper text-ink mt-1 w-full resize-none rounded-[4px] border px-2.5 py-2 text-[12.5px]"
-                  />
-                  <p className="text-ink-5 mt-1 text-[11px] leading-[1.45]">
-                    {t("sourcing.config.keywords_hint")}
-                  </p>
-                </div>
-
-                <div className="mt-3">
-                  <label className="text-ink-3 text-[11px]">
-                    {t("sourcing.config.region_label")}
-                  </label>
-                  <select
-                    value={areaValue}
-                    onChange={(e) => setAreaValue(e.target.value)}
-                    disabled={!hhChecked}
-                    className="border-rule-2 bg-paper text-ink mt-1 w-full rounded-[4px] border px-2.5 py-2 text-[12.5px]"
+        <div className="flex max-h-[60vh] flex-col gap-5 overflow-y-auto px-6 py-2">
+          {/* Sources */}
+          <Field label={t("sourcing.config.sources_label")}>
+            <div className="flex flex-col gap-1.5">
+              {SELECTABLE.map((kind) => {
+                const isAvailable = kind === "internal_pool" || availableSources.includes(kind);
+                const checked = selected.has(kind) && isAvailable;
+                return (
+                  <div
+                    key={kind}
+                    className="flex items-center justify-between gap-2 rounded-[var(--radius-md)] border border-[var(--color-line)] px-3 py-2"
                   >
-                    <option value={ALL_REGIONS}>{t("sourcing.config.region_all")}</option>
-                    {areaOptions.map((a) => (
-                      <option key={a.id} value={a.id}>
-                        {a.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            )}
-
-            {selected.size === 0 && (
-              <p className="text-persimmon-2 mt-3 text-[11.5px]">
-                {t("sourcing.config.no_sources")}
+                    <Checkbox
+                      checked={checked}
+                      disabled={!isAvailable}
+                      onChange={() => toggle(kind)}
+                      label={t(SOURCE_LABEL_KEY[kind])}
+                    />
+                    {!isAvailable && kind === "hh" && (
+                      <Link
+                        href="/hr/settings/company"
+                        className="shrink-0 text-xs font-medium text-[var(--color-primary)] hover:underline"
+                      >
+                        {t("sourcing.config.hh_connect")}
+                      </Link>
+                    )}
+                    {!isAvailable && kind === "telegram" && (
+                      <span className="shrink-0 text-xs text-[var(--color-text-subtle)]">
+                        {t("sourcing.config.unavailable")}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            {!hhAvailable && (
+              <p className="mt-2 text-xs leading-[1.5] text-[var(--color-text-subtle)]">
+                {t("sourcing.config.hh_unavailable")}
               </p>
             )}
+          </Field>
 
-            <div className="mt-5 flex justify-end gap-2">
-              <TezButton
-                size="sm"
-                variant="ghost"
-                onClick={() => setOpen(false)}
-                disabled={loading}
-              >
-                {t("common.cancel")}
-              </TezButton>
-              <TezButton
-                size="sm"
-                variant="primary"
-                onClick={submit}
-                disabled={loading || selected.size === 0}
-              >
-                {loading ? t("sourcing.find.searching") : t("sourcing.config.submit")}
-              </TezButton>
+          {/* hh.uz query options */}
+          {hhAvailable && (
+            <div className={hhChecked ? "flex flex-col gap-4" : "pointer-events-none flex flex-col gap-4 opacity-50"}>
+              <p className="text-xs font-semibold tracking-[0.04em] text-[var(--color-text-muted)] uppercase data-mono">
+                {t("sourcing.config.hh_options_label")}
+              </p>
+
+              <Field label={t("sourcing.config.keywords_label")} helperText={t("sourcing.config.keywords_hint")}>
+                <Textarea
+                  value={keywords}
+                  onChange={(e) => setKeywords(e.target.value)}
+                  disabled={!hhChecked}
+                  rows={2}
+                  placeholder={t("sourcing.config.keywords_placeholder")}
+                  className="min-h-[60px]"
+                />
+              </Field>
+
+              <Field label={t("sourcing.config.region_label")}>
+                <Select value={areaValue} onValueChange={setAreaValue} disabled={!hhChecked}>
+                  <SelectTrigger aria-label={t("sourcing.config.region_label")}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={ALL_REGIONS}>{t("sourcing.config.region_all")}</SelectItem>
+                    {areaOptions.map((a) => (
+                      <SelectItem key={a.id} value={a.id}>
+                        {a.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
             </div>
-          </div>
+          )}
+
+          {selected.size === 0 && (
+            <InlineMessage tone="danger">{t("sourcing.config.no_sources")}</InlineMessage>
+          )}
         </div>
-      )}
-    </>
+
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => setOpen(false)} disabled={loading}>
+            {t("common.cancel")}
+          </Button>
+          <Button onClick={submit} loading={loading} disabled={selected.size === 0}>
+            {t("sourcing.config.submit")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

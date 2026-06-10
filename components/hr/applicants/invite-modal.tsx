@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { Copy, Check, Send, Loader2 } from "lucide-react";
+import { Copy, Check, Send } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -10,8 +10,8 @@ import {
   DialogDescription,
   DialogFooter,
   Button,
+  SegmentedControl,
 } from "@/components/ui";
-import { cn } from "@/lib/utils";
 import type { Candidate } from "@/types";
 import { useTranslation } from "@/lib/i18n/provider";
 
@@ -125,36 +125,16 @@ export function InviteModal({
         <div className="flex flex-col gap-4 px-5 py-4">
           {/* Language segment */}
           <div className="flex items-center justify-between gap-3">
-            <span
-              className="data-mono text-[10.5px] font-semibold tracking-[0.1em] text-[var(--color-text-muted)] uppercase"
-            >
+            <span className="data-mono text-[10.5px] font-semibold tracking-[0.1em] text-[var(--color-text-muted)] uppercase">
               {t("applicants.invite.copy_message")}
             </span>
-            <div
-              className="flex gap-0.5 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] p-0.5"
-              role="group"
-              aria-label="Language"
-            >
-              {LANGS.map((l) => {
-                const active = lang === l.value;
-                return (
-                  <button
-                    key={l.value}
-                    type="button"
-                    onClick={() => setLang(l.value)}
-                    aria-pressed={active}
-                    className={cn(
-                      "rounded-[3px] px-2.5 py-[3px] text-[10.5px] font-semibold tracking-[0.04em] transition-colors",
-                      active
-                        ? "bg-[var(--color-primary)] text-[var(--color-on-primary)]"
-                        : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-text)]",
-                    )}
-                  >
-                    {l.label}
-                  </button>
-                );
-              })}
-            </div>
+            <SegmentedControl<Lang>
+              size="sm"
+              aria-label={t("applicants.invite.copy_message")}
+              value={lang}
+              options={LANGS}
+              onChange={setLang}
+            />
           </div>
 
           {/* Message preview */}
@@ -201,12 +181,7 @@ export function InviteModal({
           <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={marking}>
             {t("common.cancel")}
           </Button>
-          <Button
-            variant="primary"
-            onClick={handleMarkInvited}
-            disabled={marking}
-          >
-            {marking ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
+          <Button variant="primary" onClick={handleMarkInvited} loading={marking}>
             {t("applicants.invite.mark_invited")}
           </Button>
         </DialogFooter>
