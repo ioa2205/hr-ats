@@ -14,16 +14,13 @@ export default async function SettingsLayout({ children }: { children: React.Rea
     <div>
       <TrialExpiryBanner companyId={companyId} />
       <div className="mb-6">
-        <div
-          className="text-ink-5 mb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.12em]"
-          style={{ fontFamily: "var(--font-tez-mono)" }}
-        >
+        <div className="data-mono mb-1.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-subtle)]">
           {t("hr.settings.eyebrow", locale)}
         </div>
-        <h1 className="text-ink text-[28px] font-semibold leading-[1.1] tracking-[-0.02em]">
+        <h1 className="text-[28px] font-semibold leading-[1.1] tracking-[-0.02em] text-[var(--color-text)]">
           {t("hr.settings.title", locale)}
         </h1>
-        <p className="text-ink-4 mt-1.5 max-w-[580px] text-[13px] leading-[1.5]">
+        <p className="mt-1.5 max-w-[580px] text-[13px] leading-[1.5] text-[var(--color-text-muted)]">
           {t("hr.settings.subtitle", locale)}
         </p>
       </div>

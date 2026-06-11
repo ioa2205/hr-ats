@@ -1,8 +1,20 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { cn } from "@/lib/utils";
-import { Panel, PanelHeader, PanelTitle, SectionH, TezButton, Seg } from "@/components/hr/design";
+import {
+  Panel,
+  PanelBody,
+  PanelHeader,
+  PanelTitle,
+  SegmentedControl,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Switch,
+} from "@/components/ui";
+import { SettingsSaveBar } from "@/components/hr/settings/settings-ui";
 import { useTranslation } from "@/lib/i18n/provider";
 import type { Database } from "@/types/supabase";
 import type { TranslationKey } from "@/lib/i18n/types";
@@ -142,35 +154,42 @@ export function PreferencesForm({ initial }: { initial: Prefs }) {
     setStatus("idle");
   }, [saved]);
 
-  const renderRow = (row: EventRow) => (
-    <div
-      key={row.id}
-      className="border-rule grid grid-cols-[1fr_auto] items-start gap-6 border-t px-[18px] py-3 first:border-t-0"
-    >
-      <div className="min-w-0">
-        <div className="text-ink text-[13.5px] font-semibold">{t(row.labelKey)}</div>
-        <div className="text-ink-4 mt-0.5 text-[12px] leading-[1.5]">{t(row.descKey)}</div>
-      </div>
-      <div className="flex items-center gap-6 pt-1">
-        <ChannelToggle
-          label={t("hr.settings.notifications.channel.email")}
-          on={state[row.emailKey] as boolean}
-          onChange={(v) => patch({ [row.emailKey]: v } as Partial<EditablePrefs>)}
-        />
-        {row.inappKey ? (
+  const renderRow = (row: EventRow) => {
+    const eventLabel = t(row.labelKey);
+    return (
+      <div
+        key={row.id}
+        className="flex flex-col gap-3 border-t border-[var(--color-line)] px-4 py-3.5 first:border-t-0 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+      >
+        <div className="min-w-0">
+          <div className="text-[13.5px] font-semibold text-[var(--color-text)]">{eventLabel}</div>
+          <div className="mt-0.5 text-[12px] leading-[1.5] text-[var(--color-text-muted)]">
+            {t(row.descKey)}
+          </div>
+        </div>
+        <div className="flex items-center gap-5">
           <ChannelToggle
-            label={t("hr.settings.notifications.channel.inapp")}
-            on={state[row.inappKey] as boolean}
-            onChange={(v) =>
-              patch({ [row.inappKey as keyof EditablePrefs]: v } as Partial<EditablePrefs>)
-            }
+            channel={t("hr.settings.notifications.channel.email")}
+            event={eventLabel}
+            on={state[row.emailKey] as boolean}
+            onChange={(v) => patch({ [row.emailKey]: v } as Partial<EditablePrefs>)}
           />
-        ) : (
-          <div className="w-[64px]" aria-hidden />
-        )}
+          {row.inappKey ? (
+            <ChannelToggle
+              channel={t("hr.settings.notifications.channel.inapp")}
+              event={eventLabel}
+              on={state[row.inappKey] as boolean}
+              onChange={(v) =>
+                patch({ [row.inappKey as keyof EditablePrefs]: v } as Partial<EditablePrefs>)
+              }
+            />
+          ) : (
+            <div className="w-[52px]" aria-hidden />
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <>
@@ -206,10 +225,13 @@ export function PreferencesForm({ initial }: { initial: Prefs }) {
         <PanelHeader>
           <PanelTitle>{t("hr.settings.notifications.cadence.title")}</PanelTitle>
         </PanelHeader>
-        <div className="space-y-5 p-[18px]">
+        <PanelBody className="space-y-5">
           <div>
-            <SectionH title={t("hr.settings.notifications.cadence.digest_label")} />
-            <Seg
+            <div className="mb-1.5 text-sm font-medium text-[var(--color-text)]">
+              {t("hr.settings.notifications.cadence.digest_label")}
+            </div>
+            <SegmentedControl
+              aria-label={t("hr.settings.notifications.cadence.digest_label")}
               value={String(state.digest_hour)}
               options={DIGEST_HOURS.map((h) => ({
                 value: String(h),
@@ -217,13 +239,15 @@ export function PreferencesForm({ initial }: { initial: Prefs }) {
               }))}
               onChange={(v) => patch({ digest_hour: Number(v) })}
             />
-            <p className="text-ink-5 mt-2 text-[11.5px]">
+            <p className="mt-2 text-[11.5px] text-[var(--color-text-subtle)]">
               {t("hr.settings.notifications.cadence.digest_hint")}
             </p>
           </div>
 
           <div>
-            <SectionH title={t("hr.settings.notifications.cadence.quiet_label")} />
+            <div className="mb-1.5 text-sm font-medium text-[var(--color-text)]">
+              {t("hr.settings.notifications.cadence.quiet_label")}
+            </div>
             <div className="flex items-center gap-2">
               <HourSelect
                 ariaLabel={t("hr.settings.notifications.cadence.quiet_start")}
@@ -231,7 +255,7 @@ export function PreferencesForm({ initial }: { initial: Prefs }) {
                 onChange={(v) => patch({ quiet_hours_start: v })}
                 offLabel={t("hr.settings.notifications.cadence.quiet_off")}
               />
-              <span className="text-ink-5 text-[11.5px]">→</span>
+              <span className="text-[11.5px] text-[var(--color-text-subtle)]">→</span>
               <HourSelect
                 ariaLabel={t("hr.settings.notifications.cadence.quiet_end")}
                 value={state.quiet_hours_end}
@@ -239,59 +263,58 @@ export function PreferencesForm({ initial }: { initial: Prefs }) {
                 offLabel={t("hr.settings.notifications.cadence.quiet_off")}
               />
             </div>
-            <p className="text-ink-5 mt-2 text-[11.5px]">
+            <p className="mt-2 text-[11.5px] text-[var(--color-text-subtle)]">
               {t("hr.settings.notifications.cadence.quiet_hint")}
             </p>
           </div>
-        </div>
+        </PanelBody>
       </Panel>
 
-      <SaveBar
-        dirty={dirty}
-        status={status}
+      <SettingsSaveBar
+        visible={dirty || status === "ok" || status === "error"}
+        message={
+          status === "ok" ? (
+            <span className="font-medium text-[var(--color-success)]">
+              ✓ {t("hr.settings.notifications.saved")}
+            </span>
+          ) : status === "error" ? (
+            <span className="font-medium text-[var(--color-danger)]">
+              {t("hr.settings.notifications.save_error")}
+            </span>
+          ) : (
+            <span className="text-[var(--color-text-muted)]">
+              {t("hr.settings.notifications.unsaved_warn")}
+            </span>
+          )
+        }
         onSave={save}
+        saveLabel={t("hr.settings.notifications.save")}
+        saving={status === "saving"}
+        saveDisabled={!dirty}
         onDiscard={discard}
-        labels={{
-          save: t("hr.settings.notifications.save"),
-          discard: t("hr.settings.notifications.discard"),
-          unsaved: t("hr.settings.notifications.unsaved_warn"),
-          saved: t("hr.settings.notifications.saved"),
-          error: t("hr.settings.notifications.save_error"),
-        }}
+        discardLabel={t("hr.settings.notifications.discard")}
+        discardDisabled={!dirty || status === "saving"}
       />
     </>
   );
 }
 
 function ChannelToggle({
-  label,
+  channel,
+  event,
   on,
   onChange,
 }: {
-  label: string;
+  channel: string;
+  event: string;
   on: boolean;
   onChange: (v: boolean) => void;
 }) {
   return (
-    <label className="flex cursor-pointer select-none items-center gap-2">
-      <span className="text-ink-4 w-12 text-right text-[11.5px]">{label}</span>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={on}
-        aria-label={label}
-        onClick={() => onChange(!on)}
-        className={cn(
-          "relative inline-flex h-4 w-7 shrink-0 items-center rounded-[8px] border transition-colors",
-          on ? "bg-ink border-ink" : "bg-bone-3 border-rule-2",
-        )}
-      >
-        <span
-          className="bg-paper absolute top-[1px] h-3 w-3 rounded-full shadow-sm transition-[left]"
-          style={{ left: on ? 14 : 1 }}
-        />
-      </button>
-    </label>
+    <div className="flex flex-col items-center gap-1">
+      <span className="text-[11px] text-[var(--color-text-muted)]">{channel}</span>
+      <Switch checked={on} onCheckedChange={onChange} aria-label={`${event} · ${channel}`} />
+    </div>
   );
 }
 
@@ -306,72 +329,21 @@ function HourSelect({
   offLabel: string;
   ariaLabel: string;
 }) {
-  const raw = value == null ? "" : String(value);
+  const raw = value == null ? "off" : String(value);
   return (
-    <select
-      aria-label={ariaLabel}
-      value={raw}
-      onChange={(e) => onChange(e.target.value === "" ? null : Number(e.target.value))}
-      className="border-rule-2 bg-paper text-ink h-[30px] rounded-[4px] border px-2 text-[12.5px]"
-      style={{ fontFamily: "var(--font-tez-mono)" }}
-    >
-      <option value="">{offLabel}</option>
-      {Array.from({ length: 24 }, (_, h) => (
-        <option key={h} value={h}>
-          {String(h).padStart(2, "0")}:00
-        </option>
-      ))}
-    </select>
-  );
-}
-
-function SaveBar({
-  dirty,
-  status,
-  onSave,
-  onDiscard,
-  labels,
-}: {
-  dirty: boolean;
-  status: "idle" | "saving" | "error" | "ok";
-  onSave: () => void;
-  onDiscard: () => void;
-  labels: { save: string; discard: string; unsaved: string; saved: string; error: string };
-}) {
-  if (!dirty && status !== "ok" && status !== "error") return null;
-
-  return (
-    <div className="sticky bottom-3 z-10">
-      <div className="border-rule bg-paper shadow-tez-2 flex items-center justify-between gap-3 rounded-[6px] border px-4 py-2.5">
-        <div className="flex items-center gap-2 text-[12.5px]">
-          {status === "ok" ? (
-            <span className="text-tez-green font-medium">✓ {labels.saved}</span>
-          ) : status === "error" ? (
-            <span className="text-tez-red font-medium">{labels.error}</span>
-          ) : (
-            <span className="text-ink-4">{labels.unsaved}</span>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <TezButton
-            variant="ghost"
-            size="sm"
-            onClick={onDiscard}
-            disabled={!dirty || status === "saving"}
-          >
-            {labels.discard}
-          </TezButton>
-          <TezButton
-            variant="accent"
-            size="sm"
-            onClick={onSave}
-            disabled={!dirty || status === "saving"}
-          >
-            {labels.save}
-          </TezButton>
-        </div>
-      </div>
-    </div>
+    <Select value={raw} onValueChange={(v) => onChange(v === "off" ? null : Number(v))}>
+      <SelectTrigger aria-label={ariaLabel} className="data-mono h-10 w-[110px]">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="off">{offLabel}</SelectItem>
+        {Array.from({ length: 24 }, (_, h) => (
+          <SelectItem key={h} value={String(h)}>
+            {String(h).padStart(2, "0")}:00
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 

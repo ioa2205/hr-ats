@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthPanel } from "@/components/auth/auth-panel";
 import { AuthDivider } from "@/components/auth/auth-banner";
-import { TezButton } from "@/components/hr/design";
+import { Button } from "@/components/ui";
 import { LoginForm } from "@/components/auth/login-form";
 import { OAuthButtons } from "@/components/auth/oauth-buttons";
 import { createClient } from "@/lib/supabase/server";
@@ -42,24 +42,13 @@ export default async function LoginPage({
         subtitle={t("auth.already_signed_in_body", locale, { email: user.email ?? "" })}
       >
         <div className="flex flex-col gap-2">
-          <Link href={continueHref} className="block">
-            <TezButton
-              variant="primary"
-              size="lg"
-              className="h-12 w-full justify-center text-[14.5px] font-semibold"
-            >
-              {t("auth.continue_to_app", locale)}
-            </TezButton>
-          </Link>
+          <Button asChild size="lg" fullWidth>
+            <Link href={continueHref}>{t("auth.continue_to_app", locale)}</Link>
+          </Button>
           <form action={signOut}>
-            <TezButton
-              type="submit"
-              variant="ghost"
-              size="lg"
-              className="h-11 w-full justify-center text-[13.5px]"
-            >
+            <Button type="submit" variant="ghost" size="lg" fullWidth>
               {t("auth.sign_out", locale)}
-            </TezButton>
+            </Button>
           </form>
         </div>
       </AuthPanel>
@@ -78,11 +67,11 @@ export default async function LoginPage({
         <LoginForm nextPath={nextPath ?? undefined} />
       </AuthPanel>
 
-      <p className="text-ink-4 text-center text-[13px]">
+      <p className="text-center text-[13px] text-[var(--color-text-muted)]">
         {t("auth.no_account", locale)}
         <Link
           href={nextPath === "/upgrade" ? "/auth/signup?intent=pro" : "/auth/signup"}
-          className="text-ink hover:text-persimmon ml-1.5 font-semibold underline-offset-2 hover:underline"
+          className="ml-1.5 font-semibold text-[var(--color-text)] underline-offset-2 hover:text-[var(--color-primary)] hover:underline"
         >
           {t("auth.create_account", locale)}
         </Link>

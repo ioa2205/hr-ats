@@ -48,7 +48,7 @@ export const en: Translations = {
   "auth.phone_hint": "+998 XX XXX-XX-XX",
   "auth.send_code": "Send code",
   "auth.sending_code": "Sending...",
-  "auth.enter_code": "Enter code",
+  "auth.enter_code": "Verification code",
   "auth.enter_code_desc": "We sent a 6-digit code to {phone}.",
   "auth.verify_code": "Verify",
   "auth.verifying": "Verifying...",
@@ -1928,6 +1928,11 @@ export const en: Translations = {
   "hr.settings.team.invite_sent": "Invite sent",
   "hr.settings.team.invite_error": "Couldn't send — please retry.",
   "hr.settings.team.invite_already_member": "That email is already a member.",
+  "hr.settings.team.invite_sent_to": "Invite sent to {email}",
+  "hr.settings.team.revoke_invite_for": "Revoke invite for {email}",
+  "hr.settings.team.remove_dialog_title": "Remove from workspace?",
+  "hr.settings.team.remove_dialog_body":
+    "{name} will immediately lose access to this workspace. You can re-invite them later.",
   "hr.settings.team.role_change.confirm_owner_title": "Change an Owner's role?",
   "hr.settings.team.role_change.confirm_owner_body":
     "To change an Owner's role, transfer ownership first from the Company page.",

@@ -1932,6 +1932,11 @@ export const ru: Translations = {
   "hr.settings.team.invite_sent": "Приглашение отправлено",
   "hr.settings.team.invite_error": "Не удалось — повторите.",
   "hr.settings.team.invite_already_member": "Этот email уже участник.",
+  "hr.settings.team.invite_sent_to": "Приглашение отправлено на {email}",
+  "hr.settings.team.revoke_invite_for": "Отозвать приглашение для {email}",
+  "hr.settings.team.remove_dialog_title": "Удалить из рабочей области?",
+  "hr.settings.team.remove_dialog_body":
+    "{name} сразу потеряет доступ к этой рабочей области. Позже можно пригласить снова.",
   "hr.settings.team.role_change.confirm_owner_title": "Изменить роль Владельца?",
   "hr.settings.team.role_change.confirm_owner_body":
     "Сначала передайте владение на странице Компания.",

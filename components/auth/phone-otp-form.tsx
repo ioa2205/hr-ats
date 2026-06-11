@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Check, Loader2 } from "lucide-react";
-import { TezButton } from "@/components/hr/design";
+import { Button } from "@/components/ui";
 import { AuthField } from "./auth-field";
 import { AuthBanner } from "./auth-banner";
 import { useTranslation } from "@/lib/i18n/provider";
@@ -29,6 +29,15 @@ const errorKeys: Record<string, TranslationKey> = {
 };
 
 const RESEND_COOLDOWN = 60;
+
+function Spin() {
+  return (
+    <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+  );
+}
+
+const linkButtonClass =
+  "rounded-[var(--radius-sm)] font-medium text-[var(--color-text-muted)] underline-offset-2 transition-colors hover:text-[var(--color-text)] hover:underline disabled:opacity-50";
 
 export function PhoneOtpForm() {
   const { t } = useTranslation();
@@ -157,22 +166,16 @@ export function PhoneOtpForm() {
           helper={t("auth.phone_digit_hint")}
         />
 
-        <TezButton
-          type="submit"
-          variant="primary"
-          size="lg"
-          disabled={loading}
-          className="mt-1 h-12 w-full justify-center text-[14.5px] font-semibold"
-          leadingIcon={loading ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined}
-        >
+        <Button type="submit" size="lg" fullWidth disabled={loading} className="mt-1">
+          {loading && <Spin />}
           {loading ? t("auth.sending_code") : t("auth.send_code")}
-        </TezButton>
+        </Button>
 
-        <p className="text-ink-4 text-center text-[13px]">
+        <p className="text-center text-[13px] text-[var(--color-text-muted)]">
           {t("auth.already_have_account")}
           <Link
             href="/auth/login"
-            className="text-ink hover:text-persimmon ml-1.5 font-semibold underline-offset-2 hover:underline"
+            className="ml-1.5 font-semibold text-[var(--color-text)] underline-offset-2 hover:text-[var(--color-primary)] hover:underline"
           >
             {t("auth.sign_in")}
           </Link>
@@ -187,7 +190,7 @@ export function PhoneOtpForm() {
       <form onSubmit={handleOtpSubmit} className="flex flex-col gap-4">
         {errorNode}
 
-        <p className="text-ink-3 text-[14px] leading-[1.55]">
+        <p className="text-[14px] leading-[1.55] text-[var(--color-text-muted)]">
           {t("auth.enter_code_desc", { phone })}
         </p>
 
@@ -209,16 +212,16 @@ export function PhoneOtpForm() {
           style={{ fontFamily: "var(--font-tez-mono)" }}
         />
 
-        <TezButton
+        <Button
           type="submit"
-          variant="primary"
           size="lg"
+          fullWidth
           disabled={loading || code.length !== 6}
-          className="mt-1 h-12 w-full justify-center text-[14.5px] font-semibold"
-          leadingIcon={loading ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined}
+          className="mt-1"
         >
+          {loading && <Spin />}
           {loading ? t("auth.verifying") : t("auth.verify_code")}
-        </TezButton>
+        </Button>
 
         <div className="flex items-center justify-between text-[13px]">
           <button
@@ -228,24 +231,16 @@ export function PhoneOtpForm() {
               setCode("");
               setError(null);
             }}
-            className="text-ink-4 hover:text-ink font-medium underline-offset-2 hover:underline"
+            className={linkButtonClass}
           >
             {t("auth.phone_change_number")}
           </button>
           {resendTimer > 0 ? (
-            <span
-              className="text-ink-5"
-              style={{ fontFamily: "var(--font-tez-mono)" }}
-            >
+            <span className="data-mono text-[var(--color-text-subtle)]">
               {t("auth.resend_in", { seconds: String(resendTimer) })}
             </span>
           ) : (
-            <button
-              type="button"
-              onClick={handleResend}
-              disabled={loading}
-              className="text-ink-4 hover:text-ink font-medium underline-offset-2 hover:underline disabled:opacity-50"
-            >
+            <button type="button" onClick={handleResend} disabled={loading} className={linkButtonClass}>
               {t("auth.resend_code")}
             </button>
           )}
@@ -263,7 +258,7 @@ export function PhoneOtpForm() {
         {t("auth.phone_verified")}
       </AuthBanner>
 
-      <p className="text-ink-3 text-[14px] leading-[1.55]">
+      <p className="text-[14px] leading-[1.55] text-[var(--color-text-muted)]">
         {t("auth.complete_signup_desc")}
       </p>
 
@@ -292,16 +287,10 @@ export function PhoneOtpForm() {
         placeholder="you@example.com"
       />
 
-      <TezButton
-        type="submit"
-        variant="primary"
-        size="lg"
-        disabled={loading}
-        className="mt-1 h-12 w-full justify-center text-[14.5px] font-semibold"
-        leadingIcon={loading ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined}
-      >
+      <Button type="submit" size="lg" fullWidth disabled={loading} className="mt-1">
+        {loading && <Spin />}
         {loading ? t("auth.creating_account") : t("auth.complete_signup")}
-      </TezButton>
+      </Button>
     </form>
   );
 }

@@ -33,11 +33,11 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
         <SignupForm pinnedEmail={rawEmail} inviteToken={rawInvite} intent={rawIntent} />
       </AuthPanel>
 
-      <p className="text-ink-4 text-center text-[13px]">
+      <p className="text-center text-[13px] text-[var(--color-text-muted)]">
         {t("auth.already_have_account", locale)}
         <Link
           href={rawIntent === "pro" ? "/auth/login?next=/upgrade" : "/auth/login"}
-          className="text-ink hover:text-persimmon ml-1.5 font-semibold underline-offset-2 hover:underline"
+          className="ml-1.5 font-semibold text-[var(--color-text)] underline-offset-2 hover:text-[var(--color-primary)] hover:underline"
         >
           {t("auth.sign_in", locale)}
         </Link>

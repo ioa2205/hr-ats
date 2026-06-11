@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertCircle } from "lucide-react";
-import { TezButton } from "@/components/hr/design";
+import { Button } from "@/components/ui";
 import { AuthPanel } from "@/components/auth/auth-panel";
 import { useTranslation } from "@/lib/i18n/provider";
 
@@ -14,18 +14,13 @@ export default function OnboardingError({
   const { t } = useTranslation();
   return (
     <AuthPanel
-      eyebrow={<AlertCircle className="inline h-3 w-3" />}
+      eyebrow={<AlertCircle className="inline h-3 w-3" aria-hidden="true" />}
       title={t("errors.generic.title")}
       subtitle={t("errors.load_failed")}
     >
-      <TezButton
-        variant="primary"
-        size="lg"
-        onClick={reset}
-        className="h-11 w-full justify-center text-[13.5px] font-semibold"
-      >
+      <Button size="lg" fullWidth onClick={reset}>
         {t("common.retry")}
-      </TezButton>
+      </Button>
     </AuthPanel>
   );
 }

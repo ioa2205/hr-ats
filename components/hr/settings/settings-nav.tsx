@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n/provider";
-import { Pill } from "@/components/hr/design";
+import { Badge } from "@/components/ui";
 import type { CompanyRole } from "@/types";
 import type { TranslationKey } from "@/lib/i18n/types";
 import type { SettingsNavWarnings } from "@/lib/settings/warnings";
@@ -138,8 +138,7 @@ export function SettingsNav({
   const personal = TABS.filter((t) => t.group === "personal");
   const workspace = TABS.filter((t) => t.group === "workspace");
 
-  const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(`${href}/`);
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   const visible = (tb: TabDef) => !tb.allowed || tb.allowed.includes(role);
 
@@ -148,7 +147,7 @@ export function SettingsNav({
       {/* Desktop rail — persistent from lg up */}
       <nav
         aria-label={t("hr.settings.nav.collapse_aria")}
-        className="bg-bone-2/40 border-rule sticky top-[72px] hidden h-[calc(100vh-88px)] w-[240px] shrink-0 flex-col gap-5 overflow-y-auto border-r py-5 pr-2 pl-1 lg:flex"
+        className="sticky top-[72px] hidden h-[calc(100vh-88px)] w-[240px] shrink-0 flex-col gap-5 overflow-y-auto border-r border-[var(--color-line)] bg-[var(--color-surface-subtle)] py-5 pr-2 pl-1 lg:flex"
       >
         <RailGroup
           title={t("hr.settings.group.personal")}
@@ -164,10 +163,10 @@ export function SettingsNav({
         />
       </nav>
 
-      {/* Mobile scroller — horizontal Seg-like strip under lg */}
+      {/* Mobile scroller — horizontal chip strip under lg */}
       <nav
         aria-label={t("hr.settings.nav.collapse_aria")}
-        className="border-rule bg-bone-2/40 -mx-4 mb-4 flex gap-1 overflow-x-auto border-b px-4 py-2 lg:hidden"
+        className="-mx-4 mb-4 flex gap-1 overflow-x-auto border-b border-[var(--color-line)] bg-[var(--color-surface-subtle)] px-4 py-2 lg:hidden"
       >
         {TABS.filter(visible).map((tb) => {
           const active = isActive(tb.href);
@@ -179,10 +178,10 @@ export function SettingsNav({
               href={tb.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "relative inline-flex h-7 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-[4px] border px-2.5 text-[12px] font-medium transition-colors",
+                "relative inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-[var(--radius-sm)] border px-3 text-[12.5px] font-medium transition-colors",
                 active
-                  ? "bg-paper text-ink border-rule-2 shadow-tez-1"
-                  : "text-ink-4 hover:text-ink border-transparent",
+                  ? "border-[var(--color-line)] bg-[var(--color-surface)] text-[var(--color-text)] shadow-level-1"
+                  : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)]",
               )}
             >
               <Icon className="h-3.5 w-3.5" />
@@ -191,7 +190,7 @@ export function SettingsNav({
               {typeof badge.unread === "number" && badge.unread > 0 && (
                 <UnreadGlyph count={badge.unread} />
               )}
-              {badge.plan && <PlanPill plan={badge.plan} />}
+              {badge.plan && <PlanBadge plan={badge.plan} />}
             </Link>
           );
         })}
@@ -214,10 +213,7 @@ function RailGroup({
   const { t } = useTranslation();
   return (
     <div>
-      <div
-        className="text-ink-5 px-3 pb-2 text-[10.5px] font-semibold uppercase tracking-[0.12em]"
-        style={{ fontFamily: "var(--font-tez-mono)" }}
-      >
+      <div className="data-mono px-3 pb-2 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-subtle)]">
         {title}
       </div>
       <div className="flex flex-col gap-[1px]">
@@ -232,26 +228,20 @@ function RailGroup({
               aria-current={active ? "page" : undefined}
               title={badge.dot ? badge.dotTitle : undefined}
               className={cn(
-                "group relative flex items-center gap-2 py-[7px] pr-2.5 pl-[11px] text-[12.5px] tracking-[-0.005em] transition-colors",
-                "border-l-2",
+                "group relative flex items-center gap-2 border-l-2 py-[9px] pr-2.5 pl-[11px] text-[12.5px] tracking-[-0.005em] transition-colors",
                 active
-                  ? "bg-paper text-ink border-ink font-semibold shadow-[inset_-1px_0_0_var(--color-rule)]"
-                  : "text-ink-4 hover:bg-bone-2 hover:text-ink border-transparent font-medium",
+                  ? "border-[var(--color-primary)] bg-[var(--color-surface)] font-semibold text-[var(--color-text)] shadow-[inset_-1px_0_0_var(--color-line)]"
+                  : "border-transparent font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-text)]",
               )}
             >
-              <Icon
-                className={cn(
-                  "h-3.5 w-3.5 shrink-0",
-                  active ? "opacity-100" : "opacity-75",
-                )}
-              />
+              <Icon className={cn("h-4 w-4 shrink-0", active ? "opacity-100" : "opacity-75")} />
               <span className="flex-1 truncate">{t(tb.labelKey)}</span>
               <span className="flex shrink-0 items-center gap-1.5">
                 {badge.dot && <DotGlyph title={badge.dotTitle} />}
                 {typeof badge.unread === "number" && badge.unread > 0 && (
                   <UnreadGlyph count={badge.unread} />
                 )}
-                {badge.plan && <PlanPill plan={badge.plan} />}
+                {badge.plan && <PlanBadge plan={badge.plan} />}
               </span>
             </Link>
           );
@@ -266,7 +256,7 @@ function DotGlyph({ title }: { title?: string }) {
     <span
       aria-hidden={!title}
       title={title}
-      className="bg-persimmon inline-block h-[5px] w-[5px] rounded-full"
+      className="inline-block h-[6px] w-[6px] rounded-full bg-[var(--color-accent)]"
     />
   );
 }
@@ -274,27 +264,19 @@ function DotGlyph({ title }: { title?: string }) {
 function UnreadGlyph({ count }: { count: number }) {
   const label = count > 99 ? "99+" : String(count);
   return (
-    <span
-      className="bg-ink text-paper inline-flex h-[16px] min-w-[16px] items-center justify-center rounded-[8px] px-1 text-[10px] font-semibold tabular-nums"
-      style={{ fontFamily: "var(--font-tez-mono)" }}
-    >
+    <span className="data-mono inline-flex h-[16px] min-w-[16px] items-center justify-center rounded-[8px] bg-[var(--color-primary)] px-1 text-[10px] font-semibold tabular-nums text-[var(--color-on-primary)]">
       {label}
     </span>
   );
 }
 
-function PlanPill({ plan }: { plan: "pro" | "trial" }) {
+function PlanBadge({ plan }: { plan: "pro" | "trial" }) {
   const { t } = useTranslation();
   return (
-    <Pill tone={plan === "pro" ? "persimmon" : "outline"} className="!px-1.5 !py-0 !text-[9.5px]">
-      <span
-        className="uppercase tracking-[0.1em]"
-        style={{ fontFamily: "var(--font-tez-mono)" }}
-      >
-        {plan === "pro"
-          ? t("hr.settings.nav.plan_pro")
-          : t("hr.settings.nav.plan_trial")}
+    <Badge tone={plan === "pro" ? "accent" : "neutral"} size="sm" className="px-1.5 py-0">
+      <span className="data-mono text-[9.5px] uppercase tracking-[0.1em]">
+        {plan === "pro" ? t("hr.settings.nav.plan_pro") : t("hr.settings.nav.plan_trial")}
       </span>
-    </Pill>
+    </Badge>
   );
 }

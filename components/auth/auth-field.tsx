@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  forwardRef,
-  type InputHTMLAttributes,
-  type ReactNode,
-} from "react";
+import { forwardRef, type InputHTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface AuthFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
@@ -14,15 +10,22 @@ interface AuthFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "si
   endSlot?: ReactNode;
 }
 
+/**
+ * Auth input field. Keeps a visible, associated `<label>` (so screen readers
+ * and the auth E2E `getByLabel` lookups stay correct), a 44px touch target,
+ * the Tez Lapis focus boundary, and an optional end-of-label slot (e.g. the
+ * "forgot password" link). Semantic tokens only.
+ */
 export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
   ({ label, helper, error, endSlot, className, id, name, ...rest }, ref) => {
     const fieldId = id ?? `f-${(name ?? label).toLowerCase().replace(/\s+/g, "-")}`;
+    const describedBy = error ? `${fieldId}-error` : helper ? `${fieldId}-helper` : undefined;
     return (
       <div className="flex flex-col gap-1.5">
         <div className="flex items-baseline justify-between gap-3">
           <label
             htmlFor={fieldId}
-            className="text-ink text-[13px] font-semibold tracking-[-0.005em]"
+            className="text-[13px] font-semibold tracking-[-0.005em] text-[var(--color-text)]"
           >
             {label}
           </label>
@@ -32,21 +35,28 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
           ref={ref}
           id={fieldId}
           name={name}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
           {...rest}
           className={cn(
-            "border-rule bg-paper text-ink placeholder:text-ink-5 flex h-[44px] w-full items-center rounded-[6px] border px-3.5 text-[14.5px] transition-colors",
-            "focus:border-ink focus:outline-none",
-            rest.readOnly && "bg-bone-2/60 text-ink-3 cursor-default",
-            error && "border-persimmon focus:border-persimmon",
+            "flex h-11 w-full items-center rounded-[var(--radius-md)] border bg-[var(--color-surface)] px-3.5 text-[14.5px] text-[var(--color-text)] outline-none transition-colors",
+            "placeholder:text-[var(--color-text-subtle)]",
+            "focus:border-[var(--color-focus)]",
+            rest.readOnly && "cursor-default bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)]",
+            error
+              ? "border-[var(--color-danger)] focus:border-[var(--color-danger)]"
+              : "border-[var(--color-line-strong)]",
             className,
           )}
         />
         {error ? (
-          <p className="text-persimmon text-[12.5px]" role="alert">
+          <p id={`${fieldId}-error`} className="text-[12.5px] text-[var(--color-danger)]" role="alert">
             {error}
           </p>
         ) : helper ? (
-          <p className="text-ink-4 text-[12.5px]">{helper}</p>
+          <p id={`${fieldId}-helper`} className="text-[12.5px] text-[var(--color-text-muted)]">
+            {helper}
+          </p>
         ) : null}
       </div>
     );

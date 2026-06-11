@@ -1942,6 +1942,11 @@ export const uz: Translations = {
   "hr.settings.team.invite_sent": "Taklif yuborildi",
   "hr.settings.team.invite_error": "Yuborib bo‘lmadi — qayta urinib ko‘ring.",
   "hr.settings.team.invite_already_member": "Bu email allaqachon a'zo.",
+  "hr.settings.team.invite_sent_to": "Taklif {email} manziliga yuborildi",
+  "hr.settings.team.revoke_invite_for": "{email} uchun taklifni bekor qilish",
+  "hr.settings.team.remove_dialog_title": "Ish maydonidan olib tashlansinmi?",
+  "hr.settings.team.remove_dialog_body":
+    "{name} bu ish maydoniga kirish huquqini darhol yo‘qotadi. Keyinroq qayta taklif qilishingiz mumkin.",
   "hr.settings.team.role_change.confirm_owner_title": "Egasi rolini o‘zgartirishmi?",
   "hr.settings.team.role_change.confirm_owner_body":
     "Avval Kompaniya sahifasidan egalikni o‘tkazing.",

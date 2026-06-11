@@ -7,19 +7,25 @@ interface AuthBannerProps {
   icon?: ReactNode;
 }
 
+const toneClass: Record<NonNullable<AuthBannerProps["tone"]>, string> = {
+  error:
+    "border-[color-mix(in_srgb,var(--color-danger)_35%,transparent)] bg-[var(--color-danger-container)] text-[var(--color-on-danger-container)]",
+  info: "border-[var(--color-line)] bg-[var(--color-surface-subtle)] text-[var(--color-text)]",
+  success:
+    "border-[color-mix(in_srgb,var(--color-success)_35%,transparent)] bg-[var(--color-success-container)] text-[var(--color-on-success-container)]",
+};
+
+/**
+ * Inline feedback callout for the auth forms. Status is conveyed by icon + text,
+ * never color alone; errors are announced assertively.
+ */
 export function AuthBanner({ tone = "error", children, icon }: AuthBannerProps) {
-  const toneClass =
-    tone === "success"
-      ? "border-ink-6 bg-bone-2 text-ink-2"
-      : tone === "info"
-        ? "border-rule-2 bg-bone-2 text-ink-2"
-        : "border-persimmon bg-persimmon-tint text-persimmon-2";
   return (
     <div
-      role={tone === "error" ? "alert" : undefined}
+      role={tone === "error" ? "alert" : "status"}
       className={cn(
-        "flex items-start gap-2.5 rounded-[6px] border px-3.5 py-2.5 text-[13px] leading-[1.5]",
-        toneClass,
+        "flex items-start gap-2.5 rounded-[var(--radius-sm)] border px-3.5 py-2.5 text-[13px] leading-[1.5]",
+        toneClass[tone],
       )}
     >
       {icon && <span className="mt-[1px] shrink-0">{icon}</span>}
@@ -31,14 +37,11 @@ export function AuthBanner({ tone = "error", children, icon }: AuthBannerProps) 
 export function AuthDivider({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="bg-rule h-px flex-1" aria-hidden />
-      <span
-        className="text-ink-5 text-[10.5px] font-semibold uppercase tracking-[0.12em]"
-        style={{ fontFamily: "var(--font-tez-mono)" }}
-      >
+      <span className="h-px flex-1 bg-[var(--color-line)]" aria-hidden />
+      <span className="data-mono text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-subtle)]">
         {label}
       </span>
-      <span className="bg-rule h-px flex-1" aria-hidden />
+      <span className="h-px flex-1 bg-[var(--color-line)]" aria-hidden />
     </div>
   );
 }

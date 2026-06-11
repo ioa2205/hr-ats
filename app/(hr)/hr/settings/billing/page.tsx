@@ -8,7 +8,8 @@ import { canGenerateQuestions, canScheduleInterview, getQuotaState } from "@/lib
 import { getLocale, t } from "@/lib/i18n";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Locale, TranslationKey } from "@/lib/i18n/types";
-import { Panel, PanelHeader, PanelTitle, Pill, SettingsHeader } from "@/components/hr/design";
+import { Badge, Panel, PanelHeader, PanelTitle, Progress, type BadgeTone } from "@/components/ui";
+import { SettingsPageHeader } from "@/components/hr/settings/settings-page-header";
 import { cn } from "@/lib/utils";
 import { CancelButton, UpgradeButton } from "@/components/hr/settings/billing/billing-dialogs";
 
@@ -33,8 +34,8 @@ export default async function BillingSettingsPage({
   if (!quota) {
     return (
       <section>
-        <SettingsHeader title={t("quota.billing_title", locale)} />
-        <p className="text-ink-4 text-[13px]">{t("common.error", locale)}</p>
+        <SettingsPageHeader title={t("quota.billing_title", locale)} />
+        <p className="text-[13px] text-[var(--color-text-muted)]">{t("common.error", locale)}</p>
       </section>
     );
   }
@@ -63,7 +64,7 @@ export default async function BillingSettingsPage({
 
   return (
     <section>
-      <SettingsHeader
+      <SettingsPageHeader
         title={t("quota.billing_title", locale)}
         sub={t("quota.billing_desc", locale)}
       />
@@ -81,7 +82,7 @@ export default async function BillingSettingsPage({
         <PanelHeader>
           <PanelTitle>{t("hr.settings.billing.usage.title", locale)}</PanelTitle>
         </PanelHeader>
-        <div className="divide-rule divide-y">
+        <div className="divide-y divide-[var(--color-line)]">
           <UsageRow
             label={t("hr.settings.billing.usage.cv_analyses", locale)}
             used={quota.cvQuotaUsed}
@@ -138,7 +139,7 @@ export default async function BillingSettingsPage({
           />
         </div>
         {!isPro && (
-          <div className="border-rule flex items-center justify-end gap-2 border-t px-[18px] py-3">
+          <div className="flex items-center justify-end gap-2 border-t border-[var(--color-line)] px-4 py-3">
             {(isExpired || isCancelled) && <CancelStatus status={quota.status} locale={locale} />}
             <UpgradeButton hasPendingRequest={hasPendingUpgrade} />
           </div>
@@ -150,8 +151,8 @@ export default async function BillingSettingsPage({
           <PanelHeader>
             <PanelTitle>{t("hr.settings.billing.cta.cancel", locale)}</PanelTitle>
           </PanelHeader>
-          <div className="flex items-center justify-between gap-3 px-[18px] py-3">
-            <p className="text-ink-4 text-[12.5px]">
+          <div className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-[12.5px] text-[var(--color-text-muted)]">
               {t("hr.settings.billing.cancel.dialog_body", locale)}
             </p>
             <CancelButton />
@@ -163,10 +164,7 @@ export default async function BillingSettingsPage({
         <PanelHeader>
           <PanelTitle>{t("hr.settings.billing.invoices.title", locale)}</PanelTitle>
         </PanelHeader>
-        <div
-          className="text-ink-5 px-[18px] py-8 text-center text-[11.5px]"
-          style={{ fontFamily: "var(--font-tez-mono)" }}
-        >
+        <div className="data-mono px-4 py-8 text-center text-[11.5px] text-[var(--color-text-subtle)]">
           {t("hr.settings.billing.invoices.empty", locale)}
         </div>
       </Panel>
@@ -209,20 +207,20 @@ function PlanCard({
 
   return (
     <Panel className="mb-4">
-      <div className="flex items-start justify-between gap-4 p-[18px]">
+      <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <Pill tone={isPro ? "persimmon-solid" : isExpired ? "danger" : "outline"}>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge tone={isPro ? "accent" : isExpired ? "danger" : "neutral"}>
               {t(badgeKey, locale)}
-            </Pill>
+            </Badge>
             {isReadOnly && (
-              <Pill tone="danger">
-                <Lock className="h-3 w-3" />
-                <span className="ml-1">{t("quota.readonly_title", locale)}</span>
-              </Pill>
+              <Badge tone="danger">
+                <Lock className="h-3 w-3" aria-hidden="true" />
+                {t("quota.readonly_title", locale)}
+              </Badge>
             )}
           </div>
-          <div className="text-ink mt-2 text-[20px] font-semibold tracking-[-0.015em]">
+          <div className="mt-2 text-[20px] font-semibold tracking-[-0.015em] text-[var(--color-text)]">
             {isPro
               ? t("quota.plan_pro", locale)
               : isExpired
@@ -231,7 +229,7 @@ function PlanCard({
                   ? t("quota.plan_cancelled", locale)
                   : t("quota.plan_trial", locale)}
           </div>
-          <div className="text-ink-4 mt-1 text-[12.5px]">
+          <div className="mt-1 text-[12.5px] text-[var(--color-text-muted)]">
             {isPro
               ? t("hr.settings.billing.plan.renews_on", locale, { date: trialDate })
               : isTrial
@@ -242,10 +240,12 @@ function PlanCard({
                 : t("hr.settings.billing.plan.read_only", locale)}
           </div>
           {isTrial && (
-            <div className="bg-bone-3 mt-3 h-[3px] w-full max-w-[360px] overflow-hidden rounded-[2px]">
-              <div
-                className="bg-persimmon h-full rounded-[2px]"
-                style={{ width: `${trialPct}%` }}
+            <div className="mt-3 max-w-[360px]">
+              <Progress
+                value={trialPct}
+                tone="accent"
+                size="sm"
+                label={t("hr.settings.billing.plan.trial_badge", locale)}
               />
             </div>
           )}
@@ -271,9 +271,9 @@ function UsageRow({
 }) {
   if (limit === null || !Number.isFinite(limit)) {
     return (
-      <div className="flex items-center justify-between gap-3 px-[18px] py-3">
-        <div className="text-ink text-[13px] font-semibold">{label}</div>
-        <div className="text-ink-4 text-[11.5px]" style={{ fontFamily: "var(--font-tez-mono)" }}>
+      <div className="flex items-center justify-between gap-3 px-4 py-3">
+        <div className="text-[13px] font-semibold text-[var(--color-text)]">{label}</div>
+        <div className="data-mono text-[11.5px] text-[var(--color-text-muted)]">
           {used} · {t("hr.settings.billing.usage.unlimited", locale)}
         </div>
       </div>
@@ -284,27 +284,22 @@ function UsageRow({
   const state: "ok" | "warn" | "over" = pct >= 100 ? "over" : pct >= 80 ? "warn" : "ok";
 
   return (
-    <div className="px-[18px] py-3">
+    <div className="px-4 py-3">
       <div className="flex items-center justify-between gap-3">
-        <div className="text-ink text-[13px] font-semibold">{label}</div>
-        <div className="text-ink-4 text-[11.5px]" style={{ fontFamily: "var(--font-tez-mono)" }}>
+        <div className="text-[13px] font-semibold text-[var(--color-text)]">{label}</div>
+        <div className="data-mono text-[11.5px] text-[var(--color-text-muted)]">
           {t("hr.settings.billing.usage.used_of", locale, {
             used: String(used),
             limit: String(limit),
           })}
         </div>
       </div>
-      <div className="bg-bone-3 mt-2 h-[3px] w-full overflow-hidden rounded-[2px]">
-        <div
-          className={cn(
-            "h-full rounded-[2px]",
-            state === "over"
-              ? "bg-[color:var(--color-tez-red)]"
-              : state === "warn"
-                ? "bg-[color:var(--color-tez-amber)]"
-                : "bg-persimmon",
-          )}
-          style={{ width: `${Math.max(pct, used > 0 ? 2 : 0)}%` }}
+      <div className="mt-2">
+        <Progress
+          value={Math.max(pct, used > 0 ? 2 : 0)}
+          tone={state === "over" ? "danger" : state === "warn" ? "warning" : "primary"}
+          size="sm"
+          label={label}
         />
       </div>
     </div>
@@ -323,24 +318,27 @@ function ComparisonColumn({
   ribbon?: string | null;
 }) {
   return (
-    <div className={cn("relative px-5 py-5", highlighted ? "bg-persimmon-tint/30" : "bg-paper")}>
+    <div
+      className={cn(
+        "relative px-5 py-5",
+        highlighted ? "bg-[var(--color-accent-container)]/40" : "bg-[var(--color-surface)]",
+      )}
+    >
       {ribbon && (
-        <div
-          className="bg-persimmon text-paper absolute top-3 right-3 rounded-[3px] px-1.5 py-[1px] text-[9.5px] font-semibold tracking-[0.1em] uppercase"
-          style={{ fontFamily: "var(--font-tez-mono)" }}
-        >
+        <div className="data-mono absolute top-3 right-3 rounded-[var(--radius-sm)] bg-[var(--color-accent)] px-1.5 py-[1px] text-[9.5px] font-semibold uppercase tracking-[0.1em] text-[var(--color-on-accent)]">
           {ribbon}
         </div>
       )}
-      <div className="text-ink text-[14px] font-semibold">{name}</div>
+      <div className="text-[14px] font-semibold text-[var(--color-text)]">{name}</div>
       <ul className="mt-3 flex flex-col gap-1.5">
         {features.map((f) => (
-          <li key={f} className="text-ink-3 flex items-start gap-2 text-[12.5px]">
+          <li key={f} className="flex items-start gap-2 text-[12.5px] text-[var(--color-text-muted)]">
             <Check
               className={cn(
                 "mt-[3px] h-3.5 w-3.5 shrink-0",
-                highlighted ? "text-persimmon" : "text-ink-5",
+                highlighted ? "text-[var(--color-accent)]" : "text-[var(--color-text-subtle)]",
               )}
+              aria-hidden="true"
             />
             <span>{f}</span>
           </li>
@@ -355,10 +353,11 @@ function CancelStatus({ status, locale }: { status: string; locale: Locale }) {
     status === "expired"
       ? "hr.settings.billing.plan.expired_badge"
       : "hr.settings.billing.plan.cancelled_badge";
+  const tone: BadgeTone = "danger";
   return (
-    <Pill tone="danger">
-      <Lock className="h-3 w-3" />
-      <span className="ml-1">{t(labelKey, locale)}</span>
-    </Pill>
+    <Badge tone={tone}>
+      <Lock className="h-3 w-3" aria-hidden="true" />
+      {t(labelKey, locale)}
+    </Badge>
   );
 }

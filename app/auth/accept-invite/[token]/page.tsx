@@ -31,7 +31,7 @@ export default async function AcceptInvitePage({ params }: Props) {
         title={t("invite.invalid", locale)}
         subtitle={t("invite.invalid_desc", locale)}
       >
-        <p className="text-ink-4 text-[13px]">{t("invite.error_generic", locale)}</p>
+        <p className="text-[13px] text-[var(--color-text-muted)]">{t("invite.error_generic", locale)}</p>
       </AuthPanel>
     );
   }
@@ -43,7 +43,7 @@ export default async function AcceptInvitePage({ params }: Props) {
         title={t("invite.used", locale)}
         subtitle={t("invite.used_desc", locale)}
       >
-        <p className="text-ink-4 text-[13px]">{t("invite.error_used", locale)}</p>
+        <p className="text-[13px] text-[var(--color-text-muted)]">{t("invite.error_used", locale)}</p>
       </AuthPanel>
     );
   }
@@ -55,7 +55,7 @@ export default async function AcceptInvitePage({ params }: Props) {
         title={t("invite.expired", locale)}
         subtitle={t("invite.expired_desc", locale)}
       >
-        <p className="text-ink-4 text-[13px]">{t("invite.error_expired", locale)}</p>
+        <p className="text-[13px] text-[var(--color-text-muted)]">{t("invite.error_expired", locale)}</p>
       </AuthPanel>
     );
   }

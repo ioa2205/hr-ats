@@ -1,8 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { cn } from "@/lib/utils";
-import { TezButton } from "@/components/hr/design";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Radio,
+  RadioGroup,
+  SuccessState,
+  Textarea,
+} from "@/components/ui";
+import { ButtonSpinner } from "@/components/hr/settings/settings-ui";
 import { useTranslation } from "@/lib/i18n/provider";
 import { requestCancel, requestUpgrade } from "@/lib/actions/billing";
 import type { TranslationKey } from "@/lib/i18n/types";
@@ -49,9 +61,8 @@ export function UpgradeButton({
 
   return (
     <>
-      <TezButton
+      <Button
         variant={emphasized ? "accent" : "secondary"}
-        size="md"
         onClick={() => {
           setStatus(hasPendingRequest ? "sent" : "idle");
           setOpen(true);
@@ -63,63 +74,51 @@ export function UpgradeButton({
           : hasPendingRequest || status === "sent"
             ? t("hr.settings.billing.upgrade.dialog_sent_title")
             : t("hr.settings.billing.cta.upgrade")}
-      </TezButton>
-      {open && (
-        <DialogShell onClose={() => setOpen(false)}>
+      </Button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
           {status === "sent" ? (
-            <div className="text-center">
-              <div className="text-ink text-[14px] font-semibold">
-                {t("hr.settings.billing.upgrade.dialog_sent_title")}
-              </div>
-              <p className="text-ink-4 mt-2 text-[12.5px] leading-[1.5]">
-                {t("hr.settings.billing.upgrade.dialog_sent_body")}
-              </p>
-              <TezButton
-                variant="secondary"
-                size="sm"
-                className="mt-4"
-                onClick={() => setOpen(false)}
-              >
-                {t("common.save")}
-              </TezButton>
-            </div>
+            <>
+              <SuccessState
+                title={t("hr.settings.billing.upgrade.dialog_sent_title")}
+                description={t("hr.settings.billing.upgrade.dialog_sent_body")}
+                compact
+              />
+              <DialogFooter>
+                <Button variant="secondary" onClick={() => setOpen(false)}>
+                  {t("common.save")}
+                </Button>
+              </DialogFooter>
+            </>
           ) : (
             <>
-              <div className="text-ink text-[16px] font-semibold tracking-[-0.01em]">
-                {t("hr.settings.billing.upgrade.dialog_title")}
-              </div>
-              <p className="text-ink-4 mt-2 text-[12.5px] leading-[1.5]">
-                {t("hr.settings.billing.upgrade.dialog_body")}
-              </p>
+              <DialogHeader>
+                <DialogTitle>{t("hr.settings.billing.upgrade.dialog_title")}</DialogTitle>
+                <DialogDescription>
+                  {t("hr.settings.billing.upgrade.dialog_body")}
+                </DialogDescription>
+              </DialogHeader>
               {status === "error" && (
-                <p className="text-tez-red mt-2 text-[11.5px]">
+                <p className="px-6 pt-3 text-[12px] text-[var(--color-danger)]" role="alert">
                   {t("hr.settings.billing.upgrade.dialog_error")}
                 </p>
               )}
-              <div className="mt-4 flex justify-end gap-2">
-                <TezButton
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setOpen(false)}
-                  disabled={status === "sending"}
-                >
+              <DialogFooter>
+                <Button variant="ghost" onClick={() => setOpen(false)} disabled={status === "sending"}>
                   {t("common.cancel")}
-                </TezButton>
-                <TezButton
-                  variant="primary"
-                  size="sm"
-                  onClick={submit}
-                  disabled={status === "sending"}
-                >
+                </Button>
+                <Button variant="primary" onClick={submit} disabled={status === "sending"}>
+                  {status === "sending" && <ButtonSpinner />}
                   {status === "sending"
                     ? t("hr.settings.billing.upgrade.dialog_submitting")
                     : t("hr.settings.billing.upgrade.dialog_submit")}
-                </TezButton>
-              </div>
+                </Button>
+              </DialogFooter>
             </>
           )}
-        </DialogShell>
-      )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
@@ -139,7 +138,7 @@ export function CancelButton() {
 
   return (
     <>
-      <TezButton
+      <Button
         variant="secondary"
         size="sm"
         onClick={() => {
@@ -150,117 +149,70 @@ export function CancelButton() {
         }}
       >
         {t("hr.settings.billing.cta.cancel")}
-      </TezButton>
-      {open && (
-        <DialogShell onClose={() => setOpen(false)}>
+      </Button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-[460px]">
           {status === "sent" ? (
-            <div className="text-center">
-              <div className="text-ink text-[14px] font-semibold">
-                {t("hr.settings.billing.cancel.sent")}
-              </div>
-              <TezButton
-                variant="secondary"
-                size="sm"
-                className="mt-4"
-                onClick={() => setOpen(false)}
-              >
-                {t("common.save")}
-              </TezButton>
-            </div>
+            <>
+              <SuccessState title={t("hr.settings.billing.cancel.sent")} compact />
+              <DialogFooter>
+                <Button variant="secondary" onClick={() => setOpen(false)}>
+                  {t("common.save")}
+                </Button>
+              </DialogFooter>
+            </>
           ) : (
             <>
-              <div className="text-ink text-[16px] font-semibold tracking-[-0.01em]">
-                {t("hr.settings.billing.cancel.dialog_title")}
-              </div>
-              <p className="text-ink-4 mt-2 text-[12.5px] leading-[1.5]">
-                {t("hr.settings.billing.cancel.dialog_body")}
-              </p>
-
-              <div className="mt-3">
-                <label className="text-ink-2 text-[11.5px] font-semibold">
-                  {t("hr.settings.billing.cancel.reason_label")}
-                </label>
-                <div className="mt-1.5 flex flex-col gap-1">
-                  {CANCEL_REASONS.map((r) => (
-                    <label
-                      key={r.value}
-                      className={cn(
-                        "hover:bg-bone-2 flex cursor-pointer items-center gap-2 rounded-[4px] border px-2.5 py-1.5 text-[12.5px] transition-colors",
-                        reason === r.value ? "border-ink bg-bone-2" : "border-rule",
-                      )}
-                    >
-                      <input
-                        type="radio"
-                        name="cancel-reason"
-                        checked={reason === r.value}
-                        onChange={() => setReason(r.value)}
-                        className="accent-ink"
-                      />
-                      {t(r.labelKey)}
-                    </label>
-                  ))}
+              <DialogHeader>
+                <DialogTitle>{t("hr.settings.billing.cancel.dialog_title")}</DialogTitle>
+                <DialogDescription>
+                  {t("hr.settings.billing.cancel.dialog_body")}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-col gap-4 px-6 pt-4">
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-sm font-medium text-[var(--color-text)]">
+                    {t("hr.settings.billing.cancel.reason_label")}
+                  </span>
+                  <RadioGroup
+                    aria-label={t("hr.settings.billing.cancel.reason_label")}
+                    value={reason}
+                    onValueChange={(v) => setReason(v as CancelReason)}
+                  >
+                    {CANCEL_REASONS.map((r) => (
+                      <Radio key={r.value} value={r.value} label={t(r.labelKey)} />
+                    ))}
+                  </RadioGroup>
                 </div>
-              </div>
-
-              <div className="mt-3">
-                <label className="text-ink-2 text-[11.5px] font-semibold">
-                  {t("hr.settings.billing.cancel.notes_label")}
-                </label>
-                <textarea
+                <Textarea
+                  label={t("hr.settings.billing.cancel.notes_label")}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder={t("hr.settings.billing.cancel.notes_placeholder")}
                   rows={3}
-                  className="border-rule-2 bg-paper mt-1.5 w-full resize-none rounded-[4px] border px-2.5 py-2 text-[12.5px]"
                 />
+                {status === "error" && (
+                  <p className="text-[12px] text-[var(--color-danger)]" role="alert">
+                    {t("hr.settings.billing.cancel.error")}
+                  </p>
+                )}
               </div>
-
-              {status === "error" && (
-                <p className="text-tez-red mt-2 text-[11.5px]">
-                  {t("hr.settings.billing.cancel.error")}
-                </p>
-              )}
-              <div className="mt-4 flex justify-end gap-2">
-                <TezButton
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setOpen(false)}
-                  disabled={status === "sending"}
-                >
+              <DialogFooter>
+                <Button variant="ghost" onClick={() => setOpen(false)} disabled={status === "sending"}>
                   {t("common.cancel")}
-                </TezButton>
-                <TezButton
-                  variant="primary"
-                  size="sm"
-                  onClick={submit}
-                  disabled={status === "sending"}
-                >
+                </Button>
+                <Button variant="primary" onClick={submit} disabled={status === "sending"}>
+                  {status === "sending" && <ButtonSpinner />}
                   {status === "sending"
                     ? t("hr.settings.billing.cancel.submitting")
                     : t("hr.settings.billing.cancel.submit")}
-                </TezButton>
-              </div>
+                </Button>
+              </DialogFooter>
             </>
           )}
-        </DialogShell>
-      )}
+        </DialogContent>
+      </Dialog>
     </>
-  );
-}
-
-function DialogShell({ children, onClose }: { children: React.ReactNode; onClose: () => void }) {
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      className="bg-ink/40 fixed inset-0 z-50 flex items-center justify-center p-4"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div className="border-rule bg-paper shadow-tez-3 w-full max-w-[440px] rounded-[6px] border p-5">
-        {children}
-      </div>
-    </div>
   );
 }

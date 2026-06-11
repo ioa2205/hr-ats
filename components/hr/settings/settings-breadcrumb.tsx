@@ -64,20 +64,20 @@ export function SettingsBreadcrumb() {
 
   return (
     <div
-      className="mb-4 flex items-center justify-between gap-3 text-[11px]"
-      style={{ fontFamily: "var(--font-tez-mono)", letterSpacing: "0.04em" }}
+      className="data-mono mb-4 flex items-center justify-between gap-3 text-[11px]"
+      style={{ letterSpacing: "0.04em" }}
     >
       <nav aria-label="breadcrumb" className="flex items-center gap-1.5">
         <Link
           href="/hr/settings"
-          className="text-ink-5 hover:text-ink-3 transition-colors"
+          className="text-[var(--color-text-subtle)] transition-colors hover:text-[var(--color-text-muted)]"
         >
           {t("hr.settings.breadcrumb.root")}
         </Link>
         <Separator />
-        <span className="text-ink-5">{groupLabel}</span>
+        <span className="text-[var(--color-text-subtle)]">{groupLabel}</span>
         <Separator />
-        <span className="text-ink-3 font-semibold">{sectionLabel}</span>
+        <span className="font-semibold text-[var(--color-text-muted)]">{sectionLabel}</span>
       </nav>
       <LastSavedCaption key={section} section={section} />
     </div>
@@ -86,7 +86,7 @@ export function SettingsBreadcrumb() {
 
 function Separator() {
   return (
-    <span aria-hidden className="text-ink-6">
+    <span aria-hidden className="text-[var(--color-line-strong)]">
       /
     </span>
   );
@@ -116,17 +116,21 @@ function LastSavedCaption({ section }: { section: SectionKey }) {
   }, [section]);
 
   if (state === "loading") {
-    return <span className="text-ink-6">{t("hr.settings.last_saved_loading")}</span>;
+    return (
+      <span className="text-[var(--color-text-subtle)]">{t("hr.settings.last_saved_loading")}</span>
+    );
   }
   if (!state.at) {
-    return <span className="text-ink-5">{t("hr.settings.last_saved_none")}</span>;
+    return (
+      <span className="text-[var(--color-text-subtle)]">{t("hr.settings.last_saved_none")}</span>
+    );
   }
   const ago = formatDistanceToNow(new Date(state.at), {
     addSuffix: true,
     locale: dateLocaleByLocale[locale],
   });
   return (
-    <span className="text-ink-4 truncate" title={new Date(state.at).toLocaleString()}>
+    <span className="truncate text-[var(--color-text-muted)]" title={new Date(state.at).toLocaleString()}>
       {t("hr.settings.last_saved_by", {
         ago,
         name: state.actor ?? "—",

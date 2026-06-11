@@ -4,7 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireCompanyAccess } from "@/lib/auth/guards";
 import { getLocale, t } from "@/lib/i18n";
 import { env } from "@/lib/env";
-import { SettingsHeader } from "@/components/hr/design";
+import { SettingsPageHeader } from "@/components/hr/settings/settings-page-header";
 import {
   TeamClient,
   type TeamMemberRow,
@@ -78,7 +78,7 @@ export default async function TeamSettingsPage() {
 
   return (
     <section>
-      <SettingsHeader
+      <SettingsPageHeader
         title={t("hr.settings.team.title", locale)}
         sub={t("hr.settings.team.subtitle", locale)}
       />

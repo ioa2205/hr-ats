@@ -1762,6 +1762,10 @@ export type TranslationKey =
   | "hr.settings.team.invite_sent"
   | "hr.settings.team.invite_error"
   | "hr.settings.team.invite_already_member"
+  | "hr.settings.team.invite_sent_to"
+  | "hr.settings.team.revoke_invite_for"
+  | "hr.settings.team.remove_dialog_title"
+  | "hr.settings.team.remove_dialog_body"
   | "hr.settings.team.role_change.confirm_owner_title"
   | "hr.settings.team.role_change.confirm_owner_body"
   // --- hr activity page (phase 5) ---

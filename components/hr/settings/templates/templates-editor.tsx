@@ -3,7 +3,15 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Send } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Panel, PanelHeader, PanelTitle, Seg, TezButton } from "@/components/hr/design";
+import {
+  Button,
+  Panel,
+  PanelHeader,
+  PanelTitle,
+  SegmentedControl,
+  Textarea,
+} from "@/components/ui";
+import { ConfirmDialog, SettingsSaveBar } from "@/components/hr/settings/settings-ui";
 import { useTranslation } from "@/lib/i18n/provider";
 import {
   KNOWN_VARIABLES,
@@ -37,13 +45,11 @@ export function TemplatesEditor({ initial, defaults, canEdit, hasOverrides }: Te
   const [saved, setSaved] = useState(initial);
   const [active, setActive] = useState<Lang>("ru");
   const [status, setStatus] = useState<"idle" | "saving" | "ok" | "error">("idle");
+  const [resetOpen, setResetOpen] = useState(false);
   const ruRef = useRef<HTMLTextAreaElement>(null);
   const uzRef = useRef<HTMLTextAreaElement>(null);
   const enRef = useRef<HTMLTextAreaElement>(null);
-  const editorRefs = useMemo(
-    () => ({ ru: ruRef, uz: uzRef, en: enRef }),
-    [],
-  );
+  const editorRefs = useMemo(() => ({ ru: ruRef, uz: uzRef, en: enRef }), []);
 
   const parity = useMemo(() => detectLocaleParity(values), [values]);
   const unknownByLocale = useMemo(
@@ -101,92 +107,97 @@ export function TemplatesEditor({ initial, defaults, canEdit, hasOverrides }: Te
     }
   };
 
-  const handleReset = async () => {
-    if (!confirm(t("hr.settings.templates.reset_confirm"))) return;
-    const next = { ...values, [active]: defaults[active] };
-    setValues(next);
+  const handleReset = () => {
+    setValues((prev) => ({ ...prev, [active]: defaults[active] }));
+    setResetOpen(false);
   };
 
   return (
     <>
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <TabsWithParity active={active} onChange={setActive} parity={parity} />
+      <div className="mb-3">
+        <SegmentedControl
+          aria-label={t("hr.settings.templates.tab_ru")}
+          value={active}
+          options={LANGS.map((lang) => ({
+            value: lang,
+            label: (
+              <span className="inline-flex items-center gap-1.5">
+                {t(`hr.settings.templates.tab_${lang}` as const)}
+                {parity[lang] && (
+                  <span
+                    aria-label={t("hr.settings.templates.parity_warning")}
+                    title={t("hr.settings.templates.parity_warning")}
+                    className="inline-block h-[5px] w-[5px] rounded-full bg-[var(--color-accent)]"
+                  />
+                )}
+              </span>
+            ),
+          }))}
+          onChange={(v) => setActive(v as Lang)}
+        />
       </div>
 
       <Panel className="mb-4">
         <PanelHeader>
           <PanelTitle>{t(`hr.settings.templates.tab_${active}` as const)}</PanelTitle>
-          <div className="flex items-center gap-2">
-            {hasOverrides && canEdit && (
-              <TezButton variant="ghost" size="sm" onClick={handleReset}>
-                {t("hr.settings.templates.reset")}
-              </TezButton>
-            )}
-          </div>
+          {hasOverrides && canEdit && (
+            <Button variant="ghost" size="sm" onClick={() => setResetOpen(true)}>
+              {t("hr.settings.templates.reset")}
+            </Button>
+          )}
         </PanelHeader>
         <div className="grid gap-0 md:grid-cols-[1.05fr_1fr]">
-          <div className="border-rule md:border-r p-[18px]">
-            <div className="mb-2 flex items-center justify-between gap-3">
-              <label className="text-ink-2 text-[11.5px] font-semibold">
-                {t("hr.settings.templates.variables_label")}
-              </label>
-            </div>
-            <div className="mb-3 flex flex-wrap gap-1.5">
+          <div className="border-b border-[var(--color-line)] p-4 md:border-r md:border-b-0">
+            <label className="text-[11.5px] font-semibold text-[var(--color-text-muted)]">
+              {t("hr.settings.templates.variables_label")}
+            </label>
+            <div className="mt-2 mb-3 flex flex-wrap gap-1.5">
               {KNOWN_VARIABLES.map((v) => (
                 <button
                   key={v}
                   type="button"
                   onClick={() => handleInsert(v)}
                   disabled={!canEdit}
-                  className="border-rule-2 bg-paper text-ink-2 hover:bg-bone-2 inline-flex h-6 items-center rounded-[3px] border px-1.5 text-[10.5px] transition-colors disabled:cursor-not-allowed disabled:opacity-60"
-                  style={{ fontFamily: "var(--font-tez-mono)" }}
+                  className="data-mono inline-flex h-7 items-center rounded-[var(--radius-sm)] border border-[var(--color-line-strong)] bg-[var(--color-surface)] px-2 text-[10.5px] text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {"{" + v + "}"}
                 </button>
               ))}
             </div>
-            <p className="text-ink-5 mb-2 text-[11px]">
+            <p className="mb-2 text-[11px] text-[var(--color-text-subtle)]">
               {t("hr.settings.templates.variable_hint")}
             </p>
             {LANGS.map((lang) => (
-              <textarea
+              <Textarea
                 key={lang}
                 ref={editorRefs[lang]}
+                aria-label={t(`hr.settings.templates.tab_${lang}` as const)}
                 value={values[lang]}
-                onChange={(e) =>
-                  setValues((prev) => ({ ...prev, [lang]: e.target.value }))
-                }
+                onChange={(e) => setValues((prev) => ({ ...prev, [lang]: e.target.value }))}
                 disabled={!canEdit}
                 rows={8}
-                className={cn(
-                  "border-rule-2 bg-paper text-ink w-full resize-y rounded-[4px] border p-2.5 text-[12.5px] leading-[1.55]",
-                  lang !== active && "hidden",
-                )}
-                style={{ fontFamily: "var(--font-tez-mono)" }}
+                className={cn("data-mono leading-[1.55]", lang !== active && "hidden")}
               />
             ))}
             {unknownByLocale[active].length > 0 && (
-              <p className="text-persimmon-2 mt-2 text-[11.5px]">
+              <p className="mt-2 text-[11.5px] text-[var(--color-danger)]">
                 {t("hr.settings.templates.unknown_token", {
-                  tokens: unknownByLocale[active].map((t) => `{${t}}`).join(", "),
+                  tokens: unknownByLocale[active].map((tok) => `{${tok}}`).join(", "),
                 })}
               </p>
             )}
           </div>
 
-          <div className="bg-bone-2/40 p-[18px]">
-            <div className="text-ink-5 mb-2 flex items-center gap-1.5 text-[11px]">
-              <span
-                className="uppercase tracking-[0.08em]"
-                style={{ fontFamily: "var(--font-tez-mono)" }}
-              >
+          <div className="bg-[var(--color-surface-subtle)] p-4">
+            <div className="mb-2 flex items-center gap-1.5 text-[11px] text-[var(--color-text-subtle)]">
+              <span className="data-mono uppercase tracking-[0.08em]">
                 {t("hr.settings.templates.preview_label")}
               </span>
               <span>·</span>
               <span>{t("hr.settings.templates.preview_via")}</span>
             </div>
-            <div className="bg-paper border-rule max-w-[320px] rounded-[16px] rounded-bl-[4px] border px-4 py-3 text-[13px] leading-[1.45] shadow-tez-1">
-              <pre className="text-ink whitespace-pre-wrap font-sans">
+            <div className="max-w-[320px] rounded-[var(--radius-lg)] rounded-bl-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface)] px-4 py-3 text-[13px] leading-[1.45] shadow-level-1">
+              <pre className="whitespace-pre-wrap font-sans text-[var(--color-text)]">
                 {renderTemplate(values[active], FIXTURE)}
               </pre>
             </div>
@@ -195,78 +206,49 @@ export function TemplatesEditor({ initial, defaults, canEdit, hasOverrides }: Te
       </Panel>
 
       {canEdit && (
-        <div className="sticky bottom-3 z-10">
-          <div className="border-rule bg-paper shadow-tez-2 flex items-center justify-between gap-3 rounded-[6px] border px-4 py-2.5">
-            <div className="text-[12.5px]">
-              {status === "ok" ? (
-                <span className="text-tez-green font-medium">
-                  ✓ {t("hr.settings.templates.saved")}
-                </span>
-              ) : status === "error" ? (
-                <span className="text-tez-red font-medium">
-                  {t("hr.settings.templates.save_error")}
-                </span>
-              ) : hasUnknown ? (
-                <span className="text-persimmon-2">
-                  {t("hr.settings.templates.unknown_token", {
-                    tokens: LANGS.flatMap((l) =>
-                      unknownByLocale[l].map((v) => `{${v}}`),
-                    ).join(", "),
-                  })}
-                </span>
-              ) : (
-                <span className="text-ink-4">
-                  {t("hr.settings.notifications.unsaved_warn")}
-                </span>
-              )}
-            </div>
-            <TezButton
-              variant="accent"
-              size="sm"
-              onClick={handleSave}
-              disabled={!dirty || hasUnknown || status === "saving"}
-              leadingIcon={<Send className="h-3 w-3" />}
-            >
-              {status === "saving"
-                ? t("hr.settings.templates.saving")
-                : t("hr.settings.templates.save")}
-            </TezButton>
-          </div>
-        </div>
+        <SettingsSaveBar
+          visible
+          message={
+            status === "ok" ? (
+              <span className="font-medium text-[var(--color-success)]">
+                ✓ {t("hr.settings.templates.saved")}
+              </span>
+            ) : status === "error" ? (
+              <span className="font-medium text-[var(--color-danger)]">
+                {t("hr.settings.templates.save_error")}
+              </span>
+            ) : hasUnknown ? (
+              <span className="text-[var(--color-danger)]">
+                {t("hr.settings.templates.unknown_token", {
+                  tokens: LANGS.flatMap((l) => unknownByLocale[l].map((v) => `{${v}}`)).join(", "),
+                })}
+              </span>
+            ) : (
+              <span className="text-[var(--color-text-muted)]">
+                {t("hr.settings.notifications.unsaved_warn")}
+              </span>
+            )
+          }
+          onSave={handleSave}
+          saveLabel={
+            status === "saving" ? t("hr.settings.templates.saving") : t("hr.settings.templates.save")
+          }
+          saving={status === "saving"}
+          saveDisabled={!dirty || hasUnknown}
+          saveIcon={<Send className="h-3.5 w-3.5" aria-hidden="true" />}
+        />
       )}
-    </>
-  );
-}
 
-function TabsWithParity({
-  active,
-  onChange,
-  parity,
-}: {
-  active: Lang;
-  onChange: (v: Lang) => void;
-  parity: Record<Lang, boolean>;
-}) {
-  const { t } = useTranslation();
-  return (
-    <Seg
-      value={active}
-      options={LANGS.map((lang) => ({
-        value: lang,
-        label: (
-          <span className="inline-flex items-center gap-1.5">
-            {t(`hr.settings.templates.tab_${lang}` as const)}
-            {parity[lang] && (
-              <span
-                aria-label="parity warning"
-                title={t("hr.settings.templates.parity_warning")}
-                className="bg-persimmon inline-block h-[5px] w-[5px] rounded-full"
-              />
-            )}
-          </span>
-        ),
-      }))}
-      onChange={(v) => onChange(v as Lang)}
-    />
+      <ConfirmDialog
+        open={resetOpen}
+        onOpenChange={setResetOpen}
+        title={t("hr.settings.templates.reset")}
+        description={t("hr.settings.templates.reset_confirm")}
+        confirmLabel={t("hr.settings.templates.reset")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={handleReset}
+        tone="primary"
+      />
+    </>
   );
 }

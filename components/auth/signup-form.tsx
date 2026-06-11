@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { Loader2 } from "lucide-react";
-import { TezButton } from "@/components/hr/design";
+import { Button } from "@/components/ui";
 import { AuthField } from "./auth-field";
 import { AuthBanner } from "./auth-banner";
 import { signUpWithEmail, type AuthState } from "@/lib/actions/auth";
@@ -71,16 +71,12 @@ export function SignupForm({ pinnedEmail, inviteToken, intent }: SignupFormProps
         helper={t("auth.password_hint")}
       />
 
-      <TezButton
-        type="submit"
-        variant="primary"
-        size="lg"
-        disabled={isPending}
-        className="mt-1 h-12 w-full justify-center text-[14.5px] font-semibold"
-        leadingIcon={isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined}
-      >
+      <Button type="submit" size="lg" fullWidth disabled={isPending} className="mt-1">
+        {isPending && (
+          <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+        )}
         {t("auth.create_account")}
-      </TezButton>
+      </Button>
     </form>
   );
 }

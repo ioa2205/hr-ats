@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, Loader2, UserPlus } from "lucide-react";
-import { TezButton } from "@/components/hr/design";
+import { Button } from "@/components/ui";
 import { AuthPanel } from "@/components/auth/auth-panel";
 import { AuthBanner } from "@/components/auth/auth-banner";
 import { useTranslation } from "@/lib/i18n/provider";
@@ -70,45 +70,34 @@ export function AcceptInviteClient({ token, companyName, role, email }: AcceptIn
       title={t("invite.join_heading", { name: companyName })}
     >
       {/* Company card */}
-      <div className="border-rule bg-bone-2/60 flex items-center gap-3 rounded-[6px] border px-4 py-3">
-        <span className="bg-ink text-paper flex h-10 w-10 shrink-0 items-center justify-center rounded-[5px] text-[14px] font-bold">
+      <div className="flex items-center gap-3 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] px-4 py-3">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--color-primary)] text-[14px] font-bold text-[var(--color-on-primary)]">
           {companyName.slice(0, 1).toUpperCase()}
         </span>
         <div className="min-w-0">
-          <p className="text-ink truncate text-[14px] font-semibold">{companyName}</p>
-          <p
-            className="text-ink-4 mt-0.5 text-[10.5px] font-semibold uppercase tracking-[0.12em]"
-            style={{ fontFamily: "var(--font-tez-mono)" }}
-          >
-            <Building2 className="mr-1 inline h-3 w-3 align-[-1px]" />
+          <p className="truncate text-[14px] font-semibold text-[var(--color-text)]">{companyName}</p>
+          <p className="data-mono mt-0.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
+            <Building2 className="mr-1 inline h-3 w-3 align-[-1px]" aria-hidden="true" />
             {t("invite.invited_as")} · {t(roleKey[role])}
           </p>
         </div>
       </div>
 
       {/* Email line */}
-      <p
-        className="text-ink-4 text-[12px]"
-        style={{ fontFamily: "var(--font-tez-mono)" }}
-      >
+      <p className="data-mono text-[12px] text-[var(--color-text-muted)]">
         {t("invite.sent_to")} {email}
       </p>
 
       {error && <AuthBanner tone="error">{error}</AuthBanner>}
 
-      <TezButton
-        type="button"
-        variant="primary"
-        size="lg"
-        onClick={() => void handleAccept()}
-        disabled={busy}
-        leadingIcon={
-          busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />
-        }
-        className="h-12 w-full justify-center text-[14.5px] font-semibold"
-      >
+      <Button type="button" size="lg" fullWidth onClick={() => void handleAccept()} disabled={busy}>
+        {busy ? (
+          <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+        ) : (
+          <UserPlus className="h-4 w-4" aria-hidden="true" />
+        )}
         {busy ? t("invite.accepting") : t("invite.accept")}
-      </TezButton>
+      </Button>
     </AuthPanel>
   );
 }

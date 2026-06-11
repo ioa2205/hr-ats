@@ -27,18 +27,20 @@ export default async function VerifyPage({
           : t("auth.verify_body_no_email", locale)
       }
     >
-      <div className="border-rule bg-bone-2/60 flex items-start gap-3 rounded-[6px] border px-4 py-3">
-        <span className="bg-paper border-rule flex h-9 w-9 shrink-0 items-center justify-center rounded-[5px] border">
-          <Mail className="text-ink-3 h-4 w-4" strokeWidth={1.75} />
+      <div className="flex items-start gap-3 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] px-4 py-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface)]">
+          <Mail className="h-4 w-4 text-[var(--color-text-muted)]" strokeWidth={1.75} aria-hidden="true" />
         </span>
-        <p className="text-ink-3 text-[13px] leading-[1.55]">{t("auth.verify_help", locale)}</p>
+        <p className="text-[13px] leading-[1.55] text-[var(--color-text-muted)]">
+          {t("auth.verify_help", locale)}
+        </p>
       </div>
 
       <ResendVerificationButton email={email} />
 
       <Link
         href="/auth/login"
-        className="text-ink-4 hover:text-ink text-center text-[13px] font-medium underline-offset-2 hover:underline"
+        className="text-center text-[13px] font-medium text-[var(--color-text-muted)] underline-offset-2 hover:text-[var(--color-text)] hover:underline"
       >
         {t("auth.back_to_login", locale)}
       </Link>

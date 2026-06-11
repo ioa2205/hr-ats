@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import Link from "next/link";
 import { Phone, Loader2 } from "lucide-react";
-import { TezButton } from "@/components/hr/design";
+import { Button } from "@/components/ui";
 import { signInWithGoogle } from "@/lib/actions/auth";
 import { useTranslation } from "@/lib/i18n/provider";
 
@@ -13,35 +13,31 @@ export function OAuthButtons() {
 
   return (
     <div className="flex flex-col gap-2">
-      <TezButton
+      <Button
         type="button"
         variant="secondary"
         size="lg"
+        fullWidth
         disabled={isPending}
         onClick={() => startTransition(() => signInWithGoogle())}
-        className="h-11 w-full justify-center text-[13.5px] font-semibold"
-        leadingIcon={
-          isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <GoogleIcon />
-          )
-        }
       >
+        {isPending ? (
+          <Loader2
+            className="h-4 w-4 animate-spin motion-reduce:animate-none"
+            aria-hidden="true"
+          />
+        ) : (
+          <GoogleIcon />
+        )}
         {t("auth.continue_with_google")}
-      </TezButton>
+      </Button>
 
-      <Link href="/auth/signup-phone" className="block">
-        <TezButton
-          type="button"
-          variant="secondary"
-          size="lg"
-          className="h-11 w-full justify-center text-[13.5px] font-semibold"
-          leadingIcon={<Phone className="h-4 w-4" strokeWidth={1.75} />}
-        >
+      <Button asChild variant="secondary" size="lg" fullWidth>
+        <Link href="/auth/signup-phone">
+          <Phone className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
           {t("auth.continue_with_phone")}
-        </TezButton>
-      </Link>
+        </Link>
+      </Button>
     </div>
   );
 }

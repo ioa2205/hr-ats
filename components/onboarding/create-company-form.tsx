@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Loader2 } from "lucide-react";
-import { TezButton } from "@/components/hr/design";
+import { Button } from "@/components/ui";
 import { AuthField } from "@/components/auth/auth-field";
 import { AuthBanner } from "@/components/auth/auth-banner";
 import {
@@ -94,11 +94,14 @@ export function CreateCompanyForm({ labels, intent }: CreateCompanyFormProps) {
       />
 
       <div className="flex flex-col gap-1.5">
-        <label className="text-ink text-[13px] font-semibold tracking-[-0.005em]">
+        <label
+          htmlFor="onboarding-default-locale"
+          className="text-[13px] font-semibold tracking-[-0.005em] text-[var(--color-text)]"
+        >
           {labels.default_locale}
         </label>
         <Select value={defaultLocale} onValueChange={setDefaultLocale}>
-          <SelectTrigger className="border-rule bg-paper text-ink hover:border-ink-6 h-[44px] rounded-[6px] px-3.5 text-[14.5px] transition-colors">
+          <SelectTrigger id="onboarding-default-locale" className="h-11 text-[14.5px]">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -107,30 +110,30 @@ export function CreateCompanyForm({ labels, intent }: CreateCompanyFormProps) {
             <SelectItem value="en">{labels.locale_en}</SelectItem>
           </SelectContent>
         </Select>
-        <p className="text-ink-4 text-[12.5px]">{labels.default_locale_hint}</p>
+        <p className="text-[12.5px] text-[var(--color-text-muted)]">{labels.default_locale_hint}</p>
       </div>
 
       <div className="mt-1 flex items-center gap-2">
-        <TezButton
+        <Button
           type="button"
           variant="ghost"
           size="lg"
           onClick={() => router.push(intent === "pro" ? "/onboarding?intent=pro" : "/onboarding")}
-          leadingIcon={<ArrowLeft className="h-3.5 w-3.5" />}
-          className="h-11 text-[13.5px]"
         >
+          <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
           {labels.back}
-        </TezButton>
-        <TezButton
+        </Button>
+        <Button
           type="submit"
-          variant="primary"
           size="lg"
           disabled={creating || name.trim().length < 2}
-          className="h-12 flex-1 justify-center text-[14.5px] font-semibold"
-          leadingIcon={creating ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined}
+          className="flex-1"
         >
+          {creating && (
+            <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+          )}
           {creating ? labels.creating : labels.create}
-        </TezButton>
+        </Button>
       </div>
     </form>
   );

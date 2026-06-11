@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { Check, Loader2, RotateCcw } from "lucide-react";
-import { TezButton } from "@/components/hr/design";
+import { Button } from "@/components/ui";
 import { AuthBanner } from "@/components/auth/auth-banner";
 import { resendVerification, type AuthState } from "@/lib/actions/auth";
 import { useTranslation } from "@/lib/i18n/provider";
@@ -50,9 +50,7 @@ export function ResendVerificationButton({ email }: ResendVerificationButtonProp
     }
     if (state?.error === "cooldown") {
       return (
-        <AuthBanner tone="info">
-          {t("auth.verify_resend_cooldown", { seconds: "60" })}
-        </AuthBanner>
+        <AuthBanner tone="info">{t("auth.verify_resend_cooldown", { seconds: "60" })}</AuthBanner>
       );
     }
     if (state?.error === "rate_limit") {
@@ -68,26 +66,18 @@ export function ResendVerificationButton({ email }: ResendVerificationButtonProp
     <form action={handleSubmit} className="flex flex-col gap-3">
       <input type="hidden" name="email" value={email} />
       {bannerNode}
-      <TezButton
-        type="submit"
-        variant="secondary"
-        size="md"
-        disabled={disabled}
-        className="h-10 justify-center text-[13.5px] font-medium"
-        leadingIcon={
-          isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <RotateCcw className="h-4 w-4" strokeWidth={1.75} />
-          )
-        }
-      >
+      <Button type="submit" variant="secondary" fullWidth disabled={disabled}>
+        {isPending ? (
+          <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+        ) : (
+          <RotateCcw className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
+        )}
         {isPending
           ? t("auth.verify_resend_sending")
           : cooldown > 0
             ? t("auth.verify_resend_cooldown", { seconds: String(cooldown) })
             : t("auth.verify_resend_button")}
-      </TezButton>
+      </Button>
     </form>
   );
 }

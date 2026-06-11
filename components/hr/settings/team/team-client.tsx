@@ -2,20 +2,24 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Copy, Clock, UserPlus, UserMinus, X } from "lucide-react";
+import { Check, Clock, Copy, UserMinus, UserPlus, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ru as ruLocale, enUS, uz } from "date-fns/locale";
-import { cn } from "@/lib/utils";
 import {
   Avatar,
-  Chip,
+  Badge,
+  Button,
+  FilterChip,
+  IconButton,
+  Input,
   Panel,
+  PanelBody,
   PanelHeader,
   PanelTitle,
-  Pill,
-  Seg,
-  TezButton,
-} from "@/components/hr/design";
+  SegmentedControl,
+  type BadgeTone,
+} from "@/components/ui";
+import { ButtonSpinner, ConfirmDialog } from "@/components/hr/settings/settings-ui";
 import { useTranslation } from "@/lib/i18n/provider";
 import type { CompanyRole } from "@/types";
 import type { Locale, TranslationKey } from "@/lib/i18n/types";
@@ -62,13 +66,18 @@ const dateLocaleByLocale: Record<Locale, typeof ruLocale> = {
   en: enUS,
 };
 
+function roleTone(role: CompanyRole): BadgeTone {
+  return role === "owner" ? "primary" : role === "admin" ? "info" : "neutral";
+}
+
 export function TeamClient({ selfId, selfRole, members, invites }: TeamClientProps) {
   const { t, locale } = useTranslation();
   const router = useRouter();
   const canManage = selfRole === "owner" || selfRole === "admin";
   const [filter, setFilter] = useState<Filter>("all");
-  const [inviteBannerId, setInviteBannerId] = useState<string | null>(null);
   const [globalError, setGlobalError] = useState<string | null>(null);
+  const [removeTarget, setRemoveTarget] = useState<TeamMemberRow | null>(null);
+  const [removing, setRemoving] = useState(false);
 
   const counts = useMemo(
     () => ({
@@ -97,14 +106,8 @@ export function TeamClient({ selfId, selfRole, members, invites }: TeamClientPro
 
   const onChangeRole = async (m: TeamMemberRow, next: CompanyRole) => {
     if (m.userId === selfId) return;
-    if (m.role === "owner" || next === "owner") {
-      alert(
-        `${t("hr.settings.team.role_change.confirm_owner_title")}\n\n${t(
-          "hr.settings.team.role_change.confirm_owner_body",
-        )}`,
-      );
-      return;
-    }
+    // Owner promotions/demotions only happen through ownership transfer.
+    if (m.role === "owner" || next === "owner") return;
     setGlobalError(null);
     const res = await fetch("/api/hr/team/change-role", {
       method: "PATCH",
@@ -118,17 +121,22 @@ export function TeamClient({ selfId, selfRole, members, invites }: TeamClientPro
     router.refresh();
   };
 
-  const onRemove = async (userId: string) => {
+  const confirmRemove = async () => {
+    if (!removeTarget) return;
     setGlobalError(null);
+    setRemoving(true);
     const res = await fetch("/api/hr/team/remove", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ user_id: userId }),
+      body: JSON.stringify({ user_id: removeTarget.userId }),
     });
+    setRemoving(false);
     if (!res.ok) {
       setGlobalError(t("team.error_generic"));
+      setRemoveTarget(null);
       return;
     }
+    setRemoveTarget(null);
     router.refresh();
   };
 
@@ -146,35 +154,33 @@ export function TeamClient({ selfId, selfRole, members, invites }: TeamClientPro
     router.refresh();
   };
 
-  const copyLink = async (inviteId: string, url: string) => {
-    try {
-      await navigator.clipboard.writeText(url);
-      setInviteBannerId(inviteId);
-      setTimeout(() => setInviteBannerId((v) => (v === inviteId ? null : v)), 1400);
-    } catch {
-      /* noop */
-    }
-  };
+  const canManageMember = (m: TeamMemberRow) =>
+    canManage &&
+    m.userId !== selfId &&
+    m.role !== "owner" &&
+    !(selfRole === "admin" && m.role === "admin");
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       {canManage && <InvitePanel />}
 
-      <div className="mb-3 flex flex-wrap items-center gap-1.5">
+      <div className="flex flex-wrap items-center gap-1.5">
         {FILTERS.map((f) => (
-          <Chip
+          <FilterChip
             key={f}
             active={filter === f}
             onClick={() => setFilter(f)}
             count={counts[f]}
           >
             {t(`hr.settings.team.filter.${f}` as const)}
-          </Chip>
+          </FilterChip>
         ))}
       </div>
 
       {globalError && (
-        <div className="text-tez-red mb-3 text-[12.5px]">{globalError}</div>
+        <p className="text-[12.5px] text-[var(--color-danger)]" role="alert">
+          {globalError}
+        </p>
       )}
 
       {members.length === 1 && canManage && invites.length === 0 && filter === "all" && (
@@ -182,29 +188,24 @@ export function TeamClient({ selfId, selfRole, members, invites }: TeamClientPro
       )}
 
       {showInvites && invites.length > 0 && (
-        <Panel className="mb-4">
+        <Panel>
           <PanelHeader>
-            <PanelTitle count={invites.length}>
-              {t("hr.settings.team.pending_panel")}
-            </PanelTitle>
+            <PanelTitle count={invites.length}>{t("hr.settings.team.pending_panel")}</PanelTitle>
           </PanelHeader>
-          <ul className="divide-rule divide-y">
+          <ul className="divide-y divide-[var(--color-line)]">
             {invites.map((inv) => (
               <li
                 key={inv.id}
-                className="flex items-center gap-3 px-[18px] py-3"
+                className="flex flex-wrap items-center gap-3 px-4 py-3"
               >
-                <div className="bg-bone-2 text-ink-4 flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
-                  <Clock className="h-4 w-4" />
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)]">
+                  <Clock className="h-4 w-4" aria-hidden="true" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div
-                    className="text-ink text-[13px]"
-                    style={{ fontFamily: "var(--font-tez-mono)" }}
-                  >
+                  <div className="data-mono truncate text-[13px] text-[var(--color-text)]">
                     {inv.email}
                   </div>
-                  <div className="text-ink-5 mt-0.5 text-[11px]">
+                  <div className="mt-0.5 text-[11px] text-[var(--color-text-subtle)]">
                     {inv.invitedByName} ·{" "}
                     {formatDistanceToNow(new Date(inv.expiresAt), {
                       addSuffix: true,
@@ -212,26 +213,19 @@ export function TeamClient({ selfId, selfRole, members, invites }: TeamClientPro
                     })}
                   </div>
                 </div>
-                <Pill tone="neutral">{t(ROLE_LABEL[inv.role])}</Pill>
-                <TezButton
-                  size="sm"
-                  variant="secondary"
-                  leadingIcon={<Copy className="h-3 w-3" />}
-                  onClick={() => void copyLink(inv.id, inv.inviteUrl)}
-                >
-                  {inviteBannerId === inv.id
-                    ? t("hr.settings.team.copy_link_done")
-                    : t("hr.settings.team.copy_link")}
-                </TezButton>
+                <Badge tone={roleTone(inv.role)} className="capitalize">
+                  {t(ROLE_LABEL[inv.role])}
+                </Badge>
+                <CopyLinkButton url={inv.inviteUrl} />
                 {canManage && (
-                  <TezButton
+                  <IconButton
                     size="sm"
                     variant="ghost"
-                    aria-label={t("hr.settings.team.revoke")}
+                    aria-label={t("hr.settings.team.revoke_invite_for", { email: inv.email })}
                     onClick={() => void onRevoke(inv.id)}
                   >
-                    <X className="h-3 w-3" />
-                  </TezButton>
+                    <X className="h-4 w-4" />
+                  </IconButton>
                 )}
               </li>
             ))}
@@ -240,143 +234,186 @@ export function TeamClient({ selfId, selfRole, members, invites }: TeamClientPro
       )}
 
       {filter !== "pending" && filteredMembers.length > 0 && (
-        <Panel className="mb-4">
+        <Panel>
           <PanelHeader>
             <PanelTitle count={filteredMembers.length}>
               {t("hr.settings.team.col.member")}
             </PanelTitle>
           </PanelHeader>
-          <table className="w-full border-collapse text-[12.5px]">
-            <thead>
-              <tr className="text-ink-5 border-rule border-b text-left text-[10.5px] uppercase tracking-[0.08em]">
-                <th className="px-[18px] py-2 font-semibold">
-                  {t("hr.settings.team.col.member")}
-                </th>
-                <th className="px-[18px] py-2 font-semibold">
-                  {t("hr.settings.team.col.role")}
-                </th>
-                <th className="px-[18px] py-2 font-semibold">
-                  {t("hr.settings.team.col.joined")}
-                </th>
-                <th className="px-[18px] py-2 font-semibold">
-                  {t("hr.settings.team.col.last_active")}
-                </th>
-                <th className="px-[18px] py-2" />
-              </tr>
-            </thead>
-            <tbody>
-              {filteredMembers.map((m) => (
-                <tr
-                  key={m.userId}
-                  className="border-rule hover:bg-bone-2/40 border-b last:border-b-0"
-                >
-                  <td className="px-[18px] py-2.5">
-                    <div className="flex items-center gap-2.5">
-                      <Avatar name={m.fullName} url={m.avatarUrl ?? undefined} size="md" />
-                      <div className="min-w-0">
-                        <div className="text-ink truncate text-[13px] font-semibold">
-                          {m.fullName}
-                          {m.userId === selfId && (
-                            <span className="text-ink-5 ml-1 text-[11px] font-normal">
-                              ({t("hr.settings.team.you")})
-                            </span>
-                          )}
-                        </div>
-                        <div
-                          className="text-ink-5 truncate text-[11.5px]"
-                          style={{ fontFamily: "var(--font-tez-mono)" }}
-                        >
-                          {m.email}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-[18px] py-2.5">
-                    <RoleCell
-                      member={m}
-                      canManage={canManage}
-                      selfRole={selfRole}
-                      selfId={selfId}
-                      onChange={(next) => void onChangeRole(m, next)}
-                    />
-                  </td>
-                  <td className="px-[18px] py-2.5 text-ink-4">
-                    <span title={new Date(m.joinedAt).toLocaleString()}>
-                      {formatDistanceToNow(new Date(m.joinedAt), {
-                        addSuffix: true,
-                        locale: dateLocaleByLocale[locale],
-                      })}
-                    </span>
-                  </td>
-                  <td className="px-[18px] py-2.5 text-ink-4">
-                    {m.lastSignInAt
-                      ? formatDistanceToNow(new Date(m.lastSignInAt), {
+
+          {/* Desktop table */}
+          <div className="hidden md:block">
+            <table className="w-full border-collapse text-[12.5px]">
+              <thead>
+                <tr className="border-b border-[var(--color-line)] text-left text-[10.5px] uppercase tracking-[0.08em] text-[var(--color-text-subtle)]">
+                  <th className="px-4 py-2 font-semibold">{t("hr.settings.team.col.member")}</th>
+                  <th className="px-4 py-2 font-semibold">{t("hr.settings.team.col.role")}</th>
+                  <th className="px-4 py-2 font-semibold">{t("hr.settings.team.col.joined")}</th>
+                  <th className="px-4 py-2 font-semibold">
+                    {t("hr.settings.team.col.last_active")}
+                  </th>
+                  <th className="px-4 py-2" />
+                </tr>
+              </thead>
+              <tbody>
+                {filteredMembers.map((m) => (
+                  <tr
+                    key={m.userId}
+                    className="border-b border-[var(--color-line)] last:border-b-0 hover:bg-[var(--color-surface-subtle)]"
+                  >
+                    <td className="px-4 py-2.5">
+                      <MemberIdentity m={m} isSelf={m.userId === selfId} />
+                    </td>
+                    <td className="px-4 py-2.5">
+                      <RoleCell
+                        member={m}
+                        editable={canManageMember(m)}
+                        onChange={(next) => void onChangeRole(m, next)}
+                      />
+                    </td>
+                    <td className="px-4 py-2.5 text-[var(--color-text-muted)]">
+                      <span title={new Date(m.joinedAt).toLocaleString()}>
+                        {formatDistanceToNow(new Date(m.joinedAt), {
                           addSuffix: true,
                           locale: dateLocaleByLocale[locale],
-                        })
-                      : t("hr.settings.team.never_active")}
-                  </td>
-                  <td className="px-[18px] py-2.5 text-right">
-                    {canManage &&
-                      m.userId !== selfId &&
-                      m.role !== "owner" &&
-                      !(selfRole === "admin" && m.role === "admin") && (
-                        <TezButton
+                        })}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2.5 text-[var(--color-text-muted)]">
+                      {m.lastSignInAt
+                        ? formatDistanceToNow(new Date(m.lastSignInAt), {
+                            addSuffix: true,
+                            locale: dateLocaleByLocale[locale],
+                          })
+                        : t("hr.settings.team.never_active")}
+                    </td>
+                    <td className="px-4 py-2.5 text-right">
+                      {canManageMember(m) && (
+                        <Button
                           size="sm"
                           variant="ghost"
-                          className="text-[color:var(--color-tez-red)]/80 hover:text-[color:var(--color-tez-red)]"
-                          onClick={() => {
-                            if (confirm(`${m.fullName} — ${t("team.remove")}?`)) {
-                              void onRemove(m.userId);
-                            }
-                          }}
+                          className="text-[var(--color-danger)]"
+                          onClick={() => setRemoveTarget(m)}
                           aria-label={`${t("team.remove")} ${m.fullName}`}
-                          leadingIcon={<UserMinus className="h-3 w-3" />}
                         >
+                          <UserMinus className="h-3.5 w-3.5" aria-hidden="true" />
                           {t("team.remove")}
-                        </TezButton>
+                        </Button>
                       )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile cards */}
+          <ul className="divide-y divide-[var(--color-line)] md:hidden">
+            {filteredMembers.map((m) => (
+              <li key={m.userId} className="flex flex-col gap-3 px-4 py-3.5">
+                <div className="flex items-start justify-between gap-3">
+                  <MemberIdentity m={m} isSelf={m.userId === selfId} />
+                  <RoleCell
+                    member={m}
+                    editable={canManageMember(m)}
+                    onChange={(next) => void onChangeRole(m, next)}
+                  />
+                </div>
+                <div className="flex items-center justify-between gap-3 text-[11.5px] text-[var(--color-text-subtle)]">
+                  <span>
+                    {t("hr.settings.team.col.joined")}:{" "}
+                    {formatDistanceToNow(new Date(m.joinedAt), {
+                      addSuffix: true,
+                      locale: dateLocaleByLocale[locale],
+                    })}
+                  </span>
+                  {canManageMember(m) && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-[var(--color-danger)]"
+                      onClick={() => setRemoveTarget(m)}
+                      aria-label={`${t("team.remove")} ${m.fullName}`}
+                    >
+                      <UserMinus className="h-3.5 w-3.5" aria-hidden="true" />
+                      {t("team.remove")}
+                    </Button>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
         </Panel>
       )}
-    </>
+
+      <ConfirmDialog
+        open={removeTarget !== null}
+        onOpenChange={(v) => {
+          if (!v) setRemoveTarget(null);
+        }}
+        title={t("hr.settings.team.remove_dialog_title")}
+        description={
+          removeTarget
+            ? t("hr.settings.team.remove_dialog_body", { name: removeTarget.fullName })
+            : undefined
+        }
+        confirmLabel={t("team.remove")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={confirmRemove}
+        busy={removing}
+      />
+    </div>
   );
 }
 
-// ─── Role change inline Seg ─────────────────────────────────────────
+function MemberIdentity({ m, isSelf }: { m: TeamMemberRow; isSelf: boolean }) {
+  const { t } = useTranslation();
+  return (
+    <div className="flex min-w-0 items-center gap-2.5">
+      <Avatar name={m.fullName} src={m.avatarUrl} size="md" />
+      <div className="min-w-0">
+        <div className="truncate text-[13px] font-semibold text-[var(--color-text)]">
+          {m.fullName}
+          {isSelf && (
+            <span className="ml-1 text-[11px] font-normal text-[var(--color-text-subtle)]">
+              ({t("hr.settings.team.you")})
+            </span>
+          )}
+        </div>
+        <div className="data-mono truncate text-[11.5px] text-[var(--color-text-subtle)]">
+          {m.email}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Role change inline control ─────────────────────────────────────
 
 function RoleCell({
   member,
-  canManage,
-  selfRole,
-  selfId,
+  editable,
   onChange,
 }: {
   member: TeamMemberRow;
-  canManage: boolean;
-  selfRole: CompanyRole;
-  selfId: string;
+  editable: boolean;
   onChange: (r: CompanyRole) => void;
 }) {
   const { t } = useTranslation();
 
-  const disabled =
-    !canManage ||
-    member.userId === selfId ||
-    member.role === "owner" ||
-    (selfRole === "admin" && member.role === "admin");
-
-  if (disabled) {
-    return <Pill tone={toneFor(member.role)}>{t(ROLE_LABEL[member.role])}</Pill>;
+  if (!editable) {
+    return (
+      <Badge tone={roleTone(member.role)} className="capitalize">
+        {t(ROLE_LABEL[member.role])}
+      </Badge>
+    );
   }
 
   return (
-    <Seg
-      value={member.role}
+    <SegmentedControl
+      size="sm"
+      aria-label={t("hr.settings.team.col.role")}
+      value={member.role as "admin" | "recruiter"}
       options={[
         { value: "admin", label: t("team.role_admin") },
         { value: "recruiter", label: t("team.role_recruiter") },
@@ -386,8 +423,31 @@ function RoleCell({
   );
 }
 
-function toneFor(role: CompanyRole) {
-  return role === "owner" ? "persimmon" : role === "admin" ? "info" : "neutral";
+function CopyLinkButton({ url }: { url: string }) {
+  const { t } = useTranslation();
+  const [copied, setCopied] = useState(false);
+  return (
+    <Button
+      size="sm"
+      variant="secondary"
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(url);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 1400);
+        } catch {
+          /* noop */
+        }
+      }}
+    >
+      {copied ? (
+        <Check className="h-3.5 w-3.5" aria-hidden="true" />
+      ) : (
+        <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+      )}
+      {copied ? t("hr.settings.team.copy_link_done") : t("hr.settings.team.copy_link")}
+    </Button>
+  );
 }
 
 // ─── Invite form ────────────────────────────────────────────────────
@@ -397,8 +457,9 @@ function InvitePanel() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<CompanyRole>("recruiter");
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState<{ email: string; url: string } | null>(null);
 
   const submit = async () => {
     setError(null);
@@ -418,65 +479,87 @@ function InvitePanel() {
       );
       return;
     }
+    const data = (await res.json().catch(() => ({}))) as { invite_url?: string };
+    setSent({ email: email.trim(), url: data.invite_url ?? "" });
     setEmail("");
-    setStatus("sent");
-    setTimeout(() => setStatus("idle"), 1800);
+    setStatus("idle");
     router.refresh();
   };
 
   return (
-    <Panel className="mb-4">
+    <Panel>
       <PanelHeader>
         <PanelTitle>
           <span className="inline-flex items-center gap-1.5">
-            <UserPlus className="h-3.5 w-3.5" />
+            <UserPlus className="h-3.5 w-3.5" aria-hidden="true" />
             {t("hr.settings.team.invite_panel")}
           </span>
         </PanelTitle>
       </PanelHeader>
-      <div className="flex flex-col gap-3 p-[18px] md:flex-row md:items-end">
-        <div className="min-w-0 flex-1">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={t("hr.settings.team.invite_email_placeholder")}
-            className="border-rule-2 bg-paper text-ink w-full rounded-[4px] border px-3 py-2 text-[13px]"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && email.trim()) void submit();
-            }}
+      <PanelBody className="space-y-3">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end">
+          <div className="min-w-0 flex-1">
+            <Input
+              label={t("auth.email")}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t("hr.settings.team.invite_email_placeholder")}
+              inputSize="lg"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && email.trim()) void submit();
+              }}
+            />
+          </div>
+          <SegmentedControl
+            aria-label={t("hr.settings.team.col.role")}
+            value={role as "admin" | "recruiter"}
+            options={[
+              { value: "admin", label: t("team.role_admin") },
+              { value: "recruiter", label: t("team.role_recruiter") },
+            ]}
+            onChange={(v) => setRole(v as CompanyRole)}
           />
+          <Button
+            variant="primary"
+            onClick={submit}
+            disabled={status === "sending" || !email.trim()}
+          >
+            {status === "sending" && <ButtonSpinner />}
+            {status === "sending"
+              ? t("hr.settings.team.invite_sending")
+              : t("hr.settings.team.invite_send")}
+          </Button>
         </div>
-        <Seg
-          value={role}
-          options={[
-            { value: "admin", label: t("team.role_admin") },
-            { value: "recruiter", label: t("team.role_recruiter") },
-          ]}
-          onChange={(v) => setRole(v as CompanyRole)}
-        />
-        <TezButton
-          size="md"
-          variant="accent"
-          onClick={submit}
-          disabled={status === "sending" || !email.trim()}
-        >
-          {status === "sending"
-            ? t("hr.settings.team.invite_sending")
-            : t("hr.settings.team.invite_send")}
-        </TezButton>
-      </div>
-      {(error || status === "sent") && (
-        <div className="border-rule border-t px-[18px] py-2 text-[11.5px]">
-          {status === "sent" ? (
-            <span className="text-tez-green font-medium">
-              ✓ {t("hr.settings.team.invite_sent")}
-            </span>
-          ) : (
-            <span className="text-persimmon-2">{error}</span>
-          )}
-        </div>
-      )}
+
+        {error && <p className="text-[12px] text-[var(--color-danger)]">{error}</p>}
+
+        {sent && (
+          <div className="flex flex-col gap-2 rounded-[var(--radius-md)] border border-[color-mix(in_srgb,var(--color-success)_35%,transparent)] bg-[var(--color-success-container)] px-3.5 py-3">
+            <div className="flex items-start justify-between gap-3">
+              <p className="text-[12.5px] font-medium text-[var(--color-on-success-container)]">
+                {t("hr.settings.team.invite_sent_to", { email: sent.email })}
+              </p>
+              <button
+                type="button"
+                onClick={() => setSent(null)}
+                aria-label={t("common.cancel")}
+                className="shrink-0 text-[var(--color-on-success-container)] opacity-70 hover:opacity-100"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            {sent.url && (
+              <div className="flex items-center gap-2">
+                <code className="data-mono min-w-0 flex-1 truncate rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface)] px-2 py-1 text-[11px] text-[var(--color-text-muted)]">
+                  {sent.url}
+                </code>
+                <CopyLinkButton url={sent.url} />
+              </div>
+            )}
+          </div>
+        )}
+      </PanelBody>
     </Panel>
   );
 }
@@ -486,18 +569,14 @@ function InvitePanel() {
 function SoloEmptyState() {
   const { t } = useTranslation();
   return (
-    <div
-      className={cn(
-        "border-rule bg-bone-2/40 mb-4 flex flex-col items-start gap-2 rounded-[6px] border px-6 py-10",
-      )}
-    >
-      <div className="text-ink text-[16px] font-semibold tracking-[-0.01em]">
+    <div className="flex flex-col items-start gap-2 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] px-6 py-10">
+      <div className="text-[16px] font-semibold tracking-[-0.01em] text-[var(--color-text)]">
         {t("hr.settings.team.empty_solo_title")}
       </div>
-      <p className="text-ink-4 text-[12.5px]">
+      <p className="text-[12.5px] text-[var(--color-text-muted)]">
         {t("hr.settings.team.empty_solo_body")}
       </p>
-      <p className="text-ink-5 mt-1 text-[11px]">
+      <p className="mt-1 text-[11px] text-[var(--color-text-subtle)]">
         ↑ {t("hr.settings.team.empty_solo_cta")}
       </p>
     </div>

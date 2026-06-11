@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
-import { TezButton } from "@/components/hr/design";
+import { Button } from "@/components/ui";
 import { AuthPanel } from "@/components/auth/auth-panel";
 import { useTranslation } from "@/lib/i18n/provider";
 
@@ -10,19 +10,13 @@ export default function AcceptInviteNotFound() {
   const { t } = useTranslation();
   return (
     <AuthPanel
-      eyebrow={<AlertCircle className="inline h-3 w-3" />}
+      eyebrow={<AlertCircle className="inline h-3 w-3" aria-hidden="true" />}
       title={t("invite.invalid")}
       subtitle={t("invite.invalid_desc")}
     >
-      <Link href="/auth/login" className="block">
-        <TezButton
-          variant="secondary"
-          size="lg"
-          className="h-11 w-full justify-center text-[13.5px] font-semibold"
-        >
-          {t("auth.back_to_login")}
-        </TezButton>
-      </Link>
+      <Button asChild variant="secondary" size="lg" fullWidth>
+        <Link href="/auth/login">{t("auth.back_to_login")}</Link>
+      </Button>
     </AuthPanel>
   );
 }

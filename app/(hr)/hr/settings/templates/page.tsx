@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireCompanyAccess } from "@/lib/auth/guards";
 import { getLocale, t } from "@/lib/i18n";
-import { SettingsHeader } from "@/components/hr/design";
+import { SettingsPageHeader } from "@/components/hr/settings/settings-page-header";
 import { TemplatesEditor } from "@/components/hr/settings/templates/templates-editor";
 
 const TEMPLATE_KEYS = [
@@ -38,7 +38,7 @@ export default async function TemplatesSettingsPage() {
 
   return (
     <section>
-      <SettingsHeader
+      <SettingsPageHeader
         title={t("hr.settings.templates.title", locale)}
         sub={t("hr.settings.templates.subtitle", locale)}
       />

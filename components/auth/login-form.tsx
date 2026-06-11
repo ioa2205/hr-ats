@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { Loader2 } from "lucide-react";
-import { TezButton } from "@/components/hr/design";
+import { Button } from "@/components/ui";
 import { AuthField } from "./auth-field";
 import { AuthBanner } from "./auth-banner";
 import { signInWithEmail, type AuthState } from "@/lib/actions/auth";
@@ -46,23 +46,19 @@ export function LoginForm({ nextPath }: { nextPath?: string }) {
         endSlot={
           <Link
             href="/auth/reset"
-            className="text-ink-4 hover:text-ink text-[12px] font-medium underline-offset-2 hover:underline"
+            className="rounded-[var(--radius-sm)] text-[12px] font-medium text-[var(--color-text-muted)] underline-offset-2 hover:text-[var(--color-text)] hover:underline"
           >
             {t("auth.forgot_password")}
           </Link>
         }
       />
 
-      <TezButton
-        type="submit"
-        variant="primary"
-        size="lg"
-        disabled={isPending}
-        className="mt-1 h-12 w-full justify-center text-[14.5px] font-semibold"
-        leadingIcon={isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined}
-      >
+      <Button type="submit" size="lg" fullWidth disabled={isPending} className="mt-1">
+        {isPending && (
+          <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+        )}
         {t("auth.sign_in")}
-      </TezButton>
+      </Button>
     </form>
   );
 }

@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireCompanyAccess } from "@/lib/auth/guards";
 import { getLocale, t } from "@/lib/i18n";
-import { SettingsHeader } from "@/components/hr/design";
+import { SettingsPageHeader } from "@/components/hr/settings/settings-page-header";
 import { CompanyClient } from "@/components/hr/settings/company/company-client";
 import { HhConnectionCard } from "@/components/hr/settings/hh-connection-card";
 import { isHhConfigured } from "@/lib/sourcing/connectors/hh";
@@ -42,7 +42,7 @@ export default async function CompanySettingsPage() {
 
   return (
     <section>
-      <SettingsHeader
+      <SettingsPageHeader
         title={t("hr.settings.company.title", locale)}
         sub={t("hr.settings.company.subtitle", locale)}
       />

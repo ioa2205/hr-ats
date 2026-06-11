@@ -3,7 +3,7 @@ export const dynamic = "force-dynamic";
 import { requireCompanyAccess } from "@/lib/auth/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getLocale, t } from "@/lib/i18n";
-import { SettingsHeader } from "@/components/hr/design";
+import { SettingsPageHeader } from "@/components/hr/settings/settings-page-header";
 import { PreferencesForm } from "@/components/hr/settings/notifications/preferences-form";
 
 export default async function NotificationsSettingsPage() {
@@ -29,14 +29,14 @@ export default async function NotificationsSettingsPage() {
 
   return (
     <section>
-      <SettingsHeader
+      <SettingsPageHeader
         title={t("hr.settings.notifications.title", locale)}
         sub={t("hr.settings.notifications.subtitle", locale)}
       />
       {prefs ? (
         <PreferencesForm initial={prefs} />
       ) : (
-        <div className="text-ink-4 text-[13px]">{t("common.error", locale)}</div>
+        <div className="text-[13px] text-[var(--color-text-muted)]">{t("common.error", locale)}</div>
       )}
     </section>
   );

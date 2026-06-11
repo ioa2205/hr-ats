@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, Loader2, UserPlus, ArrowRight } from "lucide-react";
-import { TezButton } from "@/components/hr/design";
+import { Button } from "@/components/ui";
 import { AuthField } from "@/components/auth/auth-field";
 import { AuthBanner, AuthDivider } from "@/components/auth/auth-banner";
 
@@ -80,18 +80,23 @@ export function OnboardingDecision({ labels, intent }: OnboardingDecisionProps) 
         onClick={() =>
           router.push(intent === "pro" ? "/onboarding/create?intent=pro" : "/onboarding/create")
         }
-        className="border-rule bg-paper hover:border-ink-6 hover:bg-bone-2/60 group flex items-center gap-3 rounded-[6px] border px-4 py-3.5 text-left transition-colors"
+        className="group flex items-center gap-3 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)] px-4 py-3.5 text-left outline-none transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-surface-subtle)] focus-visible:border-[var(--color-focus)]"
       >
-        <span className="bg-ink text-paper flex h-10 w-10 shrink-0 items-center justify-center rounded-[5px]">
-          <Building2 className="h-5 w-5" strokeWidth={1.75} />
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--color-primary)] text-[var(--color-on-primary)]">
+          <Building2 className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="text-ink block text-[14px] font-semibold">{labels.create_company}</span>
-          <span className="text-ink-4 mt-0.5 block text-[12.5px] leading-[1.45]">
+          <span className="block text-[14px] font-semibold text-[var(--color-text)]">
+            {labels.create_company}
+          </span>
+          <span className="mt-0.5 block text-[12.5px] leading-[1.45] text-[var(--color-text-muted)]">
             {labels.create_company_desc}
           </span>
         </span>
-        <ArrowRight className="text-ink-5 group-hover:text-ink h-4 w-4 shrink-0 transition-colors" />
+        <ArrowRight
+          className="h-4 w-4 shrink-0 text-[var(--color-text-subtle)] transition-colors group-hover:text-[var(--color-text)]"
+          aria-hidden="true"
+        />
       </button>
 
       <AuthDivider label={labels.or} />
@@ -99,12 +104,12 @@ export function OnboardingDecision({ labels, intent }: OnboardingDecisionProps) 
       {/* Join via invite — secondary path */}
       <div className="flex flex-col gap-3">
         <div className="flex items-start gap-3">
-          <span className="border-rule bg-bone-2 text-ink-3 flex h-10 w-10 shrink-0 items-center justify-center rounded-[5px] border">
-            <UserPlus className="h-5 w-5" strokeWidth={1.75} />
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)]">
+            <UserPlus className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-ink text-[14px] font-semibold">{labels.join_company}</p>
-            <p className="text-ink-4 mt-0.5 text-[12.5px] leading-[1.45]">
+            <p className="text-[14px] font-semibold text-[var(--color-text)]">{labels.join_company}</p>
+            <p className="mt-0.5 text-[12.5px] leading-[1.45] text-[var(--color-text-muted)]">
               {labels.join_company_desc}
             </p>
           </div>
@@ -128,17 +133,19 @@ export function OnboardingDecision({ labels, intent }: OnboardingDecisionProps) 
         />
         {error && <AuthBanner tone="error">{error}</AuthBanner>}
 
-        <TezButton
+        <Button
           type="button"
           variant="secondary"
           size="lg"
+          fullWidth
           onClick={handleJoin}
           disabled={joining || !token.trim()}
-          className="h-11 w-full justify-center text-[13.5px] font-semibold"
-          leadingIcon={joining ? <Loader2 className="h-4 w-4 animate-spin" /> : undefined}
         >
+          {joining && (
+            <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+          )}
           {joining ? labels.joining : labels.join}
-        </TezButton>
+        </Button>
       </div>
     </div>
   );
