@@ -231,7 +231,7 @@ function ConfirmDialogBody({
               placeholder={typeToConfirm}
               inputSize="lg"
               autoComplete="off"
-              style={{ fontFamily: "var(--font-tez-mono)" }}
+              style={{ fontFamily: "var(--font-mono)" }}
             />
           </div>
         )}

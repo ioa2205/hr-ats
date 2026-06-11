@@ -5,9 +5,6 @@
   /* Typography: Manrope for product/brand, JetBrains Mono for data only. */
   --font-sans: var(--font-manrope), "Manrope", system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
-  --font-tez-sans: var(--font-sans);
-  --font-tez-serif: var(--font-sans);
-  --font-tez-mono: var(--font-mono);
 
   /* Unified semantic roles. */
   --color-canvas: #f6f3ec;
@@ -51,45 +48,6 @@
   --color-info-container: #d8edf2;
   --color-on-info-container: #073e49;
 
-  /* Compatibility aliases: keep unmigrated bone/ink and Material consumers safe. */
-  --color-bone: var(--color-canvas);
-  --color-bone-2: var(--color-surface-subtle);
-  --color-bone-3: var(--color-surface-strong);
-  --color-paper: var(--color-surface);
-  --color-ink: var(--color-text);
-  --color-ink-2: var(--color-text);
-  --color-ink-3: var(--color-text-muted);
-  --color-ink-4: var(--color-text-muted);
-  --color-ink-5: var(--color-text-subtle);
-  --color-ink-6: var(--color-line-strong);
-  --color-rule: var(--color-line);
-  --color-rule-2: var(--color-line-strong);
-  --color-persimmon: var(--color-accent);
-  --color-persimmon-2: var(--color-accent-strong);
-  --color-persimmon-tint: var(--color-accent-container);
-  --color-persimmon-tint-2: var(--color-accent-container);
-  --color-tez-green: var(--color-success);
-  --color-tez-green-tint: var(--color-success-container);
-  --color-tez-amber: var(--color-warning);
-  --color-tez-amber-tint: var(--color-warning-container);
-  --color-tez-red: var(--color-danger);
-  --color-tez-red-tint: var(--color-danger-container);
-  --color-tez-blue: var(--color-primary);
-  --color-tez-blue-tint: var(--color-primary-container);
-
-  /* Legacy Material role aliases. */
-  --color-background: var(--color-canvas);
-  --color-surface-container: var(--color-surface-subtle);
-  --color-surface-container-high: var(--color-surface-strong);
-  --color-on-surface: var(--color-text);
-  --color-on-surface-variant: var(--color-text-muted);
-  --color-outline: var(--color-line-strong);
-  --color-outline-variant: var(--color-line);
-  --color-secondary: var(--color-info);
-  --color-secondary-container: var(--color-info-container);
-  --color-tertiary: var(--color-accent);
-  --color-tertiary-container: var(--color-accent-container);
-
   /* Shape and elevation. */
   --radius-sm: 6px;
   --radius-md: 8px;
@@ -99,9 +57,6 @@
   --shadow-level-1: 0 1px 2px rgb(23 26 31 / 0.08), 0 1px 3px rgb(23 26 31 / 0.05);
   --shadow-level-2: 0 4px 14px -5px rgb(23 26 31 / 0.18);
   --shadow-level-3: 0 16px 40px -18px rgb(23 26 31 / 0.28);
-  --shadow-tez-1: var(--shadow-level-1);
-  --shadow-tez-2: var(--shadow-level-2);
-  --shadow-tez-3: var(--shadow-level-3);
 
   /* Fast, functional motion. */
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
@@ -221,12 +176,6 @@ body {
 
 .tezhr ::-webkit-scrollbar-thumb:hover {
   background: var(--color-line-strong);
-}
-
-/* Temporary compatibility: old serif utility now resolves to the product face. */
-.tezhr .text-serif {
-  font-family: var(--font-sans);
-  font-style: normal;
 }
 
 .tezhr .focus-within\:border-primary:focus-within,

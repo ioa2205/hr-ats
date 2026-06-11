@@ -13,8 +13,8 @@ export default async function SuspendedPage() {
   return (
     <div className="flex min-h-full items-center justify-center p-6">
       <div className="bg-surface shadow-level-1 w-full max-w-md space-y-4 rounded-xl p-8 text-center">
-        <h1 className="text-on-surface text-xl font-semibold">{t("suspended.title", locale)}</h1>
-        <p className="text-on-surface-variant text-sm">{t("suspended.body", locale)}</p>
+        <h1 className="text-[var(--color-text)] text-xl font-semibold">{t("suspended.title", locale)}</h1>
+        <p className="text-[var(--color-text-muted)] text-sm">{t("suspended.body", locale)}</p>
         <div className="flex flex-col gap-2 pt-2">
           <a
             href="mailto:support@tezhr.uz"

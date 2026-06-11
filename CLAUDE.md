@@ -94,7 +94,7 @@ Supabase Postgres with **RLS policies per Company**. Core tenant-scoped tables: 
 
 ## Styling
 
-Tailwind CSS 4 with CSS-first `@theme` in `app/globals.css` — no `tailwind.config.js`. Material 3-inspired palette. UI primitives from Radix UI. Fonts: Roboto Flex (sans) + Roboto Mono (mono).
+Tailwind CSS 4 with CSS-first `@theme` in `app/globals.css` — no `tailwind.config.js`. One unified **Tez Signal** visual system built on semantic role tokens only (`--color-canvas/surface*/text*/line*`, Tez Lapis `--color-primary*`, Persimmon `--color-accent*`, strict `--color-success/warning/danger/info*`); see `Project-documentation/DESIGN_SYSTEM.md`. The legacy Material and warm "Tez" token aliases were removed in Phase 11 — use semantic roles, never hardcoded brand color. Shared primitives live in `components/ui` (Radix-based). Fonts: Manrope Variable (sans/brand) + JetBrains Mono (data only).
 
 ## Environment variables
 

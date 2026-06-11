@@ -18,7 +18,7 @@ export default async function NotFound() {
           <CardTitle className="text-center">{t("errors.not_found.title", locale)}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <p className="text-on-surface-variant text-center text-sm">
+          <p className="text-[var(--color-text-muted)] text-center text-sm">
             {t("errors.not_found.description", locale)}
           </p>
           <Button asChild size="lg" className="w-full">

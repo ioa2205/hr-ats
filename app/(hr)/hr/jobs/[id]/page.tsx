@@ -25,7 +25,8 @@ import {
   Avatar,
   AIFitScore,
 } from "@/components/ui";
-import { PublicLinkBlock, SharePreview } from "@/components/hr/design";
+import { PublicLinkBlock } from "@/components/hr/public-link-block";
+import { SharePreview } from "@/components/hr/share-preview";
 import { JobDetailTabs } from "@/components/hr/job-detail-tabs";
 import { StatusToggleButton } from "@/components/hr/status-toggle-button";
 import { FindCandidatesButton } from "@/components/hr/sourcing/find-candidates-button";

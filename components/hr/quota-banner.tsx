@@ -26,7 +26,7 @@ export async function QuotaBanner({ companyId, locale }: QuotaBannerProps) {
         href="/hr/settings/billing"
         className={cn(
           "mx-2.5 mb-2.5 block rounded-[4px] border px-2.5 py-2 text-[11px] transition-colors",
-          "border-[color:var(--color-tez-red-tint)] bg-[color:var(--color-tez-red-tint)] text-[color:var(--color-tez-red)] hover:bg-[color:var(--color-tez-red-tint)]/80",
+          "border-[color:var(--color-danger-container)] bg-[color:var(--color-danger-container)] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-container)]/80",
         )}
       >
         <div className="mb-1 flex items-center gap-1.5 font-semibold">
@@ -61,10 +61,10 @@ export async function QuotaBanner({ companyId, locale }: QuotaBannerProps) {
         className={cn(
           "group mx-2.5 mb-2.5 block rounded-[4px] border px-2.5 py-2 text-[11px] transition-colors",
           cvOut
-            ? "border-[color:var(--color-tez-red-tint)] bg-[color:var(--color-tez-red-tint)] text-[color:var(--color-tez-red)] hover:bg-[color:var(--color-tez-red-tint)]/80"
+            ? "border-[color:var(--color-danger-container)] bg-[color:var(--color-danger-container)] text-[color:var(--color-danger)] hover:bg-[color:var(--color-danger-container)]/80"
             : amber
-              ? "border-rule bg-bone hover:bg-bone-2 border-[color:var(--color-tez-amber)]/40"
-              : "border-rule bg-bone hover:bg-bone-2",
+              ? "border-[var(--color-line)] bg-[var(--color-canvas)] hover:bg-[var(--color-surface-subtle)] border-[color:var(--color-warning)]/40"
+              : "border-[var(--color-line)] bg-[var(--color-canvas)] hover:bg-[var(--color-surface-subtle)]",
         )}
       >
         {escalation && (
@@ -74,28 +74,28 @@ export async function QuotaBanner({ companyId, locale }: QuotaBannerProps) {
           </div>
         )}
         <div className="flex items-center justify-between gap-2">
-          <span className="text-ink-4 flex items-center gap-1.5 text-[10.5px] font-medium">
+          <span className="text-[var(--color-text-muted)] flex items-center gap-1.5 text-[10.5px] font-medium">
             {isLowDays && !escalation && <AlertTriangle className="h-3 w-3 shrink-0" />}
             {t("quota.trial_banner", locale)} ·{" "}
             {t("team.days_left", locale, { days: String(quota.daysRemaining) })}
           </span>
           <span
-            className="text-ink-2 text-[10.5px]"
-            style={{ fontFamily: "var(--font-tez-mono)" }}
+            className="text-[var(--color-text)] text-[10.5px]"
+            style={{ fontFamily: "var(--font-mono)" }}
           >
             {used} / {limit}
           </span>
         </div>
-        <div className="bg-bone-3 relative mt-1.5 h-[3px] overflow-hidden rounded-[2px]">
+        <div className="bg-[var(--color-surface-strong)] relative mt-1.5 h-[3px] overflow-hidden rounded-[2px]">
           <span
             aria-hidden
             className={cn(
               "absolute inset-y-0 left-0 rounded-[2px]",
               cvOut
-                ? "bg-[color:var(--color-tez-red)]"
+                ? "bg-[color:var(--color-danger)]"
                 : amber
-                  ? "bg-[color:var(--color-tez-amber)]"
-                  : "bg-ink-3",
+                  ? "bg-[color:var(--color-warning)]"
+                  : "bg-[var(--color-text-muted)]",
             )}
             style={{ width: `${pct}%` }}
           />

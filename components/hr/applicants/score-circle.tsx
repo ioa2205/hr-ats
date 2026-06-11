@@ -27,7 +27,7 @@ export function ScoreCircle({ score }: ScoreCircleProps) {
           cy={60}
           r={radius}
           fill="none"
-          stroke="var(--color-outline-variant)"
+          stroke="var(--color-line)"
           strokeWidth={8}
         />
         {/* Score arc */}

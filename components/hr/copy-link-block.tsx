@@ -31,7 +31,7 @@ export function CopyLinkBlock({ url }: CopyLinkBlockProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <label className="text-on-surface text-sm font-medium">{t("hr.job.public_link")}</label>
+      <label className="text-[var(--color-text)] text-sm font-medium">{t("hr.job.public_link")}</label>
       <div className="flex gap-2">
         <Input value={url} readOnly className="flex-1" />
         <Button variant="tonal" size="md" onClick={handleCopy} className="shrink-0">

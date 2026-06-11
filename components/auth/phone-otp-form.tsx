@@ -209,7 +209,7 @@ export function PhoneOtpForm() {
             setCode(v);
           }}
           className="text-center text-[18px] tracking-[0.3em]"
-          style={{ fontFamily: "var(--font-tez-mono)" }}
+          style={{ fontFamily: "var(--font-mono)" }}
         />
 
         <Button

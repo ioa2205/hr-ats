@@ -10,7 +10,7 @@ export const contentType = "image/png";
 
 export const revalidate = 3600;
 
-// Fixed light palette mirrored by components/hr/design/share-preview.tsx so the
+// Fixed light palette mirrored by components/hr/share-preview.tsx so the
 // in-app unfurl preview matches this server-rendered PNG. Aligned to the unified
 // TezHR identity: warm canvas, near-black ink, Tez Lapis primary accent.
 const COLOR_BONE = "#f6f3ec";

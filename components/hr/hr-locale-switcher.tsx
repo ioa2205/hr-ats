@@ -46,7 +46,7 @@ export function HRLocaleSwitcher() {
         {LOCALES.map((l) => (
           <DropdownMenuItem key={l.code} onSelect={() => pick(l.code)}>
             <span className="flex w-full items-center justify-between gap-3">
-              <span className="font-[var(--font-tez-mono)]">{l.label}</span>
+              <span className="font-[var(--font-mono)]">{l.label}</span>
               {l.code === locale && <Check className="h-3.5 w-3.5" />}
             </span>
           </DropdownMenuItem>

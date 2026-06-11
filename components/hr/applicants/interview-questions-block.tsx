@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { Check, Copy, FileText, Loader2, RefreshCw, Sparkles } from "lucide-react";
-import { Panel, PanelHeader, PanelTitle, Pill, TezButton } from "@/components/hr/design";
+import { Alert, Badge, Button, Panel, PanelHeader, PanelTitle } from "@/components/ui";
 import { useTranslation } from "@/lib/i18n/provider";
 import type { Locale, TranslationKey } from "@/lib/i18n/types";
 import {
@@ -156,7 +156,7 @@ export function InterviewQuestionsBlock({
         <PanelHeader>
           <PanelTitle>{t("applicants.questions.heading")}</PanelTitle>
         </PanelHeader>
-        <div className="text-ink-4 px-5 py-6 text-[12.5px]">
+        <div className="px-5 py-6 text-[12.5px] text-[var(--color-text-muted)]">
           {t("applicants.questions.candidate_not_analyzed")}
         </div>
       </Panel>
@@ -172,7 +172,7 @@ export function InterviewQuestionsBlock({
             type="button"
             onClick={() => handleGenerate(true)}
             title={t("applicants.questions.regenerate_warning")}
-            className="text-ink-4 hover:bg-bone-2 hover:text-ink flex items-center gap-1.5 rounded-[4px] border-none bg-transparent px-1.5 py-1 text-[11.5px] transition-colors"
+            className="flex items-center gap-1.5 rounded-[4px] border-none bg-transparent px-1.5 py-1 text-[11.5px] text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)]"
           >
             <RefreshCw className="h-3 w-3" />
             {t("applicants.questions.regenerate")}
@@ -182,16 +182,18 @@ export function InterviewQuestionsBlock({
 
       {status === "loading" && (
         <div className="flex flex-col gap-3 px-5 py-5">
-          <div className="text-ink-4 flex items-center gap-2 text-[12.5px]">
+          <div className="flex items-center gap-2 text-[12.5px] text-[var(--color-text-muted)]">
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
             {t("applicants.questions.generating")}
-            <span className="text-ink-5">· {t("applicants.questions.loading_hint")}</span>
+            <span className="text-[var(--color-text-subtle)]">
+              · {t("applicants.questions.loading_hint")}
+            </span>
           </div>
           <ul className="flex flex-col gap-2.5">
             {Array.from({ length: 6 }).map((_, i) => (
               <li
                 key={i}
-                className="border-rule bg-bone-2/40 h-[78px] animate-pulse rounded-[5px] border"
+                className="h-[78px] animate-pulse rounded-[5px] border border-[var(--color-line)] bg-[var(--color-surface-subtle)]/40"
               />
             ))}
           </ul>
@@ -199,39 +201,41 @@ export function InterviewQuestionsBlock({
       )}
 
       {status === "rate_limited" && (
-        <Banner tone="amber" text={t("applicants.questions.rate_limited")} />
+        <div className="px-5 py-4">
+          <Alert tone="warning">{t("applicants.questions.rate_limited")}</Alert>
+        </div>
       )}
       {status === "quota_blocked" && (
-        <Banner tone="amber" text={t("applicants.questions.quota_blocked")} />
+        <div className="px-5 py-4">
+          <Alert tone="warning">{t("applicants.questions.quota_blocked")}</Alert>
+        </div>
       )}
       {status === "error" && (
-        <Banner tone="red" text={t("applicants.questions.error")} />
+        <div className="px-5 py-4">
+          <Alert tone="danger">{t("applicants.questions.error")}</Alert>
+        </div>
       )}
 
       {!questions && status === "idle" && (
         <div className="flex flex-col items-start gap-3 px-5 py-6">
-          <p className="text-ink-3 max-w-prose text-[13px] leading-[1.55]">
+          <p className="max-w-prose text-[13px] leading-[1.55] text-[var(--color-text-muted)]">
             {t("applicants.questions.sub")}
           </p>
-          <TezButton
-            variant="accent"
-            size="lg"
-            leadingIcon={<Sparkles className="h-3.5 w-3.5" />}
-            onClick={() => handleGenerate(false)}
-          >
+          <Button variant="accent" size="lg" onClick={() => handleGenerate(false)}>
+            <Sparkles className="h-3.5 w-3.5" />
             {t("applicants.questions.generate_cta")}
-          </TezButton>
+          </Button>
         </div>
       )}
 
       {questions && status !== "loading" && (
         <div className="flex flex-col gap-4 px-5 py-5">
           <div
-            className="text-ink-5 text-[10.5px] font-semibold uppercase tracking-[0.12em]"
-            style={{ fontFamily: "var(--font-tez-mono)" }}
+            className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-subtle)]"
+            style={{ fontFamily: "var(--font-mono)" }}
           >
             {t("applicants.questions.locales_marker")}{" "}
-            <span className="text-ink-4 normal-case tracking-[0.04em]">
+            <span className="normal-case tracking-[0.04em] text-[var(--color-text-muted)]">
               · {t("applicants.questions.generated_ago", {
                 ago: relativeTimeShort(questions.generated_at, locale),
               })}
@@ -245,15 +249,15 @@ export function InterviewQuestionsBlock({
               return (
                 <li
                   key={idx}
-                  className="border-rule bg-paper hover:border-rule-2 group relative rounded-[5px] border px-3.5 py-3 transition-colors"
+                  className="group relative rounded-[5px] border border-[var(--color-line)] bg-[var(--color-surface)] px-3.5 py-3 transition-colors hover:border-[var(--color-line-strong)]"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex flex-1 flex-col gap-1.5">
-                      <Pill tone="neutral">{t(FOCUS_KEYS[q.focus])}</Pill>
-                      <p className="text-ink text-[14px] font-semibold leading-[1.4] tracking-[-0.005em]">
+                      <Badge tone="neutral">{t(FOCUS_KEYS[q.focus])}</Badge>
+                      <p className="text-[14px] font-semibold leading-[1.4] tracking-[-0.005em] text-[var(--color-text)]">
                         {q.question}
                       </p>
-                      <p className="text-ink-4 text-[12.5px] leading-[1.5]">
+                      <p className="text-[12.5px] leading-[1.5] text-[var(--color-text-muted)]">
                         {q.rationale}
                       </p>
                     </div>
@@ -261,7 +265,7 @@ export function InterviewQuestionsBlock({
                       type="button"
                       onClick={() => handleCopyOne(q, idx)}
                       aria-label={t("applicants.questions.copy_one")}
-                      className="text-ink-5 hover:bg-bone-2 hover:text-ink shrink-0 rounded-[4px] border-none bg-transparent px-1.5 py-1 opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+                      className="shrink-0 rounded-[4px] border-none bg-transparent px-1.5 py-1 text-[var(--color-text-subtle)] opacity-0 transition-opacity group-hover:opacity-100 hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)] focus:opacity-100"
                     >
                       {isCopied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                     </button>
@@ -271,56 +275,22 @@ export function InterviewQuestionsBlock({
             })}
           </ul>
 
-          <div className="border-rule mt-1 flex flex-wrap items-center gap-2 border-t pt-3">
-            <TezButton
-              variant="primary"
-              size="md"
-              onClick={handleCopyAll}
-              leadingIcon={
-                copyHot === "all" ? (
-                  <Check className="h-3 w-3" />
-                ) : (
-                  <Copy className="h-3 w-3" />
-                )
-              }
-            >
+          <div className="mt-1 flex flex-wrap items-center gap-2 border-t border-[var(--color-line)] pt-3">
+            <Button variant="primary" size="md" onClick={handleCopyAll}>
+              {copyHot === "all" ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
               {copyHot === "all"
                 ? t("applicants.questions.copy_all_done")
                 : t("applicants.questions.copy_all")}
-            </TezButton>
-            <TezButton
-              variant="secondary"
-              size="md"
-              onClick={handleCopySheet}
-              leadingIcon={
-                copyHot === "sheet" ? (
-                  <Check className="h-3 w-3" />
-                ) : (
-                  <FileText className="h-3 w-3" />
-                )
-              }
-            >
+            </Button>
+            <Button variant="secondary" size="md" onClick={handleCopySheet}>
+              {copyHot === "sheet" ? <Check className="h-3 w-3" /> : <FileText className="h-3 w-3" />}
               {copyHot === "sheet"
                 ? t("applicants.questions.copy_sheet_done")
                 : t("applicants.questions.copy_sheet")}
-            </TezButton>
+            </Button>
           </div>
         </div>
       )}
     </Panel>
-  );
-}
-
-function Banner({ tone, text }: { tone: "amber" | "red"; text: string }) {
-  const cls =
-    tone === "amber"
-      ? "border-tez-amber/40 bg-[var(--color-tez-amber-tint)] text-[var(--color-tez-amber)]"
-      : "border-persimmon/40 bg-persimmon-tint text-persimmon-2";
-  return (
-    <div className="px-5 py-4">
-      <div className={`rounded-[5px] border px-3.5 py-2.5 text-[12.5px] font-medium ${cls}`}>
-        {text}
-      </div>
-    </div>
   );
 }

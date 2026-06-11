@@ -1,8 +1,6 @@
 // TezHR unified component system.
 // All primitives use semantic role tokens only (see Project-documentation/DESIGN_SYSTEM.md).
-// Legacy surfaces still import these via the same names; new work should prefer
-// these over components/hr/design (which remain as compatibility exports until
-// their owning migration phase).
+// This is the single source for shared UI primitives across every surface.
 
 // Actions
 export {

@@ -207,7 +207,7 @@ export function AiAnalysisTab({ candidate, jobTitle, appUrl, onUpdate }: AiAnaly
           <div className="border-warning/40 bg-warning-container/30 flex items-start gap-3 rounded-[var(--radius-lg)] border p-4">
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-warning)]" />
             <div className="space-y-1">
-              <p className="text-on-surface text-sm font-medium">
+              <p className="text-[var(--color-text)] text-sm font-medium">
                 {t("applicants.analysis.rate_limited_heading")}
               </p>
               <p className="text-xs text-[var(--color-text-muted)]">
@@ -220,7 +220,7 @@ export function AiAnalysisTab({ candidate, jobTitle, appUrl, onUpdate }: AiAnaly
           <div className="border-warning/40 bg-warning-container/30 flex items-start gap-3 rounded-[var(--radius-lg)] border p-4">
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-warning)]" />
             <div className="space-y-1">
-              <p className="text-on-surface text-sm font-medium">
+              <p className="text-[var(--color-text)] text-sm font-medium">
                 {t("applicants.analysis.unavailable_heading")}
               </p>
               <p className="text-xs text-[var(--color-text-muted)]">
