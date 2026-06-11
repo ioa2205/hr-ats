@@ -4,7 +4,11 @@ import { getHealthSnapshot } from "@/lib/landing/health";
 export async function StatusPill() {
   const [{ status }, { t }] = await Promise.all([getHealthSnapshot(), getT()]);
   const color =
-    status === "ok" ? "var(--ikat)" : status === "degraded" ? "var(--saffron)" : "var(--persimmon)";
+    status === "ok"
+      ? "var(--leaf)"
+      : status === "degraded"
+        ? "var(--saffron)"
+        : "var(--color-danger)";
   const label =
     status === "ok"
       ? t("landing.footer.status_ok")
@@ -13,7 +17,7 @@ export async function StatusPill() {
         : t("landing.footer.status_down");
   return (
     <span
-      className="mono inline-flex items-center gap-2 text-[10px] tracking-[0.16em]"
+      className="mono inline-flex items-center gap-2 text-[11px] tracking-[0.06em]"
       style={{ color: "var(--ink-3)" }}
       aria-live="polite"
     >

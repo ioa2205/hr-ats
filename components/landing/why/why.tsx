@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getT } from "@/lib/i18n/server";
 import { ArrowIcon } from "../icons";
 import type { TranslationKey } from "@/lib/i18n/types";
+import { SectionHeader } from "../section";
 import { MultilingualProof, LocalMarketProof, SecurityProof } from "./differentiator-proofs";
 
 interface Card {
@@ -51,114 +52,43 @@ const CARDS: Card[] = [
 export async function Why() {
   const { t } = await getT();
   return (
-    <section
-      id="product"
-      className="paper-grain relative"
-      style={{ background: "var(--paper)", padding: "96px 28px 88px" }}
-    >
-      <div className="mx-auto" style={{ maxWidth: 1360 }}>
-        <div
-          className="mb-6 flex flex-wrap items-end gap-7 border-b pb-3.5"
-          style={{ borderColor: "var(--ink)" }}
-        >
-          <span
-            className="mono text-[11px] tracking-[0.2em]"
-            style={{ color: "var(--persimmon-2)" }}
-          >
-            {t("landing.why.section_tag")}
-          </span>
-          <span
-            className="serif text-[20px] italic"
-            style={{ color: "var(--ink-3)" }}
-          >
-            {t("landing.why.section_title")}
-          </span>
-          <span
-            className="mono ml-auto text-[11px] tracking-[0.18em]"
-            style={{ color: "var(--ink-3)" }}
-          >
-            {t("landing.why.section_meta")}
-          </span>
-        </div>
-        <h2
-          className="serif max-w-[1000px]"
-          style={{
-            margin: "0 0 56px",
-            fontSize: "clamp(40px, 5vw + 16px, 82px)",
-            lineHeight: 0.96,
-            letterSpacing: "-0.035em",
-          }}
-        >
-          {t("landing.why.heading")}{" "}
-          <em style={{ fontStyle: "italic", color: "var(--persimmon-2)" }}>
-            {t("landing.why.heading_em")}
-          </em>{" "}
-          {t("landing.why.heading_tail")}
-        </h2>
+    <section id="product" className="relative" style={{ background: "var(--paper)", padding: "clamp(72px, 8vw, 104px) 24px" }}>
+      <div className="mx-auto lp-reveal" style={{ maxWidth: 1200 }}>
+        <SectionHeader eyebrow={t("landing.why.section_tag")} meta={t("landing.why.section_meta")} maxWidth={1000}>
+          {t("landing.why.heading")} <span className="lp-accent">{t("landing.why.heading_em")}</span> {t("landing.why.heading_tail")}
+        </SectionHeader>
 
-        <ul
-          className="grid gap-0 p-0 md:grid-cols-3"
-          style={{
-            listStyle: "none",
-            borderTop: "2px solid var(--ink)",
-            borderBottom: "2px solid var(--ink)",
-          }}
-        >
+        <ul className="grid list-none gap-5 p-0 md:grid-cols-3">
           {CARDS.map((c, i) => (
             <li
               key={c.id}
-              className="flex flex-col gap-5"
-              style={{
-                padding: "32px 28px",
-                borderRight: i < CARDS.length - 1 ? "1px solid var(--ink)" : "0",
-                borderTop: "0",
-                background: "var(--paper)",
-              }}
+              className="lp-panel flex flex-col gap-4"
+              style={{ padding: "28px 26px", transition: "box-shadow 160ms, transform 160ms" }}
             >
-              <div className="flex items-start justify-between">
+              <div className="flex items-center justify-between">
                 <span
-                  className="serif text-[54px] leading-none tracking-[-0.035em]"
-                  style={{ color: "var(--persimmon-2)" }}
+                  className="mono grid h-9 w-9 place-items-center rounded-lg text-[13px]"
+                  style={{ background: "var(--ikat-tint)", color: "var(--ikat-on-tint)", fontWeight: 700 }}
                 >
                   {`0${i + 1}`}
                 </span>
-                <span
-                  className="mono text-[10px] tracking-[0.18em]"
-                  style={{ color: "var(--ink-3)" }}
-                >
+                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-4)" }}>
                   {t(c.kickerKey)}
                 </span>
               </div>
-              <h3
-                className="serif m-0 text-[28px] leading-[1.06] tracking-[-0.02em]"
-              >
-                {t(c.titleKey)}
-              </h3>
-              <p
-                className="m-0 max-w-[320px] text-[14px] leading-[1.55]"
-                style={{ color: "var(--ink-2)" }}
-              >
+              <h3 className="lp-h3 m-0">{t(c.titleKey)}</h3>
+              <p className="m-0 text-[14.5px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
                 {t(c.bodyKey)}
               </p>
-              <div
-                className="mt-1 flex flex-col gap-2 border-t pt-4"
-                style={{ borderColor: "var(--ink-4)" }}
-              >
-                <span
-                  className="mono text-[10px] tracking-[0.14em]"
-                  style={{ color: "var(--ink-3)" }}
-                >
+              <div className="mt-1 flex flex-col gap-2.5 border-t pt-4" style={{ borderColor: "var(--rule)" }}>
+                <span className="mono" style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-4)" }}>
                   {t(c.proofLabelKey)}
                 </span>
                 <div>{c.proof}</div>
               </div>
-              <Link
-                href={c.href}
-                className="mt-auto inline-flex items-center gap-2 pt-3 text-[13px] font-medium"
-                style={{ color: "var(--ink)" }}
-              >
+              <Link href={c.href} className="lp-link mt-auto pt-2">
                 {t(c.readMoreKey)}
-                <ArrowIcon size={12} color="var(--persimmon-2)" />
+                <ArrowIcon size={13} color="var(--ikat)" />
               </Link>
             </li>
           ))}

@@ -9,231 +9,65 @@ export function AboutContent() {
   const { t } = useTranslation();
 
   const values = [
-    {
-      t: t("about.values.v1_t"),
-      b: t("about.values.v1_b"),
-    },
-    {
-      t: t("about.values.v2_t"),
-      b: t("about.values.v2_b"),
-    },
-    {
-      t: t("about.values.v3_t"),
-      b: t("about.values.v3_b"),
-    },
+    { t: t("about.values.v1_t"), b: t("about.values.v1_b") },
+    { t: t("about.values.v2_t"), b: t("about.values.v2_b") },
+    { t: t("about.values.v3_t"), b: t("about.values.v3_b") },
   ];
 
   return (
     <>
-      {/* Masthead bar */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "10px 28px",
-          borderBottom: "1px solid var(--ink)",
-          fontFamily: "var(--font-jetbrains-mono),monospace",
-          fontSize: 10,
-          letterSpacing: "0.14em",
-          color: "var(--ink-2)",
-          background: "var(--paper)",
-        }}
-      >
-        <span>{t("about.kicker")}</span>
-        <span>{t("about.meta")}</span>
-      </div>
-
-      {/* Hero title */}
-      <section
-        className="paper-grain"
-        style={{ background: "var(--paper)", padding: "72px 28px 80px" }}
-      >
-        <div style={{ maxWidth: 1360, margin: "0 auto" }}>
-          <h1
-            className="serif"
-            style={{
-              margin: 0,
-              fontSize: 132,
-              lineHeight: 0.9,
-              letterSpacing: "-0.045em",
-              fontWeight: 400,
-              maxWidth: 1100,
-            }}
-          >
-            {t("about.title_a")}{" "}
-            <em style={{ fontStyle: "italic", color: "var(--persimmon-2)" }}>
-              {t("about.title_b")}
-            </em>
+      {/* Hero */}
+      <section style={{ background: "var(--paper)", padding: "clamp(48px, 6vw, 80px) 24px clamp(56px, 6vw, 80px)" }}>
+        <div className="mx-auto" style={{ maxWidth: 1100 }}>
+          <div className="lp-eyebrow is-accent mb-6">{t("about.kicker")}</div>
+          <h1 className="lp-display" style={{ margin: 0, maxWidth: 980 }}>
+            {t("about.title_a")} <span className="lp-accent">{t("about.title_b")}</span>
           </h1>
-          <p
-            className="serif"
-            style={{
-              margin: "36px 0 0",
-              fontStyle: "italic",
-              fontSize: 22,
-              color: "var(--ink-3)",
-              lineHeight: 1.45,
-              maxWidth: 720,
-            }}
-          >
+          <p className="lp-lede" style={{ marginTop: 28, maxWidth: 680 }}>
             {t("about.subtitle")}
           </p>
         </div>
       </section>
 
-      {/* Story section */}
-      <section
-        className="paper-grain"
-        style={{
-          background: "var(--paper-2)",
-          padding: "100px 28px",
-          borderTop: "1px solid var(--ink)",
-        }}
-      >
-        <div style={{ maxWidth: 1360, margin: "0 auto" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "flex-end",
-              gap: 28,
-              marginBottom: 40,
-              borderBottom: "1px solid var(--ink)",
-              paddingBottom: 14,
-            }}
-          >
-            <span
-              className="mono"
-              style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--persimmon-2)" }}
-            >
-              {t("about.story.kicker")}
-            </span>
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: 40,
-              alignItems: "flex-start",
-            }}
-          >
-            {[t("about.story.p1"), t("about.story.p2"), t("about.story.p3")].map(
-              (para, i) => (
-                <div key={i}>
-                  <div
-                    className="serif"
-                    style={{
-                      fontSize: 52,
-                      lineHeight: 1,
-                      color: "var(--persimmon-2)",
-                      letterSpacing: "-0.04em",
-                      marginBottom: 18,
-                      fontStyle: "italic",
-                    }}
-                  >
-                    {String(i + 1).padStart(2, "0")}
-                  </div>
-                  <p
-                    style={{
-                      margin: 0,
-                      fontSize: 17,
-                      lineHeight: 1.6,
-                      color: "var(--ink-2)",
-                    }}
-                  >
-                    {para}
-                  </p>
+      {/* Story */}
+      <section style={{ background: "var(--paper-2)", padding: "clamp(64px, 7vw, 96px) 24px", borderTop: "1px solid var(--rule)" }}>
+        <div className="mx-auto" style={{ maxWidth: 1100 }}>
+          <div className="lp-eyebrow mb-10">{t("about.story.kicker")}</div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {[t("about.story.p1"), t("about.story.p2"), t("about.story.p3")].map((para, i) => (
+              <div key={i} className="lp-panel" style={{ padding: "26px 24px" }}>
+                <div
+                  className="mono mb-4 grid h-10 w-10 place-items-center rounded-lg text-[14px]"
+                  style={{ background: "var(--ikat-tint)", color: "var(--ikat-on-tint)", fontWeight: 700 }}
+                >
+                  {String(i + 1).padStart(2, "0")}
                 </div>
-              ),
-            )}
+                <p className="m-0 text-[15.5px] leading-[1.6]" style={{ color: "var(--ink-2)" }}>
+                  {para}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Values */}
-      <section
-        className="paper-grain"
-        style={{
-          background: "var(--paper)",
-          padding: "100px 28px",
-          borderTop: "1px solid var(--ink)",
-        }}
-      >
-        <div style={{ maxWidth: 1360, margin: "0 auto" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "flex-end",
-              gap: 28,
-              marginBottom: 40,
-              borderBottom: "1px solid var(--ink)",
-              paddingBottom: 14,
-            }}
-          >
-            <span
-              className="mono"
-              style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--persimmon-2)" }}
-            >
-              {t("about.values.kicker")}
-            </span>
-            <span
-              className="serif"
-              style={{ fontSize: 20, fontStyle: "italic", color: "var(--ink-3)" }}
-            >
-              — {t("about.values.title")}
+      <section style={{ background: "var(--paper)", padding: "clamp(64px, 7vw, 96px) 24px", borderTop: "1px solid var(--rule)" }}>
+        <div className="mx-auto" style={{ maxWidth: 1100 }}>
+          <div className="mb-10 flex flex-wrap items-center gap-x-5 gap-y-2">
+            <span className="lp-eyebrow">{t("about.values.kicker")}</span>
+            <span className="lp-h3" style={{ color: "var(--ink-3)" }}>
+              {t("about.values.title")}
             </span>
           </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr",
-              gap: 0,
-              borderTop: "2px solid var(--ink)",
-              borderBottom: "2px solid var(--ink)",
-            }}
-          >
+          <div className="grid gap-5 md:grid-cols-3">
             {values.map((v, i) => (
-              <div
-                key={v.t}
-                style={{
-                  padding: "32px 28px",
-                  borderRight: i < 2 ? "1px solid var(--ink)" : "0",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 14,
-                }}
-              >
-                <div
-                  className="mono"
-                  style={{
-                    fontSize: 10,
-                    letterSpacing: "0.2em",
-                    color: "var(--ink-3)",
-                  }}
-                >
-                  ✶ {String(i + 1).padStart(2, "0")}
+              <div key={v.t} className="lp-panel flex flex-col gap-3" style={{ padding: "28px 26px" }}>
+                <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--ink-4)" }}>
+                  {String(i + 1).padStart(2, "0")}
                 </div>
-                <h3
-                  className="serif"
-                  style={{
-                    margin: 0,
-                    fontSize: 32,
-                    lineHeight: 1.05,
-                    letterSpacing: "-0.025em",
-                  }}
-                >
-                  {v.t}
-                </h3>
-                <p
-                  style={{
-                    margin: 0,
-                    fontSize: 15,
-                    lineHeight: 1.55,
-                    color: "var(--ink-2)",
-                  }}
-                >
+                <h3 className="lp-h3 m-0">{v.t}</h3>
+                <p className="m-0 text-[14.5px] leading-[1.6]" style={{ color: "var(--ink-3)" }}>
                   {v.b}
                 </p>
               </div>
@@ -242,123 +76,37 @@ export function AboutContent() {
         </div>
       </section>
 
-      {/* Mission (inverted) */}
-      <section
-        className="night-grain"
-        style={{
-          background: "var(--night)",
-          color: "var(--paper-3)",
-          padding: "120px 28px",
-          textAlign: "center",
-          position: "relative",
-          overflow: "hidden",
-        }}
-      >
-        <div className="ikat-bg" style={{ position: "absolute", inset: 0, opacity: 0.5 }} />
-        <div style={{ position: "relative", maxWidth: 1100, margin: "0 auto" }}>
-          <div
-            className="mono"
-            style={{
-              fontSize: 11,
-              letterSpacing: "0.2em",
-              color: "var(--saffron)",
-              marginBottom: 24,
-            }}
-          >
-            {t("about.mission.kicker")}
+      {/* Mission — single calm statement band */}
+      <section style={{ background: "var(--night)", color: "var(--on-night)", padding: "clamp(80px, 9vw, 120px) 24px", textAlign: "center" }}>
+        <div className="mx-auto" style={{ maxWidth: 940 }}>
+          <div className="mb-6 flex items-center justify-center gap-2">
+            <span className="lp-signal" aria-hidden />
+            <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8fc2f5" }}>
+              {t("about.mission.kicker")}
+            </span>
           </div>
-          <p
-            className="serif"
-            style={{
-              margin: 0,
-              fontSize: 72,
-              lineHeight: 1.05,
-              letterSpacing: "-0.035em",
-              fontStyle: "italic",
-              color: "var(--paper-3)",
-            }}
-          >
-            “{t("about.mission.text")}”
+          <p className="lp-h2" style={{ margin: 0, color: "var(--on-night)", fontWeight: 700 }}>
+            {t("about.mission.text")}
           </p>
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section
-        className="paper-grain"
-        style={{ background: "var(--paper)", padding: "80px 28px 100px" }}
-      >
-        <div
-          style={{
-            maxWidth: 1100,
-            margin: "0 auto",
-            textAlign: "center",
-          }}
-        >
-          <div
-            className="mono"
-            style={{
-              fontSize: 11,
-              letterSpacing: "0.2em",
-              color: "var(--persimmon-2)",
-              marginBottom: 16,
-            }}
-          >
+      {/* CTA */}
+      <section style={{ background: "var(--paper)", padding: "clamp(64px, 7vw, 96px) 24px", textAlign: "center" }}>
+        <div className="mx-auto" style={{ maxWidth: 760 }}>
+          <div className="lp-eyebrow is-accent mb-4 justify-center" style={{ display: "inline-flex" }}>
             {t("about.cta.kicker")}
           </div>
-          <p
-            className="serif"
-            style={{
-              margin: 0,
-              fontSize: 28,
-              lineHeight: 1.3,
-              fontStyle: "italic",
-              color: "var(--ink-2)",
-            }}
-          >
+          <p className="lp-h3" style={{ margin: "0 auto", maxWidth: 600, color: "var(--ink-2)", fontWeight: 600 }}>
             {t("about.cta.text")}
           </p>
-          <div
-            style={{
-              marginTop: 36,
-              display: "inline-flex",
-              gap: 14,
-            }}
-          >
-            <Link
-              href={SIGNUP_HREF}
-              className="btn-primary"
-              style={{
-                padding: "14px 24px",
-                fontSize: 14,
-                background: "var(--persimmon)",
-                color: "var(--paper-3)",
-                boxShadow: "5px 5px 0 var(--ink)",
-              }}
-            >
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+            <Link href={SIGNUP_HREF} className="btn-primary">
               {t("about.cta.primary")}
-              <Icon.arrow size={14} color="var(--paper-3)" />
+              <Icon.arrow size={16} color="var(--color-on-primary)" />
             </Link>
-            <a
-              href={TELEGRAM_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                padding: "13px 22px",
-                background: "transparent",
-                color: "var(--ink)",
-                border: "1.5px solid var(--ink)",
-                cursor: "pointer",
-                fontFamily: "var(--font-manrope),sans-serif",
-                fontSize: 14,
-                fontWeight: 500,
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                textDecoration: "none",
-              }}
-            >
-              <Icon.telegram size={14} />
+            <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+              <Icon.telegram size={15} color="var(--ikat)" />
               {t("about.cta.secondary")}
             </a>
           </div>

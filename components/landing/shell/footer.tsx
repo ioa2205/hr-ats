@@ -15,7 +15,7 @@ interface FooterLink {
 function Col({ title, items }: { title: string; items: FooterLink[] }) {
   return (
     <div>
-      <div className="mono mb-4 text-[10px] tracking-[0.2em]" style={{ color: "var(--ink-3)" }}>
+      <div className="lp-eyebrow is-plain mb-4" style={{ color: "var(--ink-4)" }}>
         {title}
       </div>
       <ul className="m-0 flex list-none flex-col gap-3 p-0">
@@ -26,16 +26,16 @@ function Col({ title, items }: { title: string; items: FooterLink[] }) {
                 href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[14px] leading-tight tracking-[-0.005em]"
-                style={{ color: "var(--ink)" }}
+                className="text-[14px] leading-tight transition-colors hover:text-[var(--ikat)]"
+                style={{ color: "var(--ink-2)" }}
               >
                 {item.label}
               </a>
             ) : (
               <Link
                 href={item.href}
-                className="text-[14px] leading-tight tracking-[-0.005em]"
-                style={{ color: "var(--ink)" }}
+                className="text-[14px] leading-tight transition-colors hover:text-[var(--ikat)]"
+                style={{ color: "var(--ink-2)" }}
               >
                 {item.label}
               </Link>
@@ -69,22 +69,18 @@ export async function LandingFooter() {
   return (
     <footer
       id="contact"
-      className="paper-grain"
       style={{
         position: "relative",
         background: "var(--paper-2)",
-        borderTop: "2px solid var(--ink)",
-        padding: "64px 28px 28px",
+        borderTop: "1px solid var(--rule)",
+        padding: "64px 24px 28px",
       }}
     >
-      <div className="mx-auto" style={{ maxWidth: 1360 }}>
+      <div className="mx-auto" style={{ maxWidth: 1200 }}>
         <div className="grid gap-10 md:grid-cols-[1.8fr_1fr_1fr_1fr]">
           <div className="flex max-w-[360px] flex-col gap-4">
-            <TezSignalWordmark size={30} />
-            <p
-              className="serif m-0 text-[16px] leading-[1.5] italic"
-              style={{ color: "var(--ink-3)" }}
-            >
+            <TezSignalWordmark size={26} suffix="Tashkent" />
+            <p className="m-0 text-[15px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
               {t("landing.footer.tagline")}
             </p>
             <div className="mt-2">
@@ -98,44 +94,36 @@ export async function LandingFooter() {
 
         <div
           className="mt-12 flex flex-col gap-4 border-t pt-6 md:flex-row md:items-center md:justify-between"
-          style={{ borderColor: "var(--ink)" }}
+          style={{ borderColor: "var(--rule)" }}
         >
-          <div className="flex flex-wrap items-center gap-5">
-            <span className="mono text-[11px] tracking-[0.1em]" style={{ color: "var(--ink-3)" }}>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <span className="mono text-[11px] tracking-[0.06em]" style={{ color: "var(--ink-4)" }}>
               {t("landing.footer.copy")}
             </span>
-            <Link
-              href="/terms"
-              className="mono text-[11px] tracking-[0.1em]"
-              style={{ color: "var(--ink-3)" }}
-            >
+            <Link href="/terms" className="text-[13px] transition-colors hover:text-[var(--ikat)]" style={{ color: "var(--ink-3)" }}>
               {t("landing.footer.legal_terms")}
             </Link>
-            <Link
-              href="/privacy"
-              className="mono text-[11px] tracking-[0.1em]"
-              style={{ color: "var(--ink-3)" }}
-            >
+            <Link href="/privacy" className="text-[13px] transition-colors hover:text-[var(--ikat)]" style={{ color: "var(--ink-3)" }}>
               {t("landing.footer.legal_privacy")}
             </Link>
             <Link
               href="/for-candidates"
-              className="mono text-[11px] tracking-[0.1em]"
+              className="text-[13px] transition-colors hover:text-[var(--ikat)]"
               style={{ color: "var(--ink-3)" }}
             >
               {t("landing.footer.legal_candidate_rights")}
             </Link>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-5">
             <StatusPill />
             <a
               href={TELEGRAM_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="mono inline-flex items-center gap-2 text-[11px] tracking-[0.1em]"
-              style={{ color: "var(--ink)" }}
+              className="inline-flex items-center gap-2 text-[13px] transition-colors hover:text-[var(--ikat)]"
+              style={{ color: "var(--ink-2)" }}
             >
-              <TelegramIcon size={14} /> Telegram
+              <TelegramIcon size={15} /> Telegram
             </a>
           </div>
         </div>

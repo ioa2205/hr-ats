@@ -44,14 +44,14 @@ export function ScrollSpyNav({
   brandMobile,
   homeHref,
 }: Props) {
-  const [stuck, setStuck] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const sheetRef = useRef<HTMLDivElement | null>(null);
   const firstMobileLinkRef = useRef<HTMLAnchorElement | null>(null);
 
   useEffect(() => {
-    const onScroll = () => setStuck(window.scrollY > 200);
+    const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -97,46 +97,37 @@ export function ScrollSpyNav({
     <>
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-2 focus:top-2 focus:z-[60] focus:rounded-sm focus:bg-[var(--ink)] focus:px-3 focus:py-2 focus:text-[13px] focus:text-[var(--paper-3)]"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[80] focus:rounded-lg focus:bg-[var(--ikat)] focus:px-4 focus:py-2.5 focus:text-[13px] focus:font-semibold focus:text-[var(--color-on-primary)]"
       >
         {labels.sectionsHeading}
       </a>
 
       <nav
         aria-label="Primary"
-        className={[
-          "tezhr-nav",
-          "transition-[transform,background-color,box-shadow] duration-300",
-          stuck
-            ? "fixed inset-x-0 top-0 z-50 translate-y-0 border-b border-[var(--ink)] bg-[rgba(239,232,219,0.92)] backdrop-blur-md"
-            : "relative",
-        ].join(" ")}
-        style={{ fontFamily: "var(--font-manrope),sans-serif" }}
+        className="sticky top-0 z-50 transition-[box-shadow,border-color,background-color] duration-200"
+        style={{
+          background: scrolled ? "color-mix(in srgb, var(--paper) 86%, transparent)" : "var(--paper)",
+          backdropFilter: scrolled ? "saturate(140%) blur(10px)" : "none",
+          WebkitBackdropFilter: scrolled ? "saturate(140%) blur(10px)" : "none",
+          borderBottom: `1px solid ${scrolled ? "var(--rule)" : "transparent"}`,
+          boxShadow: scrolled ? "var(--shadow-level-1)" : "none",
+          fontFamily: "var(--font-manrope),sans-serif",
+        }}
       >
-        <div
-          className="mx-auto flex items-center gap-6"
-          style={{ maxWidth: 1360, padding: stuck ? "12px 28px" : "18px 28px" }}
-        >
-          <Link
-            href={homeHref}
-            className="inline-flex items-center"
-            aria-label="TezHR — home"
-          >
+        <div className="mx-auto flex items-center gap-6" style={{ maxWidth: 1200, padding: "12px 24px" }}>
+          <Link href={homeHref} className="inline-flex items-center" aria-label="TezHR — home">
             <span className="hidden md:inline">{brand}</span>
             <span className="md:hidden">{brandMobile}</span>
           </Link>
 
-          <ul
-            className="hidden list-none gap-7 p-0 text-[13px] font-medium md:flex"
-            style={{ color: "var(--ink-2)" }}
-          >
+          <ul className="hidden list-none gap-1 p-0 text-[14px] font-medium md:flex" style={{ color: "var(--ink-3)" }}>
             {items.map((it) => {
               const isActive = active === it.id;
               return (
                 <li key={it.id} className="relative">
                   <a
                     href={it.href}
-                    className="inline-block py-1 transition-colors hover:text-[var(--ink)]"
+                    className="inline-flex items-center rounded-lg px-3 py-2 transition-colors hover:text-[var(--ink)]"
                     aria-current={isActive ? "true" : undefined}
                     style={{ color: isActive ? "var(--ink)" : undefined }}
                   >
@@ -144,7 +135,7 @@ export function ScrollSpyNav({
                   </a>
                   <span
                     aria-hidden
-                    className="absolute inset-x-0 -bottom-[1px] h-[1.5px] origin-left bg-[var(--persimmon)] transition-transform duration-200"
+                    className="absolute inset-x-3 -bottom-[3px] h-[2px] origin-center rounded-full bg-[var(--ikat)] transition-transform duration-200"
                     style={{ transform: isActive ? "scaleX(1)" : "scaleX(0)" }}
                   />
                 </li>
@@ -152,46 +143,38 @@ export function ScrollSpyNav({
             })}
           </ul>
 
-          <div className="ml-auto flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-2.5">
+            <div className="hidden md:flex items-center gap-2.5">
               <LocaleSwitcher />
               <Link
                 href={loginHref}
-                className="border border-[var(--ink)] px-[14px] py-2 text-[13px] transition-colors hover:bg-[var(--ink)] hover:text-[var(--paper-3)]"
+                className="rounded-lg px-3.5 py-2 text-[14px] font-medium transition-colors hover:bg-[var(--paper-2)]"
+                style={{ color: "var(--ink)" }}
               >
                 {labels.signin}
               </Link>
             </div>
-            <Link
-              href={signupHref}
-              className="btn-primary"
-              style={{
-                padding: stuck ? "8px 14px" : "9px 16px",
-                fontSize: 13,
-                boxShadow: "3px 3px 0 var(--persimmon)",
-              }}
-            >
+            <Link href={signupHref} className="btn-primary" style={{ minHeight: 40, padding: "9px 16px", fontSize: 14 }}>
               {labels.cta}
             </Link>
             <button
               type="button"
               onClick={() => setMenuOpen(true)}
-              className="grid h-9 w-9 place-items-center border border-[var(--ink)] md:hidden"
+              className="grid h-10 w-10 place-items-center rounded-lg border md:hidden"
+              style={{ borderColor: "var(--rule-strong)" }}
               aria-label={labels.menuOpen}
               aria-expanded={menuOpen}
               aria-controls="tezhr-mobile-menu"
             >
-              <span aria-hidden className="flex flex-col gap-[3.5px]">
-                <span className="block h-[1.5px] w-[16px] bg-[var(--ink)]" />
-                <span className="block h-[1.5px] w-[16px] bg-[var(--ink)]" />
-                <span className="block h-[1.5px] w-[16px] bg-[var(--ink)]" />
+              <span aria-hidden className="flex flex-col gap-[4px]">
+                <span className="block h-[2px] w-[17px] rounded-full bg-[var(--ink)]" />
+                <span className="block h-[2px] w-[17px] rounded-full bg-[var(--ink)]" />
+                <span className="block h-[2px] w-[17px] rounded-full bg-[var(--ink)]" />
               </span>
             </button>
           </div>
         </div>
       </nav>
-
-      {stuck && <div aria-hidden style={{ height: 62 }} />}
 
       {menuOpen && (
         <div
@@ -200,64 +183,51 @@ export function ScrollSpyNav({
           role="dialog"
           aria-modal="true"
           aria-label={labels.sectionsHeading}
-          className="fixed inset-0 z-[70] flex flex-col bg-[var(--paper)] paper-grain"
+          className="fixed inset-0 z-[70] flex flex-col"
+          style={{ background: "var(--paper)" }}
         >
-          <div
-            className="flex items-center justify-between border-b border-[var(--ink)]"
-            style={{ padding: "18px 24px" }}
-          >
+          <div className="flex items-center justify-between" style={{ padding: "14px 20px", borderBottom: "1px solid var(--rule)" }}>
             {brandMobile}
             <button
               type="button"
               onClick={closeMenu}
-              className="grid h-9 w-9 place-items-center border border-[var(--ink)]"
+              className="grid h-10 w-10 place-items-center rounded-lg border"
+              style={{ borderColor: "var(--rule-strong)" }}
               aria-label={labels.menuClose}
             >
-              <span aria-hidden className="text-[18px] leading-none">×</span>
+              <span aria-hidden className="text-[20px] leading-none">×</span>
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto px-6 py-8">
-            <div
-              className="mb-4 text-[10px] tracking-[0.2em]"
-              style={{
-                color: "var(--ink-3)",
-                fontFamily: "var(--font-jetbrains-mono),monospace",
-              }}
-            >
-              {labels.sectionsHeading}
-            </div>
-            <ul className="m-0 flex list-none flex-col gap-1 p-0">
+          <div className="flex-1 overflow-y-auto px-6 py-7">
+            <div className="lp-eyebrow is-plain mb-4">{labels.sectionsHeading}</div>
+            <ul className="m-0 flex list-none flex-col gap-0 p-0">
               {items.map((it, idx) => (
                 <li key={it.id}>
                   <a
                     ref={idx === 0 ? firstMobileLinkRef : undefined}
                     href={it.href}
                     onClick={closeMenu}
-                    className="serif block border-b border-[var(--ink-4)] py-4 text-[28px] leading-tight tracking-[-0.02em] transition-colors hover:text-[var(--persimmon-2)]"
+                    className="block py-4 text-[24px] tracking-[-0.02em] transition-colors hover:text-[var(--ikat)]"
+                    style={{ fontWeight: 700, borderBottom: "1px solid var(--rule)", color: "var(--ink)" }}
                   >
                     {it.label}
                   </a>
                 </li>
               ))}
             </ul>
-            <div className="mt-8 flex flex-col gap-3">
+            <div className="mt-7 flex flex-col gap-3">
               <Link
                 href={loginHref}
                 onClick={closeMenu}
-                className="w-full border border-[var(--ink)] px-5 py-3 text-center text-[14px] font-medium"
+                className="btn-ghost w-full"
               >
                 {labels.signin}
               </Link>
-              <Link
-                href={signupHref}
-                onClick={closeMenu}
-                className="btn-primary w-full justify-center"
-                style={{ padding: "14px 20px", fontSize: 14 }}
-              >
+              <Link href={signupHref} onClick={closeMenu} className="btn-primary w-full">
                 {labels.cta}
               </Link>
             </div>
-            <div className="mt-8">
+            <div className="mt-7">
               <LocaleSwitcher />
             </div>
           </div>

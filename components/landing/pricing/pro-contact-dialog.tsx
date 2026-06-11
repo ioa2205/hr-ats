@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition, type CSSProperties } from "react";
 import { submitContactMessage } from "@/lib/actions/contact";
 
 interface Labels {
@@ -26,6 +26,26 @@ interface Labels {
   channelEmail: string;
   teamSizes: string[];
 }
+
+const labelStyle: CSSProperties = {
+  fontFamily: "var(--font-jetbrains-mono),monospace",
+  fontSize: 10,
+  letterSpacing: "0.12em",
+  textTransform: "uppercase",
+  color: "var(--ink-3)",
+};
+
+const inputStyle: CSSProperties = {
+  width: "100%",
+  padding: "11px 13px",
+  fontSize: 15,
+  background: "var(--paper)",
+  border: "1px solid var(--rule-strong)",
+  borderRadius: "var(--radius-md)",
+  color: "var(--ink)",
+  fontFamily: "var(--font-manrope),sans-serif",
+  outline: "none",
+};
 
 export function ProContactDialog({ labels }: { labels: Labels }) {
   const dialogRef = useRef<HTMLDialogElement | null>(null);
@@ -104,45 +124,22 @@ export function ProContactDialog({ labels }: { labels: Labels }) {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={open}
-        className="block w-full text-center"
-        style={{
-          padding: "14px 18px",
-          background: "var(--ink)",
-          color: "var(--paper-3)",
-          fontFamily: "var(--font-manrope),sans-serif",
-          fontWeight: 600,
-          fontSize: 14,
-          letterSpacing: "-0.005em",
-          border: 0,
-        }}
-      >
+      <button type="button" onClick={open} className="btn-ghost w-full">
         {labels.triggerLabel}
       </button>
       <dialog
         ref={dialogRef}
         onClick={onBackdropClick}
         aria-labelledby="tezhr-pro-dialog-title"
-        className="m-0 w-full max-w-[min(640px,96vw)] border-2 border-[var(--ink)] bg-[var(--paper-3)] p-0 text-[var(--ink)] backdrop:bg-[rgba(20,18,16,0.55)]"
-        style={{ inset: 0 }}
+        className="m-0 w-full max-w-[min(640px,96vw)] overflow-hidden rounded-2xl border bg-[var(--paper-3)] p-0 text-[var(--ink)] backdrop:bg-[rgba(20,18,16,0.45)]"
+        style={{ inset: 0, borderColor: "var(--rule)" }}
       >
-        <div
-          className="flex items-center justify-between border-b border-[var(--ink)] px-6 py-4"
-          style={{ background: "var(--ink)", color: "var(--paper-3)" }}
-        >
-          <div className="flex items-baseline gap-3">
-            <span
-              className="mono text-[10px] tracking-[0.22em]"
-              style={{ color: "var(--saffron)" }}
-            >
-              TEZHR · PRO
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: "1px solid var(--rule)" }}>
+          <div className="flex items-center gap-3">
+            <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", padding: "3px 8px", borderRadius: 999, background: "var(--ikat-tint)", color: "var(--ikat-on-tint)" }}>
+              TezHR · Pro
             </span>
-            <span
-              id="tezhr-pro-dialog-title"
-              className="serif text-[22px] italic tracking-[-0.015em]"
-            >
+            <span id="tezhr-pro-dialog-title" className="text-[19px] font-bold tracking-[-0.015em]">
               {labels.heading}
             </span>
           </div>
@@ -150,97 +147,44 @@ export function ProContactDialog({ labels }: { labels: Labels }) {
             type="button"
             onClick={close}
             aria-label={labels.closeLabel}
-            className="grid h-9 w-9 place-items-center border border-[var(--paper-3)] text-[16px] leading-none"
+            className="grid h-9 w-9 place-items-center rounded-lg border text-[18px] leading-none transition-colors hover:bg-[var(--paper-2)]"
+            style={{ borderColor: "var(--rule-strong)" }}
           >
             ×
           </button>
         </div>
         {ok ? (
           <div className="flex flex-col items-start gap-4 p-8">
-            <h3
-              className="serif m-0 text-[32px] leading-[1.15] tracking-[-0.02em]"
-              style={{ color: "var(--persimmon-2)" }}
-            >
+            <h3 className="lp-h2 m-0" style={{ fontSize: 28, color: "var(--ikat)" }}>
               {labels.successHeading}
             </h3>
-            <p
-              className="serif m-0 max-w-[440px] text-[17px] italic leading-[1.55]"
-              style={{ color: "var(--ink-2)" }}
-            >
+            <p className="m-0 max-w-[440px] text-[16px] leading-[1.55]" style={{ color: "var(--ink-2)" }}>
               {labels.successBody}
             </p>
-            <button
-              type="button"
-              onClick={close}
-              className="btn-ghost"
-            >
+            <button type="button" onClick={close} className="btn-ghost">
               {labels.closeLabel}
             </button>
           </div>
         ) : (
           <form onSubmit={onSubmit} className="flex flex-col gap-4 p-7">
-            <label className="flex flex-col gap-1">
-              <span
-                className="mono text-[10px] tracking-[0.14em]"
-                style={{ color: "var(--ink-3)" }}
-              >
-                {labels.nameLabel}
-              </span>
-              <input
-                ref={firstFieldRef}
-                name="name"
-                required
-                minLength={2}
-                maxLength={120}
-                className="border px-3 py-2.5 text-[15px]"
-                style={{ borderColor: "var(--ink)", background: "var(--paper)" }}
-              />
+            <label className="flex flex-col gap-1.5">
+              <span style={labelStyle}>{labels.nameLabel}</span>
+              <input ref={firstFieldRef} name="name" required minLength={2} maxLength={120} style={inputStyle} />
             </label>
             <div className="grid gap-4 md:grid-cols-2">
-              <label className="flex flex-col gap-1">
-                <span
-                  className="mono text-[10px] tracking-[0.14em]"
-                  style={{ color: "var(--ink-3)" }}
-                >
-                  {labels.emailLabel}
-                </span>
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  maxLength={200}
-                  className="border px-3 py-2.5 text-[15px]"
-                  style={{ borderColor: "var(--ink)", background: "var(--paper)" }}
-                />
+              <label className="flex flex-col gap-1.5">
+                <span style={labelStyle}>{labels.emailLabel}</span>
+                <input name="email" type="email" required maxLength={200} style={inputStyle} />
               </label>
-              <label className="flex flex-col gap-1">
-                <span
-                  className="mono text-[10px] tracking-[0.14em]"
-                  style={{ color: "var(--ink-3)" }}
-                >
-                  {labels.companyLabel}
-                </span>
-                <input
-                  name="company"
-                  maxLength={200}
-                  className="border px-3 py-2.5 text-[15px]"
-                  style={{ borderColor: "var(--ink)", background: "var(--paper)" }}
-                />
+              <label className="flex flex-col gap-1.5">
+                <span style={labelStyle}>{labels.companyLabel}</span>
+                <input name="company" maxLength={200} style={inputStyle} />
               </label>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              <label className="flex flex-col gap-1">
-                <span
-                  className="mono text-[10px] tracking-[0.14em]"
-                  style={{ color: "var(--ink-3)" }}
-                >
-                  {labels.teamSizeLabel}
-                </span>
-                <select
-                  name="team_size"
-                  className="border px-3 py-2.5 text-[15px]"
-                  style={{ borderColor: "var(--ink)", background: "var(--paper)" }}
-                >
+              <label className="flex flex-col gap-1.5">
+                <span style={labelStyle}>{labels.teamSizeLabel}</span>
+                <select name="team_size" style={inputStyle}>
                   {labels.teamSizes.map((s) => (
                     <option key={s} value={s}>
                       {s}
@@ -248,59 +192,29 @@ export function ProContactDialog({ labels }: { labels: Labels }) {
                   ))}
                 </select>
               </label>
-              <label className="flex flex-col gap-1">
-                <span
-                  className="mono text-[10px] tracking-[0.14em]"
-                  style={{ color: "var(--ink-3)" }}
-                >
-                  {labels.channelLabel}
-                </span>
-                <select
-                  name="channel"
-                  className="border px-3 py-2.5 text-[15px]"
-                  style={{ borderColor: "var(--ink)", background: "var(--paper)" }}
-                >
+              <label className="flex flex-col gap-1.5">
+                <span style={labelStyle}>{labels.channelLabel}</span>
+                <select name="channel" style={inputStyle}>
                   <option value={labels.channelTelegram}>{labels.channelTelegram}</option>
                   <option value={labels.channelPhone}>{labels.channelPhone}</option>
                   <option value={labels.channelEmail}>{labels.channelEmail}</option>
                 </select>
               </label>
             </div>
-            <label className="flex flex-col gap-1">
-              <span
-                className="mono text-[10px] tracking-[0.14em]"
-                style={{ color: "var(--ink-3)" }}
-              >
-                {labels.messageLabel}
-              </span>
-              <textarea
-                name="message"
-                rows={3}
-                maxLength={2000}
-                placeholder={labels.messagePlaceholder}
-                className="resize-none border px-3 py-2.5 text-[15px]"
-                style={{ borderColor: "var(--ink)", background: "var(--paper)" }}
-              />
+            <label className="flex flex-col gap-1.5">
+              <span style={labelStyle}>{labels.messageLabel}</span>
+              <textarea name="message" rows={3} maxLength={2000} placeholder={labels.messagePlaceholder} className="resize-none" style={inputStyle} />
             </label>
             {err && (
-              <div
-                className="mono text-[12px] tracking-[0.06em]"
-                style={{ color: "var(--persimmon-2)" }}
-                role="alert"
-              >
+              <div className="rounded-lg px-3 py-2.5 text-[13px]" role="alert" style={{ background: "var(--color-danger-container)", color: "var(--color-danger)" }}>
                 {err}
               </div>
             )}
             <div className="mt-2 flex items-center justify-end gap-3">
-              <button type="button" onClick={close} className="btn-ghost">
+              <button type="button" onClick={close} className="btn-ghost" style={{ minHeight: 40 }}>
                 {labels.closeLabel}
               </button>
-              <button
-                type="submit"
-                disabled={isPending}
-                className="btn-primary"
-                style={{ opacity: isPending ? 0.7 : 1 }}
-              >
+              <button type="submit" disabled={isPending} className="btn-primary" style={{ minHeight: 40, opacity: isPending ? 0.7 : 1 }}>
                 {isPending ? labels.submitting : labels.submit}
               </button>
             </div>

@@ -1,21 +1,33 @@
 import { ImageResponse } from "next/og";
 import { getT } from "@/lib/i18n/server";
 
-export const alt = "TezHR — ранжируем 200 резюме за 30 секунд";
+export const alt = "TezHR — the hiring signal system";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const revalidate = 3600;
 
-async function loadGoogleFont(
-  family: string,
-  weight: number,
-  text: string,
-): Promise<ArrayBuffer | null> {
+// Fixed light palette aligned to the unified TezHR identity (warm canvas,
+// near-black ink, Tez Lapis primary) — mirrors the design system tokens.
+const COLOR_BONE = "#f6f3ec";
+const COLOR_SURFACE = "#ffffff";
+const COLOR_INK = "#171a1f";
+const COLOR_INK_3 = "#4f5963";
+const COLOR_INK_4 = "#65707a";
+const COLOR_RULE = "#d7d1c5";
+const COLOR_STRONG = "#ece7dd";
+const COLOR_LINE_STRONG = "#918b81";
+const COLOR_LAPIS = "#0b57a3";
+const COLOR_LAPIS_TINT = "#d9eaf8";
+
+async function loadGoogleFont(family: string, weight: number, text: string): Promise<ArrayBuffer | null> {
   try {
-    const url = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(
-      family,
-    )}:wght@${weight}&text=${encodeURIComponent(text)}&display=swap`;
-    const css = await fetch(url).then((r) => r.text());
+    const url = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@${weight}&text=${encodeURIComponent(text)}&display=swap`;
+    const css = await fetch(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      },
+    }).then((r) => r.text());
     const match = css.match(/src:\s*url\((https:[^)]+)\)\s*format\(['"]?(woff2?|truetype)['"]?\)/);
     if (!match) return null;
     const fontRes = await fetch(match[1]);
@@ -28,112 +40,126 @@ async function loadGoogleFont(
 
 export default async function Image() {
   const { t } = await getT();
+  const eyebrow = t("landing.hero.product_label");
   const hl1 = t("landing.hero.hl_1");
   const hl2 = t("landing.hero.hl_2");
   const hlPrefix = t("landing.hero.hl_3_prefix");
   const hlNum = t("landing.hero.headline_time_num");
   const hlUnit = t("landing.hero.hl_3_unit");
   const tagline = t("landing.hero.subhead_plain");
-  const cta = t("landing.hero.cta_primary_short");
 
-  const allText = [hl1, hl2, hlPrefix, hlNum, hlUnit, tagline, cta, "TezHR"].join(" ");
+  const sansGlyphs = `${hl1}${hl2}${hlPrefix}${hlNum}${hlUnit}${tagline}TezHR.uz`;
+  const monoGlyphs = `${eyebrow}tezhr.uz0123456789`;
 
-  const [mono, sans, display] = await Promise.all([
-    loadGoogleFont("JetBrains Mono", 500, allText),
-    loadGoogleFont("Manrope", 600, allText),
-    loadGoogleFont("Manrope", 800, allText),
+  const [sans600, sans800, mono500] = await Promise.all([
+    loadGoogleFont("Manrope", 600, sansGlyphs),
+    loadGoogleFont("Manrope", 800, sansGlyphs),
+    loadGoogleFont("JetBrains+Mono", 500, monoGlyphs),
   ]);
 
-  const fonts: Array<{
-    name: string;
-    data: ArrayBuffer;
-    weight: 500 | 600 | 800;
-    style: "normal";
-  }> = [];
-  if (mono) fonts.push({ name: "JetBrains Mono", data: mono, weight: 500, style: "normal" });
-  if (sans) fonts.push({ name: "Manrope", data: sans, weight: 600, style: "normal" });
-  if (display) fonts.push({ name: "Manrope", data: display, weight: 800, style: "normal" });
+  const fonts: Array<{ name: string; data: ArrayBuffer; weight: 500 | 600 | 800; style: "normal" }> = [];
+  if (mono500) fonts.push({ name: "JetBrains Mono", data: mono500, weight: 500, style: "normal" });
+  if (sans600) fonts.push({ name: "Manrope", data: sans600, weight: 600, style: "normal" });
+  if (sans800) fonts.push({ name: "Manrope", data: sans800, weight: 800, style: "normal" });
+
+  const bars = [94, 87, 82, 76];
 
   return new ImageResponse(
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        background: "#f6f3ec",
-        padding: "56px 72px 48px",
-        position: "relative",
-      }}
-    >
+    (
       <div
         style={{
+          width: "100%",
+          height: "100%",
           display: "flex",
-          alignItems: "center",
+          flexDirection: "column",
           justifyContent: "space-between",
-          fontFamily: "JetBrains Mono, monospace",
-          fontSize: 18,
-          letterSpacing: "0.2em",
-          color: "#4f5963",
-          borderBottom: "2px solid #171a1f",
-          paddingBottom: 20,
+          background: COLOR_BONE,
+          padding: "60px 64px 52px",
+          fontFamily: "Manrope",
+          position: "relative",
         }}
       >
-        <span>TEZHR · TASHKENT</span>
-        <span>HR / РЕКРУТИНГ / ИИ</span>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div style={{ display: "flex", alignItems: "baseline" }}>
+            <span style={{ fontSize: 30, fontWeight: 800, letterSpacing: "-0.03em", color: COLOR_INK }}>TezHR</span>
+            <span style={{ fontSize: 16, fontWeight: 600, color: COLOR_INK_4, letterSpacing: "0.1em", marginLeft: 4 }}>.uz</span>
+          </div>
+          <div
+            style={{
+              fontFamily: "JetBrains Mono",
+              fontSize: 16,
+              fontWeight: 500,
+              color: COLOR_LAPIS,
+              letterSpacing: "0.08em",
+              border: `1px solid ${COLOR_LAPIS_TINT}`,
+              background: COLOR_LAPIS_TINT,
+              borderRadius: 999,
+              padding: "7px 14px",
+            }}
+          >
+            {eyebrow}
+          </div>
+        </div>
+
+        {/* Headline + ranked motif */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 40 }}>
+          <div style={{ display: "flex", flexDirection: "column", maxWidth: 660 }}>
+            <div style={{ fontSize: 66, fontWeight: 800, lineHeight: 1.02, letterSpacing: "-0.035em", color: COLOR_INK, display: "flex", flexWrap: "wrap" }}>
+              {hl1} {hl2} {hlPrefix}
+              <span style={{ color: COLOR_LAPIS }}>{hlNum}</span>
+              {hlUnit}
+            </div>
+            <div style={{ marginTop: 22, fontSize: 24, fontWeight: 500, color: COLOR_INK_3, maxWidth: 600, lineHeight: 1.4 }}>
+              {tagline}
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 13,
+              padding: 24,
+              width: 320,
+              background: COLOR_SURFACE,
+              border: `1px solid ${COLOR_RULE}`,
+              borderRadius: 18,
+            }}
+          >
+            {bars.map((s, i) => (
+              <div key={s} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span style={{ fontFamily: "JetBrains Mono", fontSize: 14, fontWeight: 500, color: COLOR_INK_4, width: 14 }}>{i + 1}</span>
+                <div style={{ flex: 1, height: 10, borderRadius: 999, background: COLOR_STRONG, display: "flex" }}>
+                  <div style={{ width: `${s}%`, height: 10, borderRadius: 999, background: i === 0 ? COLOR_LAPIS : COLOR_LINE_STRONG }} />
+                </div>
+                <span style={{ fontFamily: "JetBrains Mono", fontSize: 14, fontWeight: 500, color: COLOR_INK, width: 26, textAlign: "right" }}>{s}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer */}
         <div
           style={{
-            fontFamily: "Manrope, sans-serif",
-            fontWeight: 800,
-            fontSize: 132,
-            lineHeight: 0.88,
-            letterSpacing: "-0.045em",
-            color: "#171a1f",
             display: "flex",
-            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderTop: `1px solid ${COLOR_RULE}`,
+            paddingTop: 22,
+            fontFamily: "JetBrains Mono",
+            fontSize: 16,
+            color: COLOR_INK_4,
+            letterSpacing: "0.1em",
           }}
         >
-          <span>{hl1}</span>
-          <span>{hl2}</span>
-          <span>
-            <span style={{ color: "#4f5963" }}>{hlPrefix}</span>
-            <em style={{ fontStyle: "normal", color: "#0b57a3" }}>{hlNum}</em>
-            <span style={{ color: "#4f5963" }}>{hlUnit}</span>
-          </span>
+          <span>tezhr.uz</span>
+          <span style={{ color: COLOR_LAPIS }}>RU · UZ · EN</span>
         </div>
-        <div
-          style={{
-            marginTop: 20,
-            fontFamily: "Manrope, sans-serif",
-            fontSize: 26,
-            color: "#4f5963",
-            maxWidth: 960,
-            lineHeight: 1.4,
-          }}
-        >
-          {tagline}
-        </div>
+
+        <div style={{ position: "absolute", left: 0, bottom: 0, width: 160, height: 6, background: COLOR_LAPIS }} />
       </div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          borderTop: "1.5px solid #171a1f",
-          paddingTop: 20,
-          fontFamily: "JetBrains Mono, monospace",
-          fontSize: 18,
-          color: "#4f5963",
-          letterSpacing: "0.12em",
-        }}
-      >
-        <span>tezhr.uz</span>
-        <span style={{ color: "#c1440e" }}>{cta} →</span>
-      </div>
-    </div>,
+    ),
     { ...size, fonts: fonts.length ? fonts : undefined },
   );
 }

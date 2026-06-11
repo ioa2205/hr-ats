@@ -1,22 +1,55 @@
+/* ============================================================================
+   TezHR public surface — Phase 10 product-led system.
+
+   The marketing site is built like the product: a warm canvas, white signal
+   panels, hairline grids, and a single Tez Lapis indicator that marks what
+   matters. Manrope only. Persimmon is a restrained priority pulse, never the
+   default action color. No grain, no rotating seals, no ticker, no editorial
+   serif composition, no offset hard shadows.
+
+   Compatibility aliases (ink/paper/persimmon/ikat) still map to the canonical
+   semantic roles so the public surface stays on one palette. They are removed
+   platform-wide in Phase 11.
+   ========================================================================= */
+
 .tezhr-landing {
-  /* Compatibility aliases until the public surface is migrated in Phase 10. */
-  --paper: var(--color-canvas);
-  --paper-2: var(--color-surface-strong);
-  --paper-3: var(--color-surface);
+  /* Surfaces */
+  --paper: var(--color-canvas); /* page background */
+  --paper-2: var(--color-surface-subtle); /* quiet alternate band */
+  --paper-3: var(--color-surface); /* white content panel */
+  --paper-strong: var(--color-surface-strong); /* chip / inset well */
+
+  /* Ink */
   --ink: var(--color-text);
-  --ink-2: var(--color-text);
+  --ink-2: var(--color-text); /* strong body */
   --ink-3: var(--color-text-muted);
   --ink-4: var(--color-text-subtle);
-  --rule: var(--color-line-strong);
+
+  /* Lines */
+  --rule: var(--color-line);
+  --rule-strong: var(--color-line-strong);
+
+  /* Accents — Tez Lapis is primary; persimmon is the restrained pulse */
+  --ikat: var(--color-primary);
+  --ikat-2: var(--color-primary-hover);
+  --ikat-tint: var(--color-primary-container);
+  --ikat-on-tint: var(--color-on-primary-container);
   --persimmon: var(--color-accent);
   --persimmon-2: var(--color-accent-strong);
-  --ikat: var(--color-primary);
-  --ikat-2: var(--color-on-primary-container);
+  --persimmon-tint: var(--color-accent-container);
+
+  /* Status */
   --saffron: var(--color-warning);
-  --grape: var(--color-info);
   --leaf: var(--color-success);
-  --night: var(--color-text);
-  --night-2: var(--color-text-muted);
+  --grape: var(--color-info);
+
+  /* One calm near-black statement surface */
+  --night: #14181b;
+  --night-2: #1d2226;
+  --on-night: #f4f1ea;
+  --on-night-muted: #b7bdc0;
+
+  /* Compatibility (legacy serif requests resolve to Manrope) */
   --font-instrument-serif: var(--font-manrope);
 
   background: var(--paper);
@@ -24,7 +57,10 @@
   font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
+  /* `clip` (not `hidden`) prevents horizontal overflow without turning the
+     root into a scroll container, so the sticky nav stays pinned to the
+     viewport. */
+  overflow-x: clip;
   width: 100%;
 }
 
@@ -41,10 +77,21 @@
   font-family: inherit;
 }
 
+.tezhr-landing ::selection {
+  background: var(--ikat-tint);
+  color: var(--ikat-on-tint);
+}
+
+/* ---- Typography roles ----------------------------------------------------- */
+
+/* `.serif` and `.mono` keep their class names for compatibility, but the
+   public surface no longer depends on editorial serif composition: display
+   type is strong Manrope. */
 .tezhr-landing .serif {
   font-family: var(--font-manrope), sans-serif;
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-style: normal;
 }
 
 .tezhr-landing .mono {
@@ -52,38 +99,96 @@
   font-variant-numeric: tabular-nums;
 }
 
-.tezhr-landing ::selection {
-  background: var(--color-primary-container);
-  color: var(--color-on-primary-container);
+/* Eyebrow / kicker — mono, uppercase, quiet */
+.tezhr-landing .lp-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
 }
 
-.tezhr-landing .paper-grain {
-  position: relative;
-}
-
-.tezhr-landing .paper-grain::before {
+.tezhr-landing .lp-eyebrow::before {
   content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.42;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08  0 0 0 0 0.07  0 0 0 0 0.06  0 0 0 0.35 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  background: var(--ikat);
 }
 
-.tezhr-landing .paper-grain > * {
-  position: relative;
-  z-index: 1;
+.tezhr-landing .lp-eyebrow.is-accent::before {
+  background: var(--persimmon);
 }
 
-.tezhr-landing .night-grain::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.5;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 0.95  0 0 0 0 0.85  0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+.tezhr-landing .lp-eyebrow.is-plain::before {
+  display: none;
+}
+
+/* Display + heading scale (fluid, capped at a calm maximum) */
+.tezhr-landing .lp-display {
+  font-family: var(--font-manrope), sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+  font-size: clamp(40px, 4.6vw + 12px, 72px);
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.tezhr-landing .lp-h2 {
+  font-family: var(--font-manrope), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.06;
+  font-size: clamp(30px, 2.8vw + 12px, 48px);
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.tezhr-landing .lp-h3 {
+  font-family: var(--font-manrope), sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  font-size: clamp(20px, 1vw + 14px, 24px);
+  color: var(--ink);
+}
+
+.tezhr-landing .lp-accent {
+  color: var(--ikat);
+}
+
+.tezhr-landing .lp-lede {
+  font-size: clamp(17px, 0.7vw + 13px, 20px);
+  line-height: 1.55;
+  color: var(--ink-3);
+  max-width: 60ch;
+}
+
+/* ---- Surfaces ------------------------------------------------------------- */
+
+.tezhr-landing .lp-panel {
+  background: var(--paper-3);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-level-1);
+}
+
+.tezhr-landing .lp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  background: var(--paper-3);
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
 }
 
 .tezhr-landing .rule {
@@ -91,85 +196,145 @@
   background: var(--rule);
 }
 
-.tezhr-landing .rule-thick {
-  height: 2px;
-  background: var(--ink);
+/* Signal bar — the lapis indicator that marks an active / important item */
+.tezhr-landing .lp-signal {
+  width: 28px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--ikat);
 }
 
-.tezhr-landing .sticker {
-  display: inline-block;
-  padding: 4px 10px;
-  background: var(--persimmon);
-  color: var(--paper-3);
-  font-family: var(--font-jetbrains-mono), monospace;
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  transform: rotate(-2deg);
-  font-weight: 500;
-}
+/* ---- Buttons -------------------------------------------------------------- */
 
-.tezhr-landing .margin-note {
-  font-family: var(--font-instrument-serif), serif;
-  font-style: italic;
-  font-size: 14px;
-  color: var(--ink-3);
-  line-height: 1.35;
-}
-
-@keyframes tezhr-ticker-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.tezhr-landing .ticker-band {
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.tezhr-landing .ticker-track {
+.tezhr-landing .btn-primary {
   display: inline-flex;
-  gap: 44px;
-  animation: tezhr-ticker-scroll 40s linear infinite;
-  padding-left: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 12px 20px;
+  background: var(--ikat);
+  color: var(--color-on-primary);
+  border: 1px solid var(--ikat);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  font-family: var(--font-manrope), sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  box-shadow: var(--shadow-level-1);
+  transition:
+    transform var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
 }
 
-.tezhr-landing .ikat-bg {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'><g fill='%230B6E6E' opacity='0.08'><path d='M30 0 L34 10 L44 10 L36 17 L40 27 L30 22 L20 27 L24 17 L16 10 L26 10 Z'/><circle cx='10' cy='50' r='3'/><circle cx='50' cy='50' r='3'/></g></svg>");
+.tezhr-landing .btn-primary:hover {
+  background: var(--ikat-2);
+  border-color: var(--ikat-2);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-level-2);
 }
 
-@keyframes tezhr-spin-slow {
-  to {
-    transform: rotate(360deg);
+.tezhr-landing .btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 12px 18px;
+  background: var(--paper-3);
+  color: var(--ink);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  font-family: var(--font-manrope), sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.005em;
+  text-decoration: none;
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard);
+}
+
+.tezhr-landing .btn-ghost:hover {
+  border-color: var(--ink);
+  background: var(--paper-2);
+}
+
+/* Inline lapis link with a moving arrow */
+.tezhr-landing .lp-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ikat);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.tezhr-landing .lp-link svg {
+  transition: transform var(--duration-standard) var(--ease-emphasized);
+}
+
+.tezhr-landing .lp-link:hover svg {
+  transform: translateX(3px);
+}
+
+/* ---- Scroll anchor + focus ------------------------------------------------ */
+
+.tezhr-landing :target {
+  scroll-margin-top: 88px;
+}
+
+.tezhr-landing :focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---- Measured motion ------------------------------------------------------ */
+
+/* Scroll-reveal: progressive enhancement only. Content is fully visible by
+   default; where the browser supports scroll-driven timelines and the user
+   has not requested reduced motion, sections ease in as they enter. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .tezhr-landing .lp-reveal {
+      animation: lp-reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 22%;
+    }
   }
 }
 
-.tezhr-landing .spin-seal {
-  animation: tezhr-spin-slow 18s linear infinite;
-  transform-origin: 50% 50%;
+@keyframes lp-reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@keyframes tezhr-pulse-soft {
+/* Live / processing pulse — used only where something is genuinely active */
+@keyframes lp-pulse {
   0%,
   100% {
     opacity: 1;
-    transform: scale(1);
   }
   50% {
-    opacity: 0.65;
-    transform: scale(0.88);
+    opacity: 0.45;
   }
 }
 
-.tezhr-landing .pulse-dot {
-  animation: tezhr-pulse-soft 1.6s ease-in-out infinite;
+.tezhr-landing .lp-live-dot {
+  animation: lp-pulse 1.8s ease-in-out infinite;
 }
 
-/* Reduced motion: disable every decorative animation on the landing surface. */
 @media (prefers-reduced-motion: reduce) {
   .tezhr-landing *,
   .tezhr-landing *::before,
@@ -179,136 +344,8 @@
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
-  .tezhr-landing .ticker-track {
-    animation: none !important;
+  .tezhr-landing .lp-reveal {
+    opacity: 1 !important;
     transform: none !important;
   }
-  .tezhr-landing .spin-seal {
-    animation: none !important;
-  }
-  .tezhr-landing .pulse-dot {
-    animation: none !important;
-  }
-}
-
-/* Ensure the landing scroll anchor offset doesn't hide behind sticky nav. */
-.tezhr-landing :target {
-  scroll-margin-top: 80px;
-}
-
-/* Tez Lapis is the single focus role across every surface. */
-.tezhr-landing :focus-visible {
-  outline: 3px solid var(--color-focus);
-  outline-offset: 3px;
-}
-
-.tezhr-landing .pen-circle {
-  position: relative;
-  display: inline-block;
-}
-
-.tezhr-landing .pen-circle::before {
-  content: "";
-  position: absolute;
-  inset: -10px -14px;
-  border: 2.5px solid var(--persimmon);
-  border-radius: 54% 46% 52% 48% / 48% 52% 48% 52%;
-  transform: rotate(-3deg);
-  pointer-events: none;
-}
-
-.tezhr-landing .wob {
-  background: linear-gradient(
-    180deg,
-    transparent 82%,
-    var(--saffron) 82%,
-    var(--saffron) 98%,
-    transparent 98%
-  );
-  padding: 0 2px;
-}
-
-.tezhr-landing .btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 13px 22px;
-  background: var(--ink);
-  color: var(--paper-3);
-  border: 0;
-  border-radius: 0;
-  cursor: pointer;
-  font-family: var(--font-manrope), sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  letter-spacing: -0.01em;
-  position: relative;
-  box-shadow: 4px 4px 0 var(--persimmon);
-  transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease;
-  text-decoration: none;
-}
-
-.tezhr-landing .btn-primary:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--persimmon);
-}
-
-.tezhr-landing .btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 18px;
-  background: transparent;
-  color: var(--ink);
-  border: 1.5px solid var(--ink);
-  border-radius: 0;
-  cursor: pointer;
-  font-family: var(--font-manrope), sans-serif;
-  font-weight: 500;
-  font-size: 14px;
-  text-decoration: none;
-}
-
-.tezhr-landing .stamp {
-  display: grid;
-  place-items: center;
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  border: 1.5px solid var(--persimmon-2);
-  color: var(--persimmon-2);
-  font-family: var(--font-jetbrains-mono), monospace;
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-align: center;
-  line-height: 1.1;
-  transform: rotate(-8deg);
-  opacity: 0.9;
-}
-
-.tezhr-landing .big-number {
-  font-family: var(--font-instrument-serif), serif;
-  font-weight: 400;
-  font-size: 180px;
-  line-height: 0.85;
-  letter-spacing: -0.04em;
-}
-
-.tezhr-landing .hand-arrow {
-  display: inline-block;
-  transform: translateY(2px);
-}
-
-.tezhr-landing .chip-ink {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border: 1px solid var(--ink);
-  background: var(--paper-3);
-  font-family: var(--font-jetbrains-mono), monospace;
-  font-size: 11px;
-  letter-spacing: 0.04em;
 }

@@ -7,42 +7,24 @@ export async function CandidatesRibbon() {
   return (
     <aside
       aria-label={t("landing.candidates.ribbon_aria")}
-      className="paper-grain"
-      style={{
-        background: "var(--paper-2)",
-        borderTop: "1.5px solid var(--ink)",
-        borderBottom: "1.5px solid var(--ink)",
-      }}
+      style={{ background: "var(--paper-2)", borderTop: "1px solid var(--rule)" }}
     >
       <div
-        className="mx-auto flex flex-col items-start gap-3 px-7 py-5 md:flex-row md:items-center md:gap-8 md:py-6"
-        style={{ maxWidth: 1360 }}
+        className="mx-auto flex flex-col items-start gap-4 px-6 py-7 md:flex-row md:items-center md:gap-8"
+        style={{ maxWidth: 1200 }}
       >
-        <span
-          className="mono text-[10px] tracking-[0.22em]"
-          style={{ color: "var(--persimmon-2)" }}
-        >
-          {t("landing.candidates.ribbon_kicker")}
-        </span>
-        <span
-          className="serif text-[clamp(20px,2vw+10px,28px)] italic leading-[1.25]"
-          style={{ color: "var(--ink)" }}
-        >
-          {t("landing.candidates.ribbon_title")}
-        </span>
-        <span
-          className="flex-1 text-[14px] leading-[1.5]"
-          style={{ color: "var(--ink-2)" }}
-        >
+        <div className="flex flex-col gap-1.5">
+          <span className="lp-eyebrow">{t("landing.candidates.ribbon_kicker")}</span>
+          <span style={{ fontSize: "clamp(19px,1.4vw+10px,24px)", fontWeight: 700, letterSpacing: "-0.02em", color: "var(--ink)" }}>
+            {t("landing.candidates.ribbon_title")}
+          </span>
+        </div>
+        <span className="flex-1 text-[14.5px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
           {t("landing.candidates.ribbon_body")}
         </span>
-        <Link
-          href="/for-candidates"
-          className="mono inline-flex items-center gap-2 border py-2 pl-3 pr-4 text-[12px] tracking-[0.08em]"
-          style={{ borderColor: "var(--ink)", color: "var(--ink)" }}
-        >
+        <Link href="/for-candidates" className="btn-ghost shrink-0" style={{ minHeight: 40 }}>
           {t("landing.candidates.ribbon_cta")}
-          <ArrowIcon size={12} color="var(--persimmon-2)" />
+          <ArrowIcon size={14} color="var(--ikat)" />
         </Link>
       </div>
     </aside>

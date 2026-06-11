@@ -1,4 +1,5 @@
 import { getT } from "@/lib/i18n/server";
+import { SectionHeader } from "../section";
 
 export async function PainSolution() {
   const { t } = await getT();
@@ -16,311 +17,84 @@ export async function PainSolution() {
   ];
 
   return (
-    <section
-      className="paper-grain"
-      style={{ position: "relative", padding: "120px 28px", background: "var(--paper-2)" }}
-    >
-      <div style={{ maxWidth: 1360, margin: "0 auto" }}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "flex-end",
-            gap: 28,
-            marginBottom: 20,
-            borderBottom: "1px solid var(--ink)",
-            paddingBottom: 14,
-          }}
-        >
-          <span
-            className="mono"
-            style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--persimmon-2)" }}
-          >
-            {t("landing.pain.section_tag")}
-          </span>
-          <span
-            className="serif"
-            style={{ fontSize: 20, fontStyle: "italic", color: "var(--ink-3)" }}
-          >
-            {t("landing.pain.section_title")}
-          </span>
-          <span
-            className="mono"
-            style={{
-              marginLeft: "auto",
-              fontSize: 11,
-              letterSpacing: "0.18em",
-              color: "var(--ink-3)",
-            }}
-          >
-            {t("landing.pain.section_meta")}
-          </span>
-        </div>
+    <section style={{ position: "relative", padding: "clamp(72px, 8vw, 104px) 24px", background: "var(--paper-2)" }}>
+      <div className="mx-auto lp-reveal" style={{ maxWidth: 1200 }}>
+        <SectionHeader eyebrow={t("landing.pain.section_tag")} meta={t("landing.pain.section_meta")} maxWidth={920}>
+          {t("landing.pain.heading_a")} {t("landing.pain.heading_b")}{" "}
+          <span className="lp-accent">{t("landing.pain.heading_c")}</span>
+        </SectionHeader>
 
-        <h2
-          className="serif"
-          style={{
-            margin: "0 0 56px",
-            fontSize: 82,
-            lineHeight: 0.94,
-            letterSpacing: "-0.035em",
-            maxWidth: 1000,
-          }}
-        >
-          {t("landing.pain.heading_a")}{" "}
-          <span style={{ position: "relative" }}>
-            {t("landing.pain.heading_b")}
-            <span
-              style={{
-                position: "absolute",
-                left: -4,
-                right: -4,
-                top: "55%",
-                height: 3,
-                background: "var(--persimmon-2)",
-                transform: "rotate(-4deg)",
-              }}
-            />
-          </span>{" "}
-          <em style={{ fontStyle: "italic", color: "var(--persimmon-2)" }}>
-            {t("landing.pain.heading_c")}
-          </em>
-        </h2>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr auto 1fr",
-            gap: 0,
-            alignItems: "stretch",
-          }}
-        >
-          <div
-            style={{
-              background: "var(--paper)",
-              border: "1.5px solid var(--ink)",
-              borderRight: "0",
-              padding: "40px 36px",
-              position: "relative",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: -14,
-                left: 28,
-                padding: "4px 12px",
-                background: "var(--paper-2)",
-                border: "1.5px solid var(--ink)",
-                fontFamily: "var(--font-jetbrains-mono),monospace",
-                fontSize: 10,
-                letterSpacing: "0.2em",
-              }}
-            >
-              {t("landing.pain.badge_without")}
-            </div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 28 }}>
-              <span className="serif" style={{ fontSize: 54, lineHeight: 1, color: "var(--ink)" }}>
+        <div className="relative grid items-stretch gap-5 md:grid-cols-2">
+          {/* Without */}
+          <div className="lp-panel flex flex-col" style={{ padding: "32px 30px", background: "var(--paper-3)" }}>
+            <span className="lp-chip self-start" style={{ color: "var(--ink-4)" }}>{t("landing.pain.badge_without")}</span>
+            <div className="mt-5 flex items-baseline gap-2.5">
+              <span style={{ fontSize: 44, fontWeight: 700, letterSpacing: "-0.03em", color: "var(--ink-3)" }}>
                 {t("landing.pain.time_before")}
               </span>
-              <span className="mono" style={{ fontSize: 12, color: "var(--ink-3)" }}>
-                {t("landing.pain.time_before_v")}
-              </span>
+              <span className="mono" style={{ fontSize: 12, color: "var(--ink-4)" }}>{t("landing.pain.time_before_v")}</span>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+            <div className="mt-5 flex flex-col">
               {pain.map((p) => (
-                <div
-                  key={p.t + p.v}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr auto",
-                    gap: 16,
-                    alignItems: "baseline",
-                    padding: "14px 0",
-                    borderTop: "1px dashed var(--ink-4)",
-                  }}
-                >
+                <div key={p.t + p.v} className="grid grid-cols-[1fr_auto] items-baseline gap-4 py-3.5" style={{ borderTop: "1px solid var(--rule)" }}>
                   <div>
-                    <div
-                      className="serif"
-                      style={{
-                        fontSize: 22,
-                        color: "var(--ink-3)",
-                        textDecoration: "line-through",
-                        textDecorationColor: "var(--ink-4)",
-                        textDecorationThickness: "1px",
-                        letterSpacing: "-0.01em",
-                      }}
-                    >
-                      {p.t}
-                    </div>
-                    <div
-                      className="mono"
-                      style={{
-                        fontSize: 11,
-                        color: "var(--ink-4)",
-                        marginTop: 2,
-                        letterSpacing: "0.08em",
-                      }}
-                    >
-                      {p.u}
-                    </div>
+                    <div style={{ fontSize: 16, fontWeight: 500, color: "var(--ink-2)", letterSpacing: "-0.01em" }}>{p.t}</div>
+                    <div className="mono" style={{ fontSize: 11, color: "var(--ink-4)", marginTop: 2, letterSpacing: "0.04em" }}>{p.u}</div>
                   </div>
-                  <div
-                    className="serif"
-                    style={{ fontSize: 28, color: "var(--ink-3)", letterSpacing: "-0.02em" }}
-                  >
-                    {p.v}
-                  </div>
+                  <div className="mono" style={{ fontSize: 22, color: "var(--ink-3)", letterSpacing: "-0.02em", fontWeight: 600 }}>{p.v}</div>
                 </div>
               ))}
             </div>
-            <div
-              style={{
-                marginTop: 28,
-                padding: "12px 16px",
-                background: "var(--paper-2)",
-                border: "1px dashed var(--ink-4)",
-              }}
-            >
-              <div
-                className="mono"
-                style={{
-                  fontSize: 10,
-                  letterSpacing: "0.14em",
-                  color: "var(--ink-3)",
-                  marginBottom: 4,
-                }}
-              >
+            <div className="mt-5 rounded-lg px-4 py-3" style={{ background: "var(--paper-2)", border: "1px solid var(--rule)" }}>
+              <div className="mono" style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-4)", marginBottom: 4 }}>
                 {t("landing.pain.summary_label")}
               </div>
-              <div className="serif" style={{ fontSize: 28, color: "var(--ink-3)" }}>
-                {t("landing.pain.summary_without")}
-              </div>
+              <div style={{ fontSize: 20, fontWeight: 600, color: "var(--ink-3)" }}>{t("landing.pain.summary_without")}</div>
             </div>
           </div>
 
-          <div
-            style={{
-              display: "grid",
-              placeItems: "center",
-              background: "var(--ink)",
-              color: "var(--paper-3)",
-              padding: "0 2px",
-            }}
-          >
-            <div
-              style={{
-                writingMode: "vertical-rl",
-                transform: "rotate(180deg)",
-                padding: "20px 10px",
-                fontFamily: "var(--font-instrument-serif),serif",
-                fontStyle: "italic",
-                fontSize: 28,
-                letterSpacing: "-0.01em",
-              }}
-            >
-              {t("landing.pain.vs")}
-            </div>
-          </div>
-
-          <div
-            style={{
-              background: "var(--ink)",
-              color: "var(--paper-3)",
-              padding: "40px 36px",
-              position: "relative",
-              border: "1.5px solid var(--ink)",
-              borderLeft: "0",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: -14,
-                right: 28,
-                padding: "4px 12px",
-                background: "var(--persimmon)",
-                color: "var(--paper-3)",
-                fontFamily: "var(--font-jetbrains-mono),monospace",
-                fontSize: 10,
-                letterSpacing: "0.2em",
-              }}
+          {/* With TezHR */}
+          <div className="lp-panel flex flex-col" style={{ padding: "32px 30px", borderColor: "var(--ikat)", boxShadow: "var(--shadow-level-2)" }}>
+            <span
+              className="lp-chip self-start"
+              style={{ background: "var(--ikat)", color: "var(--color-on-primary)", borderColor: "var(--ikat)" }}
             >
               {t("landing.pain.badge_with")}
-            </div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 28 }}>
-              <span className="serif" style={{ fontSize: 54, lineHeight: 1 }}>
+            </span>
+            <div className="mt-5 flex items-baseline gap-2.5">
+              <span style={{ fontSize: 44, fontWeight: 800, letterSpacing: "-0.03em", color: "var(--ikat)" }}>
                 {t("landing.pain.time_after")}
               </span>
-              <span className="mono" style={{ fontSize: 12, color: "#C8C0B0" }}>
-                {t("landing.pain.time_after_v")}
-              </span>
+              <span className="mono" style={{ fontSize: 12, color: "var(--ink-3)" }}>{t("landing.pain.time_after_v")}</span>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+            <div className="mt-5 flex flex-col">
               {gain.map((p) => (
-                <div
-                  key={p.t + p.v}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr auto",
-                    gap: 16,
-                    alignItems: "baseline",
-                    padding: "14px 0",
-                    borderTop: "1px dashed rgba(247,242,230,0.22)",
-                  }}
-                >
+                <div key={p.t + p.v} className="grid grid-cols-[1fr_auto] items-baseline gap-4 py-3.5" style={{ borderTop: "1px solid var(--rule)" }}>
                   <div>
-                    <div className="serif" style={{ fontSize: 22, letterSpacing: "-0.01em" }}>
-                      {p.t}
-                    </div>
-                    <div
-                      className="mono"
-                      style={{
-                        fontSize: 11,
-                        color: "#C8C0B0",
-                        marginTop: 2,
-                        letterSpacing: "0.08em",
-                      }}
-                    >
-                      {p.u}
-                    </div>
+                    <div style={{ fontSize: 16, fontWeight: 600, color: "var(--ink)", letterSpacing: "-0.01em" }}>{p.t}</div>
+                    <div className="mono" style={{ fontSize: 11, color: "var(--ink-4)", marginTop: 2, letterSpacing: "0.04em" }}>{p.u}</div>
                   </div>
-                  <div
-                    className="serif"
-                    style={{
-                      fontSize: 32,
-                      color: "var(--saffron)",
-                      letterSpacing: "-0.02em",
-                    }}
-                  >
-                    {p.v}
-                  </div>
+                  <div className="mono" style={{ fontSize: 24, color: "var(--ikat)", letterSpacing: "-0.02em", fontWeight: 700 }}>{p.v}</div>
                 </div>
               ))}
             </div>
-            <div
-              style={{
-                marginTop: 28,
-                padding: "12px 16px",
-                background: "var(--night-2)",
-                border: "1px dashed rgba(247,242,230,0.22)",
-              }}
-            >
-              <div
-                className="mono"
-                style={{
-                  fontSize: 10,
-                  letterSpacing: "0.14em",
-                  color: "var(--saffron)",
-                  marginBottom: 4,
-                }}
-              >
+            <div className="mt-5 rounded-lg px-4 py-3" style={{ background: "var(--ikat-tint)" }}>
+              <div className="mono" style={{ fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ikat-on-tint)", marginBottom: 4 }}>
                 {t("landing.pain.summary_label")}
               </div>
-              <div className="serif" style={{ fontSize: 28 }}>
-                {t("landing.pain.summary_with")}
-              </div>
+              <div style={{ fontSize: 20, fontWeight: 700, color: "var(--ikat-on-tint)" }}>{t("landing.pain.summary_with")}</div>
             </div>
+          </div>
+
+          {/* vs marker */}
+          <div
+            aria-hidden
+            className="absolute left-1/2 top-1/2 hidden h-11 w-11 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full md:grid"
+            style={{ background: "var(--paper-3)", border: "1px solid var(--rule-strong)", boxShadow: "var(--shadow-level-1)" }}
+          >
+            <span className="mono" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.04em", color: "var(--ink-3)" }}>
+              {t("landing.pain.vs")}
+            </span>
           </div>
         </div>
       </div>

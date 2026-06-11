@@ -8,6 +8,7 @@ import { CandidatesRibbon } from "./candidates/candidates-ribbon";
 import { PainSolution } from "./pain/pain";
 import { Pricing } from "./pricing/pricing";
 import { Proof } from "./proof/proof";
+import { LandingNav } from "./shell/nav";
 import { LandingFooter } from "./shell/footer";
 import { Showcase } from "./showcase/showcase";
 import { Sourcing } from "./sourcing/sourcing-section";
@@ -17,6 +18,7 @@ export async function TezhrLanding() {
   const { locale } = await getT();
   return (
     <div className="tezhr-landing">
+      <LandingNav />
       <Hero />
       <Why />
       <HowItWorks />

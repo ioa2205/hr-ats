@@ -28,77 +28,36 @@ export async function StubPage({
 }: StubPageProps) {
   const { t } = await getT();
   return (
-    <main
-      className="paper-grain relative"
-      style={{ background: "var(--paper)", padding: "64px 28px 120px" }}
-    >
-      <div className="mx-auto" style={{ maxWidth: 880 }}>
-        <Link
-          href="/"
-          className="mono mb-10 inline-flex items-center gap-2 text-[11px] tracking-[0.14em]"
-          style={{ color: "var(--ink-3)" }}
-        >
-          <span aria-hidden style={{ color: "var(--persimmon-2)" }}>
-            ←
-          </span>
+    <main className="relative" style={{ background: "var(--paper)", padding: "48px 24px clamp(80px, 9vw, 120px)" }}>
+      <div className="mx-auto" style={{ maxWidth: 760 }}>
+        <Link href="/" className="lp-link mb-10 inline-flex" style={{ color: "var(--ink-3)" }}>
+          <span aria-hidden style={{ color: "var(--ikat)" }}>←</span>
           {backLabel}
         </Link>
-        <div
-          className="mono mb-4 text-[11px] tracking-[0.22em]"
-          style={{ color: "var(--persimmon-2)" }}
-        >
-          {t(kickerKey)}
-        </div>
-        <h1
-          className="serif"
-          style={{
-            margin: "0 0 24px",
-            fontSize: "clamp(44px, 6vw + 16px, 92px)",
-            lineHeight: 0.96,
-            letterSpacing: "-0.035em",
-          }}
-        >
+        <div className="lp-eyebrow is-accent mb-5">{t(kickerKey)}</div>
+        <h1 className="lp-display" style={{ margin: "0 0 24px", fontSize: "clamp(40px, 5vw + 12px, 64px)" }}>
           {t(headlineKey)}
         </h1>
-        <p
-          className="serif max-w-[640px] text-[clamp(17px,1.2vw+10px,22px)] italic leading-[1.55]"
-          style={{ color: "var(--ink-3)", margin: "0 0 56px" }}
-        >
+        <p className="lp-lede" style={{ margin: "0 0 56px" }}>
           {t(ledeKey)}
         </p>
         <div className="flex flex-col gap-10">
           {sections.map((sec) => (
             <section key={sec.titleKey}>
-              <h2
-                className="serif m-0 text-[28px] leading-[1.15] tracking-[-0.02em]"
-              >
-                {t(sec.titleKey)}
-              </h2>
-              <p
-                className="mt-3 whitespace-pre-line text-[16px] leading-[1.65]"
-                style={{ color: "var(--ink-2)" }}
-              >
+              <h2 className="lp-h3 m-0">{t(sec.titleKey)}</h2>
+              <p className="mt-3 whitespace-pre-line text-[16px] leading-[1.65]" style={{ color: "var(--ink-2)" }}>
                 {t(sec.bodyKey)}
               </p>
             </section>
           ))}
         </div>
         {callToActionKey && (
-          <div
-            className="mt-14 flex items-center gap-4 border-t pt-8"
-            style={{ borderColor: "var(--ink)" }}
-          >
-            <Link
-              href={`${SIGNUP_HREF}?utm_source=landing&utm_section=sub_${kickerKey}`}
-              className="btn-primary"
-            >
+          <div className="mt-14 flex flex-wrap items-center gap-4 border-t pt-8" style={{ borderColor: "var(--rule)" }}>
+            <Link href={`${SIGNUP_HREF}?utm_source=landing&utm_section=sub_${kickerKey}`} className="btn-primary">
               {t(callToActionKey)}
-              <ArrowIcon size={14} color="var(--paper-3)" />
+              <ArrowIcon size={16} color="var(--color-on-primary)" />
             </Link>
-            <Link
-              href="/contact"
-              className="btn-ghost"
-            >
+            <Link href="/contact" className="btn-ghost">
               {t("landing.nav.contact")}
             </Link>
           </div>

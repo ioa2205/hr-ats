@@ -11,32 +11,20 @@ export async function HeroTrustStrip() {
   return (
     <aside
       aria-label={t("landing.hero.trust_title")}
-      className="border-y border-[var(--paper-3)]/20"
-      style={{ background: "var(--ink)", color: "var(--paper-3)" }}
+      style={{ borderTop: "1px solid var(--rule)", borderBottom: "1px solid var(--rule)", background: "var(--paper-2)" }}
     >
       <div
-        className="mx-auto flex flex-col items-stretch gap-0 px-7 md:flex-row md:items-center md:divide-x md:divide-[rgba(247,242,230,0.18)]"
-        style={{ maxWidth: 1360, padding: "20px 28px" }}
+        className="mx-auto grid grid-cols-2 gap-x-8 gap-y-5 md:grid-cols-4"
+        style={{ maxWidth: 1200, padding: "24px" }}
       >
-        <div
-          className="mono pb-3 text-[10px] tracking-[0.22em] md:pb-0 md:pr-6"
-          style={{ color: "var(--saffron)" }}
-        >
-          {t("landing.hero.trust_title")}
-        </div>
-        <div className="flex flex-1 flex-wrap items-center gap-x-10 gap-y-2 md:pl-6">
-          {rows.map((r) => (
-            <div key={r.label} className="flex items-baseline gap-2">
-              <span
-                className="mono text-[10px] tracking-[0.14em]"
-                style={{ color: "#C8C0B0" }}
-              >
-                {r.label}
-              </span>
-              <span className="serif text-[15px] italic tracking-[-0.005em]">{r.value}</span>
-            </div>
-          ))}
-        </div>
+        {rows.map((r) => (
+          <div key={r.label} className="flex flex-col gap-1">
+            <span className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-4)" }}>
+              {r.label}
+            </span>
+            <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: "-0.01em", color: "var(--ink)" }}>{r.value}</span>
+          </div>
+        ))}
       </div>
     </aside>
   );

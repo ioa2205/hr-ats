@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { CheckIcon } from "../icons";
 
 export interface PlanCardProps {
   tag: string;
@@ -28,109 +29,76 @@ export function PlanCard({
   variant,
   ctaSlot,
 }: PlanCardProps) {
-  const isPrimary = variant === "primary";
+  const highlight = variant === "primary";
   return (
     <div
-      className="relative"
+      className="lp-panel relative flex flex-col"
       style={{
-        padding: "36px 36px 32px",
-        background: isPrimary ? "var(--ink)" : "var(--paper-3)",
-        color: isPrimary ? "var(--paper-3)" : "var(--ink)",
-        border: "1.5px solid var(--ink)",
-        boxShadow: isPrimary ? "10px 10px 0 var(--persimmon)" : "10px 10px 0 var(--ink)",
+        padding: "32px 30px 30px",
+        borderColor: highlight ? "var(--ikat)" : "var(--rule)",
+        boxShadow: highlight ? "var(--shadow-level-2)" : "var(--shadow-level-1)",
       }}
     >
       <div className="mb-3 flex items-center gap-3">
         <span
-          className="mono text-[11px] tracking-[0.2em]"
-          style={{ color: isPrimary ? "var(--saffron)" : "var(--persimmon-2)" }}
+          className="mono"
+          style={{ fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: highlight ? "var(--ikat)" : "var(--ink-3)" }}
         >
           {tag}
         </span>
         {tagBadge && (
           <span
-            className="mono text-[9px] tracking-[0.18em]"
+            className="mono"
             style={{
-              padding: "2px 8px",
-              background: isPrimary ? "var(--saffron)" : "var(--ink)",
-              color: isPrimary ? "var(--ink)" : "var(--paper-3)",
+              fontSize: 9,
+              letterSpacing: "0.12em",
+              padding: "3px 8px",
+              borderRadius: 999,
+              background: highlight ? "var(--ikat-tint)" : "var(--paper-strong)",
+              color: highlight ? "var(--ikat-on-tint)" : "var(--ink-3)",
             }}
           >
             {tagBadge}
           </span>
         )}
       </div>
-      <div
-        className="serif leading-none tracking-[-0.03em]"
-        style={{ fontSize: "clamp(32px, 3vw + 12px, 44px)" }}
-      >
+
+      <div style={{ fontSize: "clamp(28px, 2.4vw + 12px, 36px)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.05 }}>
         {name}
       </div>
-      <div
-        className="serif mt-2 text-[16px] italic"
-        style={{ color: isPrimary ? "#C8C0B0" : "var(--ink-3)" }}
-      >
-        — {tagline}
+      <div className="mt-1.5 text-[15px]" style={{ color: "var(--ink-3)" }}>
+        {tagline}
       </div>
-      <div
-        className="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b pb-5"
-        style={{
-          borderColor: isPrimary ? "rgba(247,242,230,0.22)" : "var(--ink)",
-        }}
-      >
-        <span
-          className="serif leading-[0.9] tracking-[-0.05em]"
-          style={{
-            fontSize: "clamp(56px, 6vw + 16px, 92px)",
-            color: isPrimary ? "var(--paper-3)" : "var(--ink)",
-          }}
-        >
+
+      <div className="mt-6 flex flex-wrap items-baseline gap-x-2.5 gap-y-1 border-b pb-5" style={{ borderColor: "var(--rule)" }}>
+        <span className="mono" style={{ fontSize: "clamp(40px, 4vw + 12px, 56px)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 0.95, color: "var(--ink)" }}>
           {priceLine}
         </span>
-        <span
-          className="mono text-[11px] tracking-[0.16em]"
-          style={{
-            color: isPrimary ? "#C8C0B0" : "var(--ink-3)",
-            marginBottom: 8,
-          }}
-        >
+        <span className="mono" style={{ fontSize: 12, letterSpacing: "0.1em", color: "var(--ink-3)", marginBottom: 6 }}>
           {unit}
         </span>
         {priceSub && (
-          <span
-            className="mono w-full pt-1 text-[11px] tracking-[0.1em]"
-            style={{ color: isPrimary ? "#9A9485" : "var(--ink-4)" }}
-          >
+          <span className="mono w-full pt-1" style={{ fontSize: 11, letterSpacing: "0.04em", color: "var(--ink-4)" }}>
             {priceSub}
           </span>
         )}
       </div>
-      <ul
-        className="m-0 mt-5 flex list-none flex-col gap-2.5 p-0 text-[14px] leading-[1.5]"
-      >
-        {features.map((f, i) => (
-          <li key={f} className="flex gap-3">
-            <span
-              className="serif italic"
-              style={{
-                color: isPrimary ? "var(--saffron)" : "var(--persimmon-2)",
-                fontSize: 16,
-                width: 22,
-              }}
-            >
-              {String(i + 1).padStart(2, "0")}
+
+      <ul className="m-0 mt-5 flex list-none flex-col gap-3 p-0 text-[14.5px] leading-[1.5]">
+        {features.map((f) => (
+          <li key={f} className="flex gap-2.5">
+            <span className="mt-0.5 shrink-0">
+              <CheckIcon size={15} color={highlight ? "var(--ikat)" : "var(--leaf)"} />
             </span>
-            <span>{f}</span>
+            <span style={{ color: "var(--ink-2)" }}>{f}</span>
           </li>
         ))}
       </ul>
+
       <div className="mt-8">
         {ctaSlot}
         {note && (
-          <div
-            className="serif mt-3.5 text-center text-[12px] italic"
-            style={{ color: isPrimary ? "#C8C0B0" : "var(--ink-3)" }}
-          >
+          <div className="mt-3.5 text-center text-[12.5px]" style={{ color: "var(--ink-3)" }}>
             {note}
           </div>
         )}
@@ -139,30 +107,9 @@ export function PlanCard({
   );
 }
 
-export function PlanCtaLink({
-  href,
-  label,
-  isPrimary,
-}: {
-  href: string;
-  label: string;
-  isPrimary: boolean;
-}) {
+export function PlanCtaLink({ href, label, isPrimary }: { href: string; label: string; isPrimary: boolean }) {
   return (
-    <Link
-      href={href}
-      className="block w-full text-center"
-      style={{
-        padding: "14px 18px",
-        background: isPrimary ? "var(--persimmon)" : "var(--ink)",
-        color: "var(--paper-3)",
-        fontFamily: "var(--font-manrope),sans-serif",
-        fontWeight: 600,
-        fontSize: 14,
-        letterSpacing: "-0.005em",
-        textDecoration: "none",
-      }}
-    >
+    <Link href={href} className={isPrimary ? "btn-primary w-full" : "btn-ghost w-full"}>
       {label}
     </Link>
   );

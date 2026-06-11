@@ -11,13 +11,11 @@ export async function PlatformPulse() {
   return (
     <span className="inline-flex items-center gap-2">
       <span
-        className="pulse-dot inline-block"
+        className="lp-live-dot inline-block"
         style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--persimmon)" }}
+        aria-hidden
       />
-      <span
-        className="mono"
-        style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--ink-2)" }}
-      >
+      <span className="mono" style={{ fontSize: 11, letterSpacing: "0.08em", color: "var(--ink-3)" }}>
         {t("landing.hero.pulse_today", {
           count: formatInt(metrics.cvs_processed_today, locale),
         })}

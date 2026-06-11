@@ -9,61 +9,28 @@ const FINAL_HREF = `${SIGNUP_HREF}?utm_source=landing&utm_section=final`;
 export async function FinalCTA() {
   const { t } = await getT();
   return (
-    <section
-      className="night-grain relative overflow-hidden"
-      style={{ background: "var(--night)", color: "var(--paper-3)", padding: "128px 28px" }}
-    >
-      <div
-        aria-hidden
-        className="ikat-bg absolute inset-0"
-        style={{ opacity: 0.6 }}
-      />
-      <div className="relative mx-auto text-center" style={{ maxWidth: 1100 }}>
-        <div
-          className="mono mb-6 inline-flex items-center gap-4 text-[11px] tracking-[0.22em]"
-          style={{ color: "var(--saffron)" }}
-        >
-          <span>★</span>
-          <span>{t("landing.final.kicker_new")}</span>
-          <span>★</span>
+    <section style={{ background: "var(--night)", color: "var(--on-night)", padding: "clamp(88px, 10vw, 132px) 24px" }}>
+      <div className="relative mx-auto text-center lp-reveal" style={{ maxWidth: 880 }}>
+        <div className="mb-6 flex items-center justify-center gap-2">
+          <span className="lp-signal" aria-hidden />
+          <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8fc2f5" }}>
+            {t("landing.final.kicker_new")}
+          </span>
+          <span className="lp-signal" aria-hidden />
         </div>
         <h2
-          className="serif"
-          style={{
-            margin: 0,
-            fontSize: "clamp(56px, 8vw + 16px, 128px)",
-            lineHeight: 0.88,
-            letterSpacing: "-0.045em",
-            fontWeight: 400,
-          }}
+          className="lp-display"
+          style={{ margin: 0, color: "var(--on-night)", fontSize: "clamp(40px, 6vw + 12px, 76px)" }}
         >
-          {t("landing.final.heading_a_new")}
-          <br />
-          <em style={{ fontStyle: "italic", color: "var(--persimmon)" }}>
-            {t("landing.final.heading_b_new")}
-          </em>
-          .
+          {t("landing.final.heading_a_new")} <span style={{ color: "#8fc2f5" }}>{t("landing.final.heading_b_new")}</span>.
         </h2>
-        <p
-          className="serif mx-auto mt-8 max-w-[600px] text-[clamp(17px,1.5vw+10px,22px)] italic leading-[1.5]"
-          style={{ color: "#C8C0B0" }}
-        >
+        <p className="mx-auto mt-6 text-[clamp(16px,1vw+12px,20px)] leading-[1.55]" style={{ color: "var(--on-night-muted)", maxWidth: 560 }}>
           {t("landing.final.sub_new")}
         </p>
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <Link
-            href={FINAL_HREF}
-            className="btn-primary"
-            style={{
-              padding: "16px 28px",
-              fontSize: 15,
-              background: "var(--persimmon)",
-              color: "var(--paper-3)",
-              boxShadow: "6px 6px 0 var(--saffron)",
-            }}
-          >
+        <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link href={FINAL_HREF} className="btn-primary" style={{ minHeight: 48, padding: "14px 26px", fontSize: 15 }}>
             {t("landing.final.cta_primary_new")}
-            <ArrowIcon size={16} color="var(--paper-3)" />
+            <ArrowIcon size={16} color="var(--color-on-primary)" />
           </Link>
           <div className="w-full max-w-[260px] sm:w-auto">
             <ProContactDialog
@@ -94,11 +61,8 @@ export async function FinalCTA() {
           </div>
         </div>
         <div
-          className="mono mt-10 flex flex-wrap items-center justify-center gap-4 border-t pt-6 text-[11px] tracking-[0.14em]"
-          style={{
-            borderColor: "rgba(247,242,230,0.2)",
-            color: "#C8C0B0",
-          }}
+          className="mono mx-auto mt-10 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 border-t pt-6 text-[11px] tracking-[0.06em]"
+          style={{ borderColor: "rgba(244,241,234,0.14)", color: "var(--on-night-muted)" }}
         >
           <span>{t("landing.final.note_setup_new")}</span>
           <span aria-hidden>·</span>
