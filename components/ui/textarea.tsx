@@ -53,13 +53,11 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           }}
           id={textareaId}
           className={cn(
-            "w-full rounded-[var(--radius-md)] border bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)]",
+            "field-focus-ring w-full rounded-[var(--radius-md)] border bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text)]",
             "placeholder:text-[var(--color-text-subtle)] outline-none",
-            "transition-colors duration-150 ease-[var(--ease-standard)]",
+            "transition-[border-color,box-shadow] duration-150 ease-[var(--ease-standard)]",
             "disabled:cursor-not-allowed disabled:opacity-60",
-            hasError
-              ? "border-[var(--color-danger)]"
-              : "border-[var(--color-line-strong)] focus:border-[var(--color-focus)]",
+            hasError ? "border-[var(--color-danger)]" : "border-[var(--color-line-strong)]",
             autoGrow ? "resize-none overflow-hidden" : "min-h-[80px] resize-y",
             className,
           )}

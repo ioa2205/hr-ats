@@ -17,14 +17,11 @@ export const SelectTrigger = forwardRef<
     ref={ref}
     aria-invalid={invalid || undefined}
     className={cn(
-      "flex h-10 w-full items-center justify-between gap-2 rounded-[var(--radius-md)] border bg-[var(--color-surface)] px-3 text-sm text-[var(--color-text)]",
-      "transition-colors duration-150 ease-[var(--ease-standard)]",
+      "field-focus-ring flex h-10 w-full items-center justify-between gap-2 rounded-[var(--radius-md)] border bg-[var(--color-surface)] px-3 text-sm text-[var(--color-text)]",
+      "transition-[border-color,box-shadow] duration-150 ease-[var(--ease-standard)]",
       "data-[placeholder]:text-[var(--color-text-subtle)]",
-      "focus:border-[var(--color-focus)]",
       "disabled:cursor-not-allowed disabled:opacity-60",
-      invalid
-        ? "border-[var(--color-danger)]"
-        : "border-[var(--color-line-strong)]",
+      invalid ? "border-[var(--color-danger)]" : "border-[var(--color-line-strong)]",
       className,
     )}
     {...props}

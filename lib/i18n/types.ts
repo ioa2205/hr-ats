@@ -285,6 +285,8 @@ export type TranslationKey =
   | "hr.nav.settings"
   | "hr.nav.open_menu"
   | "hr.nav.close_menu"
+  | "hr.nav.collapse"
+  | "hr.nav.expand"
   // --- hr jobs list columns / details ---
   | "hr.jobs.column.title"
   | "hr.jobs.column.status"
@@ -931,6 +933,7 @@ export type TranslationKey =
   | "landing.nav.menu_open"
   | "landing.nav.menu_close"
   | "landing.nav.sections_heading"
+  | "landing.nav.theme_toggle"
   | "landing.meta.edition_prefix"
   | "landing.hero.hl_1"
   | "landing.hero.hl_2"

@@ -52,11 +52,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <div
           className={cn(
-            "flex items-center gap-2 rounded-[var(--radius-md)] border bg-[var(--color-surface)] px-3",
-            "transition-colors duration-150 ease-[var(--ease-standard)]",
-            hasError
-              ? "border-[var(--color-danger)]"
-              : "border-[var(--color-line-strong)] focus-within:border-[var(--color-focus)]",
+            "field-focus-ring flex items-center gap-2 rounded-[var(--radius-md)] border bg-[var(--color-surface)] px-3",
+            "transition-[border-color,box-shadow] duration-150 ease-[var(--ease-standard)]",
+            hasError ? "border-[var(--color-danger)]" : "border-[var(--color-line-strong)]",
             "has-[input:disabled]:opacity-60",
             className,
           )}

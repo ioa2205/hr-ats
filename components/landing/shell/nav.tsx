@@ -29,6 +29,7 @@ export async function LandingNav() {
         menuOpen: t("landing.nav.menu_open"),
         menuClose: t("landing.nav.menu_close"),
         sectionsHeading: t("landing.nav.sections_heading"),
+        themeToggle: t("landing.nav.theme_toggle"),
       }}
       signupHref={SIGNUP_HREF}
       loginHref={LOGIN_HREF}

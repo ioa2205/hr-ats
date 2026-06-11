@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { LocaleSwitcher } from "./locale-switcher";
+import { LandingThemeToggle } from "./landing-theme-toggle";
 
 interface Item {
   id: string;
@@ -23,6 +24,7 @@ interface Labels {
   menuOpen: string;
   menuClose: string;
   sectionsHeading: string;
+  themeToggle: string;
 }
 
 interface Props {
@@ -145,6 +147,7 @@ export function ScrollSpyNav({
 
           <div className="ml-auto flex items-center gap-2.5">
             <div className="hidden md:flex items-center gap-2.5">
+              <LandingThemeToggle label={labels.themeToggle} />
               <LocaleSwitcher />
               <Link
                 href={loginHref}
@@ -227,8 +230,9 @@ export function ScrollSpyNav({
                 {labels.cta}
               </Link>
             </div>
-            <div className="mt-7">
+            <div className="mt-7 flex items-center gap-2.5">
               <LocaleSwitcher />
+              <LandingThemeToggle label={labels.themeToggle} />
             </div>
           </div>
         </div>

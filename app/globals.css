@@ -152,12 +152,29 @@ body {
   color: var(--color-on-primary-container);
 }
 
-/* The signal focus halo — a solid Signal Blue ring with a soft glow. */
-:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
-  box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-focus) 16%, transparent);
+/* Focus — the signal halo. One tight indicator, never stacked.
+   Generic controls (buttons, links, checkboxes, bare inputs) get a solid
+   Signal Blue outline. Form-field shells get a blue border + soft ring on the
+   shell itself (see `.field-focus-ring`) so the inner control stays ring-free.
+   This lives in @layer base so utilities like `outline-none` and the shells'
+   focus rings win the cascade — that is what keeps inputs from showing the
+   old fat double-ring. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+}
+
+/* Form-field shell. A single clean focus treatment: the border turns Signal
+   Blue and a tight 3px ring hugs the shell's own radius — no detached outline,
+   no offset gap. `:focus-within` also matches the element itself, so the one
+   class covers both the Input wrapper and the Textarea / Select trigger. */
+.field-focus-ring:focus-within {
+  border-color: var(--color-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus) 18%, transparent);
+  outline: none;
 }
 
 .nums,
@@ -294,20 +311,10 @@ html[data-hr-theme="dark"] textarea::placeholder {
   color: var(--color-text-subtle);
 }
 
-.tezhr select:focus-visible,
-.tezhr input:focus-visible,
-.tezhr textarea:focus-visible,
-html[data-operator-theme="dark"] select:focus-visible,
-html[data-operator-theme="dark"] input:focus-visible,
-html[data-operator-theme="dark"] textarea:focus-visible,
-html[data-hr-theme="dark"] select:focus-visible,
-html[data-hr-theme="dark"] input:focus-visible,
-html[data-hr-theme="dark"] textarea:focus-visible {
-  outline: 2px solid var(--color-focus);
-  outline-offset: 1px;
-  border-color: var(--color-focus);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-focus) 22%, transparent);
-}
+/* Form fields show focus on their shell via `.field-focus-ring` (set on the
+   Input/Textarea/Select components), so the inner control keeps `outline-none`.
+   Bare inputs without a shell fall back to the generic `:focus-visible`
+   outline above — clean and accessible, never the old stacked ring. */
 
 html[data-operator-theme="dark"] body,
 html[data-hr-theme="dark"] body,
@@ -327,6 +334,35 @@ body:has([data-testid="impersonation-banner"]) .operator-shell-root,
 body:has([data-testid="impersonation-banner"]) .hr-shell-root {
   padding-top: 44px;
   --app-sticky-top: 44px;
+}
+
+/* Collapsible navigation rail (operator). The same <aside> is the mobile
+   drawer and the desktop rail, so the collapsed icon-only treatment applies
+   only from `md` up — the mobile drawer always shows full labels. */
+.nav-rail .nav-rail-mark {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .nav-rail[data-collapsed="true"] .nav-rail-label,
+  .nav-rail[data-collapsed="true"] .nav-rail-heading,
+  .nav-rail[data-collapsed="true"] .nav-rail-wordmark {
+    display: none;
+  }
+  .nav-rail[data-collapsed="true"] .nav-rail-mark {
+    display: inline-flex;
+  }
+  .nav-rail[data-collapsed="true"] .nav-rail-header {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .nav-rail[data-collapsed="true"] .nav-rail-link {
+    justify-content: center;
+    gap: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -63,6 +63,17 @@
   width: 100%;
 }
 
+/* Dark mode. The public surface re-themes by mapping its local tokens onto the
+   canonical dark roles — `.theme-dark` (from globals.css) flips every
+   `--color-*`, and the locals above follow. Only the always-dark "statement"
+   bands need a nudge so they read as a distinct, slightly-raised surface
+   against the true-black canvas instead of blending into it. */
+.tezhr-landing.theme-dark {
+  color-scheme: dark;
+  --night: #1c1f23;
+  --night-2: #24282e;
+}
+
 .tezhr-landing * {
   box-sizing: border-box;
 }

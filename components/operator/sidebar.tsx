@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -13,6 +13,8 @@ import {
   Inbox,
   LayoutDashboard,
   Menu,
+  PanelLeftClose,
+  PanelLeftOpen,
   Radar,
   Settings,
   Users,
@@ -21,7 +23,13 @@ import {
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/i18n/provider";
 import type { TranslationKey } from "@/lib/i18n/types";
-import { TezSignalWordmark } from "@/components/brand/tez-signal";
+import { TezSignalMark, TezSignalWordmark } from "@/components/brand/tez-signal";
+import {
+  getSidebarServerSnapshot,
+  getSidebarSnapshot,
+  subscribeSidebar,
+  writeSidebarCollapsed,
+} from "@/lib/ui/sidebar-store";
 
 interface NavItem {
   labelKey: TranslationKey;
@@ -116,6 +124,11 @@ export function OperatorSidebar() {
   const pathname = usePathname();
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const collapsed = useSyncExternalStore(
+    subscribeSidebar,
+    getSidebarSnapshot,
+    getSidebarServerSnapshot,
+  );
 
   return (
     <>
@@ -139,15 +152,20 @@ export function OperatorSidebar() {
       )}
 
       <aside
+        data-collapsed={collapsed ? "true" : "false"}
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-[224px] flex-col border-r border-[var(--color-line)] bg-[var(--color-surface-subtle)]",
-          "transition-transform duration-300 ease-[var(--ease-emphasized)]",
+          "nav-rail fixed inset-y-0 left-0 z-50 flex w-[224px] flex-col border-r border-[var(--color-line)] bg-[var(--color-surface-subtle)]",
+          "transition-transform duration-300 ease-[var(--ease-emphasized)] md:transition-[width] md:duration-200",
           "md:sticky md:top-[var(--app-sticky-top)] md:h-[calc(100vh-var(--app-sticky-top))] md:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
+          collapsed ? "md:w-[68px]" : "md:w-[224px]",
         )}
       >
-        <div className="flex h-12 items-center justify-between px-4">
-          <TezSignalWordmark size={14} suffix="Operator" />
+        <div className="nav-rail-header flex h-12 items-center justify-between px-4">
+          <span className="nav-rail-wordmark">
+            <TezSignalWordmark size={14} suffix="Operator" />
+          </span>
+          <TezSignalMark size={20} className="nav-rail-mark text-[var(--color-primary)]" />
           <button
             onClick={() => setMobileOpen(false)}
             className="grid h-9 w-9 place-items-center rounded-[var(--radius-md)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-strong)] md:hidden"
@@ -157,10 +175,10 @@ export function OperatorSidebar() {
           </button>
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-2 py-2">
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 py-2">
           {SECTIONS.map((section) => (
             <section key={section.labelKey} className="mb-2.5">
-              <h2 className="px-2 py-1 text-[10px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
+              <h2 className="nav-rail-heading px-2 py-1 text-[10px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
                 {t(section.labelKey)}
               </h2>
               <ul className="flex flex-col gap-px">
@@ -171,8 +189,9 @@ export function OperatorSidebar() {
                       <Link
                         href={item.href}
                         onClick={() => setMobileOpen(false)}
+                        title={t(item.labelKey)}
                         className={cn(
-                          "flex h-8 items-center gap-2.5 rounded-[var(--radius-sm)] px-2 text-[13px] transition-colors",
+                          "nav-rail-link flex h-8 items-center gap-2.5 rounded-[var(--radius-sm)] px-2 text-[13px] transition-colors",
                           active
                             ? "bg-[var(--color-primary-container)] font-semibold text-[var(--color-on-primary-container)]"
                             : "font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-text)]",
@@ -189,7 +208,7 @@ export function OperatorSidebar() {
                         >
                           {item.icon}
                         </span>
-                        <span className="truncate">{t(item.labelKey)}</span>
+                        <span className="nav-rail-label truncate">{t(item.labelKey)}</span>
                       </Link>
                     </li>
                   );
@@ -198,6 +217,30 @@ export function OperatorSidebar() {
             </section>
           ))}
         </nav>
+
+        {/* Desktop collapse toggle */}
+        <div className="mt-auto hidden border-t border-[var(--color-line)] p-2 md:block">
+          <button
+            type="button"
+            onClick={() => writeSidebarCollapsed(!collapsed)}
+            aria-label={collapsed ? t("hr.nav.expand") : t("hr.nav.collapse")}
+            aria-expanded={!collapsed}
+            title={collapsed ? t("hr.nav.expand") : t("hr.nav.collapse")}
+            className={cn(
+              "flex h-9 w-full items-center rounded-[var(--radius-md)] text-[12.5px] font-medium text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-text)]",
+              collapsed ? "justify-center" : "gap-2.5 px-2",
+            )}
+          >
+            {collapsed ? (
+              <PanelLeftOpen className="h-4 w-4 shrink-0" />
+            ) : (
+              <>
+                <PanelLeftClose className="h-4 w-4 shrink-0" />
+                <span className="flex-1 truncate text-left">{t("hr.nav.collapse")}</span>
+              </>
+            )}
+          </button>
+        </div>
       </aside>
     </>
   );
