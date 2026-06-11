@@ -50,7 +50,7 @@ function CopyButton({ text, label }: { text: string; label: string }) {
         setCopied(true);
         setTimeout(() => setCopied(false), 1500);
       }}
-      className="text-on-surface-variant hover:text-primary text-xs font-medium underline-offset-2 hover:underline"
+      className="text-[var(--color-text-muted)] hover:text-primary text-xs font-medium underline-offset-2 hover:underline"
     >
       {copied ? t("common.copied") : label}
     </button>
@@ -75,20 +75,20 @@ function MessageCard({ msg }: { msg: ContactMessage }) {
   return (
     <article
       className={
-        "border-outline-variant bg-surface rounded-[var(--radius-md)] border p-4 sm:p-5 " +
+        "border-[var(--color-line)] bg-surface rounded-[var(--radius-md)] border p-4 sm:p-5 " +
         (unread ? "ring-danger/30 ring-2 ring-offset-0" : "")
       }
     >
       <header className="mb-3 flex flex-wrap items-start justify-between gap-3">
         <div className="flex items-center gap-2">
-          <h3 className="text-on-surface text-base font-semibold">{msg.name}</h3>
+          <h3 className="text-[var(--color-text)] text-base font-semibold">{msg.name}</h3>
           {unread && (
             <Badge tone="danger" size="sm">
               {t("inbox.badge_new")}
             </Badge>
           )}
         </div>
-        <div className="text-on-surface-variant flex items-center gap-1.5 text-xs">
+        <div className="text-[var(--color-text-muted)] flex items-center gap-1.5 text-xs">
           <Clock className="h-3.5 w-3.5" />
           <span title={new Date(msg.created_at).toISOString()}>
             {formatWhen(msg.created_at, t)}
@@ -98,7 +98,7 @@ function MessageCard({ msg }: { msg: ContactMessage }) {
 
       <div className="mb-4 flex flex-wrap gap-x-5 gap-y-1.5 text-sm">
         <div className="flex items-center gap-1.5">
-          <Mail className="text-on-surface-variant h-3.5 w-3.5" />
+          <Mail className="text-[var(--color-text-muted)] h-3.5 w-3.5" />
           <a href={`mailto:${msg.email}`} className="text-primary hover:underline">
             {msg.email}
           </a>
@@ -106,19 +106,19 @@ function MessageCard({ msg }: { msg: ContactMessage }) {
         </div>
         {msg.company && (
           <div className="flex items-center gap-1.5">
-            <Building2 className="text-on-surface-variant h-3.5 w-3.5" />
-            <span className="text-on-surface">{msg.company}</span>
+            <Building2 className="text-[var(--color-text-muted)] h-3.5 w-3.5" />
+            <span className="text-[var(--color-text)]">{msg.company}</span>
           </div>
         )}
         {msg.locale && (
           <div className="flex items-center gap-1.5">
-            <Globe className="text-on-surface-variant h-3.5 w-3.5" />
-            <span className="text-on-surface-variant text-xs uppercase">{msg.locale}</span>
+            <Globe className="text-[var(--color-text-muted)] h-3.5 w-3.5" />
+            <span className="text-[var(--color-text-muted)] text-xs uppercase">{msg.locale}</span>
           </div>
         )}
       </div>
 
-      <p className="text-on-surface mb-4 text-[15px] leading-relaxed whitespace-pre-wrap">
+      <p className="text-[var(--color-text)] mb-4 text-[15px] leading-relaxed whitespace-pre-wrap">
         {msg.message}
       </p>
 
@@ -145,7 +145,7 @@ function MessageCard({ msg }: { msg: ContactMessage }) {
           href={`mailto:${msg.email}?subject=${encodeURIComponent(
             t("operator.inbox.reply_subject", { name: msg.name }),
           )}`}
-          className="text-primary hover:bg-surface-container inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] px-3 py-1.5 text-sm font-medium"
+          className="text-primary hover:bg-[var(--color-surface-strong)] inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] px-3 py-1.5 text-sm font-medium"
         >
           <Mail className="h-4 w-4" />
           {t("inbox.reply_email")}
@@ -189,8 +189,8 @@ export function InboxView({
     <div className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-on-surface text-2xl font-semibold">{t("inbox.title")}</h1>
-          <p className="text-on-surface-variant mt-1 text-sm">{t("inbox.subtitle")}</p>
+          <h1 className="text-[var(--color-text)] text-2xl font-semibold">{t("inbox.title")}</h1>
+          <p className="text-[var(--color-text-muted)] mt-1 text-sm">{t("inbox.subtitle")}</p>
         </div>
         {unreadCount > 0 && (
           <Button
@@ -205,14 +205,14 @@ export function InboxView({
         )}
       </header>
 
-      <div className="border-outline-variant flex gap-1 border-b">
+      <div className="border-[var(--color-line)] flex gap-1 border-b">
         <Link
           href="/operator/inbox"
           className={
             "relative inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium " +
             (filter === "unread"
               ? "text-primary border-primary -mb-px border-b-2"
-              : "text-on-surface-variant hover:text-on-surface")
+              : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]")
           }
         >
           {t("inbox.tab_unread")}
@@ -228,7 +228,7 @@ export function InboxView({
             "relative inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium " +
             (filter === "all"
               ? "text-primary border-primary -mb-px border-b-2"
-              : "text-on-surface-variant hover:text-on-surface")
+              : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]")
           }
         >
           {t("inbox.tab_all")}
@@ -255,7 +255,7 @@ export function InboxView({
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-1">
-          <span className="text-on-surface-variant text-sm">
+          <span className="text-[var(--color-text-muted)] text-sm">
             {t("common.page_of", { page: String(page), total: String(totalPages) })}
           </span>
           <div className="flex items-center gap-2">

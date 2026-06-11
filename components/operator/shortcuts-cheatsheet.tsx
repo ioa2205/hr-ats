@@ -46,17 +46,17 @@ export function ShortcutsCheatsheet({ open, onOpenChange }: Props) {
         <div className="flex flex-col gap-5 p-6 pt-2">
           {groups.map(([groupKey, items]) => (
             <section key={groupKey} className="flex flex-col gap-2">
-              <h3 className="text-[11px] font-semibold tracking-[0.08em] text-[var(--color-ink-4)] uppercase">
+              <h3 className="text-[11px] font-semibold tracking-[0.08em] text-[var(--color-text-muted)] uppercase">
                 {t(groupKey)}
               </h3>
               <ul className="flex flex-col gap-1.5">
                 {(items as unknown as typeof SHORTCUTS[number][]).map((s) => (
                   <li
                     key={s.id}
-                    className="flex items-center justify-between rounded-[var(--radius-sm)] px-2 py-1.5 text-[13px] text-[var(--color-ink)] hover:bg-[var(--color-bone-2)]"
+                    className="flex items-center justify-between rounded-[var(--radius-sm)] px-2 py-1.5 text-[13px] text-[var(--color-text)] hover:bg-[var(--color-surface-subtle)]"
                   >
                     <span>{t(s.labelKey)}</span>
-                    <kbd className="font-[var(--font-tez-mono)] rounded-[var(--radius-sm)] border border-[var(--color-rule-2)] bg-[var(--color-bone)] px-2 py-0.5 text-xs tracking-tight text-[var(--color-ink-3)]">
+                    <kbd className="font-[var(--font-mono)] rounded-[var(--radius-sm)] border border-[var(--color-line-strong)] bg-[var(--color-canvas)] px-2 py-0.5 text-xs tracking-tight text-[var(--color-text-muted)]">
                       {mac ? s.display.mac : s.display.other}
                     </kbd>
                   </li>

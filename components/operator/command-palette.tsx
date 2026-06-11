@@ -239,21 +239,21 @@ function PaletteContent({ onOpenChange }: { onOpenChange: (open: boolean) => voi
         <DialogTitle>{t("operator.palette.title")}</DialogTitle>
         <DialogDescription>{t("operator.palette.subtitle")}</DialogDescription>
       </DialogHeader>
-      <div className="flex items-center gap-2 border-b border-[var(--color-rule-2)] px-4">
-        <Search className="h-4 w-4 shrink-0 text-[var(--color-ink-4)]" aria-hidden="true" />
+      <div className="flex items-center gap-2 border-b border-[var(--color-line-strong)] px-4">
+        <Search className="h-4 w-4 shrink-0 text-[var(--color-text-muted)]" aria-hidden="true" />
         <input
           ref={inputRef}
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={onKeyDown}
           placeholder={t("operator.palette.placeholder")}
-          className="h-12 flex-1 bg-transparent text-sm text-[var(--color-ink)] placeholder:text-[var(--color-ink-5)] outline-none"
+          className="h-12 flex-1 bg-transparent text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-subtle)] outline-none"
           aria-label={t("operator.palette.title")}
           aria-autocomplete="list"
           aria-activedescendant={activeItem ? itemDomId(activeItem) : undefined}
         />
         {loading && (
-          <span className="text-[11px] text-[var(--color-ink-4)]">
+          <span className="text-[11px] text-[var(--color-text-muted)]">
             {t("operator.palette.loading")}
           </span>
         )}
@@ -262,10 +262,10 @@ function PaletteContent({ onOpenChange }: { onOpenChange: (open: boolean) => voi
       <div
         ref={listRef}
         role="listbox"
-        className="max-h-[380px] overflow-y-auto p-2 font-[var(--font-tez-sans)]"
+        className="max-h-[380px] overflow-y-auto p-2 font-[var(--font-sans)]"
       >
         {items.length === 0 && (
-          <p className="p-6 text-center text-sm text-[var(--color-ink-4)]">
+          <p className="p-6 text-center text-sm text-[var(--color-text-muted)]">
             {debouncedQ
               ? t("operator.palette.empty_results")
               : t("operator.palette.empty_hint")}
@@ -319,7 +319,7 @@ function PaletteContent({ onOpenChange }: { onOpenChange: (open: boolean) => voi
         </Group>
       </div>
 
-      <footer className="flex items-center justify-between border-t border-[var(--color-rule-2)] px-4 py-2 text-[11px] text-[var(--color-ink-4)]">
+      <footer className="flex items-center justify-between border-t border-[var(--color-line-strong)] px-4 py-2 text-[11px] text-[var(--color-text-muted)]">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1">
             <Kbd>↑</Kbd>
@@ -358,7 +358,7 @@ function Group({
   if (!show) return null;
   return (
     <section className="mb-2">
-      <h3 className="px-2 py-1 text-[10px] font-semibold tracking-[0.08em] text-[var(--color-ink-5)] uppercase">
+      <h3 className="px-2 py-1 text-[10px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
         {label}
       </h3>
       <div role="group">{children}</div>
@@ -385,8 +385,8 @@ function Row({
       data-active={active ? "true" : "false"}
       aria-selected={active}
       onClick={(e) => onClick(e.metaKey || e.ctrlKey)}
-      className={`flex w-full items-center gap-3 rounded-[var(--radius-sm)] px-2 py-2 text-left text-[13px] text-[var(--color-ink)] ${
-        active ? "bg-[var(--color-bone-2)]" : "hover:bg-[var(--color-bone-2)]"
+      className={`flex w-full items-center gap-3 rounded-[var(--radius-sm)] px-2 py-2 text-left text-[13px] text-[var(--color-text)] ${
+        active ? "bg-[var(--color-surface-subtle)]" : "hover:bg-[var(--color-surface-subtle)]"
       }`}
     >
       {children}
@@ -411,7 +411,7 @@ function ActionRow({
       id={itemDomId(item)}
       onClick={(meta) => onActivate(item, meta)}
     >
-      <span className="text-[var(--color-ink-4)]">{item.icon}</span>
+      <span className="text-[var(--color-text-muted)]">{item.icon}</span>
       <span className="flex-1">{label}</span>
     </Row>
   );
@@ -430,9 +430,9 @@ function CompanyRow({
   const statusLabel = t(companyStatusKey(item.status));
   return (
     <Row active={active} id={itemDomId(item)} onClick={(meta) => onActivate(item, meta)}>
-      <Building2 className="h-4 w-4 text-[var(--color-ink-4)]" />
+      <Building2 className="h-4 w-4 text-[var(--color-text-muted)]" />
       <span className="flex-1 truncate">{item.name}</span>
-      <span className="font-[var(--font-tez-mono)] text-[11px] text-[var(--color-ink-5)]">
+      <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-subtle)]">
         {item.slug}
       </span>
       <StatusDot status={item.status} label={statusLabel} />
@@ -453,15 +453,15 @@ function UserRow({
 }) {
   return (
     <Row active={active} id={itemDomId(item)} onClick={(meta) => onActivate(item, meta)}>
-      <User className="h-4 w-4 text-[var(--color-ink-4)]" />
+      <User className="h-4 w-4 text-[var(--color-text-muted)]" />
       <span className="flex flex-1 flex-col truncate">
         <span className="truncate">{item.fullName ?? item.email}</span>
         {item.fullName && (
-          <span className="truncate text-[11px] text-[var(--color-ink-4)]">{item.email}</span>
+          <span className="truncate text-[11px] text-[var(--color-text-muted)]">{item.email}</span>
         )}
       </span>
       {item.isOperator && (
-        <span className="rounded-[var(--radius-sm)] bg-[var(--color-persimmon-tint)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-persimmon-2)]">
+        <span className="rounded-[var(--radius-sm)] bg-[var(--color-accent-container)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--color-accent-strong)]">
           {opLabel}
         </span>
       )}
@@ -480,10 +480,10 @@ function AuditRow({
 }) {
   return (
     <Row active={active} id={itemDomId(item)} onClick={(meta) => onActivate(item, meta)}>
-      <ClipboardList className="h-4 w-4 text-[var(--color-ink-4)]" />
+      <ClipboardList className="h-4 w-4 text-[var(--color-text-muted)]" />
       <span className="flex flex-1 flex-col truncate">
-        <span className="font-[var(--font-tez-mono)] text-[12px] truncate">{item.action}</span>
-        <span className="text-[11px] text-[var(--color-ink-4)]">
+        <span className="font-[var(--font-mono)] text-[12px] truncate">{item.action}</span>
+        <span className="text-[11px] text-[var(--color-text-muted)]">
           {item.actor ?? "system"} · {new Date(item.createdAt).toLocaleString()}
         </span>
       </span>
@@ -494,10 +494,10 @@ function AuditRow({
 function StatusDot({ status, label }: { status: string; label: string }) {
   const cls =
     status === "active"
-      ? "bg-[var(--color-tez-green)]"
+      ? "bg-[var(--color-success)]"
       : status === "suspended"
-        ? "bg-[var(--color-tez-red)]"
-        : "bg-[var(--color-ink-5)]";
+        ? "bg-[var(--color-danger)]"
+        : "bg-[var(--color-text-subtle)]";
   return (
     <span
       className={`h-1.5 w-1.5 rounded-full ${cls}`}
@@ -509,7 +509,7 @@ function StatusDot({ status, label }: { status: string; label: string }) {
 
 function Kbd({ children }: { children: React.ReactNode }) {
   return (
-    <kbd className="font-[var(--font-tez-mono)] rounded-[var(--radius-sm)] border border-[var(--color-rule-2)] bg-[var(--color-bone)] px-1.5 py-0.5 text-[10px] leading-none text-[var(--color-ink-3)]">
+    <kbd className="font-[var(--font-mono)] rounded-[var(--radius-sm)] border border-[var(--color-line-strong)] bg-[var(--color-canvas)] px-1.5 py-0.5 text-[10px] leading-none text-[var(--color-text-muted)]">
       {children}
     </kbd>
   );

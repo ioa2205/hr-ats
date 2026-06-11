@@ -38,19 +38,19 @@ export function DangerZone({
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   return (
-    <section className="rounded-[var(--radius-md)] border border-[var(--color-tez-red)]/40 bg-[var(--color-paper)]">
-      <header className="flex items-center gap-2 border-b border-[var(--color-tez-red)]/30 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-tez-red)]">
+    <section className="rounded-[var(--radius-md)] border border-[var(--color-danger)]/40 bg-[var(--color-surface)]">
+      <header className="flex items-center gap-2 border-b border-[var(--color-danger)]/30 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-danger)]">
         <AlertTriangle className="h-3.5 w-3.5" />
         {t("operator.danger.title")}
       </header>
       <div className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <Gauge className="h-4 w-4 text-[var(--color-ink-4)]" />
+          <Gauge className="h-4 w-4 text-[var(--color-text-muted)]" />
           <div className="flex flex-col text-[12px]">
-            <span className="font-medium text-[var(--color-ink)]">
+            <span className="font-medium text-[var(--color-text)]">
               {t("operator.danger.quota_override")}
             </span>
-            <span className="text-[var(--color-ink-4)]">
+            <span className="text-[var(--color-text-muted)]">
               {t("operator.danger.quota_current", {
                 cv: cvQuotaLimit !== null ? String(cvQuotaLimit) : "—",
                 job: jobQuotaLimit !== null ? String(jobQuotaLimit) : "—",
@@ -63,14 +63,14 @@ export function DangerZone({
           {t("operator.danger.quota_button")}
         </Button>
       </div>
-      <div className="flex flex-col gap-2 border-t border-[var(--color-rule)] p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-2 border-t border-[var(--color-line)] p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <Trash2 className="h-4 w-4 text-[var(--color-tez-red)]" />
+          <Trash2 className="h-4 w-4 text-[var(--color-danger)]" />
           <div className="flex flex-col text-[12px]">
-            <span className="font-medium text-[var(--color-ink)]">
+            <span className="font-medium text-[var(--color-text)]">
               {t("operator.danger.delete_title")}
             </span>
-            <span className="text-[var(--color-ink-4)]">{t("operator.danger.delete_help")}</span>
+            <span className="text-[var(--color-text-muted)]">{t("operator.danger.delete_help")}</span>
           </div>
         </div>
         <Button size="sm" variant="danger" onClick={() => setDeleteOpen(true)}>
@@ -206,7 +206,7 @@ function OverrideDialog({
             {t("operator.danger.apply_override")}
           </Button>
         </DialogFooter>
-        <p className="px-6 pb-4 text-[10px] text-[var(--color-ink-5)]">
+        <p className="px-6 pb-4 text-[10px] text-[var(--color-text-subtle)]">
           {t("operator.danger.reversible")}
         </p>
       </DialogContent>
@@ -291,7 +291,7 @@ function DeleteDialog({
             {t("operator.danger.schedule_delete")}
           </Button>
         </DialogFooter>
-        <p className="px-6 pb-4 text-[10px] text-[var(--color-tez-red)]">
+        <p className="px-6 pb-4 text-[10px] text-[var(--color-danger)]">
           {t("operator.danger.irreversible")}
         </p>
       </DialogContent>

@@ -107,7 +107,7 @@ export default function OperatorUsersPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-on-surface text-2xl font-semibold">{t("admin.users.title")}</h1>
+        <h1 className="text-[var(--color-text)] text-2xl font-semibold">{t("admin.users.title")}</h1>
         <Button variant="secondary" size="sm" onClick={fetchUsers} aria-label={t("admin.refresh")}>
           <RefreshCw className="h-4 w-4" />
           {t("admin.refresh")}
@@ -134,7 +134,7 @@ export default function OperatorUsersPage() {
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="bg-surface-container h-12 w-full animate-pulse rounded-[var(--radius-md)]"
+              className="bg-[var(--color-surface-subtle)] h-12 w-full animate-pulse rounded-[var(--radius-md)]"
             />
           ))}
         </div>
@@ -161,7 +161,7 @@ export default function OperatorUsersPage() {
               {rows.map((u) => (
                 <TableRow key={u.id}>
                   <TableCell className="font-medium">{u.full_name ?? "—"}</TableCell>
-                  <TableCell className="text-on-surface-variant">{u.email}</TableCell>
+                  <TableCell className="text-[var(--color-text-muted)]">{u.email}</TableCell>
                   <TableCell>{u.company?.name ?? "—"}</TableCell>
                   <TableCell>
                     {u.is_operator ? (
@@ -172,7 +172,7 @@ export default function OperatorUsersPage() {
                       <Badge size="sm">{t("operator.enum.role.user")}</Badge>
                     )}
                   </TableCell>
-                  <TableCell className="text-on-surface-variant text-xs">
+                  <TableCell className="text-[var(--color-text-muted)] text-xs">
                     {new Date(u.created_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="text-right">
@@ -180,7 +180,7 @@ export default function OperatorUsersPage() {
                       <DropdownMenuTrigger asChild>
                         <button
                           aria-label={t("operator.users.open_actions")}
-                          className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-sm)] text-[var(--color-ink-4)] hover:bg-[var(--color-bone-2)]"
+                          className="flex h-7 w-7 items-center justify-center rounded-[var(--radius-sm)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-subtle)]"
                         >
                           <MoreHorizontal className="h-3.5 w-3.5" />
                         </button>
@@ -262,7 +262,7 @@ export default function OperatorUsersPage() {
 
           {totalPages > 1 && (
             <div className="flex items-center justify-between">
-              <p className="text-on-surface-variant text-sm">
+              <p className="text-[var(--color-text-muted)] text-sm">
                 {t("operator.users.total", { n: String(total) })}
               </p>
               <div className="flex gap-2">
@@ -274,7 +274,7 @@ export default function OperatorUsersPage() {
                 >
                   {t("common.previous")}
                 </Button>
-                <span className="text-on-surface-variant flex items-center text-sm">
+                <span className="text-[var(--color-text-muted)] flex items-center text-sm">
                   {t("operator.users.pagination", {
                     page: String(page),
                     total: String(totalPages),

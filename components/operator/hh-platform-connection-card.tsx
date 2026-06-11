@@ -87,11 +87,11 @@ export function HhPlatformConnectionCard() {
   const connected = ok || error;
 
   return (
-    <div className="bg-surface-container rounded-[var(--radius-lg)] p-4">
+    <div className="bg-[var(--color-surface-subtle)] rounded-[var(--radius-lg)] p-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-on-surface text-sm font-semibold">{t("operator.hh.title")}</h2>
-          <p className="text-on-surface-variant mt-0.5 text-xs">{t("operator.hh.subtitle")}</p>
+          <h2 className="text-[var(--color-text)] text-sm font-semibold">{t("operator.hh.title")}</h2>
+          <p className="text-[var(--color-text-muted)] mt-0.5 text-xs">{t("operator.hh.subtitle")}</p>
         </div>
         {!loading && (
           <Badge tone={ok ? "success" : error ? "danger" : "neutral"} size="sm">
@@ -105,11 +105,11 @@ export function HhPlatformConnectionCard() {
       </div>
 
       {loading ? (
-        <div className="bg-surface-variant mt-3 h-5 w-48 animate-pulse rounded-[var(--radius-sm)]" />
+        <div className="bg-[var(--color-surface-strong)] mt-3 h-5 w-48 animate-pulse rounded-[var(--radius-sm)]" />
       ) : (
         <div className="mt-3 space-y-2">
           {ok && health?.employerName && (
-            <p className="text-on-surface-variant text-xs">
+            <p className="text-[var(--color-text-muted)] text-xs">
               {t("operator.hh.connected_as", { name: health.employerName })}
             </p>
           )}
@@ -118,7 +118,7 @@ export function HhPlatformConnectionCard() {
               {[health.error.status, health.error.message].filter(Boolean).join(" ")}
             </p>
           )}
-          <p className="text-on-surface-variant text-xs">{t("operator.hh.employer_required")}</p>
+          <p className="text-[var(--color-text-muted)] text-xs">{t("operator.hh.employer_required")}</p>
 
           {baseConfigured ? (
             <div className="flex items-center gap-2 pt-1">
@@ -140,7 +140,7 @@ export function HhPlatformConnectionCard() {
               )}
             </div>
           ) : (
-            <p className="text-on-surface-variant text-xs">{t("operator.hh.not_configured")}</p>
+            <p className="text-[var(--color-text-muted)] text-xs">{t("operator.hh.not_configured")}</p>
           )}
         </div>
       )}

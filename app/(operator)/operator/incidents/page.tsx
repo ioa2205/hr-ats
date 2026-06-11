@@ -2,7 +2,17 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AlertTriangle, CheckCircle2, RefreshCw } from "lucide-react";
-import { Button, useToast } from "@/components/ui";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Textarea,
+  useToast,
+} from "@/components/ui";
 import { useTranslation } from "@/lib/i18n/provider";
 import type { TranslationKey } from "@/lib/i18n/types";
 import { severityKey, incidentStatusKey } from "@/lib/operator/enum-labels";
@@ -94,13 +104,13 @@ export default function IncidentsPage() {
   const tabs = useMemo<Tab[]>(() => ["firing", "acknowledged", "resolved", "all"], []);
 
   return (
-    <div className="flex flex-col gap-4 font-[var(--font-tez-sans)]">
+    <div className="flex flex-col gap-4 font-[var(--font-sans)]">
       <header className="flex items-end justify-between gap-3">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-ink-4)]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
             {t("operator.incidents.eyebrow")}
           </p>
-          <h1 className="text-[22px] font-semibold tracking-tight text-[var(--color-ink)]">
+          <h1 className="text-[22px] font-semibold tracking-tight text-[var(--color-text)]">
             {t("operator.incidents.title")}
           </h1>
         </div>
@@ -110,7 +120,7 @@ export default function IncidentsPage() {
         </Button>
       </header>
 
-      <nav className="flex items-center gap-1 overflow-x-auto border-b border-[var(--color-rule)] pb-1">
+      <nav className="flex items-center gap-1 overflow-x-auto border-b border-[var(--color-line)] pb-1">
         {tabs.map((id) => {
           const active = tab === id;
           return (
@@ -119,8 +129,8 @@ export default function IncidentsPage() {
               onClick={() => setTab(id)}
               className={`whitespace-nowrap rounded-[var(--radius-sm)] px-2.5 py-1 text-[12px] font-medium transition-colors ${
                 active
-                  ? "bg-[var(--color-ink)] text-[var(--color-bone)]"
-                  : "text-[var(--color-ink-4)] hover:bg-[var(--color-bone-2)] hover:text-[var(--color-ink)]"
+                  ? "bg-[var(--color-text)] text-[var(--color-canvas)]"
+                  : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)]"
               }`}
             >
               {t(TAB_KEYS[id])}
@@ -134,14 +144,14 @@ export default function IncidentsPage() {
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="h-16 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-bone-2)]"
+              className="h-16 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-surface-subtle)]"
             />
           ))}
         </div>
       ) : incidents.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 rounded-[var(--radius-md)] border border-[var(--color-rule-2)] bg-[var(--color-paper)] p-10">
-          <CheckCircle2 className="h-8 w-8 text-[var(--color-tez-green)]" />
-          <p className="text-[13px] text-[var(--color-ink-3)]">
+        <div className="flex flex-col items-center gap-3 rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)] p-10">
+          <CheckCircle2 className="h-8 w-8 text-[var(--color-success)]" />
+          <p className="text-[13px] text-[var(--color-text-muted)]">
             {tab === "firing"
               ? t("operator.incidents.empty_firing")
               : t("operator.incidents.empty")}
@@ -152,23 +162,23 @@ export default function IncidentsPage() {
           {incidents.map((i) => (
             <li
               key={i.id}
-              className="flex items-start gap-3 rounded-[var(--radius-md)] border border-[var(--color-rule-2)] bg-[var(--color-paper)] p-3"
+              className="flex items-start gap-3 rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)] p-3"
             >
               <AlertTriangle
                 className={`mt-0.5 h-4 w-4 shrink-0 ${
                   i.severity === "critical"
-                    ? "text-[var(--color-tez-red)]"
+                    ? "text-[var(--color-danger)]"
                     : i.severity === "warn"
-                      ? "text-[var(--color-tez-amber)]"
-                      : "text-[var(--color-ink-4)]"
+                      ? "text-[var(--color-warning)]"
+                      : "text-[var(--color-text-muted)]"
                 }`}
               />
               <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <p className="font-[var(--font-tez-mono)] text-[10px] uppercase tracking-[0.06em] text-[var(--color-ink-5)]">
+                <p className="font-[var(--font-mono)] text-[10px] uppercase tracking-[0.06em] text-[var(--color-text-subtle)]">
                   {i.rule_id} · {t(severityKey(i.severity))} · {t(incidentStatusKey(i.status))}
                 </p>
-                <p className="text-[13px] text-[var(--color-ink)]">{i.summary}</p>
-                <p className="text-[11px] text-[var(--color-ink-4)]">
+                <p className="text-[13px] text-[var(--color-text)]">{i.summary}</p>
+                <p className="text-[11px] text-[var(--color-text-muted)]">
                   {t("operator.incidents.first_fired", {
                     when: new Date(i.first_fired_at).toLocaleString(),
                   })}
@@ -176,7 +186,7 @@ export default function IncidentsPage() {
                     <>
                       {" · "}
                       <a
-                        className="text-[var(--color-persimmon-2)] hover:underline"
+                        className="font-medium text-[var(--color-accent-strong)] underline underline-offset-2"
                         href={`/operator/companies/${i.target_id}`}
                       >
                         {t("operator.incidents.view_company")}
@@ -185,7 +195,7 @@ export default function IncidentsPage() {
                   )}
                 </p>
                 {i.resolution_note && (
-                  <p className="text-[11px] text-[var(--color-ink-4)] italic">
+                  <p className="text-[11px] text-[var(--color-text-muted)] italic">
                     {t("operator.incidents.resolved_prefix")} · {i.resolution_note}
                   </p>
                 )}
@@ -210,41 +220,53 @@ export default function IncidentsPage() {
         </ul>
       )}
 
-      {resolveFor && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-[var(--radius-md)] border border-[var(--color-rule-2)] bg-[var(--color-paper)] p-5">
-            <h2 className="mb-1 text-[14px] font-semibold text-[var(--color-ink)]">
-              {t("operator.incidents.resolve_title", { rule: resolveFor.rule_id })}
-            </h2>
-            <p className="mb-3 text-[12px] text-[var(--color-ink-4)]">
-              {t("operator.incidents.resolve_note_help")}
-            </p>
-            <textarea
+      <Dialog
+        open={resolveFor !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setResolveFor(null);
+            setResolveNote("");
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {resolveFor
+                ? t("operator.incidents.resolve_title", { rule: resolveFor.rule_id })
+                : ""}
+            </DialogTitle>
+            <DialogDescription>{t("operator.incidents.resolve_note_help")}</DialogDescription>
+          </DialogHeader>
+          <div className="px-6 py-2">
+            <Textarea
+              label={t("operator.incidents.resolve_note_label")}
               value={resolveNote}
               onChange={(e) => setResolveNote(e.target.value)}
               rows={3}
-              className="w-full rounded-[var(--radius-sm)] border border-[var(--color-rule-2)] bg-[var(--color-bone)] p-2 text-[13px] text-[var(--color-ink)] focus:border-[var(--color-ink-4)] focus:outline-none"
               placeholder={t("operator.incidents.resolve_note_placeholder")}
               autoFocus
             />
-            <div className="mt-3 flex justify-end gap-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => {
-                  setResolveFor(null);
-                  setResolveNote("");
-                }}
-              >
-                {t("operator.incidents.cancel")}
-              </Button>
-              <Button size="sm" onClick={() => resolve(resolveFor.id, resolveNote)}>
-                {t("operator.incidents.resolve_submit")}
-              </Button>
-            </div>
           </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setResolveFor(null);
+                setResolveNote("");
+              }}
+            >
+              {t("operator.incidents.cancel")}
+            </Button>
+            <Button
+              disabled={resolveNote.trim().length === 0}
+              onClick={() => resolveFor && resolve(resolveFor.id, resolveNote)}
+            >
+              {t("operator.incidents.resolve_submit")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

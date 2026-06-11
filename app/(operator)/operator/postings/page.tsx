@@ -47,7 +47,7 @@ export default function OperatorPostingsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-on-surface text-2xl font-semibold">{t("admin.postings.title")}</h1>
+        <h1 className="text-[var(--color-text)] text-2xl font-semibold">{t("admin.postings.title")}</h1>
         <Button
           variant="secondary"
           size="sm"
@@ -64,12 +64,12 @@ export default function OperatorPostingsPage() {
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="bg-surface-container h-12 w-full animate-pulse rounded-[var(--radius-md)]"
+              className="bg-[var(--color-surface-subtle)] h-12 w-full animate-pulse rounded-[var(--radius-md)]"
             />
           ))}
         </div>
       ) : rows.length === 0 ? (
-        <p className="text-on-surface-variant py-8 text-center text-sm">{t("admin.postings.empty")}</p>
+        <p className="text-[var(--color-text-muted)] py-8 text-center text-sm">{t("admin.postings.empty")}</p>
       ) : (
         <Table>
           <TableHeader>
@@ -96,7 +96,7 @@ export default function OperatorPostingsPage() {
                         {row.company.name}
                       </Link>
                     ) : (
-                      <span className="text-on-surface-variant">—</span>
+                      <span className="text-[var(--color-text-muted)]">—</span>
                     )}
                   </TableCell>
                   <TableCell>
@@ -109,7 +109,7 @@ export default function OperatorPostingsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="nums">{candidateCount}</TableCell>
-                  <TableCell className="text-on-surface-variant text-xs">
+                  <TableCell className="text-[var(--color-text-muted)] text-xs">
                     {new Date(row.created_at).toLocaleDateString()}
                   </TableCell>
                 </TableRow>

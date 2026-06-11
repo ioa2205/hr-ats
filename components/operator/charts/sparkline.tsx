@@ -21,7 +21,7 @@ export function Sparkline({
   values,
   width = 120,
   height = 32,
-  stroke = "var(--color-persimmon)",
+  stroke = "var(--color-accent)",
   fill,
   ariaLabel,
 }: Props) {
@@ -58,7 +58,7 @@ export function Sparkline({
           y1={height / 2}
           x2={width - 2}
           y2={height / 2}
-          stroke="var(--color-rule-2)"
+          stroke="var(--color-line-strong)"
           strokeDasharray="2 3"
           strokeWidth={1}
         />

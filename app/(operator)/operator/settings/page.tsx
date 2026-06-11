@@ -2,7 +2,20 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Settings as SettingsIcon, Users } from "lucide-react";
-import { useToast } from "@/components/ui";
+import {
+  Badge,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Input,
+  Switch,
+  Textarea,
+  useToast,
+} from "@/components/ui";
 import { useTranslation } from "@/lib/i18n/provider";
 import type { TranslationKey } from "@/lib/i18n/types";
 import { operatorRoleKey } from "@/lib/operator/enum-labels";
@@ -38,27 +51,28 @@ export default function SettingsPage() {
   );
 
   return (
-    <div className="flex flex-col gap-4 font-[var(--font-tez-sans)]">
+    <div className="flex flex-col gap-4 font-[var(--font-sans)]">
       <header>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-ink-4)]">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
           {t("operator.settings.eyebrow")}
         </p>
-        <h1 className="text-[22px] font-semibold tracking-tight text-[var(--color-ink)]">
+        <h1 className="text-[22px] font-semibold tracking-tight text-[var(--color-text)]">
           {t("operator.nav.settings")}
         </h1>
       </header>
 
-      <nav className="flex items-center gap-1 overflow-x-auto border-b border-[var(--color-rule)] pb-1">
+      <nav className="flex items-center gap-1 overflow-x-auto border-b border-[var(--color-line)] pb-1">
         {tabs.map(({ id, icon }) => {
           const active = tab === id;
           return (
             <button
               key={id}
               onClick={() => setTab(id)}
+              aria-current={active ? "page" : undefined}
               className={`flex items-center gap-1.5 whitespace-nowrap rounded-[var(--radius-sm)] px-2.5 py-1 text-[12px] font-medium transition-colors ${
                 active
-                  ? "bg-[var(--color-ink)] text-[var(--color-bone)]"
-                  : "text-[var(--color-ink-4)] hover:bg-[var(--color-bone-2)] hover:text-[var(--color-ink)]"
+                  ? "bg-[var(--color-text)] text-[var(--color-canvas)]"
+                  : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)]"
               }`}
             >
               {icon}
@@ -75,14 +89,97 @@ export default function SettingsPage() {
   );
 }
 
+/**
+ * Shared reason-capture dialog. Operator role changes and platform-setting
+ * edits are audited, so each requires a free-text reason (≥10 chars) before the
+ * write is sent — replacing the old jarring `window.prompt`.
+ */
+function ReasonDialog({
+  open,
+  onOpenChange,
+  title,
+  description,
+  confirmLabel,
+  busy,
+  onConfirm,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  title: string;
+  description: string;
+  confirmLabel: string;
+  busy: boolean;
+  onConfirm: (reason: string) => void;
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        {/* Mount the field only while open so each invocation starts blank —
+            same per-session reset trick the command palette uses. */}
+        {open && (
+          <ReasonForm
+            confirmLabel={confirmLabel}
+            busy={busy}
+            onConfirm={onConfirm}
+            onCancel={() => onOpenChange(false)}
+          />
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ReasonForm({
+  confirmLabel,
+  busy,
+  onConfirm,
+  onCancel,
+}: {
+  confirmLabel: string;
+  busy: boolean;
+  onConfirm: (reason: string) => void;
+  onCancel: () => void;
+}) {
+  const { t } = useTranslation();
+  const [reason, setReason] = useState("");
+  const valid = reason.trim().length >= 10;
+
+  return (
+    <>
+      <div className="px-6 py-2">
+        <Textarea
+          label={t("operator.settings.reason_label")}
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          placeholder={t("operator.settings.reason_placeholder")}
+          rows={3}
+          autoFocus
+        />
+      </div>
+      <DialogFooter>
+        <Button variant="secondary" onClick={onCancel}>
+          {t("common.cancel")}
+        </Button>
+        <Button loading={busy} disabled={!valid} onClick={() => onConfirm(reason.trim())}>
+          {confirmLabel}
+        </Button>
+      </DialogFooter>
+    </>
+  );
+}
+
 function PreferencesTab() {
   const { t } = useTranslation();
   return (
-    <section className="rounded-[var(--radius-md)] border border-[var(--color-rule-2)] bg-[var(--color-paper)] p-5">
-      <h2 className="mb-1 text-[14px] font-semibold text-[var(--color-ink)]">
+    <section className="rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)] p-5">
+      <h2 className="mb-1 text-[14px] font-semibold text-[var(--color-text)]">
         {t("operator.settings.prefs_title")}
       </h2>
-      <p className="text-[12px] text-[var(--color-ink-4)]">
+      <p className="text-[12px] text-[var(--color-text-muted)]">
         {t("operator.settings.prefs_help")}
       </p>
     </section>
@@ -95,6 +192,10 @@ function TeamTab() {
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [roleChange, setRoleChange] = useState<{
+    member: TeamMember;
+    next: "full" | "read_only";
+  } | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -113,21 +214,19 @@ function TeamTab() {
     void load();
   }, [load]);
 
-  async function changeRole(m: TeamMember, next: "full" | "read_only") {
-    const reason = window.prompt(
-      t("operator.settings.role_prompt", { email: m.email, next }),
-      "",
-    );
-    if (!reason || reason.trim().length < 10) return;
-    setBusyId(m.id);
+  async function changeRole(reason: string) {
+    if (!roleChange) return;
+    const { member, next } = roleChange;
+    setBusyId(member.id);
     try {
       const res = await fetch("/api/operator/team", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ targetUserId: m.id, operatorRole: next, reason }),
+        body: JSON.stringify({ targetUserId: member.id, operatorRole: next, reason }),
       });
       if (res.ok) {
         toast({ variant: "success", title: t("operator.settings.role_updated") });
+        setRoleChange(null);
         await load();
       } else {
         const j = await res.json().catch(() => ({}));
@@ -140,60 +239,78 @@ function TeamTab() {
 
   if (loading) {
     return (
-      <div className="h-24 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-bone-2)]" />
+      <div className="h-24 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-surface-subtle)]" />
     );
   }
 
   return (
-    <section className="rounded-[var(--radius-md)] border border-[var(--color-rule-2)] bg-[var(--color-paper)]">
-      <header className="border-b border-[var(--color-rule-2)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-ink-4)]">
+    <section className="rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)]">
+      <header className="border-b border-[var(--color-line-strong)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
         {t("operator.settings.team_title", { n: String(members.length) })}
       </header>
-      <ul className="divide-y divide-[var(--color-rule)]">
+      <ul className="divide-y divide-[var(--color-line)]">
         {members.map((m) => (
           <li
             key={m.id}
             className="flex items-center justify-between gap-3 px-4 py-3 text-[13px]"
           >
             <div className="flex flex-col">
-              <span className="font-medium text-[var(--color-ink)]">
+              <span className="font-medium text-[var(--color-text)]">
                 {m.full_name ?? m.email}
               </span>
               {m.full_name && (
-                <span className="text-[11px] text-[var(--color-ink-4)]">{m.email}</span>
+                <span className="text-[11px] text-[var(--color-text-muted)]">{m.email}</span>
               )}
             </div>
             <div className="flex items-center gap-2">
-              <span
-                className={`rounded-[var(--radius-sm)] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
-                  m.operator_role === "read_only"
-                    ? "bg-[var(--color-bone-2)] text-[var(--color-ink-4)]"
-                    : "bg-[var(--color-persimmon-tint)] text-[var(--color-persimmon-2)]"
-                }`}
-              >
+              <Badge tone={m.operator_role === "read_only" ? "neutral" : "accent"} size="sm">
                 {t(operatorRoleKey(m.operator_role))}
-              </span>
-              <button
-                type="button"
-                disabled={busyId === m.id}
+              </Badge>
+              <Button
+                variant="secondary"
+                size="sm"
+                loading={busyId === m.id}
                 onClick={() =>
-                  changeRole(m, m.operator_role === "full" ? "read_only" : "full")
+                  setRoleChange({
+                    member: m,
+                    next: m.operator_role === "full" ? "read_only" : "full",
+                  })
                 }
-                className="h-8 rounded-[var(--radius-sm)] border border-[var(--color-rule-2)] bg-[var(--color-bone)] px-2.5 text-[12px] font-medium text-[var(--color-ink-3)] hover:bg-[var(--color-bone-2)] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {busyId === m.id
-                  ? "…"
-                  : m.operator_role === "full"
-                    ? t("operator.settings.restrict")
-                    : t("operator.settings.grant")}
-              </button>
+                {m.operator_role === "full"
+                  ? t("operator.settings.restrict")
+                  : t("operator.settings.grant")}
+              </Button>
             </div>
           </li>
         ))}
       </ul>
-      <p className="px-4 py-2 text-[10px] text-[var(--color-ink-5)]">
+      <p className="px-4 py-2 text-[10px] text-[var(--color-text-subtle)]">
         {t("operator.settings.team_note")}
       </p>
+
+      <ReasonDialog
+        open={roleChange !== null}
+        onOpenChange={(open) => {
+          if (!open) setRoleChange(null);
+        }}
+        title={t("operator.settings.role_dialog_title")}
+        description={
+          roleChange
+            ? t("operator.settings.role_prompt", {
+                email: roleChange.member.email,
+                next: t(operatorRoleKey(roleChange.next)),
+              })
+            : ""
+        }
+        confirmLabel={
+          roleChange?.next === "read_only"
+            ? t("operator.settings.restrict")
+            : t("operator.settings.grant")
+        }
+        busy={busyId !== null}
+        onConfirm={changeRole}
+      />
     </section>
   );
 }
@@ -255,6 +372,7 @@ function PlatformTab() {
   const [edited, setEdited] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [savingKey, setSavingKey] = useState<string | null>(null);
+  const [confirmKey, setConfirmKey] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -273,10 +391,8 @@ function PlatformTab() {
     void load();
   }, [load]);
 
-  async function save(key: string) {
+  async function save(key: string, reason: string) {
     const value = edited[key] ?? values[key] ?? "";
-    const reason = window.prompt(t("operator.settings.save_prompt", { key, value }), "");
-    if (!reason || reason.trim().length < 10) return;
     setSavingKey(key);
     try {
       const res = await fetch("/api/operator/settings", {
@@ -286,6 +402,7 @@ function PlatformTab() {
       });
       if (res.ok) {
         toast({ variant: "success", title: t("operator.settings.saved") });
+        setConfirmKey(null);
         setEdited((e) => {
           const next = { ...e };
           delete next[key];
@@ -302,70 +419,78 @@ function PlatformTab() {
   }
 
   if (loading) {
-    return <div className="h-24 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-bone-2)]" />;
+    return <div className="h-24 animate-pulse rounded-[var(--radius-md)] bg-[var(--color-surface-subtle)]" />;
   }
 
+  const confirmValue = confirmKey ? (edited[confirmKey] ?? values[confirmKey] ?? "") : "";
+
   return (
-    <section className="rounded-[var(--radius-md)] border border-[var(--color-rule-2)] bg-[var(--color-paper)]">
-      <header className="border-b border-[var(--color-rule-2)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-ink-4)]">
+    <section className="rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)]">
+      <header className="border-b border-[var(--color-line-strong)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
         {t("operator.settings.platform_title")}
       </header>
-      <ul className="divide-y divide-[var(--color-rule)]">
+      <ul className="divide-y divide-[var(--color-line)]">
         {PLATFORM_FIELDS.map((f) => {
           const current = edited[f.key] ?? values[f.key] ?? "";
           const dirty = edited[f.key] !== undefined && edited[f.key] !== values[f.key];
           const saving = savingKey === f.key;
-          const inputCls =
-            "h-8 w-44 rounded-[var(--radius-sm)] border border-[var(--color-rule-2)] bg-[var(--color-bone)] px-2 text-[12px] text-[var(--color-ink)] placeholder:text-[var(--color-ink-5)] focus:border-[var(--color-ink-3)] focus:outline-none";
           return (
             <li key={f.key} className="flex items-center gap-3 p-3">
               <div className="flex min-w-0 flex-1 flex-col">
-                <span className="text-[13px] font-medium text-[var(--color-ink)]">
+                <span className="text-[13px] font-medium text-[var(--color-text)]">
                   {t(f.labelKey)}
                 </span>
-                <span className="text-[11px] text-[var(--color-ink-4)]">{t(f.helpKey)}</span>
+                <span className="text-[11px] text-[var(--color-text-muted)]">{t(f.helpKey)}</span>
               </div>
               <div className="flex items-center gap-2">
                 {f.type === "toggle" ? (
-                  <select
-                    value={current === "true" ? "true" : "false"}
-                    onChange={(e) =>
-                      setEdited((v) => ({ ...v, [f.key]: e.target.value }))
+                  <Switch
+                    checked={current === "true"}
+                    onCheckedChange={(v) =>
+                      setEdited((prev) => ({ ...prev, [f.key]: v ? "true" : "false" }))
                     }
-                    className="h-8 rounded-[var(--radius-sm)] border border-[var(--color-rule-2)] bg-[var(--color-bone)] px-2 text-[12px] text-[var(--color-ink)] focus:border-[var(--color-ink-3)] focus:outline-none"
-                  >
-                    <option value="false">{t("operator.settings.off")}</option>
-                    <option value="true">{t("operator.settings.on")}</option>
-                  </select>
-                ) : f.type === "number" ? (
-                  <input
-                    value={current}
-                    onChange={(e) => setEdited((v) => ({ ...v, [f.key]: e.target.value }))}
-                    type="number"
-                    min={0}
-                    className={inputCls}
+                    aria-label={t(f.labelKey)}
                   />
                 ) : (
-                  <input
-                    value={current}
-                    onChange={(e) => setEdited((v) => ({ ...v, [f.key]: e.target.value }))}
-                    type="text"
-                    className={inputCls}
-                  />
+                  <div className="w-32">
+                    <Input
+                      value={current}
+                      onChange={(e) => setEdited((v) => ({ ...v, [f.key]: e.target.value }))}
+                      type={f.type === "number" ? "number" : "text"}
+                      min={f.type === "number" ? 0 : undefined}
+                      aria-label={t(f.labelKey)}
+                    />
+                  </div>
                 )}
-                <button
-                  type="button"
+                <Button
+                  size="sm"
                   disabled={!dirty || saving}
-                  onClick={() => save(f.key)}
-                  className="flex h-8 items-center rounded-[var(--radius-sm)] bg-[var(--color-persimmon-2)] px-3 text-[12px] font-medium text-white hover:bg-[var(--color-persimmon)] disabled:cursor-not-allowed disabled:bg-[var(--color-bone-3)] disabled:text-[var(--color-ink-5)]"
+                  loading={saving}
+                  onClick={() => setConfirmKey(f.key)}
                 >
-                  {saving ? "…" : t("operator.settings.save")}
-                </button>
+                  {t("operator.settings.save")}
+                </Button>
               </div>
             </li>
           );
         })}
       </ul>
+
+      <ReasonDialog
+        open={confirmKey !== null}
+        onOpenChange={(open) => {
+          if (!open) setConfirmKey(null);
+        }}
+        title={t("operator.settings.save_dialog_title")}
+        description={
+          confirmKey
+            ? t("operator.settings.save_prompt", { key: confirmKey, value: confirmValue })
+            : ""
+        }
+        confirmLabel={t("operator.settings.save")}
+        busy={savingKey !== null}
+        onConfirm={(reason) => confirmKey && save(confirmKey, reason)}
+      />
     </section>
   );
 }

@@ -74,7 +74,7 @@ export default function OperatorProcessingPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-on-surface text-2xl font-semibold">{t("admin.processing_log")}</h1>
+        <h1 className="text-[var(--color-text)] text-2xl font-semibold">{t("admin.processing_log")}</h1>
         <div className="flex items-center gap-2">
           <Select value={filter} onValueChange={setFilter}>
             <SelectTrigger className="w-40" aria-label={t("admin.processing.filter_label")}>
@@ -101,12 +101,12 @@ export default function OperatorProcessingPage() {
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="bg-surface-container h-12 w-full animate-pulse rounded-[var(--radius-md)]"
+              className="bg-[var(--color-surface-subtle)] h-12 w-full animate-pulse rounded-[var(--radius-md)]"
             />
           ))}
         </div>
       ) : rows.length === 0 ? (
-        <p className="text-on-surface-variant py-8 text-center text-sm">
+        <p className="text-[var(--color-text-muted)] py-8 text-center text-sm">
           {t("operator.processing.empty")}
         </p>
       ) : (

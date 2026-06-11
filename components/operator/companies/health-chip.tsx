@@ -11,7 +11,7 @@ interface Props {
 export function HealthChip({ score, reasons }: Props) {
   if (score === null || score === undefined) {
     return (
-      <span className="nums font-[var(--font-tez-mono)] text-[11px] text-[var(--color-ink-5)]">
+      <span className="nums font-[var(--font-mono)] text-[11px] text-[var(--color-text-subtle)]">
         —
       </span>
     );
@@ -19,20 +19,20 @@ export function HealthChip({ score, reasons }: Props) {
   const tone =
     score >= 70
       ? {
-          bg: "bg-[var(--color-tez-green-tint)]",
-          fg: "text-[var(--color-tez-green)]",
-          dot: "bg-[var(--color-tez-green)]",
+          bg: "bg-[var(--color-success-container)]",
+          fg: "text-[var(--color-success)]",
+          dot: "bg-[var(--color-success)]",
         }
       : score >= 40
         ? {
-            bg: "bg-[var(--color-tez-amber-tint)]",
-            fg: "text-[var(--color-tez-amber)]",
-            dot: "bg-[var(--color-tez-amber)]",
+            bg: "bg-[var(--color-warning-container)]",
+            fg: "text-[var(--color-warning)]",
+            dot: "bg-[var(--color-warning)]",
           }
         : {
-            bg: "bg-[var(--color-tez-red-tint)]",
-            fg: "text-[var(--color-tez-red)]",
-            dot: "bg-[var(--color-tez-red)]",
+            bg: "bg-[var(--color-danger-container)]",
+            fg: "text-[var(--color-danger)]",
+            dot: "bg-[var(--color-danger)]",
           };
 
   const chip = (

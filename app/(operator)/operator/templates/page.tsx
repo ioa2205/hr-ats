@@ -107,10 +107,10 @@ export default function OperatorTemplatesPage() {
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="bg-surface-container h-6 w-40 animate-pulse rounded" />
-        <div className="bg-surface-container h-32 w-full animate-pulse rounded-[var(--radius-md)]" />
-        <div className="bg-surface-container h-32 w-full animate-pulse rounded-[var(--radius-md)]" />
-        <div className="bg-surface-container h-32 w-full animate-pulse rounded-[var(--radius-md)]" />
+        <div className="bg-[var(--color-surface-subtle)] h-6 w-40 animate-pulse rounded" />
+        <div className="bg-[var(--color-surface-subtle)] h-32 w-full animate-pulse rounded-[var(--radius-md)]" />
+        <div className="bg-[var(--color-surface-subtle)] h-32 w-full animate-pulse rounded-[var(--radius-md)]" />
+        <div className="bg-[var(--color-surface-subtle)] h-32 w-full animate-pulse rounded-[var(--radius-md)]" />
       </div>
     );
   }
@@ -121,10 +121,10 @@ export default function OperatorTemplatesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-on-surface text-2xl font-semibold">
+          <h1 className="text-[var(--color-text)] text-2xl font-semibold">
             {t("operator.templates.title")}
           </h1>
-          <p className="text-on-surface-variant text-sm">
+          <p className="text-[var(--color-text-muted)] text-sm">
             {t("operator.templates.description")}
           </p>
         </div>
@@ -143,7 +143,7 @@ export default function OperatorTemplatesPage() {
         {langs.map((lang) => (
           <div key={lang}>
             <div className="mb-2 flex items-center gap-2">
-              <span className="text-on-surface text-sm font-medium">
+              <span className="text-[var(--color-text)] text-sm font-medium">
                 {t(LANG_LABEL_KEYS[lang])}
               </span>
               <div className="flex gap-1">

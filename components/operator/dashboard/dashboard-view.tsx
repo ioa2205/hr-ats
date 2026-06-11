@@ -115,14 +115,14 @@ export function DashboardView({ initial }: { initial: DashboardData }) {
   }
 
   return (
-    <div className="flex flex-col gap-5 font-[var(--font-tez-sans)]">
+    <div className="flex flex-col gap-5 font-[var(--font-sans)]">
       {/* Header */}
       <header className="flex items-end justify-between gap-3">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-ink-4)]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
             {t("operator.dashboard.eyebrow")}
           </p>
-          <h1 className="text-[22px] font-semibold tracking-tight text-[var(--color-ink)]">
+          <h1 className="text-[22px] font-semibold tracking-tight text-[var(--color-text)]">
             {t("operator.dashboard.title")}
           </h1>
         </div>
@@ -156,8 +156,8 @@ export function DashboardView({ initial }: { initial: DashboardData }) {
           value={data.timeseries.at(-1)?.dailyActiveUsers ?? 0}
           series={data.timeseries.map((p) => ({ day: p.day, value: p.dailyActiveUsers }))}
           icon={<Activity className="h-4 w-4" />}
-          stroke="var(--color-tez-blue)"
-          fill="var(--color-tez-blue-tint)"
+          stroke="var(--color-primary)"
+          fill="var(--color-primary-container)"
         />
         <TimeSeriesCard
           title={t("operator.dashboard.series.candidates")}
@@ -165,8 +165,8 @@ export function DashboardView({ initial }: { initial: DashboardData }) {
           subtitle={t("operator.dashboard.series.candidates_sub")}
           series={data.timeseries.map((p) => ({ day: p.day, value: p.candidatesProcessed }))}
           icon={<Flame className="h-4 w-4" />}
-          stroke="var(--color-tez-green)"
-          fill="var(--color-tez-green-tint)"
+          stroke="var(--color-success)"
+          fill="var(--color-success-container)"
         />
       </section>
 
@@ -228,7 +228,7 @@ function RangeToggle({
     <div
       role="tablist"
       aria-label={t("operator.dashboard.range_label")}
-      className="flex items-center rounded-[var(--radius-sm)] border border-[var(--color-rule-2)] p-0.5 text-[11px]"
+      className="flex items-center rounded-[var(--radius-sm)] border border-[var(--color-line-strong)] p-0.5 text-[11px]"
     >
       {(["30", "90"] as const).map((r) => {
         const active = Number(r) === range;
@@ -240,8 +240,8 @@ function RangeToggle({
             onClick={() => onChange(Number(r) as 30 | 90)}
             className={`rounded-[var(--radius-sm)] px-2.5 py-1 font-medium transition-colors ${
               active
-                ? "bg-[var(--color-ink)] text-[var(--color-bone)]"
-                : "text-[var(--color-ink-4)] hover:text-[var(--color-ink)]"
+                ? "bg-[var(--color-text)] text-[var(--color-canvas)]"
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
             }`}
           >
             {r}d
@@ -274,7 +274,7 @@ function RefreshControl({
       type="button"
       onClick={onClick}
       disabled={refreshing}
-      className="flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--color-rule-2)] px-2 py-1 text-[11px] text-[var(--color-ink-4)] hover:bg-[var(--color-bone-2)] disabled:opacity-60"
+      className="flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--color-line-strong)] px-2 py-1 text-[11px] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-subtle)] disabled:opacity-60"
       aria-label={t("operator.dashboard.refresh")}
     >
       <RefreshCw className={`h-3 w-3 ${refreshing ? "animate-spin" : ""}`} />
@@ -375,32 +375,32 @@ function HealthPill({
 }) {
   const toneBorder =
     state === "red"
-      ? "border-[var(--color-tez-red)]/50"
+      ? "border-[var(--color-danger)]/50"
       : state === "amber"
-        ? "border-[var(--color-tez-amber)]/50"
-        : "border-[var(--color-rule-2)]";
+        ? "border-[var(--color-warning)]/50"
+        : "border-[var(--color-line-strong)]";
   const toneDot =
     state === "red"
-      ? "bg-[var(--color-tez-red)]"
+      ? "bg-[var(--color-danger)]"
       : state === "amber"
-        ? "bg-[var(--color-tez-amber)]"
-        : "bg-[var(--color-tez-green)]";
+        ? "bg-[var(--color-warning)]"
+        : "bg-[var(--color-success)]";
   return (
     <div
-      className={`flex flex-col gap-1 rounded-[var(--radius-md)] border ${toneBorder} bg-[var(--color-paper)] px-3 py-2.5`}
+      className={`flex flex-col gap-1 rounded-[var(--radius-md)] border ${toneBorder} bg-[var(--color-surface)] px-3 py-2.5`}
     >
-      <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-ink-4)]">
+      <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
         <span className="flex items-center gap-1.5">
-          <span className="text-[var(--color-ink-5)]">{icon}</span>
+          <span className="text-[var(--color-text-subtle)]">{icon}</span>
           <span>{label}</span>
         </span>
         <span className={`h-1.5 w-1.5 rounded-full ${toneDot}`} />
       </div>
-      <p className="nums text-[15px] font-semibold tabular-nums text-[var(--color-ink)]">
+      <p className="nums text-[15px] font-semibold tabular-nums text-[var(--color-text)]">
         {primary}
       </p>
       {secondary && (
-        <p className="text-[11px] text-[var(--color-ink-4)]">{secondary}</p>
+        <p className="text-[11px] text-[var(--color-text-muted)]">{secondary}</p>
       )}
     </div>
   );
@@ -424,17 +424,17 @@ function TimeSeriesCard({
   fill?: string;
 }) {
   return (
-    <div className="flex flex-col gap-2 rounded-[var(--radius-md)] border border-[var(--color-rule-2)] bg-[var(--color-paper)] p-4">
-      <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-ink-4)]">
+    <div className="flex flex-col gap-2 rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)] p-4">
+      <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
         <span className="flex items-center gap-1.5">
-          <span className="text-[var(--color-ink-5)]">{icon}</span>
+          <span className="text-[var(--color-text-subtle)]">{icon}</span>
           <span>{title}</span>
         </span>
       </div>
-      <p className="nums text-[22px] font-semibold tabular-nums leading-none text-[var(--color-ink)]">
+      <p className="nums text-[22px] font-semibold tabular-nums leading-none text-[var(--color-text)]">
         {value.toLocaleString()}
       </p>
-      {subtitle && <p className="text-[11px] text-[var(--color-ink-4)]">{subtitle}</p>}
+      {subtitle && <p className="text-[11px] text-[var(--color-text-muted)]">{subtitle}</p>}
       <div className="mt-1">
         <LineChart
           data={series}
@@ -459,29 +459,29 @@ function TopMoversCard({
   t: (k: TranslationKey) => string;
 }) {
   return (
-    <div className="flex flex-col rounded-[var(--radius-md)] border border-[var(--color-rule-2)] bg-[var(--color-paper)]">
-      <div className="flex items-center gap-1.5 border-b border-[var(--color-rule-2)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-ink-4)]">
-        <span className="text-[var(--color-ink-5)]">{icon}</span>
+    <div className="flex flex-col rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)]">
+      <div className="flex items-center gap-1.5 border-b border-[var(--color-line-strong)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
+        <span className="text-[var(--color-text-subtle)]">{icon}</span>
         <span>{title}</span>
       </div>
       {items.length === 0 ? (
-        <p className="p-6 text-center text-[12px] text-[var(--color-ink-4)]">
+        <p className="p-6 text-center text-[12px] text-[var(--color-text-muted)]">
           {t("operator.dashboard.movers.empty")}
         </p>
       ) : (
-        <ul className="divide-y divide-[var(--color-rule)]">
+        <ul className="divide-y divide-[var(--color-line)]">
           {items.map((m) => (
             <li key={m.id}>
               <Link
                 href={`/operator/companies/${m.id}`}
-                className="flex items-center justify-between gap-3 px-4 py-2.5 text-[13px] hover:bg-[var(--color-bone-2)]"
+                className="flex items-center justify-between gap-3 px-4 py-2.5 text-[13px] hover:bg-[var(--color-surface-subtle)]"
               >
-                <span className="truncate font-medium text-[var(--color-ink)]">{m.name}</span>
+                <span className="truncate font-medium text-[var(--color-text)]">{m.name}</span>
                 <span
                   className={`nums flex items-center gap-1 whitespace-nowrap text-[11px] ${
                     m.tone === "positive"
-                      ? "text-[var(--color-tez-green)]"
-                      : "text-[var(--color-tez-red)]"
+                      ? "text-[var(--color-success)]"
+                      : "text-[var(--color-danger)]"
                   }`}
                 >
                   {m.tone === "positive" ? (
@@ -524,24 +524,24 @@ function WorkersCard({
   t: (k: TranslationKey, vars?: Record<string, string>) => string;
 }) {
   return (
-    <section className="rounded-[var(--radius-md)] border border-[var(--color-rule-2)] bg-[var(--color-paper)]">
-      <div className="flex items-center gap-1.5 border-b border-[var(--color-rule-2)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-ink-4)]">
-        <Server className="h-3.5 w-3.5 text-[var(--color-ink-5)]" />
+    <section className="rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)]">
+      <div className="flex items-center gap-1.5 border-b border-[var(--color-line-strong)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
+        <Server className="h-3.5 w-3.5 text-[var(--color-text-subtle)]" />
         <span>{t("operator.dashboard.workers.title")}</span>
       </div>
       {workers.length === 0 ? (
-        <p className="p-6 text-center text-[12px] text-[var(--color-ink-4)]">
+        <p className="p-6 text-center text-[12px] text-[var(--color-text-muted)]">
           {t("operator.dashboard.workers.empty")}
         </p>
       ) : (
-        <ul className="divide-y divide-[var(--color-rule)]">
+        <ul className="divide-y divide-[var(--color-line)]">
           {workers.map((w) => {
             const dot =
               w.state === "red"
-                ? "bg-[var(--color-tez-red)]"
+                ? "bg-[var(--color-danger)]"
                 : w.state === "amber"
-                  ? "bg-[var(--color-tez-amber)]"
-                  : "bg-[var(--color-tez-green)]";
+                  ? "bg-[var(--color-warning)]"
+                  : "bg-[var(--color-success)]";
             const nameKey = WORKER_NAME_KEY[w.worker];
             return (
               <li
@@ -550,18 +550,18 @@ function WorkersCard({
               >
                 <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
                 <div className="flex min-w-0 flex-col">
-                  <span className="truncate font-medium text-[var(--color-ink)]">
+                  <span className="truncate font-medium text-[var(--color-text)]">
                     {nameKey ? t(nameKey) : w.worker}
                   </span>
                   {w.consecutiveFailures > 0 && w.lastError && (
-                    <span className="font-[var(--font-tez-mono)] truncate text-[10px] text-[var(--color-tez-red)]">
+                    <span className="font-[var(--font-mono)] truncate text-[10px] text-[var(--color-danger)]">
                       {t("operator.dashboard.workers.failures", {
                         n: String(w.consecutiveFailures),
                       })}
                     </span>
                   )}
                 </div>
-                <span className="nums whitespace-nowrap text-[11px] text-[var(--color-ink-4)]">
+                <span className="nums whitespace-nowrap text-[11px] text-[var(--color-text-muted)]">
                   {w.lastRunAt
                     ? t("operator.dashboard.workers.ran_ago", { ago: compactAgo(w.lastRunAt) })
                     : t("operator.dashboard.workers.never")}
@@ -583,36 +583,36 @@ function RecentActivityCard({
   t: (k: TranslationKey) => string;
 }) {
   return (
-    <section className="rounded-[var(--radius-md)] border border-[var(--color-rule-2)] bg-[var(--color-paper)]">
-      <div className="flex items-center justify-between border-b border-[var(--color-rule-2)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-ink-4)]">
+    <section className="rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)]">
+      <div className="flex items-center justify-between border-b border-[var(--color-line-strong)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
         <span>{t("operator.dashboard.activity.title")}</span>
         <Link
           href="/operator/audit"
-          className="text-[var(--color-persimmon-2)] hover:underline"
+          className="text-[var(--color-accent-strong)] hover:underline"
         >
           {t("operator.dashboard.activity.view_all")}
         </Link>
       </div>
       {rows.length === 0 ? (
-        <p className="p-6 text-center text-[12px] text-[var(--color-ink-4)]">
+        <p className="p-6 text-center text-[12px] text-[var(--color-text-muted)]">
           {t("operator.dashboard.activity.empty")}
         </p>
       ) : (
-        <ul className="divide-y divide-[var(--color-rule)]">
+        <ul className="divide-y divide-[var(--color-line)]">
           {rows.map((r) => (
             <li
               key={r.id}
               className="grid grid-cols-[1fr_auto] items-center gap-3 px-4 py-2 text-[12px]"
             >
               <div className="flex min-w-0 items-center gap-2">
-                <span className="font-[var(--font-tez-mono)] truncate text-[11px] text-[var(--color-ink-3)]">
+                <span className="font-[var(--font-mono)] truncate text-[11px] text-[var(--color-text-muted)]">
                   {r.action}
                 </span>
-                <span className="truncate text-[var(--color-ink-4)]">
+                <span className="truncate text-[var(--color-text-muted)]">
                   · {r.actor ?? t("operator.dashboard.activity.system_actor")}
                 </span>
               </div>
-              <span className="font-[var(--font-tez-mono)] nums whitespace-nowrap text-[10px] text-[var(--color-ink-5)]">
+              <span className="font-[var(--font-mono)] nums whitespace-nowrap text-[10px] text-[var(--color-text-subtle)]">
                 {new Date(r.createdAt).toLocaleString()}
               </span>
             </li>

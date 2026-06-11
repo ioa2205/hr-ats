@@ -127,7 +127,7 @@ export default function OperatorSourcingPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-on-surface text-2xl font-semibold">{t("operator.sourcing.title")}</h1>
+        <h1 className="text-[var(--color-text)] text-2xl font-semibold">{t("operator.sourcing.title")}</h1>
         <div className="flex items-center gap-2">
           <Select value={filter} onValueChange={setFilter}>
             <SelectTrigger className="w-40" aria-label={t("admin.processing.filter_label")}>
@@ -148,7 +148,7 @@ export default function OperatorSourcingPage() {
         </div>
       </div>
 
-      <p className="text-on-surface-variant -mt-3 text-sm">{t("operator.sourcing.subtitle")}</p>
+      <p className="text-[var(--color-text-muted)] -mt-3 text-sm">{t("operator.sourcing.subtitle")}</p>
 
       <HhPlatformConnectionCard />
 
@@ -157,12 +157,12 @@ export default function OperatorSourcingPage() {
           {tiles.map((tile) => (
             <div
               key={tile.labelKey}
-              className="bg-surface-container rounded-[var(--radius-md)] px-3 py-2.5"
+              className="bg-[var(--color-surface-subtle)] rounded-[var(--radius-md)] px-3 py-2.5"
             >
-              <div className="text-on-surface-variant text-[11px] font-medium">
+              <div className="text-[var(--color-text-muted)] text-[11px] font-medium">
                 {t(tile.labelKey)}
               </div>
-              <div className="nums text-on-surface mt-0.5 text-lg font-semibold">{tile.value}</div>
+              <div className="nums text-[var(--color-text)] mt-0.5 text-lg font-semibold">{tile.value}</div>
             </div>
           ))}
         </div>
@@ -173,12 +173,12 @@ export default function OperatorSourcingPage() {
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="bg-surface-container h-12 w-full animate-pulse rounded-[var(--radius-md)]"
+              className="bg-[var(--color-surface-subtle)] h-12 w-full animate-pulse rounded-[var(--radius-md)]"
             />
           ))}
         </div>
       ) : rows.length === 0 ? (
-        <p className="text-on-surface-variant py-8 text-center text-sm">
+        <p className="text-[var(--color-text-muted)] py-8 text-center text-sm">
           {t("operator.sourcing.empty")}
         </p>
       ) : (

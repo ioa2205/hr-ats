@@ -30,7 +30,7 @@ export default async function OperatorDashboard() {
   if (!initial) {
     const locale = await getLocale();
     return (
-      <div className="font-[var(--font-tez-sans)] rounded-[var(--radius-md)] border border-[var(--color-rule-2)] bg-[var(--color-paper)] p-6 text-[13px] text-[var(--color-ink-3)]">
+      <div className="font-[var(--font-sans)] rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)] p-6 text-[13px] text-[var(--color-text-muted)]">
         {t("operator.dashboard.error", locale)}
       </div>
     );

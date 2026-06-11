@@ -25,7 +25,7 @@ const GRID_LINES = 3;
 export function LineChart({
   data,
   height = 160,
-  stroke = "var(--color-persimmon)",
+  stroke = "var(--color-accent)",
   fill,
   format = (v) => String(v),
 }: Props) {
@@ -81,7 +81,7 @@ export function LineChart({
   if (data.length === 0) {
     return (
       <div
-        className="flex items-center justify-center text-[11px] text-[var(--color-ink-5)]"
+        className="flex items-center justify-center text-[11px] text-[var(--color-text-subtle)]"
         style={{ height }}
       >
         —
@@ -117,7 +117,7 @@ export function LineChart({
               x2={100 - PAD.right}
               y1={t.y}
               y2={t.y}
-              stroke="var(--color-rule)"
+              stroke="var(--color-line)"
               strokeWidth={0.3}
             />
           </g>
@@ -139,7 +139,7 @@ export function LineChart({
               x2={xs[hoverIdx]}
               y1={PAD.top}
               y2={height - PAD.bottom}
-              stroke="var(--color-ink-5)"
+              stroke="var(--color-text-subtle)"
               strokeDasharray="2 2"
               strokeWidth={0.5}
               vectorEffect="non-scaling-stroke"
@@ -148,7 +148,7 @@ export function LineChart({
               cx={xs[hoverIdx]}
               cy={ys[hoverIdx]}
               r={1.8}
-              fill="var(--color-bone)"
+              fill="var(--color-canvas)"
               stroke={stroke}
               strokeWidth={0.8}
               vectorEffect="non-scaling-stroke"
@@ -161,25 +161,25 @@ export function LineChart({
         {yTicks.map((t, i) => (
           <span
             key={i}
-            className="font-[var(--font-tez-mono)] absolute text-[9px] text-[var(--color-ink-5)]"
+            className="font-[var(--font-mono)] absolute text-[9px] text-[var(--color-text-subtle)]"
             style={{ left: 0, top: t.y - 5, width: 28, textAlign: "right" }}
           >
             {t.label}
           </span>
         ))}
       </div>
-      <div className="font-[var(--font-tez-mono)] mt-1 flex justify-between text-[10px] text-[var(--color-ink-5)]">
+      <div className="font-[var(--font-mono)] mt-1 flex justify-between text-[10px] text-[var(--color-text-subtle)]">
         <span>{firstDay}</span>
         <span>{lastDay}</span>
       </div>
       {hoverIdx !== null && data[hoverIdx] && (
         <div
-          className="pointer-events-none absolute -top-8 rounded-[var(--radius-sm)] bg-[var(--color-ink)] px-2 py-1 text-[11px] text-[var(--color-bone)] shadow-[var(--shadow-tez-2)]"
+          className="pointer-events-none absolute -top-8 rounded-[var(--radius-sm)] bg-[var(--color-text)] px-2 py-1 text-[11px] text-[var(--color-canvas)] shadow-[var(--shadow-level-2)]"
           style={{
             left: `calc(${(xs[hoverIdx] / 100) * 100}% - 40px)`,
           }}
         >
-          <span className="font-[var(--font-tez-mono)] opacity-70">{data[hoverIdx].day}</span>
+          <span className="font-[var(--font-mono)] opacity-70">{data[hoverIdx].day}</span>
           <span className="ml-2 font-semibold">{format(data[hoverIdx].value)}</span>
         </div>
       )}

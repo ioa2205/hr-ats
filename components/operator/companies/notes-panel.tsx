@@ -81,23 +81,24 @@ export function NotesPanel({ companyId }: { companyId: string }) {
   }
 
   return (
-    <section className="rounded-[var(--radius-md)] border border-[var(--color-rule-2)] bg-[var(--color-paper)]">
-      <header className="border-b border-[var(--color-rule-2)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-ink-4)]">
+    <section className="rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)]">
+      <header className="border-b border-[var(--color-line-strong)] px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
         {t("operator.notes.title")}
       </header>
 
-      <div className="flex flex-col gap-2 border-b border-[var(--color-rule)] p-4">
+      <div className="flex flex-col gap-2 border-b border-[var(--color-line)] p-4">
         <Textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
           placeholder={t("operator.notes.placeholder")}
+          aria-label={t("operator.notes.title")}
           rows={3}
         />
-        <p className="nums text-right font-[var(--font-tez-mono)] text-[10px] text-[var(--color-ink-5)]">
+        <p className="nums text-right font-[var(--font-mono)] text-[10px] text-[var(--color-text-subtle)]">
           {body.length.toLocaleString()} / 8,000
         </p>
         <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 text-[11px] text-[var(--color-ink-3)]">
+          <label className="flex items-center gap-2 text-[11px] text-[var(--color-text-muted)]">
             <input
               type="checkbox"
               checked={pinned}
@@ -114,21 +115,21 @@ export function NotesPanel({ companyId }: { companyId: string }) {
       </div>
 
       {loading ? (
-        <p className="p-6 text-center text-[12px] text-[var(--color-ink-4)]">
+        <p className="p-6 text-center text-[12px] text-[var(--color-text-muted)]">
           {t("operator.notes.loading")}
         </p>
       ) : notes.length === 0 ? (
-        <p className="p-6 text-center text-[12px] text-[var(--color-ink-4)]">
+        <p className="p-6 text-center text-[12px] text-[var(--color-text-muted)]">
           {t("operator.notes.empty")}
         </p>
       ) : (
-        <ul className="divide-y divide-[var(--color-rule)]">
+        <ul className="divide-y divide-[var(--color-line)]">
           {notes.map((n) => (
             <li
               key={n.id}
-              className={`flex flex-col gap-1 p-4 ${n.pinned ? "border-l-2 border-[var(--color-persimmon)]" : ""}`}
+              className={`flex flex-col gap-1 p-4 ${n.pinned ? "border-l-2 border-[var(--color-accent)]" : ""}`}
             >
-              <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.06em] text-[var(--color-ink-5)]">
+              <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.06em] text-[var(--color-text-subtle)]">
                 <span>
                   {n.author ?? t("operator.notes.default_author")} ·{" "}
                   {new Date(n.createdAt).toLocaleString()}
@@ -136,24 +137,24 @@ export function NotesPanel({ companyId }: { companyId: string }) {
                 <div className="flex gap-1">
                   <button
                     onClick={() => void togglePin(n)}
-                    className="rounded-[var(--radius-sm)] p-1 hover:bg-[var(--color-bone-2)]"
+                    className="rounded-[var(--radius-sm)] p-1 hover:bg-[var(--color-surface-subtle)]"
                     aria-label={n.pinned ? t("operator.notes.unpin") : t("operator.notes.pin")}
                     title={n.pinned ? t("operator.notes.unpin") : t("operator.notes.pin")}
                   >
                     <Pin
-                      className={`h-3 w-3 ${n.pinned ? "text-[var(--color-persimmon)]" : ""}`}
+                      className={`h-3 w-3 ${n.pinned ? "text-[var(--color-accent)]" : ""}`}
                     />
                   </button>
                   <button
                     onClick={() => void del(n)}
-                    className="rounded-[var(--radius-sm)] p-1 hover:bg-[var(--color-bone-2)]"
+                    className="rounded-[var(--radius-sm)] p-1 hover:bg-[var(--color-surface-subtle)]"
                     aria-label={t("operator.notes.delete")}
                   >
                     <Trash2 className="h-3 w-3" />
                   </button>
                 </div>
               </div>
-              <p className="whitespace-pre-wrap text-[13px] text-[var(--color-ink)]">{n.body}</p>
+              <p className="whitespace-pre-wrap text-[13px] text-[var(--color-text)]">{n.body}</p>
             </li>
           ))}
         </ul>

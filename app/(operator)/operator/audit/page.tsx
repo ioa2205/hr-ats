@@ -39,7 +39,7 @@ export default function OperatorAuditPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-on-surface text-2xl font-semibold">{t("operator.audit.title")}</h1>
+        <h1 className="text-[var(--color-text)] text-2xl font-semibold">{t("operator.audit.title")}</h1>
         <Button
           variant="secondary"
           size="sm"
@@ -56,12 +56,12 @@ export default function OperatorAuditPage() {
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="bg-surface-container h-12 w-full animate-pulse rounded-[var(--radius-md)]"
+              className="bg-[var(--color-surface-subtle)] h-12 w-full animate-pulse rounded-[var(--radius-md)]"
             />
           ))}
         </div>
       ) : rows.length === 0 ? (
-        <p className="text-on-surface-variant py-8 text-center text-sm">
+        <p className="text-[var(--color-text-muted)] py-8 text-center text-sm">
           {t("operator.audit.empty")}
         </p>
       ) : (
@@ -88,30 +88,30 @@ export default function OperatorAuditPage() {
                     second: "2-digit",
                   })}
                 </TableCell>
-                <TableCell className="text-on-surface-variant text-xs">
+                <TableCell className="text-[var(--color-text-muted)] text-xs">
                   {row.company_id ? row.company_id.slice(0, 8) : "—"}
                 </TableCell>
                 <TableCell className="text-xs">{row.actor}</TableCell>
                 <TableCell>
-                  <code className="bg-surface-container rounded px-1.5 py-0.5 text-xs">
+                  <code className="bg-[var(--color-surface-subtle)] rounded px-1.5 py-0.5 text-xs">
                     {row.action}
                   </code>
                 </TableCell>
                 <TableCell className="text-xs">
                   {row.entity_type}
                   {row.entity_id && (
-                    <span className="text-on-surface-variant ml-1">
+                    <span className="text-[var(--color-text-muted)] ml-1">
                       #{row.entity_id.slice(0, 8)}
                     </span>
                   )}
                 </TableCell>
                 <TableCell className="max-w-[300px]">
                   {row.metadata ? (
-                    <pre className="text-on-surface-variant max-h-20 overflow-auto text-xs whitespace-pre-wrap">
+                    <pre className="text-[var(--color-text-muted)] max-h-20 overflow-auto text-xs whitespace-pre-wrap">
                       {JSON.stringify(row.metadata, null, 2)}
                     </pre>
                   ) : (
-                    <span className="text-on-surface-variant text-xs">—</span>
+                    <span className="text-[var(--color-text-muted)] text-xs">—</span>
                   )}
                 </TableCell>
               </TableRow>

@@ -48,7 +48,7 @@ export function OperatorAvatarMenu({ email, fullName }: Props) {
         <DropdownMenuItem onSelect={() => setCheatsheetOpen(true)}>
           <Keyboard className="h-3.5 w-3.5" />
           <span className="flex-1">{t("operator.chrome.shortcuts")}</span>
-          <kbd className="font-[var(--font-tez-mono)] text-[10px] text-[var(--color-ink-5)]">?</kbd>
+          <kbd className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-subtle)]">?</kbd>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <a href="/hr/dashboard" className="flex w-full items-center gap-2">

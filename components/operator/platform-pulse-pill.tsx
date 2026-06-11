@@ -100,8 +100,8 @@ export function PlatformPulsePill() {
           </DialogHeader>
           {incidents.length === 0 ? (
             <div className="flex flex-col items-center gap-3 p-10">
-              <CheckCircle2 className="h-8 w-8 text-[var(--color-tez-green)]" />
-              <p className="text-center text-sm text-[var(--color-ink-3)]">
+              <CheckCircle2 className="h-8 w-8 text-[var(--color-success)]" />
+              <p className="text-center text-sm text-[var(--color-text-muted)]">
                 {t("operator.pulse.no_incidents")}
               </p>
             </div>
@@ -110,21 +110,21 @@ export function PlatformPulsePill() {
               {incidents.map((i) => (
                 <li
                   key={i.id}
-                  className="flex items-start gap-3 border-b border-[var(--color-rule)] px-5 py-3 last:border-0"
+                  className="flex items-start gap-3 border-b border-[var(--color-line)] px-5 py-3 last:border-0"
                 >
                   <AlertTriangle
                     className={`mt-0.5 h-4 w-4 shrink-0 ${
                       i.severity === "critical"
-                        ? "text-[var(--color-tez-red)]"
-                        : "text-[var(--color-tez-amber)]"
+                        ? "text-[var(--color-danger)]"
+                        : "text-[var(--color-warning)]"
                     }`}
                   />
                   <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                    <p className="font-[var(--font-tez-mono)] text-[11px] uppercase tracking-wide text-[var(--color-ink-5)]">
+                    <p className="font-[var(--font-mono)] text-[11px] uppercase tracking-wide text-[var(--color-text-subtle)]">
                       {i.rule_id} · {t(severityKey(i.severity))}
                     </p>
-                    <p className="text-[13px] text-[var(--color-ink)]">{i.summary}</p>
-                    <p className="text-[11px] text-[var(--color-ink-4)]">
+                    <p className="text-[13px] text-[var(--color-text)]">{i.summary}</p>
+                    <p className="text-[11px] text-[var(--color-text-muted)]">
                       {new Date(i.first_fired_at).toLocaleString()}
                     </p>
                   </div>
@@ -132,10 +132,10 @@ export function PlatformPulsePill() {
               ))}
             </ul>
           )}
-          <div className="border-t border-[var(--color-rule)] px-5 py-3 text-center">
+          <div className="border-t border-[var(--color-line)] px-5 py-3 text-center">
             <a
               href="/operator/incidents"
-              className="text-[12px] font-medium text-[var(--color-persimmon-2)] hover:underline"
+              className="text-[12px] font-medium text-[var(--color-accent-strong)] hover:underline"
             >
               {t("operator.pulse.open_console")}
             </a>

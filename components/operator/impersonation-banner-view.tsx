@@ -59,15 +59,15 @@ export function ImpersonationBannerView({ targetLabel, operatorLabel, startedAt 
 
   const tone =
     state === "warning"
-      ? "bg-[var(--color-tez-amber)] text-white"
-      : "bg-[var(--color-persimmon)] text-white";
+      ? "bg-[var(--color-warning)] text-white"
+      : "bg-[var(--color-accent)] text-white";
 
   return (
     <div
       role="alert"
       data-testid="impersonation-banner"
       data-state={state}
-      className={`fixed inset-x-0 top-0 z-[60] flex min-h-[44px] items-center gap-3 px-4 py-2 text-[13px] shadow-[var(--shadow-tez-2)] ${tone}`}
+      className={`fixed inset-x-0 top-0 z-[60] flex min-h-[44px] items-center gap-3 px-4 py-2 text-[13px] shadow-[var(--shadow-level-2)] ${tone}`}
     >
       <div className="flex min-w-0 flex-1 items-center gap-3">
         {state === "warning" && <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden="true" />}
@@ -97,7 +97,7 @@ export function ImpersonationBannerView({ targetLabel, operatorLabel, startedAt 
         type="button"
         onClick={() => void endSession()}
         disabled={busy}
-        className="rounded-[var(--radius-sm)] bg-white/95 px-3 py-1 text-xs font-semibold text-[var(--color-ink)] hover:bg-white disabled:opacity-60"
+        className="rounded-[var(--radius-sm)] bg-white/95 px-3 py-1 text-xs font-semibold text-[var(--color-text)] hover:bg-white disabled:opacity-60"
       >
         {busy ? t("operator.impersonation.ending") : t("operator.impersonation.end_session")}
       </button>

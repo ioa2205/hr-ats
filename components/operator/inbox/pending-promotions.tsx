@@ -62,41 +62,41 @@ export function PendingPromotions() {
 
   if (loading) {
     return (
-      <div className="rounded-[var(--radius-md)] border border-[var(--color-rule-2)] bg-[var(--color-paper)] p-4">
-        <div className="h-4 w-40 animate-pulse rounded bg-[var(--color-bone-2)]" />
+      <div className="rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)] p-4">
+        <div className="h-4 w-40 animate-pulse rounded bg-[var(--color-surface-subtle)]" />
       </div>
     );
   }
   if (rows.length === 0) return null;
 
   return (
-    <section className="rounded-[var(--radius-md)] border border-[var(--color-persimmon)]/40 bg-[var(--color-paper)]">
-      <header className="flex items-center gap-2 border-b border-[var(--color-persimmon)]/30 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-persimmon-2)]">
+    <section className="rounded-[var(--radius-md)] border border-[var(--color-accent)]/40 bg-[var(--color-surface)]">
+      <header className="flex items-center gap-2 border-b border-[var(--color-accent)]/30 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-accent-strong)]">
         <Shield className="h-3.5 w-3.5" />
         {t("operator.promotions.title", { n: String(rows.length) })}
       </header>
-      <ul className="divide-y divide-[var(--color-rule)]">
+      <ul className="divide-y divide-[var(--color-line)]">
         {rows.map((p) => (
           <li key={p.id} className="flex items-start justify-between gap-3 p-4">
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <p className="text-[13px] font-medium text-[var(--color-ink)]">
+              <p className="text-[13px] font-medium text-[var(--color-text)]">
                 {p.kind === "promote" ? (
-                  <Shield className="mr-1 inline h-3.5 w-3.5 text-[var(--color-tez-green)]" />
+                  <Shield className="mr-1 inline h-3.5 w-3.5 text-[var(--color-success)]" />
                 ) : (
-                  <ShieldOff className="mr-1 inline h-3.5 w-3.5 text-[var(--color-tez-red)]" />
+                  <ShieldOff className="mr-1 inline h-3.5 w-3.5 text-[var(--color-danger)]" />
                 )}
                 {p.kind === "promote"
                   ? t("operator.promotions.promote")
                   : t("operator.promotions.demote")}{" "}
                 {p.targetLabel}
               </p>
-              <p className="text-[11px] text-[var(--color-ink-4)]">
+              <p className="text-[11px] text-[var(--color-text-muted)]">
                 {t("operator.promotions.proposed_by", {
                   by: p.proposerLabel,
                   when: new Date(p.createdAt).toLocaleString(),
                 })}
               </p>
-              <p className="mt-1 text-[12px] italic text-[var(--color-ink-3)]">“{p.reason}”</p>
+              <p className="mt-1 text-[12px] italic text-[var(--color-text-muted)]">“{p.reason}”</p>
             </div>
             <div className="flex shrink-0 gap-1.5">
               <Button size="sm" variant="secondary" onClick={() => decide(p.id, "reject")}>
@@ -109,7 +109,7 @@ export function PendingPromotions() {
           </li>
         ))}
       </ul>
-      <p className="px-4 py-2 text-[10px] text-[var(--color-ink-5)]">
+      <p className="px-4 py-2 text-[10px] text-[var(--color-text-subtle)]">
         {t("operator.promotions.footer_note")}
       </p>
     </section>

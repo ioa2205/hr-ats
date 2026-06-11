@@ -67,6 +67,7 @@ export default function CompanyDetailPage() {
   const [data, setData] = useState<CompanyDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionBusy, setActionBusy] = useState(false);
+  const [suspendOpen, setSuspendOpen] = useState(false);
   const [impersonateTarget, setImpersonateTarget] = useState<CompanyMember | null>(null);
   const [impersonateReason, setImpersonateReason] = useState("");
   const [impersonating, setImpersonating] = useState(false);
@@ -97,6 +98,7 @@ export default function CompanyDetailPage() {
       });
       if (res.ok) {
         toast({ variant: "success", title: t("operator.company_detail.toast.suspended") });
+        setSuspendOpen(false);
         await fetchDetail();
       } else {
         const err = await res.json().catch(() => ({}));
@@ -163,9 +165,9 @@ export default function CompanyDetailPage() {
   if (loading) {
     return (
       <div className="space-y-4">
-        <div className="bg-surface-container h-8 w-48 animate-pulse rounded" />
-        <div className="bg-surface-container h-24 w-full animate-pulse rounded-[var(--radius-md)]" />
-        <div className="bg-surface-container h-64 w-full animate-pulse rounded-[var(--radius-md)]" />
+        <div className="bg-[var(--color-surface-subtle)] h-8 w-48 animate-pulse rounded" />
+        <div className="bg-[var(--color-surface-subtle)] h-24 w-full animate-pulse rounded-[var(--radius-md)]" />
+        <div className="bg-[var(--color-surface-subtle)] h-64 w-full animate-pulse rounded-[var(--radius-md)]" />
       </div>
     );
   }
@@ -176,7 +178,7 @@ export default function CompanyDetailPage() {
         <Button variant="ghost" size="sm" onClick={() => router.push("/operator/companies")}>
           <ArrowLeft className="h-4 w-4" /> {t("operator.company_detail.back")}
         </Button>
-        <p className="text-on-surface-variant">{t("operator.company_detail.not_found")}</p>
+        <p className="text-[var(--color-text-muted)]">{t("operator.company_detail.not_found")}</p>
       </div>
     );
   }
@@ -205,10 +207,12 @@ export default function CompanyDetailPage() {
         </Button>
       </div>
 
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-on-surface text-2xl font-semibold">{company.name}</h1>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+            <h1 className="text-[var(--color-text)] text-2xl font-semibold break-words">
+              {company.name}
+            </h1>
             <Badge
               tone={deleted ? "neutral" : suspended ? "danger" : "success"}
               variant="dot"
@@ -217,7 +221,7 @@ export default function CompanyDetailPage() {
               {t(companyStatusKey(company.status))}
             </Badge>
           </div>
-          <p className="text-on-surface-variant text-sm">
+          <p className="text-[var(--color-text-muted)] text-sm">
             {company.slug} ·{" "}
             {t("operator.company_detail.locale", { locale: company.default_locale })}
           </p>
@@ -231,7 +235,7 @@ export default function CompanyDetailPage() {
                 : t("operator.company_detail.activate")}
             </Button>
           ) : (
-            <Button variant="danger" onClick={handleSuspend} loading={actionBusy}>
+            <Button variant="danger" onClick={() => setSuspendOpen(true)} loading={actionBusy}>
               <Ban className="h-4 w-4" />
               {t("operator.company_detail.suspend")}
             </Button>
@@ -242,30 +246,30 @@ export default function CompanyDetailPage() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>
           <CardContent>
-            <p className="text-on-surface-variant text-xs">
+            <p className="text-[var(--color-text-muted)] text-xs">
               {t("operator.company_detail.active_jobs")}
             </p>
-            <p className="nums text-on-surface text-2xl font-semibold">
+            <p className="nums text-[var(--color-text)] text-2xl font-semibold">
               {usage?.active_job_count ?? 0}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent>
-            <p className="text-on-surface-variant text-xs">
+            <p className="text-[var(--color-text-muted)] text-xs">
               {t("operator.company_detail.candidates_30d")}
             </p>
-            <p className="nums text-on-surface text-2xl font-semibold">
+            <p className="nums text-[var(--color-text)] text-2xl font-semibold">
               {usage?.candidate_count_30d ?? 0}
             </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent>
-            <p className="text-on-surface-variant text-xs">
+            <p className="text-[var(--color-text-muted)] text-xs">
               {t("operator.company_detail.ai_cost_30d")}
             </p>
-            <p className="nums text-on-surface text-2xl font-semibold">
+            <p className="nums text-[var(--color-text)] text-2xl font-semibold">
               ${Number(usage?.ai_cost_usd_30d ?? 0).toFixed(2)}
             </p>
           </CardContent>
@@ -275,12 +279,12 @@ export default function CompanyDetailPage() {
       {subscription && (
         <Card>
           <CardContent>
-            <h2 className="text-on-surface mb-2 text-lg font-medium">
+            <h2 className="text-[var(--color-text)] mb-2 text-lg font-medium">
               {t("operator.company_detail.subscription")}
             </h2>
             <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-5">
               <div>
-                <dt className="text-on-surface-variant text-xs">
+                <dt className="text-[var(--color-text-muted)] text-xs">
                   {t("operator.company_detail.sub_status")}
                 </dt>
                 <dd>
@@ -288,7 +292,7 @@ export default function CompanyDetailPage() {
                 </dd>
               </div>
               <div>
-                <dt className="text-on-surface-variant text-xs">
+                <dt className="text-[var(--color-text-muted)] text-xs">
                   {t("operator.company_detail.sub_trial_ends")}
                 </dt>
                 <dd className="nums">
@@ -296,7 +300,7 @@ export default function CompanyDetailPage() {
                 </dd>
               </div>
               <div>
-                <dt className="text-on-surface-variant text-xs">
+                <dt className="text-[var(--color-text-muted)] text-xs">
                   {t("operator.company_detail.sub_cv_used")}
                 </dt>
                 <dd className="nums">
@@ -304,13 +308,13 @@ export default function CompanyDetailPage() {
                 </dd>
               </div>
               <div>
-                <dt className="text-on-surface-variant text-xs">
+                <dt className="text-[var(--color-text-muted)] text-xs">
                   {t("operator.company_detail.sub_job_limit")}
                 </dt>
                 <dd className="nums">{subscription.job_quota_limit}</dd>
               </div>
               <div>
-                <dt className="text-on-surface-variant text-xs">
+                <dt className="text-[var(--color-text-muted)] text-xs">
                   {t("operator.company_detail.sub_sourcing_used")}
                 </dt>
                 <dd className="nums">
@@ -323,7 +327,7 @@ export default function CompanyDetailPage() {
       )}
 
       <div className="space-y-2">
-        <h2 className="text-on-surface text-lg font-medium">
+        <h2 className="text-[var(--color-text)] text-lg font-medium">
           {t("operator.company_detail.members", { n: String(members.length) })}
         </h2>
         <Table>
@@ -342,11 +346,11 @@ export default function CompanyDetailPage() {
             {members.map((m) => (
               <TableRow key={m.user_id}>
                 <TableCell className="font-medium">{m.profile?.full_name ?? "—"}</TableCell>
-                <TableCell className="text-on-surface-variant">{m.profile?.email}</TableCell>
+                <TableCell className="text-[var(--color-text-muted)]">{m.profile?.email}</TableCell>
                 <TableCell>
                   <Badge size="sm">{t(companyMemberRoleKey(m.role))}</Badge>
                 </TableCell>
-                <TableCell className="text-on-surface-variant text-xs">
+                <TableCell className="text-[var(--color-text-muted)] text-xs">
                   {new Date(m.created_at).toLocaleDateString()}
                 </TableCell>
                 <TableCell className="text-right">
@@ -377,6 +381,26 @@ export default function CompanyDetailPage() {
         sourcingQuotaLimit={subscription?.sourcing_quota_limit ?? null}
         onChanged={fetchDetail}
       />
+
+      <Dialog open={suspendOpen} onOpenChange={setSuspendOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("operator.company_detail.suspend_dialog.title")}</DialogTitle>
+            <DialogDescription>
+              {t("operator.company_detail.suspend_dialog.desc", { name: company.name })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setSuspendOpen(false)}>
+              {t("operator.company_detail.dialog.cancel")}
+            </Button>
+            <Button variant="danger" onClick={handleSuspend} loading={actionBusy}>
+              <Ban className="h-4 w-4" />
+              {t("operator.company_detail.suspend")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         open={!!impersonateTarget}

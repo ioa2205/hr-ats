@@ -109,20 +109,20 @@ export default function OperatorCompaniesPage() {
 
   return (
     <TooltipProvider>
-      <div className="flex flex-col gap-4 font-[var(--font-tez-sans)]">
+      <div className="flex flex-col gap-4 font-[var(--font-sans)]">
         <header className="flex items-end justify-between gap-3">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-ink-4)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--color-text-muted)]">
               {t("admin.nav.companies")}
             </p>
-            <h1 className="text-[22px] font-semibold tracking-tight text-[var(--color-ink)]">
+            <h1 className="text-[22px] font-semibold tracking-tight text-[var(--color-text)]">
               {t("operator.companies.title")}
             </h1>
           </div>
           <div className="flex items-center gap-2">
             <a
               href={exportHref}
-              className="flex h-8 items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--color-rule-2)] px-2.5 text-[11px] font-medium text-[var(--color-ink-3)] hover:bg-[var(--color-bone-2)]"
+              className="flex h-8 items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--color-line-strong)] px-2.5 text-[11px] font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-subtle)]"
             >
               <Download className="h-3.5 w-3.5" />
               {t("operator.companies.export")}
@@ -140,7 +140,7 @@ export default function OperatorCompaniesPage() {
         </header>
 
         {/* Saved views */}
-        <nav className="flex items-center gap-1 overflow-x-auto border-b border-[var(--color-rule)] pb-1">
+        <nav className="flex items-center gap-1 overflow-x-auto border-b border-[var(--color-line)] pb-1">
           {VIEWS.map((v) => {
             const active = view === v.id;
             return (
@@ -152,8 +152,8 @@ export default function OperatorCompaniesPage() {
                 }}
                 className={`whitespace-nowrap rounded-[var(--radius-sm)] px-2.5 py-1 text-[12px] font-medium transition-colors ${
                   active
-                    ? "bg-[var(--color-ink)] text-[var(--color-bone)]"
-                    : "text-[var(--color-ink-4)] hover:bg-[var(--color-bone-2)] hover:text-[var(--color-ink)]"
+                    ? "bg-[var(--color-text)] text-[var(--color-canvas)]"
+                    : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)]"
                 }`}
               >
                 {t(v.labelKey)}
@@ -165,7 +165,7 @@ export default function OperatorCompaniesPage() {
         {/* Search + filter toggle */}
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative flex-1 min-w-[240px]">
-            <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-ink-4)]" />
+            <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--color-text-muted)]" />
             <input
               value={search}
               onChange={(e) => {
@@ -173,25 +173,26 @@ export default function OperatorCompaniesPage() {
                 setPage(1);
               }}
               placeholder={t("operator.companies.search_placeholder")}
-              className="h-8 w-full rounded-[var(--radius-sm)] border border-[var(--color-rule-2)] bg-[var(--color-paper)] pl-8 pr-2 text-[12px] text-[var(--color-ink)] placeholder:text-[var(--color-ink-5)] focus:border-[var(--color-ink-4)] focus:outline-none"
+              aria-label={t("operator.companies.search_placeholder")}
+              className="h-8 w-full rounded-[var(--radius-sm)] border border-[var(--color-line-strong)] bg-[var(--color-surface)] pl-8 pr-2 text-[12px] text-[var(--color-text)] placeholder:text-[var(--color-text-subtle)] focus:border-[var(--color-text-muted)] focus:outline-none"
             />
           </div>
           <button
             onClick={() => setShowFilters((v) => !v)}
-            className="flex h-8 items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--color-rule-2)] px-2.5 text-[11px] font-medium text-[var(--color-ink-3)] hover:bg-[var(--color-bone-2)]"
+            className="flex h-8 items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--color-line-strong)] px-2.5 text-[11px] font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-subtle)]"
           >
             <Filter className="h-3.5 w-3.5" />
             {t("operator.companies.filters")}
           </button>
-          <div className="nums font-[var(--font-tez-mono)] text-[11px] text-[var(--color-ink-5)]">
+          <div className="nums font-[var(--font-mono)] text-[11px] text-[var(--color-text-subtle)]">
             {total.toLocaleString()} {t("operator.companies.count_suffix")}
           </div>
         </div>
 
         {showFilters && (
-          <div className="grid grid-cols-1 gap-3 rounded-[var(--radius-md)] border border-[var(--color-rule-2)] bg-[var(--color-paper)] p-3 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)] p-3 md:grid-cols-3">
             <label className="flex flex-col gap-1 text-[11px]">
-              <span className="font-semibold uppercase tracking-[0.06em] text-[var(--color-ink-4)]">
+              <span className="font-semibold uppercase tracking-[0.06em] text-[var(--color-text-muted)]">
                 {t("operator.companies.plan")}
               </span>
               <select
@@ -200,7 +201,7 @@ export default function OperatorCompaniesPage() {
                   setPlan(e.target.value as "all" | "trial" | "pro");
                   setPage(1);
                 }}
-                className="h-8 rounded-[var(--radius-sm)] border border-[var(--color-rule-2)] bg-[var(--color-bone)] px-2 text-[12px] text-[var(--color-ink)]"
+                className="h-8 rounded-[var(--radius-sm)] border border-[var(--color-line-strong)] bg-[var(--color-canvas)] px-2 text-[12px] text-[var(--color-text)]"
               >
                 <option value="all">{t("operator.companies.plan_all")}</option>
                 <option value="trial">{t("operator.enum.plan.trial")}</option>
@@ -216,7 +217,7 @@ export default function OperatorCompaniesPage() {
             {Array.from({ length: 10 }).map((_, i) => (
               <div
                 key={i}
-                className="h-9 animate-pulse rounded-[var(--radius-sm)] bg-[var(--color-bone-2)]"
+                className="h-9 animate-pulse rounded-[var(--radius-sm)] bg-[var(--color-surface-subtle)]"
               />
             ))}
           </div>
@@ -231,10 +232,10 @@ export default function OperatorCompaniesPage() {
             description={t("admin.companies.empty_description")}
           />
         ) : (
-          <div className="overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-rule-2)] bg-[var(--color-paper)]">
+          <div className="overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)]">
             <table className="w-full text-[12px]">
-              <thead className="border-b border-[var(--color-rule)] bg-[var(--color-bone)]">
-                <tr className="text-left text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--color-ink-4)]">
+              <thead className="border-b border-[var(--color-line)] bg-[var(--color-canvas)]">
+                <tr className="text-left text-[10px] font-semibold uppercase tracking-[0.06em] text-[var(--color-text-muted)]">
                   <th className="px-3 py-2">{t("operator.companies.col.company")}</th>
                   <th className="px-3 py-2">{t("operator.companies.col.status")}</th>
                   <th className="px-3 py-2">{t("operator.companies.col.health")}</th>
@@ -251,16 +252,16 @@ export default function OperatorCompaniesPage() {
                   return (
                     <tr
                       key={c.id}
-                      className="group border-b border-[var(--color-rule)] last:border-0 hover:bg-[var(--color-bone-2)]"
+                      className="group border-b border-[var(--color-line)] last:border-0 hover:bg-[var(--color-surface-subtle)]"
                     >
                       <td className="px-3 py-1.5">
                         <Link
                           href={`/operator/companies/${c.id}`}
-                          className="font-medium text-[var(--color-ink)] hover:underline"
+                          className="font-medium text-[var(--color-text)] hover:underline"
                         >
                           {c.name}
                         </Link>
-                        <div className="font-[var(--font-tez-mono)] text-[10px] text-[var(--color-ink-5)]">
+                        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-subtle)]">
                           {c.slug}
                         </div>
                       </td>
@@ -282,22 +283,22 @@ export default function OperatorCompaniesPage() {
                       <td className="px-3 py-1.5">
                         <HealthChip score={c.health_score} />
                       </td>
-                      <td className="nums px-3 py-1.5 text-right font-[var(--font-tez-mono)] text-[var(--color-ink-3)]">
+                      <td className="nums px-3 py-1.5 text-right font-[var(--font-mono)] text-[var(--color-text-muted)]">
                         {memberCount}
                       </td>
                       <td className="px-3 py-1.5">
                         {sub ? (
-                          <span className="text-[11px] text-[var(--color-ink-3)]">
+                          <span className="text-[11px] text-[var(--color-text-muted)]">
                             <span className="font-medium">{t(planKey(sub.plan))}</span>
-                            <span className="ml-1 text-[var(--color-ink-5)]">
+                            <span className="ml-1 text-[var(--color-text-subtle)]">
                               ({t(subscriptionStatusKey(sub.status))})
                             </span>
                           </span>
                         ) : (
-                          <span className="text-[var(--color-ink-5)]">—</span>
+                          <span className="text-[var(--color-text-subtle)]">—</span>
                         )}
                       </td>
-                      <td className="nums px-3 py-1.5 text-right font-[var(--font-tez-mono)] text-[10px] text-[var(--color-ink-5)]">
+                      <td className="nums px-3 py-1.5 text-right font-[var(--font-mono)] text-[10px] text-[var(--color-text-subtle)]">
                         {new Date(c.created_at).toISOString().slice(0, 10)}
                       </td>
                       <td className="px-3 py-1.5">
@@ -340,7 +341,7 @@ export default function OperatorCompaniesPage() {
 
         {totalPages > 1 && (
           <div className="flex items-center justify-between">
-            <p className="text-[11px] text-[var(--color-ink-4)]">
+            <p className="text-[11px] text-[var(--color-text-muted)]">
               {t("operator.companies.page_of", {
                 page: String(page),
                 total: String(totalPages),
@@ -387,7 +388,7 @@ function RowAction({
       onClick={onClick}
       aria-label={label}
       title={label}
-      className="flex h-6 w-6 items-center justify-center rounded-[var(--radius-sm)] text-[var(--color-ink-4)] hover:bg-[var(--color-bone-3)] hover:text-[var(--color-ink)]"
+      className="flex h-6 w-6 items-center justify-center rounded-[var(--radius-sm)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-text)]"
     >
       {children}
     </button>
