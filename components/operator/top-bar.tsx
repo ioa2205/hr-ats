@@ -27,13 +27,13 @@ export function OperatorTopBar({ email, fullName }: Props) {
   return (
     <header
       data-testid="operator-top-bar"
-      className="sticky top-[var(--app-sticky-top)] z-30 flex h-12 items-center gap-3 border-b border-[var(--color-line)] bg-[color-mix(in_srgb,var(--color-canvas)_88%,transparent)] px-4 backdrop-blur-sm"
+      className="glass-bar sticky top-[var(--app-sticky-top)] z-30 flex h-12 items-center gap-3 border-b border-[var(--color-line)] px-4"
     >
       <button
         type="button"
         onClick={() => setPaletteOpen(true)}
         data-testid="open-palette"
-        className="hidden h-8 max-w-md min-w-0 flex-1 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)] px-3 text-left text-[12px] text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-line-strong)] sm:flex"
+        className="signal-edge hidden h-8 max-w-md min-w-0 flex-1 items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)] px-3 text-left text-[12px] text-[var(--color-text-muted)] sm:flex"
         aria-label={t("operator.palette.title")}
       >
         <Search className="h-3.5 w-3.5 shrink-0" />

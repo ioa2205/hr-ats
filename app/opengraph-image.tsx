@@ -6,18 +6,18 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const revalidate = 3600;
 
-// Fixed light palette aligned to the unified TezHR identity (warm canvas,
-// near-black ink, Tez Lapis primary) — mirrors the design system tokens.
-const COLOR_BONE = "#f6f3ec";
+// Fixed light palette aligned to the Pure Signal identity (pure-white canvas,
+// near-black ink, Signal Blue primary) — mirrors the design system tokens.
+const COLOR_BONE = "#ffffff";
 const COLOR_SURFACE = "#ffffff";
-const COLOR_INK = "#171a1f";
-const COLOR_INK_3 = "#4f5963";
-const COLOR_INK_4 = "#65707a";
-const COLOR_RULE = "#d7d1c5";
-const COLOR_STRONG = "#ece7dd";
-const COLOR_LINE_STRONG = "#918b81";
-const COLOR_LAPIS = "#0b57a3";
-const COLOR_LAPIS_TINT = "#d9eaf8";
+const COLOR_INK = "#0a0a0a";
+const COLOR_INK_3 = "#5b6470";
+const COLOR_INK_4 = "#5f6a76";
+const COLOR_RULE = "#e3e6ea";
+const COLOR_STRONG = "#e9edf1";
+const COLOR_LINE_STRONG = "#8a939e";
+const COLOR_LAPIS = "#0a66c2";
+const COLOR_LAPIS_TINT = "#dcebfa";
 
 async function loadGoogleFont(family: string, weight: number, text: string): Promise<ArrayBuffer | null> {
   try {

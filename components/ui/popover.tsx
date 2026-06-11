@@ -144,7 +144,7 @@ export function PopoverContent({
       aria-labelledby={aria["aria-labelledby"]}
       style={{ [side === "bottom" ? "top" : "bottom"]: `calc(100% + ${sideOffset}px)` }}
       className={cn(
-        "absolute z-50 min-w-[12rem] rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-surface)] p-3 text-[var(--color-text)] shadow-level-2 outline-none",
+        "glass-panel absolute z-50 min-w-[12rem] rounded-[var(--radius-lg)] border border-[var(--color-line)] p-3 text-[var(--color-text)] shadow-level-2 outline-none",
         "animate-in fade-in-0 zoom-in-95 motion-reduce:animate-none",
         align === "start" && "left-0",
         align === "end" && "right-0",

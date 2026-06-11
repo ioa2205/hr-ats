@@ -60,7 +60,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <ToastPrimitive.Root
             key={t.id}
             className={cn(
-              "group pointer-events-auto relative flex items-start gap-3 rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-surface)] p-4 shadow-level-2",
+              "glass-panel group pointer-events-auto relative flex items-start gap-3 rounded-[var(--radius-lg)] border border-[var(--color-line)] p-4 shadow-level-2",
               "data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)]",
               "data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none",
               "data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom-full",

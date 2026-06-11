@@ -44,8 +44,8 @@ const COLORS = [
   ["Text", "--color-text"],
   ["Text muted", "--color-text-muted"],
   ["Line", "--color-line"],
-  ["Tez Lapis", "--color-primary"],
-  ["Lapis container", "--color-primary-container"],
+  ["Signal Blue", "--color-primary"],
+  ["Signal container", "--color-primary-container"],
   ["Persimmon Signal", "--color-accent"],
   ["Success", "--color-success"],
   ["Warning", "--color-warning"],
@@ -65,7 +65,7 @@ function ReviewHeader({
   setLocale: (l: Locale) => void;
 }) {
   return (
-    <header className="sticky top-0 z-10 border-b border-[var(--color-line)] bg-[color-mix(in_srgb,var(--color-canvas)_88%,transparent)] backdrop-blur-xl">
+    <header className="glass-bar sticky top-0 z-10 border-b border-[var(--color-line)]">
       <div className="mx-auto flex min-h-16 max-w-[1180px] flex-wrap items-center justify-between gap-3 px-5 py-3">
         <div className="flex items-center gap-4">
           <TezSignalWordmark size={18} />
@@ -137,7 +137,7 @@ export function DesignSystemReview() {
           <ReviewHeader theme={theme} setTheme={setTheme} locale={locale} setLocale={setLocale} />
 
           <main className="mx-auto max-w-[1180px] px-5 pb-16">
-            <div className="grid gap-10 py-14 lg:grid-cols-[1fr_0.65fr] lg:items-end">
+            <div className="signal-mesh grid gap-10 py-14 lg:grid-cols-[1fr_0.65fr] lg:items-end">
               <div>
                 <p className="mb-4 text-xs font-bold tracking-[0.14em] text-[var(--color-primary)] uppercase">
                   {copy.eyebrow}
@@ -149,7 +149,7 @@ export function DesignSystemReview() {
               <div className="border-l-4 border-[var(--color-accent)] pl-5">
                 <p className="text-lg leading-relaxed text-[var(--color-text-muted)]">{copy.body}</p>
                 <p className="data-mono mt-4 text-xs text-[var(--color-text-subtle)]">
-                  Phase 2 / unified primitives / UZ-RU-EN
+                  Pure Signal / unified primitives / UZ-RU-EN
                 </p>
               </div>
             </div>
@@ -254,11 +254,11 @@ export function DesignSystemReview() {
                   </thead>
                   <tbody>
                     {[
-                      ["Text / canvas", "15.74:1", "16.68:1", "4.5:1"],
-                      ["Muted text / canvas", "6.44:1", "10.73:1", "4.5:1"],
-                      ["Primary / surface", "7.23:1", "8.19:1", "4.5:1"],
-                      ["On primary / primary", "7.23:1", "7.62:1", "4.5:1"],
-                      ["Danger / surface", "6.53:1", "8.47:1", "4.5:1"],
+                      ["Text / canvas", "19.81:1", "19.56:1", "4.5:1"],
+                      ["Muted text / canvas", "5.89:1", "9.68:1", "4.5:1"],
+                      ["Primary / surface", "5.69:1", "7.09:1", "4.5:1"],
+                      ["On primary / primary", "5.69:1", "5.51:1", "4.5:1"],
+                      ["Danger / surface", "6.53:1", "9.61:1", "4.5:1"],
                     ].map((row) => (
                       <tr key={row[0]} className="border-t border-[var(--color-line)]">
                         {row.map((cell, index) => (

@@ -111,8 +111,8 @@ test.describe("Phase 8 candidate experience", () => {
       const shell = document.querySelector(".tezhr") as HTMLElement | null;
       return shell ? getComputedStyle(shell).backgroundColor : null;
     });
-    // Dark canvas #111416
-    expect(canvas).toBe("rgb(17, 20, 22)");
+    // Dark canvas: the Pure Signal void, #000000
+    expect(canvas).toBe("rgb(0, 0, 0)");
   });
 
   test("keyboard: requirements gate reveals the details step and the name field is reachable", async ({

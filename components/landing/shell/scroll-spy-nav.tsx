@@ -106,9 +106,9 @@ export function ScrollSpyNav({
         aria-label="Primary"
         className="sticky top-0 z-50 transition-[box-shadow,border-color,background-color] duration-200"
         style={{
-          background: scrolled ? "color-mix(in srgb, var(--paper) 86%, transparent)" : "var(--paper)",
-          backdropFilter: scrolled ? "saturate(140%) blur(10px)" : "none",
-          WebkitBackdropFilter: scrolled ? "saturate(140%) blur(10px)" : "none",
+          background: scrolled ? "color-mix(in srgb, var(--paper) 80%, transparent)" : "transparent",
+          backdropFilter: scrolled ? "saturate(150%) blur(18px)" : "none",
+          WebkitBackdropFilter: scrolled ? "saturate(150%) blur(18px)" : "none",
           borderBottom: `1px solid ${scrolled ? "var(--rule)" : "transparent"}`,
           boxShadow: scrolled ? "var(--shadow-level-1)" : "none",
           fontFamily: "var(--font-manrope),sans-serif",

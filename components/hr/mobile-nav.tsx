@@ -60,7 +60,7 @@ export function HRMobileChrome({
   const [moreOpen, setMoreOpen] = useState(false);
 
   return (
-    <header className="sticky top-[var(--app-sticky-top)] z-30 flex h-14 items-center gap-2 border-b border-[var(--color-line)] bg-[color-mix(in_srgb,var(--color-canvas)_88%,transparent)] px-3 backdrop-blur-sm md:hidden">
+    <header className="glass-bar sticky top-[var(--app-sticky-top)] z-30 flex h-14 items-center gap-2 border-b border-[var(--color-line)] px-3 md:hidden">
       <button
         type="button"
         onClick={() => setMoreOpen(true)}
@@ -162,7 +162,7 @@ export function HRBottomNav({ counts }: { counts?: SidebarCounts }) {
   return (
     <nav
       aria-label={t("hr.nav.primary_aria")}
-      className="fixed inset-x-0 bottom-0 z-30 flex items-stretch border-t border-[var(--color-line)] bg-[color-mix(in_srgb,var(--color-surface)_94%,transparent)] pb-[env(safe-area-inset-bottom)] backdrop-blur-sm md:hidden"
+      className="glass-bar fixed inset-x-0 bottom-0 z-30 flex items-stretch border-t border-[var(--color-line)] pb-[env(safe-area-inset-bottom)] md:hidden"
     >
       {HR_PRIMARY_NAV.map((item) => {
         const Icon = item.icon;

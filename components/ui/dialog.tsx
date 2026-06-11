@@ -36,7 +36,7 @@ export const DialogContent = forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed z-50 w-full bg-[var(--color-surface)] text-[var(--color-text)] shadow-level-3",
+        "glass-panel fixed z-50 w-full border border-[var(--color-line)] text-[var(--color-text)] shadow-level-3",
         "max-sm:inset-x-0 max-sm:bottom-0 max-sm:max-h-[90vh] max-sm:overflow-y-auto max-sm:rounded-t-[var(--radius-xl)]",
         "sm:top-1/2 sm:left-1/2 sm:max-w-md sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[var(--radius-xl)]",
         "data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95",

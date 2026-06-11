@@ -76,7 +76,7 @@ export default async function DashboardPage() {
   if (jobIds.length === 0) {
     const quota = await getQuotaState(companyId);
     return (
-      <div className="flex flex-col gap-4">
+      <div className="signal-mesh flex flex-col gap-4">
         <p className="font-[var(--font-mono)] text-[10.5px] font-semibold tracking-[0.12em] text-[var(--color-text-subtle)] uppercase">
           {t("hr.dashboard.eyebrow", locale, { date: formatEyebrow(locale) })}
         </p>
@@ -303,14 +303,14 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-7">
+    <div className="signal-mesh flex flex-col gap-7">
       {/* Header */}
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
           <p className="mb-1.5 font-[var(--font-mono)] text-[10.5px] font-semibold tracking-[0.12em] text-[var(--color-text-subtle)] uppercase">
             {t("hr.dashboard.eyebrow", locale, { date: formatEyebrow(locale) })}
           </p>
-          <h1 className="max-w-[640px] text-[clamp(1.5rem,4vw,1.85rem)] font-bold leading-[1.12] tracking-[-0.02em] text-[var(--color-text)]">
+          <h1 className="max-w-[640px] text-[clamp(1.5rem,4vw,1.85rem)] font-bold leading-[1.12] tracking-[-0.022em] text-[var(--color-text-strong)]">
             {newCandidates > 0 ? (
               <>
                 <span className="tabular-nums text-[var(--color-accent)]">{newCandidates}</span>{" "}

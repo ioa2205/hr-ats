@@ -11,16 +11,16 @@ export const contentType = "image/png";
 export const revalidate = 3600;
 
 // Fixed light palette mirrored by components/hr/share-preview.tsx so the
-// in-app unfurl preview matches this server-rendered PNG. Aligned to the unified
-// TezHR identity: warm canvas, near-black ink, Tez Lapis primary accent.
-const COLOR_BONE = "#f6f3ec";
-const COLOR_INK = "#171a1f";
-const COLOR_INK_3 = "#4f5963";
-const COLOR_INK_4 = "#65707a";
-const COLOR_INK_5 = "#8a929a";
-const COLOR_RULE = "#d7d1c5";
-const COLOR_RULE_2 = "#c7c1b4";
-const COLOR_LAPIS = "#0b57a3";
+// in-app unfurl preview matches this server-rendered PNG. Aligned to the
+// Pure Signal identity: pure-white canvas, near-black ink, Signal Blue accent.
+const COLOR_BONE = "#ffffff";
+const COLOR_INK = "#0a0a0a";
+const COLOR_INK_3 = "#5b6470";
+const COLOR_INK_4 = "#5f6a76";
+const COLOR_INK_5 = "#8a939e";
+const COLOR_RULE = "#e3e6ea";
+const COLOR_RULE_2 = "#c9cfd6";
+const COLOR_LAPIS = "#0a66c2";
 
 async function loadGoogleFont(
   family: string,

@@ -27,13 +27,13 @@ export function HRTopBar({ email, fullName, notifications }: Props) {
   return (
     <header
       data-testid="hr-top-bar"
-      className="sticky top-[var(--app-sticky-top)] z-30 hidden h-14 items-center gap-3 border-b border-[var(--color-line)] bg-[color-mix(in_srgb,var(--color-canvas)_88%,transparent)] px-6 backdrop-blur-sm md:flex"
+      className="glass-bar sticky top-[var(--app-sticky-top)] z-30 hidden h-14 items-center gap-3 border-b border-[var(--color-line)] px-6 md:flex"
     >
       <button
         type="button"
         onClick={() => setPaletteOpen(true)}
         data-testid="hr-open-palette"
-        className="flex h-9 w-full max-w-sm items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)] px-3 text-left text-[13px] text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-line-strong)]"
+        className="signal-edge flex h-9 w-full max-w-sm items-center gap-2 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)] px-3 text-left text-[13px] text-[var(--color-text-muted)]"
         aria-label={t("hr.palette.title")}
       >
         <Search className="h-4 w-4 shrink-0" />

@@ -6,25 +6,33 @@
   --font-sans: var(--font-manrope), "Manrope", system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
 
-  /* Unified semantic roles. */
-  --color-canvas: #f6f3ec;
-  --color-surface: #ffffff;
-  --color-surface-subtle: #fbf9f4;
-  --color-surface-raised: #ffffff;
-  --color-surface-strong: #ece7dd;
-  --color-text: #171a1f;
-  --color-text-muted: #4f5963;
-  --color-text-subtle: #65707a;
-  --color-line: #d7d1c5;
-  --color-line-strong: #918b81;
+  /* ==========================================================================
+     Pure Signal — full-strength, decisive color.
+     Where it's white it's pure white; where it's black it's true black.
+     One vivid Signal Blue does the signaling; everything else stays quiet
+     cool neutral. No muddy in-between values.
+     ========================================================================= */
 
-  /* Tez Lapis: action, selection, links, focus, intelligence. */
-  --color-primary: #0b57a3;
-  --color-primary-hover: #07467f;
-  --color-primary-container: #d9eaf8;
+  /* Unified semantic roles. */
+  --color-canvas: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f4f6f8;
+  --color-surface-raised: #ffffff;
+  --color-surface-strong: #e9edf1;
+  --color-text: #0a0a0a;
+  --color-text-strong: #000000;
+  --color-text-muted: #5b6470;
+  --color-text-subtle: #5f6a76;
+  --color-line: #e3e6ea;
+  --color-line-strong: #8a939e;
+
+  /* Signal Blue: action, selection, links, focus, intelligence. */
+  --color-primary: #0a66c2;
+  --color-primary-hover: #08518f;
+  --color-primary-container: #dcebfa;
   --color-on-primary: #ffffff;
-  --color-on-primary-container: #0a3158;
-  --color-focus: #0b57a3;
+  --color-on-primary-container: #073e75;
+  --color-focus: #0a66c2;
 
   /* Persimmon Signal: restrained priority and newly arrived information. */
   --color-accent: #c84e18;
@@ -48,15 +56,18 @@
   --color-info-container: #d8edf2;
   --color-on-info-container: #073e49;
 
-  /* Shape and elevation. */
+  /* Shape and elevation. Data sits at 8px; cards and dialogs at 12–16px. */
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
   --radius-full: 9999px;
-  --shadow-level-1: 0 1px 2px rgb(23 26 31 / 0.08), 0 1px 3px rgb(23 26 31 / 0.05);
-  --shadow-level-2: 0 4px 14px -5px rgb(23 26 31 / 0.18);
-  --shadow-level-3: 0 16px 40px -18px rgb(23 26 31 / 0.28);
+  --shadow-level-1: 0 1px 2px rgb(10 12 16 / 0.06), 0 1px 3px rgb(10 12 16 / 0.05);
+  --shadow-level-2: 0 4px 14px -5px rgb(10 12 16 / 0.16);
+  --shadow-level-3: 0 16px 40px -18px rgb(10 12 16 / 0.28);
+  --shadow-glow:
+    0 0 0 1px color-mix(in srgb, var(--color-primary) 30%, transparent),
+    0 0 18px -4px color-mix(in srgb, var(--color-primary) 45%, transparent);
 
   /* Fast, functional motion. */
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
@@ -78,27 +89,30 @@
   color-scheme: light;
 }
 
+/* Dark: a true OLED-black void with graduated near-black surfaces for depth.
+   The Signal Blue lightens one tone so it glows against the void. */
 .theme-dark,
 .tezhr.dark,
 html[data-theme="dark"],
 html[data-operator-theme="dark"],
 html[data-hr-theme="dark"] {
-  --color-canvas: #111416;
-  --color-surface: #181c1f;
-  --color-surface-subtle: #1d2226;
-  --color-surface-raised: #23292e;
-  --color-surface-strong: #2a3035;
-  --color-text: #f5f3ee;
-  --color-text-muted: #c1c6c9;
-  --color-text-subtle: #a7afb4;
-  --color-line: #353c42;
-  --color-line-strong: #737d84;
-  --color-primary: #79b9f2;
-  --color-primary-hover: #9dccf5;
-  --color-primary-container: #173b5d;
-  --color-on-primary: #06233e;
-  --color-on-primary-container: #ddeeff;
-  --color-focus: #79b9f2;
+  --color-canvas: #000000;
+  --color-surface: #0c0d0f;
+  --color-surface-subtle: #141619;
+  --color-surface-raised: #1c1f23;
+  --color-surface-strong: #24282e;
+  --color-text: #f5f7fa;
+  --color-text-strong: #ffffff;
+  --color-text-muted: #a8b1bc;
+  --color-text-subtle: #8b95a1;
+  --color-line: #26292e;
+  --color-line-strong: #646d78;
+  --color-primary: #4d9eff;
+  --color-primary-hover: #79b6ff;
+  --color-primary-container: #0d2f55;
+  --color-on-primary: #00264e;
+  --color-on-primary-container: #d7e8ff;
+  --color-focus: #4d9eff;
   --color-accent: #ff8c55;
   --color-accent-strong: #ffaf86;
   --color-on-accent: #3b080c;
@@ -117,9 +131,9 @@ html[data-hr-theme="dark"] {
   --color-info: #6fcbe0;
   --color-info-container: #173b44;
   --color-on-info-container: #d1f3fa;
-  --shadow-level-1: 0 1px 2px rgb(0 0 0 / 0.28), 0 1px 3px rgb(0 0 0 / 0.2);
-  --shadow-level-2: 0 6px 18px -7px rgb(0 0 0 / 0.55);
-  --shadow-level-3: 0 18px 48px -20px rgb(0 0 0 / 0.72);
+  --shadow-level-1: 0 1px 2px rgb(0 0 0 / 0.5), 0 1px 3px rgb(0 0 0 / 0.4);
+  --shadow-level-2: 0 6px 18px -7px rgb(0 0 0 / 0.7);
+  --shadow-level-3: 0 18px 48px -20px rgb(0 0 0 / 0.85);
   color-scheme: dark;
 }
 
@@ -138,10 +152,12 @@ body {
   color: var(--color-on-primary-container);
 }
 
+/* The signal focus halo — a solid Signal Blue ring with a soft glow. */
 :focus-visible {
-  outline: 3px solid var(--color-focus);
-  outline-offset: 3px;
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
   border-radius: var(--radius-sm);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-focus) 16%, transparent);
 }
 
 .nums,
@@ -149,6 +165,78 @@ body {
 .text-mono {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
+}
+
+/* ---- Pure Signal treatments ---------------------------------------------
+   Liquid glass is chrome-only — app bars, bottom nav, dialogs, sheets,
+   popovers, dropdowns, the command palette. Dense tables, lists, forms, and
+   detail bodies stay flat and fast. One glass sheet per view; text always
+   sits on a (near-)solid layer, so frost stays moderate. */
+
+.glass-bar {
+  background: color-mix(in srgb, var(--color-canvas) 78%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  backdrop-filter: blur(18px) saturate(1.5);
+}
+
+.glass-panel {
+  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  backdrop-filter: blur(18px) saturate(1.5);
+}
+
+/* Reduce-Transparency (and no-backdrop-filter) fallback: solid surfaces. */
+@supports not ((backdrop-filter: blur(18px)) or (-webkit-backdrop-filter: blur(18px))) {
+  .glass-bar {
+    background: var(--color-canvas);
+  }
+  .glass-panel {
+    background: var(--color-surface);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-bar {
+    background: var(--color-canvas);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .glass-panel {
+    background: var(--color-surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* The light source: a faint Signal Blue radial mesh behind heroes
+   (landing, auth, dashboard header). Static — reduced-motion safe. */
+.signal-mesh {
+  background-image:
+    radial-gradient(
+      560px 300px at 12% -8%,
+      color-mix(in srgb, var(--color-primary) 10%, transparent),
+      transparent 72%
+    ),
+    radial-gradient(
+      640px 360px at 88% 0%,
+      color-mix(in srgb, var(--color-primary) 6%, transparent),
+      transparent 75%
+    );
+  background-repeat: no-repeat;
+}
+
+/* Interactive surfaces answer hover with a glowing 1px Signal edge. */
+.signal-edge {
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.signal-edge:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 55%, var(--color-line));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--color-primary) 30%, transparent),
+    0 0 16px -6px color-mix(in srgb, var(--color-primary) 55%, transparent);
 }
 
 .tezhr {
@@ -218,7 +306,7 @@ html[data-hr-theme="dark"] textarea:focus-visible {
   outline: 2px solid var(--color-focus);
   outline-offset: 1px;
   border-color: var(--color-focus);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus) 24%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-focus) 22%, transparent);
 }
 
 html[data-operator-theme="dark"] body,

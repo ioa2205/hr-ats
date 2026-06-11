@@ -13,7 +13,7 @@ export async function Hero() {
   const { t } = await getT();
 
   return (
-    <section id="main" className="relative" style={{ background: "var(--paper)" }}>
+    <section id="main" className="signal-mesh relative" style={{ backgroundColor: "var(--paper)" }}>
       <div className="mx-auto" style={{ maxWidth: 1200, padding: "clamp(40px, 6vw, 88px) 24px clamp(48px, 6vw, 80px)" }}>
         <div className="grid min-w-0 items-center gap-12 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,1fr)] lg:gap-16">
           {/* Left: the promise */}

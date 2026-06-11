@@ -55,7 +55,7 @@ export const SheetContent = forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed z-50 flex flex-col border-[var(--color-line)] bg-[var(--color-surface)] text-[var(--color-text)] shadow-level-3",
+        "glass-panel fixed z-50 flex flex-col border-[var(--color-line)] text-[var(--color-text)] shadow-level-3",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:duration-300 data-[state=closed]:duration-200",
         "motion-reduce:data-[state=open]:animate-none motion-reduce:data-[state=closed]:animate-none",
         sideClasses[side],

@@ -1,15 +1,14 @@
 /* ============================================================================
-   TezHR public surface — Phase 10 product-led system.
+   TezHR public surface — Pure Signal.
 
-   The marketing site is built like the product: a warm canvas, white signal
-   panels, hairline grids, and a single Tez Lapis indicator that marks what
-   matters. Manrope only. Persimmon is a restrained priority pulse, never the
-   default action color. No grain, no rotating seals, no ticker, no editorial
-   serif composition, no offset hard shadows.
+   The marketing site is built like the product: a pure-white canvas, crisp
+   hairline grids, and a single Signal Blue indicator that marks what matters.
+   Manrope only. Persimmon is a restrained priority pulse, never the default
+   action color. No grain, no rotating seals, no ticker, no editorial serif
+   composition, no offset hard shadows.
 
-   Compatibility aliases (ink/paper/persimmon/ikat) still map to the canonical
-   semantic roles so the public surface stays on one palette. They are removed
-   platform-wide in Phase 11.
+   Local aliases (ink/paper/persimmon/ikat) map to the canonical semantic
+   roles so the public surface stays on one palette.
    ========================================================================= */
 
 .tezhr-landing {
@@ -43,11 +42,11 @@
   --leaf: var(--color-success);
   --grape: var(--color-info);
 
-  /* One calm near-black statement surface */
-  --night: #14181b;
-  --night-2: #1d2226;
-  --on-night: #f4f1ea;
-  --on-night-muted: #b7bdc0;
+  /* One decisive near-black statement surface — the void, graduated. */
+  --night: #0c0d0f;
+  --night-2: #16191d;
+  --on-night: #f5f7fa;
+  --on-night-muted: #a8b1bc;
 
   /* Compatibility (legacy serif requests resolve to Manrope) */
   --font-instrument-serif: var(--font-manrope);
@@ -131,20 +130,20 @@
 .tezhr-landing .lp-display {
   font-family: var(--font-manrope), sans-serif;
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.035em;
   line-height: 1.02;
   font-size: clamp(40px, 4.6vw + 12px, 72px);
-  color: var(--ink);
+  color: var(--color-text-strong);
   text-wrap: balance;
 }
 
 .tezhr-landing .lp-h2 {
   font-family: var(--font-manrope), sans-serif;
   font-weight: 700;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.028em;
   line-height: 1.06;
   font-size: clamp(30px, 2.8vw + 12px, 48px);
-  color: var(--ink);
+  color: var(--color-text-strong);
   text-wrap: balance;
 }
 
@@ -196,12 +195,14 @@
   background: var(--rule);
 }
 
-/* Signal bar — the lapis indicator that marks an active / important item */
+/* Signal bar — the Signal Blue indicator that marks an active / important
+   item. As a hero accent it carries a faint electric glow. */
 .tezhr-landing .lp-signal {
   width: 28px;
   height: 3px;
   border-radius: 2px;
   background: var(--ikat);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--ikat) 55%, transparent);
 }
 
 /* ---- Buttons -------------------------------------------------------------- */
@@ -234,7 +235,9 @@
   background: var(--ikat-2);
   border-color: var(--ikat-2);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-level-2);
+  box-shadow:
+    var(--shadow-level-2),
+    0 0 18px -4px color-mix(in srgb, var(--ikat) 50%, transparent);
 }
 
 .tezhr-landing .btn-ghost {
@@ -289,9 +292,10 @@
 }
 
 .tezhr-landing :focus-visible {
-  outline: 3px solid var(--color-focus);
-  outline-offset: 3px;
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
   border-radius: 4px;
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-focus) 16%, transparent);
 }
 
 /* ---- Measured motion ------------------------------------------------------ */

@@ -94,7 +94,7 @@ Supabase Postgres with **RLS policies per Company**. Core tenant-scoped tables: 
 
 ## Styling
 
-Tailwind CSS 4 with CSS-first `@theme` in `app/globals.css` — no `tailwind.config.js`. One unified **Tez Signal** visual system built on semantic role tokens only (`--color-canvas/surface*/text*/line*`, Tez Lapis `--color-primary*`, Persimmon `--color-accent*`, strict `--color-success/warning/danger/info*`); see `Project-documentation/DESIGN_SYSTEM.md`. The legacy Material and warm "Tez" token aliases were removed in Phase 11 — use semantic roles, never hardcoded brand color. Shared primitives live in `components/ui` (Radix-based). Fonts: Manrope Variable (sans/brand) + JetBrains Mono (data only).
+Tailwind CSS 4 with CSS-first `@theme` in `app/globals.css` — no `tailwind.config.js`. One unified **Pure Signal** visual system built on semantic role tokens only (`--color-canvas/surface*/text*/line*`, Signal Blue `--color-primary*`, Persimmon `--color-accent*`, strict `--color-success/warning/danger/info*`); see `Project-documentation/DESIGN_SYSTEM.md`. Pure-white canvas in light, true-black void with graduated near-black surfaces in dark. Chrome-only liquid-glass utilities (`.glass-bar`/`.glass-panel`), hero gradient mesh (`.signal-mesh`), and hover glow (`.signal-edge`) live in `globals.css` — glass never goes on dense data surfaces. The legacy Material and warm "Tez" token aliases were removed in Phase 11 — use semantic roles, never hardcoded brand color. Shared primitives live in `components/ui` (Radix-based). Fonts: Manrope Variable (sans/brand) + JetBrains Mono (data only).
 
 ## Environment variables
 

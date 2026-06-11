@@ -61,8 +61,8 @@ test.describe("Design verification baseline", () => {
       };
     });
     expect(foundation.font).toContain("Manrope");
-    expect(foundation.canvas).toBe("rgb(246, 243, 236)");
-    expect(foundation.focus).toBe("#0b57a3");
+    expect(foundation.canvas).toBe("rgb(255, 255, 255)");
+    expect(foundation.focus).toBe("#0a66c2");
   });
 
   test("representative public and auth surfaces have no serious accessibility violations", async ({
@@ -112,7 +112,7 @@ test.describe("Design verification baseline", () => {
     });
     expect(focus.text).toBe("en");
     expect(focus.style).toBe("solid");
-    expect(focus.color).toBe("rgb(121, 185, 242)");
+    expect(focus.color).toBe("rgb(77, 158, 255)");
     expect(Number.parseFloat(focus.width)).toBeGreaterThanOrEqual(2);
 
     await expectNoHorizontalOverflow(page);

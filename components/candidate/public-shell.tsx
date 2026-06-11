@@ -43,7 +43,7 @@ export async function PublicShell({ children, width = "sm", locale }: PublicShel
       className="tezhr flex min-h-screen flex-col bg-[var(--color-canvas)]"
       style={{ fontSize: "14.5px", lineHeight: 1.5 }}
     >
-      <header className="sticky top-0 z-20 border-b border-[var(--color-line)] bg-[color-mix(in_srgb,var(--color-canvas)_85%,transparent)] backdrop-blur">
+      <header className="glass-bar sticky top-0 z-20 border-b border-[var(--color-line)]">
         <div className="mx-auto flex h-14 max-w-[960px] items-center justify-between px-4">
           <Link
             href="/"
@@ -56,7 +56,7 @@ export async function PublicShell({ children, width = "sm", locale }: PublicShel
         </div>
       </header>
 
-      <main className="flex flex-1 items-start justify-center px-4 pt-8 pb-16 sm:pt-12">
+      <main className="signal-mesh flex flex-1 items-start justify-center px-4 pt-8 pb-16 sm:pt-12">
         <div className={`w-full ${maxWidth}`}>{children}</div>
       </main>
 
