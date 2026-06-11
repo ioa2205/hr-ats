@@ -8,7 +8,9 @@ export default async function InterviewLayout({ children }: { children: React.Re
 
   return (
     <TranslationsProvider locale={locale} messages={messages}>
-      <PublicShell width="md">{children}</PublicShell>
+      <PublicShell width="md" locale={locale}>
+        {children}
+      </PublicShell>
     </TranslationsProvider>
   );
 }

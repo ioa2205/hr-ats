@@ -80,16 +80,15 @@ export function CvDropzone({ t, value, onChange, error }: CvDropzoneProps) {
   if (value) {
     return (
       <div className="flex flex-col gap-1.5">
-        <div className="border-rule bg-bone-2 flex items-center gap-3 rounded-[5px] border px-3 py-3">
-          <div className="bg-paper border-rule flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] border">
-            <FileText className="text-ink-3 h-5 w-5" strokeWidth={1.5} />
+        <div className="flex items-center gap-3 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] px-3 py-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface)]">
+            <FileText className="h-5 w-5 text-[var(--color-text-muted)]" strokeWidth={1.5} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-ink truncate text-[14px] font-semibold">{value.name}</p>
-            <p
-              className="text-ink-4 mt-0.5 text-[11.5px]"
-              style={{ fontFamily: "var(--font-tez-mono)" }}
-            >
+            <p className="truncate text-[14px] font-semibold text-[var(--color-text)]">
+              {value.name}
+            </p>
+            <p className="data-mono mt-0.5 text-[11.5px] text-[var(--color-text-subtle)]">
               {formatSize(value.size)}
             </p>
           </div>
@@ -99,14 +98,14 @@ export function CvDropzone({ t, value, onChange, error }: CvDropzoneProps) {
               onChange(null);
               setLocalError(null);
             }}
-            className="text-ink-4 hover:bg-bone-3 hover:text-ink flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] transition-colors"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--radius-sm)] text-[var(--color-text-muted)] transition-colors hover:bg-[var(--color-surface-strong)] hover:text-[var(--color-text)]"
             aria-label={t("apply.cv.remove_label")}
           >
             <X className="h-4 w-4" />
           </button>
         </div>
         {displayError && (
-          <p className="text-persimmon text-[12.5px]" role="alert">
+          <p className="text-[12.5px] text-[var(--color-danger)]" role="alert">
             {displayError}
           </p>
         )}
@@ -119,6 +118,7 @@ export function CvDropzone({ t, value, onChange, error }: CvDropzoneProps) {
       <div
         role="button"
         tabIndex={0}
+        aria-label={t("apply.upload_cv")}
         onClick={() => inputRef.current?.click()}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -130,20 +130,25 @@ export function CvDropzone({ t, value, onChange, error }: CvDropzoneProps) {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         className={cn(
-          "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-[5px] border-2 border-dashed px-6 py-8 transition-colors",
+          "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-[var(--radius-md)] border-2 border-dashed px-6 py-8 transition-colors",
           isDragging
-            ? "border-ink bg-bone-2"
+            ? "border-[var(--color-primary)] bg-[var(--color-primary-container)]"
             : displayError
-              ? "border-persimmon bg-persimmon-tint/40"
-              : "border-rule-2 bg-bone-2/40 hover:border-ink-6 hover:bg-bone-2",
+              ? "border-[var(--color-danger)] bg-[var(--color-danger-container)]"
+              : "border-[var(--color-line-strong)] bg-[var(--color-surface-subtle)] hover:border-[var(--color-primary)] hover:bg-[var(--color-surface-strong)]",
         )}
       >
         <Upload
-          className={cn("h-6 w-6", isDragging ? "text-ink" : "text-ink-4")}
+          className={cn(
+            "h-6 w-6",
+            isDragging ? "text-[var(--color-primary)]" : "text-[var(--color-text-muted)]",
+          )}
           strokeWidth={1.5}
         />
-        <p className="text-ink text-[14px] font-semibold">{t("apply.upload_cv")}</p>
-        <p className="text-ink-4 text-center text-[12.5px]">{t("apply.upload_hint")}</p>
+        <p className="text-[14px] font-semibold text-[var(--color-text)]">{t("apply.upload_cv")}</p>
+        <p className="text-center text-[12.5px] text-[var(--color-text-muted)]">
+          {t("apply.upload_hint")}
+        </p>
       </div>
       <input
         ref={inputRef}
@@ -154,7 +159,7 @@ export function CvDropzone({ t, value, onChange, error }: CvDropzoneProps) {
         tabIndex={-1}
       />
       {displayError && (
-        <p className="text-persimmon text-[12.5px]" role="alert">
+        <p className="text-[12.5px] text-[var(--color-danger)]" role="alert">
           {displayError}
         </p>
       )}

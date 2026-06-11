@@ -121,7 +121,7 @@ export function JobDescription({ text, className = "" }: JobDescriptionProps) {
           return (
             <h2
               key={idx}
-              className={`text-ink text-[17px] font-bold leading-[1.3] tracking-[-0.01em] ${
+              className={`text-[17px] font-bold leading-[1.3] tracking-[-0.01em] text-[var(--color-text)] ${
                 isFirst ? "mb-2" : "mb-2 mt-6"
               }`}
             >
@@ -133,7 +133,7 @@ export function JobDescription({ text, className = "" }: JobDescriptionProps) {
           return (
             <h3
               key={idx}
-              className={`text-ink text-[15px] font-semibold leading-[1.3] tracking-[-0.005em] ${
+              className={`text-[15px] font-semibold leading-[1.3] tracking-[-0.005em] text-[var(--color-text)] ${
                 isFirst ? "mb-2" : "mb-2 mt-5"
               }`}
             >
@@ -145,7 +145,7 @@ export function JobDescription({ text, className = "" }: JobDescriptionProps) {
           return (
             <ul
               key={idx}
-              className={`text-ink-2 space-y-1.5 text-[14.5px] leading-[1.65] ${
+              className={`space-y-1.5 text-[14.5px] leading-[1.65] text-[var(--color-text-muted)] ${
                 isFirst ? "" : "mt-2"
               }`}
             >
@@ -153,7 +153,7 @@ export function JobDescription({ text, className = "" }: JobDescriptionProps) {
                 <li key={j} className="flex gap-2.5">
                   <span
                     aria-hidden
-                    className="bg-ink-5 mt-[9px] h-1 w-1 shrink-0 rounded-full"
+                    className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-[var(--color-text-subtle)]"
                   />
                   <span>{renderInline(it)}</span>
                 </li>
@@ -165,14 +165,14 @@ export function JobDescription({ text, className = "" }: JobDescriptionProps) {
           return (
             <ol
               key={idx}
-              className={`text-ink-2 space-y-1.5 text-[14.5px] leading-[1.65] ${
+              className={`space-y-1.5 text-[14.5px] leading-[1.65] text-[var(--color-text-muted)] ${
                 isFirst ? "" : "mt-2"
               }`}
             >
               {block.items.map((it, j) => (
                 <li key={j} className="flex gap-2.5">
                   <span
-                    className="text-ink-4 mt-[2px] min-w-[1.25em] shrink-0 text-[12.5px] font-semibold tabular-nums"
+                    className="data-mono mt-[2px] min-w-[1.25em] shrink-0 text-[12.5px] font-semibold text-[var(--color-text-subtle)]"
                     aria-hidden
                   >
                     {j + 1}.
@@ -186,7 +186,7 @@ export function JobDescription({ text, className = "" }: JobDescriptionProps) {
         return (
           <Fragment key={idx}>
             <p
-              className={`text-ink-2 text-[14.5px] leading-[1.7] ${isFirst ? "" : "mt-3"}`}
+              className={`text-[14.5px] leading-[1.7] text-[var(--color-text-muted)] ${isFirst ? "" : "mt-3"}`}
             >
               {renderInline(block.text)}
             </p>

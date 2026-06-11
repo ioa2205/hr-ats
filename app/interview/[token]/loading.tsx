@@ -1,20 +1,28 @@
-import { Panel } from "@/components/hr/design";
+import { Card, Panel, PanelHeader, Skeleton } from "@/components/ui";
 
 export default function InterviewLoading() {
   return (
-    <div className="flex flex-col gap-4">
-      <Panel>
-        <div className="flex flex-col gap-3 px-5 py-5 sm:px-6">
-          <div className="bg-bone-2 h-10 w-40 animate-pulse rounded-[5px]" />
-          <div className="bg-bone-2 h-7 w-3/4 animate-pulse rounded-[5px]" />
-          <div className="bg-bone-2/70 h-4 w-1/2 animate-pulse rounded-[4px]" />
+    <div className="flex flex-col gap-4" aria-busy="true">
+      <Card>
+        <div className="flex flex-col gap-3 p-5 sm:p-6">
+          <div className="flex items-center gap-3">
+            <Skeleton variant="rect" className="h-11 w-11" />
+            <div className="flex flex-col gap-1.5">
+              <Skeleton className="h-2 w-24" />
+              <Skeleton className="h-3 w-28" />
+            </div>
+          </div>
+          <Skeleton variant="rect" className="h-7 w-3/4" />
+          <Skeleton className="h-4 w-1/2" />
         </div>
-      </Panel>
+      </Card>
       <Panel>
+        <PanelHeader>
+          <Skeleton className="h-3.5 w-32" />
+        </PanelHeader>
         <div className="flex flex-col gap-2.5 px-5 py-5 sm:px-6">
-          <div className="bg-bone-2 h-5 w-32 animate-pulse rounded-[4px]" />
           {[0, 1, 2].map((i) => (
-            <div key={i} className="bg-bone-2/70 h-[78px] animate-pulse rounded-[8px]" />
+            <Skeleton key={i} variant="rect" className="h-[72px]" />
           ))}
         </div>
       </Panel>

@@ -1,36 +1,53 @@
+import { Card, Panel, PanelHeader, Skeleton } from "@/components/ui";
+
 export default function ApplyLoading() {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="border-rule bg-paper shadow-tez-1 overflow-hidden rounded-[6px] border">
-        <div className="px-6 pb-7 pt-6">
-          <div className="mb-5 flex items-center gap-3">
-            <div className="bg-bone-2 h-10 w-10 animate-pulse rounded-[5px]" />
-            <div className="space-y-1.5">
-              <div className="bg-bone-2 h-3 w-28 animate-pulse rounded" />
-              <div className="bg-bone-3 h-2 w-16 animate-pulse rounded" />
+    <div className="flex flex-col gap-4" aria-busy="true">
+      {/* Hero */}
+      <Card>
+        <div className="flex flex-col gap-5 p-5 sm:p-6">
+          <div className="flex items-center gap-3">
+            <Skeleton variant="rect" className="h-11 w-11" />
+            <div className="flex flex-col gap-1.5">
+              <Skeleton className="h-3 w-28" />
+              <Skeleton className="h-2 w-16" />
             </div>
           </div>
-          <div className="bg-bone-2 mb-3 h-9 w-3/4 animate-pulse rounded" />
-          <div className="bg-bone-2 h-3 w-5/6 animate-pulse rounded" />
+          <div className="flex flex-col gap-2">
+            <Skeleton variant="rect" className="h-9 w-3/4" />
+            <Skeleton className="h-3 w-5/6" />
+          </div>
+          <div className="flex gap-2">
+            <Skeleton variant="rect" className="h-7 w-36 rounded-[var(--radius-full)]" />
+            <Skeleton variant="rect" className="h-7 w-44 rounded-[var(--radius-full)]" />
+          </div>
         </div>
-      </div>
-      <div className="border-rule bg-paper shadow-tez-1 overflow-hidden rounded-[6px] border">
-        <div className="border-rule h-10 border-b" />
-        <div className="space-y-3 px-6 py-5">
-          <div className="bg-bone-2 h-3 w-full animate-pulse rounded" />
-          <div className="bg-bone-2 h-3 w-11/12 animate-pulse rounded" />
-          <div className="bg-bone-2 h-3 w-10/12 animate-pulse rounded" />
+      </Card>
+
+      {/* Description */}
+      <Panel>
+        <PanelHeader>
+          <Skeleton className="h-3.5 w-24" />
+        </PanelHeader>
+        <div className="space-y-3 px-5 py-5 sm:px-6">
+          <Skeleton className="h-3 w-full" />
+          <Skeleton className="h-3 w-11/12" />
+          <Skeleton className="h-3 w-10/12" />
         </div>
-      </div>
-      <div className="border-rule bg-paper shadow-tez-1 overflow-hidden rounded-[6px] border">
-        <div className="border-rule h-10 border-b" />
-        <div className="space-y-4 px-6 py-5">
-          <div className="bg-bone-2 h-10 w-full animate-pulse rounded-[5px]" />
-          <div className="bg-bone-2 h-10 w-full animate-pulse rounded-[5px]" />
-          <div className="bg-bone-2 h-24 w-full animate-pulse rounded-[5px]" />
-          <div className="bg-bone-3 h-11 w-full animate-pulse rounded-[5px]" />
+      </Panel>
+
+      {/* Form */}
+      <Panel>
+        <PanelHeader>
+          <Skeleton className="h-3.5 w-28" />
+        </PanelHeader>
+        <div className="space-y-4 px-5 py-5 sm:px-6">
+          <Skeleton variant="rect" className="h-11 w-full" />
+          <Skeleton variant="rect" className="h-11 w-full" />
+          <Skeleton variant="rect" className="h-24 w-full" />
+          <Skeleton variant="rect" className="h-12 w-full" />
         </div>
-      </div>
+      </Panel>
     </div>
   );
 }

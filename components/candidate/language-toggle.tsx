@@ -30,7 +30,7 @@ export function LanguageToggle({ currentLocale = "ru" }: LanguageToggleProps) {
 
   return (
     <div
-      className="border-rule bg-paper flex gap-0.5 rounded-[4px] border p-0.5"
+      className="flex gap-0.5 rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface)] p-0.5"
       role="group"
       aria-label="Language"
     >
@@ -44,12 +44,11 @@ export function LanguageToggle({ currentLocale = "ru" }: LanguageToggleProps) {
             disabled={isPending}
             aria-pressed={active}
             className={cn(
-              "text-mono rounded-[3px] px-2 py-[3px] text-[10.5px] font-semibold tracking-[0.04em] transition-colors disabled:cursor-wait",
+              "data-mono inline-flex h-8 min-w-[34px] items-center justify-center rounded-[4px] px-2 text-[11px] font-semibold tracking-[0.04em] transition-colors disabled:cursor-wait",
               active
-                ? "bg-ink text-paper"
-                : "text-ink-4 hover:bg-bone-2 hover:text-ink",
+                ? "bg-[var(--color-primary)] text-[var(--color-on-primary)]"
+                : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)]",
             )}
-            style={{ fontFamily: "var(--font-tez-mono)" }}
           >
             {l.label}
           </button>

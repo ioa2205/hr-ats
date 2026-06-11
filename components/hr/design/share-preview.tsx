@@ -17,14 +17,14 @@ interface SharePreviewProps {
  * fixed palette (not theme tokens) — the unfurl looks identical regardless of
  * the recruiter's app theme.
  */
-const COLOR_BONE = "#fafaf7";
-const COLOR_INK = "#15130f";
-const COLOR_INK_3 = "#3d3830";
-const COLOR_INK_4 = "#6b6557";
-const COLOR_INK_5 = "#97907f";
-const COLOR_RULE = "#e7e4d8";
-const COLOR_RULE_2 = "#d8d4c4";
-const COLOR_PERSIMMON = "#d9480f";
+const COLOR_BONE = "#f6f3ec";
+const COLOR_INK = "#171a1f";
+const COLOR_INK_3 = "#4f5963";
+const COLOR_INK_4 = "#65707a";
+const COLOR_INK_5 = "#8a929a";
+const COLOR_RULE = "#d7d1c5";
+const COLOR_RULE_2 = "#c7c1b4";
+const COLOR_LAPIS = "#0b57a3";
 
 export function SharePreview({
   title,
@@ -58,7 +58,7 @@ export function SharePreview({
           ) : (
             <div
               className="flex h-[26px] w-[26px] items-center justify-center rounded-[4px] text-[12px] font-bold"
-              style={{ background: COLOR_INK, color: COLOR_BONE }}
+              style={{ background: COLOR_LAPIS, color: "#ffffff" }}
             >
               {logoLetter}
             </div>
@@ -109,7 +109,7 @@ export function SharePreview({
           </div>
         </div>
       </div>
-      <div className="absolute bottom-0 left-0 h-[3px] w-[70px]" style={{ background: COLOR_PERSIMMON }} />
+      <div className="absolute bottom-0 left-0 h-[3px] w-[70px]" style={{ background: COLOR_LAPIS }} />
     </div>
   );
 }

@@ -47,48 +47,50 @@ export function SlotPicker({
   disabled,
 }: SlotPickerProps) {
   return (
-    <ul className="m-0 flex list-none flex-col gap-2 p-0" role="radiogroup">
+    <div className="flex flex-col gap-2" role="radiogroup">
       {slots.map((slot) => {
         const start = new Date(slot.start_at);
         const selected = slot.id === selectedId;
         return (
-          <li key={slot.id}>
-            <button
-              type="button"
-              role="radio"
-              aria-checked={selected}
-              disabled={disabled}
-              onClick={() => onSelect(slot.id)}
+          <button
+            key={slot.id}
+            type="button"
+            role="radio"
+            aria-checked={selected}
+            disabled={disabled}
+            onClick={() => onSelect(slot.id)}
+            className={cn(
+              "group flex w-full items-center justify-between gap-3 rounded-[var(--radius-md)] border px-4 py-3.5 text-left transition-colors",
+              selected
+                ? "border-[var(--color-primary)] bg-[var(--color-primary-container)]"
+                : "border-[var(--color-line-strong)] bg-[var(--color-surface)] hover:border-[var(--color-primary)]",
+              disabled && "cursor-not-allowed opacity-60",
+            )}
+          >
+            <div className="min-w-0 flex-1">
+              <div className="text-[17px] leading-[1.2] font-semibold tracking-[-0.015em] text-[var(--color-text)]">
+                {formatDay(start, locale)}
+              </div>
+              <div className="data-mono mt-1 text-[13.5px] text-[var(--color-text-muted)]">
+                {formatTimeRange(start, durationMinutes)}
+              </div>
+            </div>
+            <span
+              aria-hidden
               className={cn(
-                "border-rule bg-paper hover:border-ink-6 group flex w-full items-center justify-between gap-3 rounded-[8px] border px-4 py-3.5 text-left transition-colors",
-                selected && "border-ink bg-bone-2/40",
-                disabled && "cursor-not-allowed opacity-60",
+                "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-colors",
+                selected
+                  ? "border-[var(--color-primary)] bg-[var(--color-primary)]"
+                  : "border-[var(--color-line-strong)] bg-[var(--color-surface)]",
               )}
             >
-              <div className="min-w-0 flex-1">
-                <div className="text-ink text-[18px] font-semibold leading-[1.2] tracking-[-0.015em]">
-                  {formatDay(start, locale)}
-                </div>
-                <div
-                  className="text-ink-3 mt-1 text-[13.5px]"
-                  style={{ fontFamily: "var(--font-tez-mono)" }}
-                >
-                  {formatTimeRange(start, durationMinutes)}
-                </div>
-              </div>
-              <span
-                aria-hidden
-                className={cn(
-                  "border-rule-2 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all",
-                  selected ? "bg-ink border-ink" : "bg-paper",
-                )}
-              >
-                {selected && <Check className="text-paper h-3.5 w-3.5" strokeWidth={3} />}
-              </span>
-            </button>
-          </li>
+              {selected && (
+                <Check className="h-3.5 w-3.5 text-[var(--color-on-primary)]" strokeWidth={3} />
+              )}
+            </span>
+          </button>
         );
       })}
-    </ul>
+    </div>
   );
 }

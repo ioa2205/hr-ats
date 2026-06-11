@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Panel, TezButton } from "@/components/hr/design";
+import { Button, Card, ErrorState } from "@/components/ui";
 import { logger } from "@/lib/logger";
 import { useTranslation } from "@/lib/i18n/provider";
 
@@ -18,16 +18,16 @@ export default function InterviewError({
   }, [error]);
 
   return (
-    <Panel>
-      <div className="flex flex-col items-center gap-4 px-6 py-14 text-center">
-        <h1 className="text-ink text-[22px] font-bold tracking-[-0.02em]">
-          {t("errors.generic.title")}
-        </h1>
-        <p className="text-ink-3 max-w-sm text-[14px]">{t("errors.generic.description")}</p>
-        <TezButton variant="primary" onClick={reset}>
-          {t("common.retry")}
-        </TezButton>
-      </div>
-    </Panel>
+    <Card>
+      <ErrorState
+        title={t("errors.generic.title")}
+        description={t("errors.generic.description")}
+        action={
+          <Button variant="primary" onClick={reset}>
+            {t("common.retry")}
+          </Button>
+        }
+      />
+    </Card>
   );
 }

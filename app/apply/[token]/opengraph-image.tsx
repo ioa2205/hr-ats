@@ -10,14 +10,17 @@ export const contentType = "image/png";
 
 export const revalidate = 3600;
 
-const COLOR_BONE = "#fafaf7";
-const COLOR_INK = "#15130f";
-const COLOR_INK_3 = "#3d3830";
-const COLOR_INK_4 = "#6b6557";
-const COLOR_INK_5 = "#97907f";
-const COLOR_RULE = "#e7e4d8";
-const COLOR_RULE_2 = "#d8d4c4";
-const COLOR_PERSIMMON = "#d9480f";
+// Fixed light palette mirrored by components/hr/design/share-preview.tsx so the
+// in-app unfurl preview matches this server-rendered PNG. Aligned to the unified
+// TezHR identity: warm canvas, near-black ink, Tez Lapis primary accent.
+const COLOR_BONE = "#f6f3ec";
+const COLOR_INK = "#171a1f";
+const COLOR_INK_3 = "#4f5963";
+const COLOR_INK_4 = "#65707a";
+const COLOR_INK_5 = "#8a929a";
+const COLOR_RULE = "#d7d1c5";
+const COLOR_RULE_2 = "#c7c1b4";
+const COLOR_LAPIS = "#0b57a3";
 
 async function loadGoogleFont(
   family: string,
@@ -217,8 +220,8 @@ export default async function OgImage({
                 width: 52,
                 height: 52,
                 borderRadius: 8,
-                background: COLOR_INK,
-                color: COLOR_BONE,
+                background: COLOR_LAPIS,
+                color: "#ffffff",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -349,7 +352,7 @@ export default async function OgImage({
             bottom: 0,
             width: 140,
             height: 5,
-            background: COLOR_PERSIMMON,
+            background: COLOR_LAPIS,
           }}
         />
       </div>

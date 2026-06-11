@@ -29,6 +29,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       currentLength,
       inputSize = "md",
       id,
+      required,
       ...props
     },
     ref,
@@ -44,7 +45,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
     return (
       <div className="flex flex-col gap-1.5">
-        {label && <Label htmlFor={inputId}>{label}</Label>}
+        {label && (
+          <Label htmlFor={inputId} required={required}>
+            {label}
+          </Label>
+        )}
         <div
           className={cn(
             "flex items-center gap-2 rounded-[var(--radius-md)] border bg-[var(--color-surface)] px-3",
@@ -70,6 +75,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             )}
             aria-invalid={hasError || undefined}
             aria-describedby={describedBy}
+            required={required}
             {...props}
           />
           {endAdornment && (
