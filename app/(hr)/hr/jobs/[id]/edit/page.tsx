@@ -8,7 +8,7 @@ import { requireCompanyAccess } from "@/lib/auth/guards";
 import { JobForm } from "@/components/hr/job-form";
 import { getLocale, t } from "@/lib/i18n";
 import { pickLocalized } from "@/lib/i18n/pick-localized";
-import type { HardRequirement } from "@/types";
+import type { HardRequirement, OpenQuestion, OptionalQuestion } from "@/types";
 
 export default async function EditJobPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -19,13 +19,20 @@ export default async function EditJobPage({ params }: { params: Promise<{ id: st
   const { data: job } = await supabaseAdmin
     .from("job_postings")
     .select(
-      "id,title,title_ru,title_uz,title_en,description,description_ru,description_uz,description_en,required_skills,hard_requirements",
+      // optional_questions / open_questions are post-Docker columns absent from
+      // the generated types — selected via the string and read through a cast.
+      "id,title,title_ru,title_uz,title_en,description,description_ru,description_uz,description_en,required_skills,hard_requirements,optional_questions,open_questions",
     )
     .eq("id", id)
     .eq("company_id", companyId)
     .maybeSingle();
 
   if (!job) notFound();
+
+  const optionalQuestions = ((job as { optional_questions?: unknown }).optional_questions ??
+    []) as OptionalQuestion[];
+  const openQuestions = ((job as { open_questions?: unknown }).open_questions ??
+    []) as OpenQuestion[];
 
   const shownTitle = pickLocalized(
     { ru: job.title_ru, uz: job.title_uz, en: job.title_en },
@@ -60,6 +67,8 @@ export default async function EditJobPage({ params }: { params: Promise<{ id: st
           description_en: job.description_en ?? "",
           required_skills: job.required_skills,
           hard_requirements: (job.hard_requirements as HardRequirement[]) ?? [],
+          optional_questions: optionalQuestions,
+          open_questions: openQuestions,
         }}
       />
     </div>

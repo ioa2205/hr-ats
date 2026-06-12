@@ -220,4 +220,93 @@ describe("runFunnel — accuracy guarantee end-to-end", () => {
     expect(result.cost.outputTokens).toBe(15);
     expect(result.cost.costUsd).toBeGreaterThan(0);
   });
+
+  it("defaults to strict: a one-requirement near-miss is excluded with no strictness set", async () => {
+    const deps = makeDeps({
+      connectors: [fakeConnector("internal_pool", [record("Near")])],
+      gate: { Near: [metVerdict("r1"), metVerdict("r2", { met: false, evidence: "" })] },
+      score: { Near: 100 },
+    });
+    const result = await runFunnel({ posting, frozenProfile: null, budget: BUDGET }, deps);
+    expect(result.shortlist).toHaveLength(0);
+  });
+});
+
+describe("runFunnel — strictness modes", () => {
+  it("balanced keeps a one-requirement near-miss, flagged and ranked below full matches", async () => {
+    const deps = makeDeps({
+      connectors: [fakeConnector("internal_pool", [record("Full"), record("Near")])],
+      gate: {
+        Full: [metVerdict("r1"), metVerdict("r2")],
+        // misses r2 — even with a higher score it must rank BELOW the full match.
+        Near: [metVerdict("r1"), metVerdict("r2", { met: false, evidence: "" })],
+      },
+      score: { Full: 50, Near: 100 },
+    });
+    const result = await runFunnel(
+      { posting, frozenProfile: null, budget: BUDGET, strictness: "balanced" },
+      deps,
+    );
+    expect(result.shortlist.map((e) => e.profile.full_name)).toEqual(["Full", "Near"]);
+    const near = result.shortlist.find((e) => e.profile.full_name === "Near")!;
+    expect(near.near_miss).toBe(true);
+    expect(near.meets_all_requirements).toBe(false);
+    expect(near.missed_requirements.map((m) => m.id)).toEqual(["r2"]);
+    const full = result.shortlist.find((e) => e.profile.full_name === "Full")!;
+    expect(full.near_miss).toBe(false);
+    expect(full.meets_all_requirements).toBe(true);
+  });
+
+  it("balanced still drops a candidate missing TWO requirements (beyond tolerance)", async () => {
+    const deps = makeDeps({
+      connectors: [fakeConnector("internal_pool", [record("TooWeak")])],
+      gate: {
+        TooWeak: [
+          metVerdict("r1", { met: false, evidence: "" }),
+          metVerdict("r2", { met: false, evidence: "" }),
+        ],
+      },
+      score: { TooWeak: 100 },
+    });
+    const result = await runFunnel(
+      { posting, frozenProfile: null, budget: BUDGET, strictness: "balanced" },
+      deps,
+    );
+    expect(result.shortlist).toHaveLength(0);
+  });
+
+  it("broad tolerates two missing requirements and verifies on the met subset only", async () => {
+    const deps = makeDeps({
+      connectors: [fakeConnector("internal_pool", [record("Weak")])],
+      gate: {
+        Weak: [
+          metVerdict("r1", { met: false, evidence: "" }),
+          metVerdict("r2", { met: false, evidence: "" }),
+        ],
+      },
+      score: { Weak: 80 },
+    });
+    const result = await runFunnel(
+      { posting, frozenProfile: null, budget: BUDGET, strictness: "broad" },
+      deps,
+    );
+    expect(result.shortlist).toHaveLength(1);
+    expect(result.shortlist[0].near_miss).toBe(true);
+    expect(result.shortlist[0].missed_requirements.map((m) => m.id).sort()).toEqual(["r1", "r2"]);
+  });
+
+  it("clamps the shortlist to the operator-provided cap", async () => {
+    const names = ["A", "B", "C", "D"];
+    const deps = makeDeps({
+      connectors: [fakeConnector("internal_pool", names.map((n) => record(n)))],
+      gate: Object.fromEntries(names.map((n) => [n, [metVerdict("r1"), metVerdict("r2")]])),
+      score: Object.fromEntries(names.map((n, i) => [n, 90 - i])),
+    });
+    const result = await runFunnel(
+      { posting, frozenProfile: null, budget: BUDGET, strictness: "broad", shortlistCap: 2 },
+      deps,
+    );
+    expect(result.shortlist).toHaveLength(2);
+    expect(result.shortlist.map((e) => e.profile.full_name)).toEqual(["A", "B"]);
+  });
 });

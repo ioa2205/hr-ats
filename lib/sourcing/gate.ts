@@ -29,10 +29,16 @@ function clampConfidence(value: unknown): number {
  * Authoritative gate. `modelResults` are the raw per-requirement verdicts from
  * the Flash auditor (Appendix B); this re-applies the fail-closed rules on top.
  * Empty hard_requirements ⇒ vacuously meets_all (nothing to fail).
+ *
+ * `minConfidence` is the strictness-mode floor: a requirement only counts as met
+ * at or above it. It defaults to MIN_REQUIREMENT_CONFIDENCE (strict). The caller
+ * decides how many misses to tolerate via `missed_count` — this function reports
+ * the misses without imposing a tolerance itself.
  */
 export function evaluateGate(
   hardRequirements: HardRequirement[],
   modelResults: RequirementResult[],
+  minConfidence: number = MIN_REQUIREMENT_CONFIDENCE,
 ): GateOutcome {
   const byId = new Map<string, RequirementResult>();
   for (const result of modelResults) {
@@ -46,23 +52,34 @@ export function evaluateGate(
     const verdict = byId.get(req.id);
     const evidence = typeof verdict?.evidence === "string" ? verdict.evidence.trim() : "";
     const confidence = clampConfidence(verdict?.confidence);
-    const met =
-      verdict?.met === true && evidence.length > 0 && confidence >= MIN_REQUIREMENT_CONFIDENCE;
+    const met = verdict?.met === true && evidence.length > 0 && confidence >= minConfidence;
     return { requirement_id: req.id, met, evidence, confidence };
   });
 
-  return { meets_all_requirements: results.every((result) => result.met), results };
+  const missed = results.filter((result) => !result.met);
+  return {
+    meets_all_requirements: missed.length === 0,
+    missed_count: missed.length,
+    missed_requirement_ids: missed.map((result) => result.requirement_id),
+    results,
+  };
 }
 
 /**
- * Final independent verification (Appendix D). `verified` is true ONLY if the
- * gate already passed AND every hard requirement was re-confirmed. The model's
- * own `verified` flag is never trusted — we re-derive it. Default to not-confirmed.
+ * Final independent verification (Appendix D). The model's own `verified` flag is
+ * never trusted — we re-derive it. Default to not-confirmed.
+ *
+ * `verified` is true ONLY if the candidate passed the (tolerated) gate AND every
+ * requirement that the gate marked MET was independently re-confirmed.
+ * `requiredIds` lets a near-miss candidate be verified on its met requirements
+ * alone — the requirements it was already flagged as missing are not re-checked
+ * here. When omitted, ALL hard requirements must re-confirm (the strict default).
  */
 export function evaluateVerification(
   hardRequirements: HardRequirement[],
-  gate: GateOutcome,
+  gate: { meets_all_requirements: boolean; results: RequirementResult[] },
   modelVerifications: RequirementVerification[],
+  requiredIds?: ReadonlySet<string>,
 ): VerificationOutcome {
   const byId = new Map<string, RequirementVerification>();
   for (const verification of modelVerifications) {
@@ -84,7 +101,13 @@ export function evaluateVerification(
     };
   });
 
+  // Which requirements must re-confirm. Strict default = all of them; a near-miss
+  // caller passes only the ids the gate actually marked met.
+  const mustConfirm = requiredIds ?? new Set(hardRequirements.map((req) => req.id));
+  // `meets_all_requirements` here means "passed the gate within tolerance" — the
+  // funnel sets it true for every candidate that survived stage 3.
   const verified =
-    gate.meets_all_requirements && results.every((result) => result.confirmed);
+    gate.meets_all_requirements &&
+    results.filter((result) => mustConfirm.has(result.requirement_id)).every((r) => r.confirmed);
   return { verified, results };
 }

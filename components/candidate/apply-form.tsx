@@ -4,9 +4,9 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Clock, Loader2, ShieldCheck } from "lucide-react";
 import type { Locale, TranslationKey } from "@/lib/i18n/types";
-import type { HardRequirement } from "@/types";
+import type { HardRequirement, OpenQuestion, OptionalQuestion } from "@/types";
 import { cn } from "@/lib/utils";
-import { Alert, Button, Card, Input, Panel, PanelHeader, PanelTitle } from "@/components/ui";
+import { Alert, Button, Card, Input, Panel, PanelHeader, PanelTitle, Textarea } from "@/components/ui";
 import { CvDropzone } from "./cv-dropzone";
 import { JobDescription } from "./job-description";
 import { SuccessState } from "./success-state";
@@ -18,6 +18,8 @@ interface ApplyFormProps {
     description: string;
     public_token: string;
     hard_requirements: HardRequirement[];
+    optional_questions: OptionalQuestion[];
+    open_questions: OpenQuestion[];
   };
   company: {
     name: string;
@@ -30,6 +32,8 @@ interface ApplyFormProps {
 
 interface FormValues {
   requirements: Record<string, string>;
+  optional: Record<string, string>;
+  open: Record<string, string>;
   full_name: string;
   phone_number: string;
 }
@@ -112,7 +116,20 @@ export function ApplyForm({
 
   const securityLabelId = useId();
   const formLoadedAt = useRef(Date.now());
-  const [section2Visible, setSection2Visible] = useState(posting.hard_requirements.length === 0);
+
+  const sortedRequirements = [...posting.hard_requirements].sort((a, b) => a.order - b.order);
+  const sortedOptional = [...(posting.optional_questions ?? [])].sort((a, b) => a.order - b.order);
+  const sortedOpen = [...(posting.open_questions ?? [])].sort((a, b) => a.order - b.order);
+  const hasRequirements = sortedRequirements.length > 0;
+  const hasStep1 =
+    hasRequirements || sortedOptional.length > 0 || sortedOpen.length > 0;
+
+  const pickLabel = (q: { label_ru: string; label_uz: string; label_en?: string }) =>
+    locale === "uz" ? q.label_uz : locale === "en" ? q.label_en || q.label_ru : q.label_ru;
+  const pickPrompt = (q: OpenQuestion) =>
+    locale === "uz" ? q.prompt_uz : locale === "en" ? q.prompt_en || q.prompt_ru : q.prompt_ru;
+
+  const [section2Visible, setSection2Visible] = useState(!hasStep1);
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [cvError, setCvError] = useState<string | undefined>();
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -125,9 +142,6 @@ export function ApplyForm({
   const turnstileResolver = useRef<((token: string | null) => void) | null>(null);
   const section2Ref = useRef<HTMLDivElement>(null);
 
-  const sortedRequirements = [...posting.hard_requirements].sort((a, b) => a.order - b.order);
-  const hasRequirements = sortedRequirements.length > 0;
-
   const {
     register,
     handleSubmit,
@@ -136,10 +150,11 @@ export function ApplyForm({
     formState: { errors },
     setError,
   } = useForm<FormValues>({
-    defaultValues: { requirements: {}, full_name: "", phone_number: "" },
+    defaultValues: { requirements: {}, optional: {}, open: {}, full_name: "", phone_number: "" },
   });
 
   const requirementValues = watch("requirements");
+  const optionalValues = watch("optional");
   const phoneRaw = watch("phone_number");
 
   function formatPhoneDisplay(raw: string): string {
@@ -292,6 +307,8 @@ export function ApplyForm({
     formData.append("phone_number", data.phone_number);
     formData.append("cv", cvFile);
     formData.append("requirement_answers", JSON.stringify(data.requirements));
+    formData.append("optional_answers", JSON.stringify(data.optional));
+    formData.append("open_answers", JSON.stringify(data.open));
     formData.append("form_loaded_at", String(formLoadedAt.current));
     formData.append("turnstile_token", token);
 
@@ -406,7 +423,7 @@ export function ApplyForm({
         </Alert>
       )}
 
-      {hasRequirements && (
+      {hasStep1 && (
         <StepProgress
           current={currentStep}
           labels={[t("apply.step_requirements"), t("apply.step_details")]}
@@ -417,87 +434,174 @@ export function ApplyForm({
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
-        {/* Requirements */}
-        {hasRequirements && (
-          <Panel>
-            <PanelHeader>
-              <PanelTitle count={sortedRequirements.length}>
-                {t("apply.requirements_heading")}
-              </PanelTitle>
-            </PanelHeader>
-            <fieldset disabled={section2Visible && !submitting} className="px-5 py-5 sm:px-6">
-              <div className="space-y-5">
-                {sortedRequirements.map((req) => {
-                  const label =
-                    locale === "uz"
-                      ? req.label_uz
-                      : locale === "en"
-                        ? req.label_en || req.label_ru
-                        : req.label_ru;
-
-                  // No "wrong answer" styling — answers never block submission.
-                  // The candidate's threshold (min_value) is intentionally hidden.
-                  if (req.type === "boolean") {
-                    return (
-                      <div key={req.id} className="space-y-2">
-                        <p className="text-[13.5px] font-semibold tracking-[-0.005em] text-[var(--color-text)]">
-                          {label}
-                        </p>
-                        <div className="grid grid-cols-2 gap-2">
-                          {(["true", "false"] as const).map((val) => {
-                            const selected = requirementValues[req.id] === val;
-                            return (
-                              <label
-                                key={val}
-                                className={cn(
-                                  "flex h-12 cursor-pointer items-center justify-center rounded-[var(--radius-md)] border text-[14px] font-medium transition-colors",
-                                  selected
-                                    ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-on-primary)]"
-                                    : "border-[var(--color-line-strong)] bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:border-[var(--color-line-strong)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)]",
-                                )}
-                              >
-                                <input
-                                  type="radio"
-                                  className="sr-only"
-                                  value={val}
-                                  {...register(`requirements.${req.id}`)}
-                                />
-                                {val === "true" ? t("apply.yes") : t("apply.no")}
-                              </label>
-                            );
-                          })}
+        {/* Step 1 — screening requirements + optional + open questions */}
+        {hasStep1 && (
+          <fieldset
+            disabled={section2Visible && !submitting}
+            className="flex min-w-0 flex-col gap-4 border-0 p-0"
+          >
+            {/* Hard requirements — answers never block submission; the
+                candidate's threshold (min_value) is intentionally hidden. */}
+            {hasRequirements && (
+              <Panel>
+                <PanelHeader>
+                  <PanelTitle count={sortedRequirements.length}>
+                    {t("apply.requirements_heading")}
+                  </PanelTitle>
+                </PanelHeader>
+                <div className="space-y-5 px-5 py-5 sm:px-6">
+                  {sortedRequirements.map((req) => {
+                    const label = pickLabel(req);
+                    if (req.type === "boolean") {
+                      return (
+                        <div key={req.id} className="space-y-2">
+                          <p className="text-[13.5px] font-semibold tracking-[-0.005em] text-[var(--color-text)]">
+                            {label}
+                          </p>
+                          <div className="grid grid-cols-2 gap-2">
+                            {(["true", "false"] as const).map((val) => {
+                              const selected = requirementValues[req.id] === val;
+                              return (
+                                <label
+                                  key={val}
+                                  className={cn(
+                                    "flex h-12 cursor-pointer items-center justify-center rounded-[var(--radius-md)] border text-[14px] font-medium transition-colors",
+                                    selected
+                                      ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-on-primary)]"
+                                      : "border-[var(--color-line-strong)] bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:border-[var(--color-line-strong)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)]",
+                                  )}
+                                >
+                                  <input
+                                    type="radio"
+                                    className="sr-only"
+                                    value={val}
+                                    {...register(`requirements.${req.id}`)}
+                                  />
+                                  {val === "true" ? t("apply.yes") : t("apply.no")}
+                                </label>
+                              );
+                            })}
+                          </div>
                         </div>
-                      </div>
+                      );
+                    }
+                    return (
+                      <Input
+                        key={req.id}
+                        label={label}
+                        inputSize="lg"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        {...register(`requirements.${req.id}`)}
+                      />
                     );
-                  }
+                  })}
+                </div>
+              </Panel>
+            )}
 
-                  return (
-                    <Input
-                      key={req.id}
-                      label={label}
-                      inputSize="lg"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      {...register(`requirements.${req.id}`)}
-                    />
-                  );
-                })}
-              </div>
+            {/* Optional questions — recorded + inform AI, but skippable */}
+            {sortedOptional.length > 0 && (
+              <Panel>
+                <PanelHeader>
+                  <PanelTitle count={sortedOptional.length}>
+                    {t("apply.optional_heading")}
+                  </PanelTitle>
+                </PanelHeader>
+                <div className="space-y-5 px-5 py-5 sm:px-6">
+                  <p className="text-[12.5px] leading-[1.5] text-[var(--color-text-muted)]">
+                    {t("apply.optional_hint")}
+                  </p>
+                  {sortedOptional.map((q) => {
+                    const label = pickLabel(q);
+                    if (q.type === "boolean") {
+                      return (
+                        <div key={q.id} className="space-y-2">
+                          <p className="text-[13.5px] font-semibold tracking-[-0.005em] text-[var(--color-text)]">
+                            {label}
+                          </p>
+                          <div className="grid grid-cols-2 gap-2">
+                            {(["true", "false"] as const).map((val) => {
+                              const selected = optionalValues[q.id] === val;
+                              return (
+                                <label
+                                  key={val}
+                                  className={cn(
+                                    "flex h-12 cursor-pointer items-center justify-center rounded-[var(--radius-md)] border text-[14px] font-medium transition-colors",
+                                    selected
+                                      ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-on-primary)]"
+                                      : "border-[var(--color-line-strong)] bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:border-[var(--color-line-strong)] hover:bg-[var(--color-surface-subtle)] hover:text-[var(--color-text)]",
+                                  )}
+                                >
+                                  <input
+                                    type="radio"
+                                    className="sr-only"
+                                    value={val}
+                                    {...register(`optional.${q.id}`)}
+                                  />
+                                  {val === "true" ? t("apply.yes") : t("apply.no")}
+                                </label>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    }
+                    return (
+                      <Input
+                        key={q.id}
+                        label={label}
+                        inputSize="lg"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        {...register(`optional.${q.id}`)}
+                      />
+                    );
+                  })}
+                </div>
+              </Panel>
+            )}
 
-              {!section2Visible && (
-                <Button
-                  type="button"
-                  variant="primary"
-                  size="lg"
-                  fullWidth
-                  onClick={handleRequirementsCheck}
-                  className="mt-6 font-semibold"
-                >
-                  {t("apply.continue")}
-                </Button>
-              )}
-            </fieldset>
-          </Panel>
+            {/* Open questions — free-text prose, optional */}
+            {sortedOpen.length > 0 && (
+              <Panel>
+                <PanelHeader>
+                  <PanelTitle count={sortedOpen.length}>{t("apply.open_heading")}</PanelTitle>
+                </PanelHeader>
+                <div className="space-y-5 px-5 py-5 sm:px-6">
+                  <p className="text-[12.5px] leading-[1.5] text-[var(--color-text-muted)]">
+                    {t("apply.open_hint")}
+                  </p>
+                  {sortedOpen.map((q) => (
+                    <div key={q.id} className="space-y-2">
+                      <p className="text-[13.5px] font-semibold tracking-[-0.005em] text-[var(--color-text)]">
+                        {pickPrompt(q)}
+                      </p>
+                      <Textarea
+                        rows={3}
+                        maxLength={2000}
+                        placeholder={t("apply.open_placeholder")}
+                        {...register(`open.${q.id}`)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </Panel>
+            )}
+
+            {!section2Visible && (
+              <Button
+                type="button"
+                variant="primary"
+                size="lg"
+                fullWidth
+                onClick={handleRequirementsCheck}
+                className="font-semibold"
+              >
+                {t("apply.continue")}
+              </Button>
+            )}
+          </fieldset>
         )}
 
         {/* Personal info */}

@@ -4,7 +4,7 @@ import { env } from "@/lib/env";
 import { getApplyLocale, t } from "@/lib/i18n";
 import { pickLocalized } from "@/lib/i18n/pick-localized";
 import type { Locale, TranslationKey } from "@/lib/i18n/types";
-import type { HardRequirement } from "@/types";
+import type { HardRequirement, OpenQuestion, OptionalQuestion } from "@/types";
 import { markdownToPlainText } from "@/lib/markdown/to-plain-text";
 import { ClosedState } from "@/components/candidate/closed-state";
 import { ApplyForm } from "@/components/candidate/apply-form";
@@ -116,6 +116,11 @@ const APPLY_KEYS: TranslationKey[] = [
   "apply.intro_subtitle",
   "apply.description_heading",
   "apply.requirements_heading",
+  "apply.optional_heading",
+  "apply.optional_hint",
+  "apply.open_heading",
+  "apply.open_hint",
+  "apply.open_placeholder",
   "apply.personal_heading",
   "apply.step_progress",
   "apply.step_requirements",
@@ -161,7 +166,9 @@ export default async function ApplyPage({ params }: { params: Promise<{ token: s
   const { data: posting } = await supabase
     .from("job_postings")
     .select(
-      "id, title, title_ru, title_uz, title_en, description, description_ru, description_uz, description_en, public_token, hard_requirements, status, company_id, created_at, companies(id, name, logo_url, status, default_locale)",
+      // optional_questions / open_questions are post-Docker columns absent from
+      // the generated types — selected via the string and read through a cast.
+      "id, title, title_ru, title_uz, title_en, description, description_ru, description_uz, description_en, public_token, hard_requirements, optional_questions, open_questions, status, company_id, created_at, companies(id, name, logo_url, status, default_locale)",
     )
     .eq("public_token", token)
     .single();
@@ -183,6 +190,10 @@ export default async function ApplyPage({ params }: { params: Promise<{ token: s
   }
 
   const hardRequirements = (posting.hard_requirements ?? []) as HardRequirement[];
+  const optionalQuestions = ((posting as { optional_questions?: unknown }).optional_questions ??
+    []) as OptionalQuestion[];
+  const openQuestions = ((posting as { open_questions?: unknown }).open_questions ??
+    []) as OpenQuestion[];
 
   const shownTitle = pickLocalized(
     { ru: posting.title_ru, uz: posting.title_uz, en: posting.title_en },
@@ -258,6 +269,8 @@ export default async function ApplyPage({ params }: { params: Promise<{ token: s
           description: shownDescription,
           public_token: posting.public_token,
           hard_requirements: hardRequirements,
+          optional_questions: optionalQuestions,
+          open_questions: openQuestions,
         }}
         company={{
           name: company.name,

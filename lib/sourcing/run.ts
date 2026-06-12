@@ -32,9 +32,10 @@ import {
 } from "./connectors/telegram";
 import type { LoadTelegramPosts } from "./connectors/telegram/db-reader";
 import { normalizePhone } from "./identity";
+import { resolveSourcingBudget } from "./budget";
 import type { PostingSeed } from "./requirement-profile";
+import { DEFAULT_STRICTNESS, isStrictnessMode } from "./types";
 import type {
-  FetchBudget,
   RequirementProfile,
   SearchOverrides,
   SourceConnector,
@@ -48,14 +49,6 @@ type SearchRow = Database["public"]["Tables"]["sourcing_searches"]["Row"];
 type AdminClient = ReturnType<typeof createAdminClient>;
 
 const MAX_ATTEMPTS = 3;
-const DEFAULT_BUDGET: FetchBudget = {
-  maxFetched: 200,
-  // Judgement-call ceiling (score + verify). On Flash + bounded concurrency this
-  // is cheap/fast, so it's set high enough to score AND verify every fetched
-  // candidate (2 × maxFetched + extraction) rather than capping the shortlist.
-  maxProCalls: 450,
-  tokenCeiling: 4_000_000,
-};
 
 function truncate(str: string, max = 500): string {
   return str.length > max ? str.slice(0, max) : str;
@@ -202,6 +195,12 @@ function toRow(
     rank: entry.rank,
     contact: entry.contact as unknown as Json,
     verified: entry.verified,
+    // near_miss / missed_requirements are post-Docker columns absent from the
+    // generated types; cast through to satisfy the typed insert.
+    ...({
+      near_miss: entry.near_miss,
+      missed_requirements: entry.missed_requirements as unknown as Json,
+    } as Record<string, unknown>),
   };
 }
 
@@ -384,7 +383,18 @@ export async function runSourcingSearch(searchId: string): Promise<void> {
 
     const frozenProfile = (claimed.requirement_profile ?? null) as RequirementProfile | null;
 
-    const result = await runFunnel({ posting: seed, frozenProfile, budget: DEFAULT_BUDGET }, deps);
+    // Operator-controlled per-run budget (global + per-company override) and the
+    // recruiter's chosen strictness, both resolved from the persisted row so a
+    // retry uses the exact same settings. `strictness` is a post-Docker column
+    // absent from the generated types.
+    const { budget, shortlistCap } = await resolveSourcingBudget(admin, claimed.company_id);
+    const rawStrictness = (claimed as { strictness?: unknown }).strictness;
+    const strictness = isStrictnessMode(rawStrictness) ? rawStrictness : DEFAULT_STRICTNESS;
+
+    const result = await runFunnel(
+      { posting: seed, frozenProfile, budget, strictness, shortlistCap },
+      deps,
+    );
 
     // Idempotent persist: clear any prior rows for this search, then insert.
     await admin.from("sourced_candidates").delete().eq("sourcing_search_id", searchId);

@@ -18,6 +18,7 @@ const errorKeys: Record<string, TranslationKey> = {
   otp_rate_limited: "auth.otp_rate_limited",
   phone_taken: "auth.phone_taken",
   sms_failed: "auth.sms_failed",
+  sms_unavailable: "auth.sms_unavailable",
   invalid_input: "auth.signup_invalid_input",
   otp_expired: "auth.otp_expired",
   otp_invalid_code: "auth.otp_invalid",

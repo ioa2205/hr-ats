@@ -28,6 +28,10 @@ interface HardRequirementsEditorProps {
   value: HardRequirement[];
   onChange: (requirements: HardRequirement[]) => void;
   errors?: Record<string, string>;
+  /** Override the hint text (e.g. for the optional-questions variant). */
+  hint?: string;
+  /** Override the add-button label. */
+  addLabel?: string;
 }
 
 function SortableRequirement({
@@ -198,6 +202,8 @@ export function HardRequirementsEditor({
   value,
   onChange,
   errors,
+  hint,
+  addLabel,
 }: HardRequirementsEditorProps) {
   const { t } = useTranslation();
   const sensors = useSensors(
@@ -255,7 +261,9 @@ export function HardRequirementsEditor({
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-[12px] text-[var(--color-text-muted)]">{t("hr.job.requirements_hint")}</p>
+      <p className="text-[12px] text-[var(--color-text-muted)]">
+        {hint ?? t("hr.job.requirements_hint")}
+      </p>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={value.map((r) => r.id)} strategy={verticalListSortingStrategy}>
@@ -276,7 +284,7 @@ export function HardRequirementsEditor({
 
       <Button type="button" variant="secondary" size="sm" onClick={addRequirement} className="self-start">
         <Plus className="h-3.5 w-3.5" />
-        {t("hr.job.add_requirement")}
+        {addLabel ?? t("hr.job.add_requirement")}
       </Button>
     </div>
   );

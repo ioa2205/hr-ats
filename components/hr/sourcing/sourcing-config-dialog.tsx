@@ -43,6 +43,19 @@ const SOURCE_LABEL_KEY: Record<SourceKind, TranslationKey> = {
 /** Sentinel select value for "no area filter". */
 const ALL_REGIONS = "__all__";
 
+type StrictnessMode = "strict" | "balanced" | "broad";
+const STRICTNESS_MODES: StrictnessMode[] = ["strict", "balanced", "broad"];
+const STRICTNESS_LABEL_KEY: Record<StrictnessMode, TranslationKey> = {
+  strict: "sourcing.config.strictness.strict",
+  balanced: "sourcing.config.strictness.balanced",
+  broad: "sourcing.config.strictness.broad",
+};
+const STRICTNESS_DESC_KEY: Record<StrictnessMode, TranslationKey> = {
+  strict: "sourcing.config.strictness_desc.strict",
+  balanced: "sourcing.config.strictness_desc.balanced",
+  broad: "sourcing.config.strictness_desc.broad",
+};
+
 export interface SourcingConfigDialogProps {
   jobId: string;
   /** sources actually configured for this company (the selectable ceiling). */
@@ -80,6 +93,7 @@ export function SourcingConfigDialog({
   const [selected, setSelected] = useState<Set<SourceKind>>(
     () => new Set(defaultSources ?? availableSources),
   );
+  const [strictness, setStrictness] = useState<StrictnessMode>("balanced");
   const [keywords, setKeywords] = useState(() => (defaultKeywords ?? []).join(", "));
   const [areaValue, setAreaValue] = useState<string>(() => {
     if (defaultAreaId === undefined) return HH_UZBEKISTAN_AREA_ID;
@@ -110,8 +124,14 @@ export function SourcingConfigDialog({
     if (selected.size === 0) return;
     setLoading(true);
     try {
-      const body: { sources: SourceKind[]; keywords?: string[]; areaId?: string | null } = {
+      const body: {
+        sources: SourceKind[];
+        keywords?: string[];
+        areaId?: string | null;
+        strictness: StrictnessMode;
+      } = {
         sources: [...selected],
+        strictness,
       };
       if (hhAvailable) {
         const kw = keywords
@@ -218,6 +238,25 @@ export function SourcingConfigDialog({
                 {t("sourcing.config.hh_unavailable")}
               </p>
             )}
+          </Field>
+
+          {/* Matching strictness */}
+          <Field label={t("sourcing.config.strictness_label")}>
+            <Select value={strictness} onValueChange={(v) => setStrictness(v as StrictnessMode)}>
+              <SelectTrigger aria-label={t("sourcing.config.strictness_label")}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {STRICTNESS_MODES.map((mode) => (
+                  <SelectItem key={mode} value={mode}>
+                    {t(STRICTNESS_LABEL_KEY[mode])}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="mt-2 text-xs leading-[1.5] text-[var(--color-text-subtle)]">
+              {t(STRICTNESS_DESC_KEY[strictness])}
+            </p>
           </Field>
 
           {/* hh.uz query options */}

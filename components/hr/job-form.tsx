@@ -16,7 +16,8 @@ import {
 } from "@/components/ui";
 import { TagInput } from "@/components/hr/tag-input";
 import { HardRequirementsEditor } from "@/components/hr/hard-requirements-editor";
-import type { HardRequirement } from "@/types";
+import { OpenQuestionsEditor } from "@/components/hr/open-questions-editor";
+import type { HardRequirement, OpenQuestion, OptionalQuestion } from "@/types";
 import type { Locale } from "@/lib/i18n/types";
 import { logger } from "@/lib/logger";
 import { useTranslation } from "@/lib/i18n/provider";
@@ -31,6 +32,8 @@ export interface JobFormValues {
   description_en: string;
   required_skills: string[];
   hard_requirements: HardRequirement[];
+  optional_questions: OptionalQuestion[];
+  open_questions: OpenQuestion[];
 }
 
 interface JobFormProps {
@@ -70,6 +73,8 @@ export function JobForm({ mode, jobId, defaultValues }: JobFormProps) {
       description_en: defaultValues?.description_en ?? "",
       required_skills: defaultValues?.required_skills ?? [],
       hard_requirements: defaultValues?.hard_requirements ?? [],
+      optional_questions: defaultValues?.optional_questions ?? [],
+      open_questions: defaultValues?.open_questions ?? [],
     },
   });
 
@@ -181,6 +186,8 @@ export function JobForm({ mode, jobId, defaultValues }: JobFormProps) {
         description_en: data.description_en || undefined,
         required_skills: data.required_skills,
         hard_requirements: data.hard_requirements,
+        optional_questions: data.optional_questions,
+        open_questions: data.open_questions,
       };
 
       const url = mode === "create" ? "/api/hr/jobs" : `/api/hr/jobs/${jobId}`;
@@ -363,6 +370,46 @@ export function JobForm({ mode, jobId, defaultValues }: JobFormProps) {
             render={({ field }) => (
               <HardRequirementsEditor
                 value={field.value as HardRequirement[]}
+                onChange={field.onChange}
+              />
+            )}
+          />
+        </div>
+      </Panel>
+
+      {/* Optional questions — recorded + inform AI, never block the candidate */}
+      <Panel>
+        <PanelHeader>
+          <PanelTitle>{t("hr.job.optional_questions_label")}</PanelTitle>
+        </PanelHeader>
+        <div className="p-4">
+          <Controller
+            control={control}
+            name="optional_questions"
+            render={({ field }) => (
+              <HardRequirementsEditor
+                value={field.value as OptionalQuestion[]}
+                onChange={field.onChange}
+                hint={t("hr.job.optional_questions_hint")}
+                addLabel={t("hr.job.add_optional_question")}
+              />
+            )}
+          />
+        </div>
+      </Panel>
+
+      {/* Open questions — free-text prompts fed to AI screening */}
+      <Panel>
+        <PanelHeader>
+          <PanelTitle>{t("hr.job.open_questions_label")}</PanelTitle>
+        </PanelHeader>
+        <div className="p-4">
+          <Controller
+            control={control}
+            name="open_questions"
+            render={({ field }) => (
+              <OpenQuestionsEditor
+                value={field.value as OpenQuestion[]}
                 onChange={field.onChange}
               />
             )}

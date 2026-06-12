@@ -95,6 +95,24 @@ describe("evaluateGate — fail-closed hard-requirement gate", () => {
     expect(outcome.results).toEqual([]);
   });
 
+  it("honors a lower minConfidence floor (looser strictness modes)", () => {
+    const verdicts = [verdict({ requirement_id: "a", confidence: 0.6 })];
+    expect(evaluateGate([req("a")], verdicts).meets_all_requirements).toBe(false); // 0.7 floor
+    expect(evaluateGate([req("a")], verdicts, 0.6).meets_all_requirements).toBe(true); // 0.6 floor
+  });
+
+  it("reports missed_count and missed_requirement_ids for near-miss tolerance", () => {
+    const reqs = [req("a"), req("b"), req("c")];
+    const outcome = evaluateGate(reqs, [
+      verdict({ requirement_id: "a" }),
+      verdict({ requirement_id: "b", met: false, evidence: "" }),
+      verdict({ requirement_id: "c", met: false, evidence: "" }),
+    ]);
+    expect(outcome.meets_all_requirements).toBe(false);
+    expect(outcome.missed_count).toBe(2);
+    expect(outcome.missed_requirement_ids.sort()).toEqual(["b", "c"]);
+  });
+
   it("handles number-type requirements structurally (trusts the auditor's comparison, enforces evidence)", () => {
     const reqs = [req("years", "number", 3)];
     const pass = evaluateGate(reqs, [verdict({ requirement_id: "years", evidence: "5 years at Acme" })]);
@@ -136,5 +154,25 @@ describe("evaluateVerification — independent re-confirmation", () => {
   it("verifies vacuously when there are no hard requirements and the gate passed", () => {
     const outcome = evaluateVerification([], passedGate, []);
     expect(outcome.verified).toBe(true);
+  });
+
+  it("with requiredIds, only the specified requirements must re-confirm (near-miss)", () => {
+    // A near-miss missed 'b'; only 'a' (the met requirement) must re-confirm.
+    const requiredIds = new Set(["a"]);
+    const passes = evaluateVerification(
+      reqs,
+      passedGate,
+      [confirm("a"), confirm("b", false)],
+      requiredIds,
+    );
+    expect(passes.verified).toBe(true);
+    // If the met requirement itself fails re-confirmation, it's dropped.
+    const fails = evaluateVerification(
+      reqs,
+      passedGate,
+      [confirm("a", false), confirm("b")],
+      requiredIds,
+    );
+    expect(fails.verified).toBe(false);
   });
 });

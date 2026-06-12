@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { jobPostingSchema, hardRequirementSchema } from "@/lib/validations/job";
+import {
+  jobPostingSchema,
+  hardRequirementSchema,
+  openQuestionSchema,
+} from "@/lib/validations/job";
 
 describe("jobPostingSchema — create payload validation", () => {
   const validPayload = {
@@ -80,6 +84,69 @@ describe("jobPostingSchema — create payload validation", () => {
       status: "draft",
     });
     expect(result.success).toBe(false);
+  });
+
+  it("defaults optional_questions and open_questions to empty arrays", () => {
+    const result = jobPostingSchema.safeParse({
+      title: "Junior Dev",
+      description: "Entry-level position for aspiring developers.",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.optional_questions).toEqual([]);
+      expect(result.data.open_questions).toEqual([]);
+    }
+  });
+
+  it("accepts optional_questions (hard-requirement shaped) and open_questions", () => {
+    const result = jobPostingSchema.safeParse({
+      ...validPayload,
+      optional_questions: [
+        {
+          id: "relocate",
+          label_ru: "Готовы к переезду?",
+          label_uz: "Ko'chishga tayyormisiz?",
+          type: "boolean" as const,
+          min_value: null,
+          order: 0,
+        },
+      ],
+      open_questions: [
+        {
+          id: "why",
+          prompt_ru: "Почему вы хотите эту работу?",
+          prompt_uz: "Nega bu ishni xohlaysiz?",
+          order: 0,
+        },
+      ],
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.optional_questions).toHaveLength(1);
+      expect(result.data.open_questions).toHaveLength(1);
+    }
+  });
+});
+
+describe("openQuestionSchema — shape validation", () => {
+  const validOpen = {
+    id: "why",
+    prompt_ru: "Почему вы хотите эту работу?",
+    prompt_uz: "Nega bu ishni xohlaysiz?",
+    order: 0,
+  };
+
+  it("accepts a valid open question (en prompt optional)", () => {
+    expect(openQuestionSchema.safeParse(validOpen).success).toBe(true);
+  });
+
+  it("rejects a blank required prompt locale", () => {
+    expect(openQuestionSchema.safeParse({ ...validOpen, prompt_ru: "" }).success).toBe(false);
+  });
+
+  it("rejects a missing uz prompt", () => {
+    const { prompt_uz: _omit, ...incomplete } = validOpen;
+    expect(openQuestionSchema.safeParse(incomplete).success).toBe(false);
   });
 });
 

@@ -13,6 +13,7 @@ interface EskizTokenResponse {
 interface EskizSendResult {
   ok: boolean;
   messageId?: string;
+  error?: string;
 }
 
 let cachedToken: { value: string; expiresAt: number } | null = null;
@@ -49,10 +50,20 @@ async function getToken(): Promise<string> {
 }
 
 export async function sendSms(phone: string, message: string): Promise<EskizSendResult> {
-  // In development, log OTP instead of sending
-  if (process.env.NODE_ENV === "development" || !ESKIZ_API_KEY) {
-    logger.info({ phone, message }, "[eskiz] DEV MODE — SMS not sent");
+  // Local development convenience: log the OTP instead of sending a real SMS so
+  // the phone-signup flow stays usable without Eskiz credentials. This branch
+  // ONLY runs in development — never in production.
+  if (process.env.NODE_ENV === "development") {
+    logger.info({ phone, message }, "[eskiz] DEV MODE — SMS not sent (logged instead)");
     return { ok: true, messageId: "dev-mode" };
+  }
+
+  // In production we must NOT pretend an SMS was sent. If credentials are
+  // missing, fail honestly so callers can surface a clear error instead of
+  // dead-ending the user on a code that never arrives.
+  if (!ESKIZ_API_KEY) {
+    logger.error({ phone }, "[eskiz] SMS not configured — ESKIZ_API_KEY missing");
+    return { ok: false, error: "sms_not_configured" };
   }
 
   const token = await getToken();
@@ -90,13 +101,13 @@ export async function sendSms(phone: string, message: string): Promise<EskizSend
       });
 
       if (!retryRes.ok) {
-        return { ok: false };
+        return { ok: false, error: "sms_send_failed" };
       }
       const retryData = await retryRes.json();
       return { ok: true, messageId: retryData.id };
     }
 
-    return { ok: false };
+    return { ok: false, error: "sms_send_failed" };
   }
 
   const data = await res.json();

@@ -114,6 +114,49 @@ interface JobPosting {
   required_skills: string[];
 }
 
+interface OptionalQuestion {
+  id: string;
+  label_ru: string;
+}
+interface OpenQuestion {
+  id: string;
+  prompt_ru: string;
+}
+
+/**
+ * Build the "self-reported answers" block from the applicant's optional + open
+ * answers. These are unverified context the AI should weigh against CV evidence,
+ * never treat as fact. Returns "" when there's nothing to add.
+ */
+function buildApplicantAnswers(
+  optionalQuestions: OptionalQuestion[],
+  optionalResponses: Record<string, string> | null,
+  openQuestions: OpenQuestion[],
+  openResponses: Record<string, string> | null,
+): string {
+  const lines: string[] = [];
+  for (const q of openQuestions ?? []) {
+    const a = openResponses?.[q.id];
+    if (a && String(a).trim()) {
+      lines.push(`Q: ${q.prompt_ru}\nA: ${String(a).trim().slice(0, 1000)}`);
+    }
+  }
+  for (const q of optionalQuestions ?? []) {
+    const a = optionalResponses?.[q.id];
+    if (a != null && String(a).trim()) {
+      lines.push(`${q.label_ru}: ${String(a).trim().slice(0, 200)}`);
+    }
+  }
+  if (lines.length === 0) return "";
+  return [
+    "",
+    "=== APPLICANT SELF-REPORTED ANSWERS ===",
+    "Optional/open answers the candidate provided. Treat as self-reported and",
+    "unverified — weigh against CV evidence, never accept blindly.",
+    ...lines,
+  ].join("\n");
+}
+
 type AiTone = "direct" | "neutral" | "generous";
 
 /**
@@ -155,7 +198,11 @@ async function fetchAiTone(supabase: any, companyId: string): Promise<AiTone> {
   return v === "direct" || v === "generous" ? v : "neutral";
 }
 
-function buildCvAnalysisPrompt(posting: JobPosting, tone: AiTone = "neutral"): string {
+function buildCvAnalysisPrompt(
+  posting: JobPosting,
+  tone: AiTone = "neutral",
+  applicantAnswers = "",
+): string {
   const skills = posting.required_skills.length
     ? posting.required_skills.join(", ")
     : "not specified";
@@ -193,7 +240,7 @@ but the same facts, same evidence, same verdict.
 === JOB DETAILS ===
 Title: ${posting.title}
 Description: ${posting.description}
-Required Skills: ${skills}${toneInstruction(tone)}`;
+Required Skills: ${skills}${toneInstruction(tone)}${applicantAnswers}`;
 }
 
 function truncate(str: string, max: number): string {
@@ -306,7 +353,9 @@ Deno.serve(async (req) => {
     log(candidateId, "info", "Fetching job posting", { jobId: claimed.job_posting_id });
     const { data: posting, error: postingError } = await supabase
       .from("job_postings")
-      .select("title, description, required_skills, company_id")
+      .select(
+        "title, description, required_skills, company_id, optional_questions, open_questions",
+      )
       .eq("id", claimed.job_posting_id)
       .single();
 
@@ -371,6 +420,14 @@ Deno.serve(async (req) => {
     const tone = await fetchAiTone(supabase, posting.company_id);
     log(candidateId, "info", "AI tone resolved", { tone });
 
+    // Self-reported optional + open answers → extra context for the screen.
+    const applicantAnswers = buildApplicantAnswers(
+      (posting.optional_questions ?? []) as OptionalQuestion[],
+      (claimed.optional_responses ?? null) as Record<string, string> | null,
+      (posting.open_questions ?? []) as OpenQuestion[],
+      (claimed.open_responses ?? null) as Record<string, string> | null,
+    );
+
     const startedAt = Date.now();
     const result = await ai.models.generateContent({
       model: MODEL,
@@ -389,7 +446,7 @@ Deno.serve(async (req) => {
         },
       ],
       config: {
-        systemInstruction: buildCvAnalysisPrompt(posting, tone),
+        systemInstruction: buildCvAnalysisPrompt(posting, tone, applicantAnswers),
         responseMimeType: "application/json",
         responseSchema: analysisSchema,
         temperature: 0.1,

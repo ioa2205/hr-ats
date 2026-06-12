@@ -10,6 +10,18 @@ export const hardRequirementSchema = z.object({
   order: z.number().int().nonnegative(),
 });
 
+/** Optional questions share the hard-requirement shape but never block. */
+export const optionalQuestionSchema = hardRequirementSchema;
+
+/** Free-text (open) question: a trilingual prompt, no type/threshold. */
+export const openQuestionSchema = z.object({
+  id: z.string().min(1),
+  prompt_ru: z.string().min(1),
+  prompt_uz: z.string().min(1),
+  prompt_en: z.string().optional(),
+  order: z.number().int().nonnegative(),
+});
+
 /**
  * Trilingual job posting input shape.
  * - `title` / `description` remain required as the primary/legacy columns.
@@ -27,8 +39,11 @@ export const jobPostingSchema = z.object({
   description_en: z.string().min(1).max(10000).optional(),
   required_skills: z.array(z.string().min(1)).default([]),
   hard_requirements: z.array(hardRequirementSchema).default([]),
+  optional_questions: z.array(optionalQuestionSchema).default([]),
+  open_questions: z.array(openQuestionSchema).default([]),
   status: z.enum(["active", "closed"]).default("active"),
 });
 
 export type JobPostingInput = z.infer<typeof jobPostingSchema>;
 export type HardRequirementInput = z.infer<typeof hardRequirementSchema>;
+export type OpenQuestionInput = z.infer<typeof openQuestionSchema>;

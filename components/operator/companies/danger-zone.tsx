@@ -128,6 +128,10 @@ function OverrideDialog({
   const [sourcingLimit, setSourcingLimit] = useState<string>(
     currentSourcing?.toString() ?? "",
   );
+  // Sourcing budget overrides — blank leaves the global/default in place.
+  const [maxFetched, setMaxFetched] = useState<string>("");
+  const [maxProCalls, setMaxProCalls] = useState<string>("");
+  const [shortlistSize, setShortlistSize] = useState<string>("");
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -136,7 +140,19 @@ function OverrideDialog({
     const cv = cvLimit === "" ? undefined : Number(cvLimit);
     const job = jobLimit === "" ? undefined : Number(jobLimit);
     const sourcing = sourcingLimit === "" ? undefined : Number(sourcingLimit);
-    if (cv === undefined && job === undefined && sourcing === undefined) return;
+    const fetched = maxFetched === "" ? undefined : Number(maxFetched);
+    const proCalls = maxProCalls === "" ? undefined : Number(maxProCalls);
+    const shortlist = shortlistSize === "" ? undefined : Number(shortlistSize);
+    if (
+      cv === undefined &&
+      job === undefined &&
+      sourcing === undefined &&
+      fetched === undefined &&
+      proCalls === undefined &&
+      shortlist === undefined
+    ) {
+      return;
+    }
 
     setBusy(true);
     try {
@@ -147,6 +163,9 @@ function OverrideDialog({
           cvQuotaLimit: cv,
           jobQuotaLimit: job,
           sourcingQuotaLimit: sourcing,
+          sourcingMaxFetched: fetched,
+          sourcingMaxProCalls: proCalls,
+          sourcingShortlistSize: shortlist,
           reason,
         }),
       });
@@ -190,6 +209,30 @@ function OverrideDialog({
             onChange={(e) => setSourcingLimit(e.target.value)}
             type="number"
             min={0}
+          />
+          <Input
+            label={t("operator.danger.sourcing_max_fetched_label")}
+            value={maxFetched}
+            onChange={(e) => setMaxFetched(e.target.value)}
+            type="number"
+            min={1}
+            placeholder={t("operator.danger.inherit_placeholder")}
+          />
+          <Input
+            label={t("operator.danger.sourcing_max_pro_calls_label")}
+            value={maxProCalls}
+            onChange={(e) => setMaxProCalls(e.target.value)}
+            type="number"
+            min={1}
+            placeholder={t("operator.danger.inherit_placeholder")}
+          />
+          <Input
+            label={t("operator.danger.sourcing_shortlist_label")}
+            value={shortlistSize}
+            onChange={(e) => setShortlistSize(e.target.value)}
+            type="number"
+            min={1}
+            placeholder={t("operator.danger.inherit_placeholder")}
           />
           <Textarea
             label={t("operator.danger.reason_label")}

@@ -51,6 +51,26 @@ export type RequirementResponses = Record<string, string>;
 /** Persisted shape of `candidates.requirements_snapshot` — frozen copy of the job's requirements at submission time. */
 export type RequirementSnapshot = HardRequirement[];
 
+/**
+ * An OPTIONAL question — structurally identical to a hard requirement
+ * (boolean/number), but it never blocks the candidate. Answers are recorded and
+ * fed to AI scoring as additional signal only.
+ */
+export type OptionalQuestion = HardRequirement;
+
+/** A free-text (OPEN) question the applicant answers in prose. */
+export interface OpenQuestion {
+  id: string;
+  prompt_ru: string;
+  prompt_uz: string;
+  prompt_en?: string;
+  order: number;
+}
+
+/** Persisted shape of `candidates.optional_responses` / `open_responses` — question id → raw answer. */
+export type OptionalResponses = Record<string, string>;
+export type OpenResponses = Record<string, string>;
+
 export type UserRole = "hr" | "admin";
 
 export interface AppUser {

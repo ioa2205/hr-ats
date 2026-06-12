@@ -7,7 +7,7 @@ import { dispatchNotification } from "@/lib/notifications/dispatch";
 import { logger } from "@/lib/logger";
 import { validatePdfBuffer } from "@/lib/pdf/validate";
 import { evaluateRequirements } from "@/lib/validations/requirements";
-import type { HardRequirement } from "@/types";
+import type { HardRequirement, OpenQuestion, OptionalQuestion } from "@/types";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -37,6 +37,8 @@ export async function POST(req: NextRequest) {
     const formLoadedAt = formData.get("form_loaded_at") as string | null;
     const website = formData.get("website") as string | null;
     const requirementAnswersRaw = formData.get("requirement_answers") as string | null;
+    const optionalAnswersRaw = formData.get("optional_answers") as string | null;
+    const openAnswersRaw = formData.get("open_answers") as string | null;
 
     // 1. Honeypot check — silently accept bots
     if (website) {
@@ -101,7 +103,9 @@ export async function POST(req: NextRequest) {
     const supabase = createAdminClient();
     const { data: posting, error: postingError } = await supabase
       .from("job_postings")
-      .select("id, company_id, hard_requirements, status")
+      // optional_questions / open_questions are post-Docker columns absent from
+      // the generated types — selected via the string and read through a cast.
+      .select("id, company_id, hard_requirements, optional_questions, open_questions, status")
       .eq("public_token", token)
       .single();
 
@@ -126,6 +130,44 @@ export async function POST(req: NextRequest) {
     const evaluation = evaluateRequirements(hardRequirements, requirementAnswers);
     const meetsRequirementsValue: boolean | null =
       hardRequirements.length === 0 ? null : evaluation.meetsAll;
+
+    // Optional + open answers — recorded but NEVER affect meets_requirements.
+    // Optional questions reuse the requirement evaluator purely to normalize the
+    // id→answer map; open answers are free text, clipped for safety.
+    const optionalQuestions =
+      ((posting as { optional_questions?: unknown }).optional_questions ??
+        []) as OptionalQuestion[];
+    const openQuestions =
+      ((posting as { open_questions?: unknown }).open_questions ?? []) as OpenQuestion[];
+
+    function parseAnswerMap(raw: string | null): Record<string, string> {
+      if (!raw) return {};
+      try {
+        const obj = JSON.parse(raw) as Record<string, unknown>;
+        return obj && typeof obj === "object" ? (obj as Record<string, string>) : {};
+      } catch {
+        return {};
+      }
+    }
+
+    const optionalAnswersInput = parseAnswerMap(optionalAnswersRaw);
+    const openAnswersInput = parseAnswerMap(openAnswersRaw);
+
+    const optionalResponses: Record<string, string> | null =
+      optionalQuestions.length > 0
+        ? evaluateRequirements(optionalQuestions, optionalAnswersInput).responses
+        : null;
+
+    const openResponses: Record<string, string> | null =
+      openQuestions.length > 0
+        ? Object.fromEntries(
+            openQuestions.map((q) => {
+              const raw = openAnswersInput[q.id];
+              const val = typeof raw === "string" ? raw.trim().slice(0, 2000) : "";
+              return [q.id, val];
+            }),
+          )
+        : null;
 
     // 8. Validate file
     if (!cv) {
@@ -174,6 +216,10 @@ export async function POST(req: NextRequest) {
       requirements_responses: evaluation.responses,
       requirements_snapshot: hardRequirements,
       meets_requirements: meetsRequirementsValue,
+      // post-Docker columns (absent from generated types); spread keeps the
+      // typed insert happy while persisting the applicant's extra answers.
+      optional_responses: optionalResponses,
+      open_responses: openResponses,
     };
 
     // 11a. Mismatch path — store the candidate with status=unscored, do NOT

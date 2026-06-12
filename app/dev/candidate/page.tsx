@@ -69,6 +69,8 @@ const POSTING = {
   description: DESCRIPTION,
   public_token: "preview-token",
   hard_requirements: REQUIREMENTS,
+  optional_questions: [],
+  open_questions: [],
 };
 
 const COMPANY = { name: "Tashkent Digital Solutions LLC", logo_url: null };

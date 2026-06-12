@@ -21,9 +21,10 @@ import { rankAndShortlist } from "./rank";
 import { ZERO_COST, addUsage, type RunCost, type TokenUsage } from "./cost";
 import {
   emptyStats,
-  SHORTLIST_SIZE,
+  STRICTNESS_CONFIG,
   type DeepScore,
   type FetchBudget,
+  type MissedRequirement,
   type NormalizedProfile,
   type RawSourcedProfile,
   type RequirementProfile,
@@ -33,6 +34,7 @@ import {
   type SourcedContact,
   type SourceKind,
   type SourcingStats,
+  type StrictnessMode,
 } from "./types";
 import type {
   GateResultsRaw,
@@ -84,6 +86,10 @@ export interface FunnelInput {
   /** if already frozen from a prior attempt, reused verbatim (not recomputed). */
   frozenProfile: RequirementProfile | null;
   budget: FetchBudget;
+  /** matching strictness; defaults to the historical fail-closed "strict". */
+  strictness?: StrictnessMode;
+  /** operator-controlled hard ceiling on the shortlist; clamps the mode target. */
+  shortlistCap?: number;
 }
 
 export interface ShortlistEntry {
@@ -94,6 +100,10 @@ export interface ShortlistEntry {
   contact: SourcedContact;
   requirement_results: RequirementResult[];
   meets_all_requirements: boolean;
+  /** true when one or more tolerated hard requirements were unmet (flagged). */
+  near_miss: boolean;
+  /** the unmet hard requirements, for display on a near-miss candidate. */
+  missed_requirements: MissedRequirement[];
   score: number;
   score_breakdown: DeepScore;
   verified: boolean;
@@ -167,6 +177,10 @@ export async function runFunnel(input: FunnelInput, deps: FunnelDeps): Promise<F
   let cost = ZERO_COST;
   let degraded = false;
 
+  // Strictness drives the gate confidence floor + how many unmet requirements
+  // are tolerated as flagged near-misses. Defaults to the fail-closed "strict".
+  const strictness = STRICTNESS_CONFIG[input.strictness ?? "strict"];
+
   // --- Stage 0: freeze the requirement profile (once) -------------------
   let profile = input.frozenProfile;
   if (!profile) {
@@ -209,11 +223,26 @@ export async function runFunnel(input: FunnelInput, deps: FunnelDeps): Promise<F
   stats.deduped = deduped.length;
   await deps.onProgress?.(stats, cost);
 
-  // --- Stage 3: hard-requirement gate (Flash, fail-closed, concurrent) --
+  // --- Stage 3: hard-requirement gate (Flash, concurrent) ---------------
+  // Strict mode keeps only full matches; looser modes also keep candidates that
+  // miss up to `maxMissed` requirements, flagged as near-misses for the recruiter.
   interface Gated {
     record: DedupedProfile;
     requirement_results: RequirementResult[];
+    near_miss: boolean;
+    missed_requirements: MissedRequirement[];
   }
+  const requirementById = new Map(requirements.map((req) => [req.id, req]));
+  const toMissedRequirements = (ids: string[]): MissedRequirement[] =>
+    ids
+      .map((id) => requirementById.get(id))
+      .filter((req): req is HardRequirement => Boolean(req))
+      .map((req) => ({
+        id: req.id,
+        label_ru: req.label_ru,
+        label_uz: req.label_uz,
+        label_en: req.label_en,
+      }));
   const gateOutcomes = await mapWithConcurrency(deduped, JUDGE_CONCURRENCY, async (record) => {
     try {
       const call = await deps.runGate(record.profile, requirements);
@@ -231,9 +260,14 @@ export async function runFunnel(input: FunnelInput, deps: FunnelDeps): Promise<F
   for (const r of gateOutcomes) {
     if (!r.ok) continue;
     cost = addUsage(cost, "flash", r.usage);
-    const outcome = evaluateGate(requirements, r.data.requirements);
-    if (outcome.meets_all_requirements) {
-      gated.push({ record: r.record, requirement_results: outcome.results });
+    const outcome = evaluateGate(requirements, r.data.requirements, strictness.minConfidence);
+    if (outcome.missed_count <= strictness.maxMissed) {
+      gated.push({
+        record: r.record,
+        requirement_results: outcome.results,
+        near_miss: outcome.missed_count > 0,
+        missed_requirements: toMissedRequirements(outcome.missed_requirement_ids),
+      });
     }
   }
   stats.gate_passed = gated.length;
@@ -304,12 +338,18 @@ export async function runFunnel(input: FunnelInput, deps: FunnelDeps): Promise<F
   for (const r of verifyOutcomes) {
     if (!r.ok) continue;
     cost = addUsage(cost, "flash", r.usage);
-    // The gate already passed for every `scored` item (stage 3 only kept
-    // meets_all). Re-confirm independently against the same gate-true baseline.
+    // Re-confirm independently, but only the requirements the gate marked MET.
+    // For a near-miss candidate the already-flagged misses are not re-checked
+    // here, so verification can't drop a candidate for a requirement we've
+    // deliberately tolerated.
+    const metIds = new Set(
+      r.item.requirement_results.filter((req) => req.met).map((req) => req.requirement_id),
+    );
     const verification = evaluateVerification(
       requirements,
       { meets_all_requirements: true, results: r.item.requirement_results },
       r.data.requirements,
+      metIds,
     );
     if (!verification.verified) {
       deps.logger.info(
@@ -325,7 +365,9 @@ export async function runFunnel(input: FunnelInput, deps: FunnelDeps): Promise<F
       profile: r.item.record.profile,
       contact: r.item.record.contact,
       requirement_results: r.item.requirement_results,
-      meets_all_requirements: true,
+      meets_all_requirements: !r.item.near_miss,
+      near_miss: r.item.near_miss,
+      missed_requirements: r.item.missed_requirements,
       score: r.item.score.total,
       score_breakdown: r.item.score,
       verified: true,
@@ -335,8 +377,10 @@ export async function runFunnel(input: FunnelInput, deps: FunnelDeps): Promise<F
   stats.verified = verified.length;
   await deps.onProgress?.(stats, cost);
 
-  // --- Stage 6: rank + take top 20 (never pad) --------------------------
-  const ranked = rankAndShortlist(verified, SHORTLIST_SIZE);
+  // --- Stage 6: rank + take the top N (never pad) -----------------------
+  // The mode picks a shortlist target; the operator's global cap clamps it.
+  const shortlistSize = Math.min(strictness.shortlist, input.shortlistCap ?? strictness.shortlist);
+  const ranked = rankAndShortlist(verified, shortlistSize);
   const shortlist = ranked.map((entry) => ({ ...entry, rank: entry.rank }));
   stats.shortlisted = shortlist.length;
   await deps.onProgress?.(stats, cost);

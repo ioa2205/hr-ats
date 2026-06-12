@@ -7,6 +7,7 @@ import { jobPostingSchema } from "@/lib/validations/job";
 import { fillMissingLocales } from "@/lib/gemini/translate-posting";
 import { logger } from "@/lib/logger";
 import type { HardRequirement } from "@/types";
+import type { Database, Json } from "@/types/supabase";
 
 export async function POST(request: NextRequest) {
   try {
@@ -54,24 +55,34 @@ export async function POST(request: NextRequest) {
     const supabaseAdmin = createAdminClient();
     const token = crypto.randomUUID().replace(/-/g, "").slice(0, 16);
 
+    // optional_questions / open_questions are post-Docker columns absent from
+    // the generated types. They are stored verbatim (no auto-translate); the
+    // apply form + AI fall back to ru when a locale is blank.
+    const insertRow: Database["public"]["Tables"]["job_postings"]["Insert"] & {
+      optional_questions?: Json;
+      open_questions?: Json;
+    } = {
+      company_id: access.companyId,
+      created_by: access.user.id,
+      title: parsed.data.title,
+      title_ru: filled.title_ru,
+      title_uz: filled.title_uz,
+      title_en: filled.title_en,
+      description: parsed.data.description,
+      description_ru: filled.description_ru,
+      description_uz: filled.description_uz,
+      description_en: filled.description_en,
+      required_skills: filled.required_skills,
+      hard_requirements: filled.hard_requirements as unknown as Json,
+      optional_questions: parsed.data.optional_questions as unknown as Json,
+      open_questions: parsed.data.open_questions as unknown as Json,
+      status: parsed.data.status,
+      public_token: token,
+    };
+
     const { data: job, error } = await supabaseAdmin
       .from("job_postings")
-      .insert({
-        company_id: access.companyId,
-        created_by: access.user.id,
-        title: parsed.data.title,
-        title_ru: filled.title_ru,
-        title_uz: filled.title_uz,
-        title_en: filled.title_en,
-        description: parsed.data.description,
-        description_ru: filled.description_ru,
-        description_uz: filled.description_uz,
-        description_en: filled.description_en,
-        required_skills: filled.required_skills,
-        hard_requirements: filled.hard_requirements as unknown as Record<string, unknown>,
-        status: parsed.data.status,
-        public_token: token,
-      })
+      .insert(insertRow)
       .select("id")
       .single();
 

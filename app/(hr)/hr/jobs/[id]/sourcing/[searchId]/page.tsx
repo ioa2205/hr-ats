@@ -24,6 +24,7 @@ import type { TranslationKey } from "@/lib/i18n/types";
 import type { HardRequirement } from "@/types";
 import type {
   DeepScore,
+  MissedRequirement,
   NormalizedProfile,
   RequirementResult,
   RequirementProfile,
@@ -157,6 +158,10 @@ export default async function SourcingResultsPage({
     const reqResults = (row.requirement_results ?? []) as RequirementResult[];
     const breakdown = (row.score_breakdown ?? null) as DeepScore | null;
     const contact = (row.contact ?? {}) as Partial<SourcedContact>;
+    // near_miss / missed_requirements are post-Docker columns absent from the
+    // generated types.
+    const missed = ((row as { missed_requirements?: unknown }).missed_requirements ??
+      []) as MissedRequirement[];
     return {
       sourcedId: row.id,
       rank: row.rank ?? 0,
@@ -170,6 +175,12 @@ export default async function SourcingResultsPage({
       confidence: breakdown?.confidence ?? 0,
       verified: row.verified === true,
       promoted: row.promoted_candidate_id != null,
+      nearMiss: (row as { near_miss?: unknown }).near_miss === true,
+      missedRequirements: missed.map(
+        (m) =>
+          labelById.get(m.id) ??
+          pickLocalized({ ru: m.label_ru, uz: m.label_uz, en: m.label_en }, locale, m.label_ru),
+      ),
       requirements: reqResults.map((rr) => ({
         id: rr.requirement_id,
         label: labelById.get(rr.requirement_id) ?? rr.requirement_id,

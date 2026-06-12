@@ -42,6 +42,10 @@ export interface SourcedCandidateCardProps {
   confidence: number;
   verified: boolean;
   promoted: boolean;
+  /** true when the candidate missed one or more tolerated hard requirements. */
+  nearMiss?: boolean;
+  /** labels of the unmet requirements (shown on a near-miss candidate). */
+  missedRequirements?: string[];
   requirements: RequirementResultView[];
   axes: AxisView[];
   gaps: string[];
@@ -106,10 +110,23 @@ export function SourcedCandidateCard(props: SourcedCandidateCardProps) {
                     {t("sourcing.results.verified_badge")}
                   </Badge>
                 )}
+                {props.nearMiss && (
+                  <Badge tone="warning">
+                    <Flag className="h-2.5 w-2.5" strokeWidth={2.5} aria-hidden="true" />
+                    {t("sourcing.results.near_miss_badge")}
+                  </Badge>
+                )}
               </div>
               {props.headline && props.headline !== props.fullName && (
                 <div className="mt-0.5 line-clamp-1 text-[12.5px] text-[var(--color-text-muted)]">
                   {props.headline}
+                </div>
+              )}
+              {props.nearMiss && props.missedRequirements && props.missedRequirements.length > 0 && (
+                <div className="mt-0.5 line-clamp-1 text-[11.5px] text-[var(--color-warning)]">
+                  {t("sourcing.results.near_miss_missing", {
+                    requirements: props.missedRequirements.join(", "),
+                  })}
                 </div>
               )}
             </div>
@@ -194,6 +211,12 @@ export function SourcedCandidateCard(props: SourcedCandidateCardProps) {
                   <Badge tone="success">
                     <Check className="h-2.5 w-2.5" strokeWidth={2.5} aria-hidden="true" />
                     {t("sourcing.results.verified_badge")}
+                  </Badge>
+                )}
+                {props.nearMiss && (
+                  <Badge tone="warning">
+                    <Flag className="h-2.5 w-2.5" strokeWidth={2.5} aria-hidden="true" />
+                    {t("sourcing.results.near_miss_badge")}
                   </Badge>
                 )}
                 <span className="data-mono text-[10.5px] text-[var(--color-text-subtle)]">

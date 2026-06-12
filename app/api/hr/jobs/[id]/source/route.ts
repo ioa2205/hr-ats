@@ -29,12 +29,16 @@ const bodySchema = z
     keywords: z.array(z.string().trim().min(1)).max(20).optional(),
     // hh.uz area id (digits per hh `/areas`); null ⇒ all areas; absent ⇒ default.
     areaId: z.string().trim().max(20).nullable().optional(),
+    // matching strictness; absent ⇒ the balanced default applied below.
+    strictness: z.enum(["strict", "balanced", "broad"]).optional(),
   })
   .strict();
 
 type SourcingSearchInsert = Database["public"]["Tables"]["sourcing_searches"]["Insert"] & {
-  // search_overrides is a post-Docker column absent from the generated types.
+  // search_overrides + strictness are post-Docker columns absent from the
+  // generated types.
   search_overrides?: Json | null;
+  strictness?: string;
 };
 
 // POST /api/hr/jobs/[id]/source — "Find candidates". Recruiter+ (any member
@@ -54,7 +58,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     if (!parsed.success) {
       return NextResponse.json({ error: "invalid_body" }, { status: 400 });
     }
-    const { sources: requestedSources, keywords, areaId } = parsed.data;
+    const { sources: requestedSources, keywords, areaId, strictness } = parsed.data;
 
     const admin = createAdminClient();
 
@@ -115,6 +119,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       // Only reference the (post-Docker) column when there's an override, so the
       // zero-config flow keeps working even if code ships before the migration.
       ...(overrides ? { search_overrides: overrides as unknown as Json } : {}),
+      ...(strictness ? { strictness } : {}),
     };
     const { data: search, error: insErr } = await admin
       .from("sourcing_searches")

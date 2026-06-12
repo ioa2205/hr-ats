@@ -18,6 +18,10 @@ const WRITABLE_KEYS = [
   "default_cv_quota",
   "default_job_quota",
   "default_sourcing_quota",
+  // Active-sourcing per-run search limits (blank ⇒ engine defaults).
+  "sourcing_max_fetched",
+  "sourcing_max_pro_calls",
+  "sourcing_shortlist_size",
 ] as const;
 type WritableKey = (typeof WRITABLE_KEYS)[number];
 

@@ -71,7 +71,14 @@ export async function POST(request: NextRequest) {
   const result = await sendSms(phone, `TezHR: ${code} — kod tasdiqlash uchun.`);
 
   if (!result.ok) {
-    logger.error({ phone }, "[auth] SMS send failed");
+    // Distinguish "SMS provider not configured" (a platform-wide condition) from
+    // a transient send failure, so the client can tell the user to use another
+    // signup method instead of retrying a code that will never arrive.
+    if (result.error === "sms_not_configured") {
+      logger.error({ phone }, "[auth] phone signup unavailable — SMS not configured");
+      return NextResponse.json({ error: "sms_unavailable" }, { status: 503 });
+    }
+    logger.error({ phone, error: result.error }, "[auth] SMS send failed");
     return NextResponse.json({ error: "sms_failed" }, { status: 502 });
   }
 

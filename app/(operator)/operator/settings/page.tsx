@@ -363,6 +363,24 @@ const PLATFORM_FIELDS: Array<{
     helpKey: "operator.settings.field.sourcing_quota_help",
     type: "number",
   },
+  {
+    key: "sourcing_max_fetched",
+    labelKey: "operator.settings.field.sourcing_max_fetched_label",
+    helpKey: "operator.settings.field.sourcing_max_fetched_help",
+    type: "number",
+  },
+  {
+    key: "sourcing_max_pro_calls",
+    labelKey: "operator.settings.field.sourcing_max_pro_calls_label",
+    helpKey: "operator.settings.field.sourcing_max_pro_calls_help",
+    type: "number",
+  },
+  {
+    key: "sourcing_shortlist_size",
+    labelKey: "operator.settings.field.sourcing_shortlist_label",
+    helpKey: "operator.settings.field.sourcing_shortlist_help",
+    type: "number",
+  },
 ];
 
 function PlatformTab() {

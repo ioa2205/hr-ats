@@ -75,6 +75,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     if (parsed.data.required_skills !== undefined) {
       updateData.required_skills = filled.required_skills;
     }
+    // optional_questions / open_questions are stored verbatim (no auto-translate).
+    if (parsed.data.optional_questions !== undefined) {
+      updateData.optional_questions = parsed.data.optional_questions;
+    }
+    if (parsed.data.open_questions !== undefined) {
+      updateData.open_questions = parsed.data.open_questions;
+    }
 
     const { error } = await supabaseAdmin
       .from("job_postings")

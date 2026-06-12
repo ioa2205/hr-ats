@@ -8,6 +8,11 @@ const bodySchema = z.object({
   cvQuotaLimit: z.number().int().min(0).max(100_000).optional(),
   jobQuotaLimit: z.number().int().min(0).max(10_000).optional(),
   sourcingQuotaLimit: z.number().int().min(0).max(100_000).optional(),
+  // Per-company active-sourcing budget overrides (stored in manual_override,
+  // read by resolveSourcingBudget). Blank ⇒ inherit global/default.
+  sourcingMaxFetched: z.number().int().min(1).max(5_000).optional(),
+  sourcingMaxProCalls: z.number().int().min(1).max(20_000).optional(),
+  sourcingShortlistSize: z.number().int().min(1).max(200).optional(),
   reason: z.string().trim().min(10).max(1000),
 });
 
@@ -26,7 +31,10 @@ export async function POST(
   if (
     parsed.data.cvQuotaLimit === undefined &&
     parsed.data.jobQuotaLimit === undefined &&
-    parsed.data.sourcingQuotaLimit === undefined
+    parsed.data.sourcingQuotaLimit === undefined &&
+    parsed.data.sourcingMaxFetched === undefined &&
+    parsed.data.sourcingMaxProCalls === undefined &&
+    parsed.data.sourcingShortlistSize === undefined
   ) {
     return NextResponse.json({ error: "no_override_fields" }, { status: 400 });
   }
@@ -49,9 +57,23 @@ export async function POST(
     update.sourcing_quota_limit = parsed.data.sourcingQuotaLimit;
   }
 
+  // Sourcing budget overrides have no dedicated columns — they live only inside
+  // manual_override, keyed exactly as resolveSourcingBudget expects.
+  const overrideExtras: Record<string, unknown> = {};
+  if (parsed.data.sourcingMaxFetched !== undefined) {
+    overrideExtras.sourcing_max_fetched = parsed.data.sourcingMaxFetched;
+  }
+  if (parsed.data.sourcingMaxProCalls !== undefined) {
+    overrideExtras.sourcing_max_pro_calls = parsed.data.sourcingMaxProCalls;
+  }
+  if (parsed.data.sourcingShortlistSize !== undefined) {
+    overrideExtras.sourcing_shortlist_size = parsed.data.sourcingShortlistSize;
+  }
+
   const nextOverride = {
     ...(before.manual_override as Record<string, unknown> | null),
     ...update,
+    ...overrideExtras,
     reason: parsed.data.reason,
     by: auth.user.id,
     at: new Date().toISOString(),

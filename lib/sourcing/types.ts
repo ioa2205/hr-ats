@@ -21,12 +21,55 @@ export type SourcingStatus = Database["public"]["Enums"]["sourcing_status"];
 
 /**
  * Evidence below this confidence is treated as NOT met by the gate, even if the
- * model returned met:true. Fail-closed: when unsure, exclude.
+ * model returned met:true. Fail-closed: when unsure, exclude. This is the
+ * STRICT-mode floor; looser strictness modes lower it (see STRICTNESS_CONFIG).
  */
 export const MIN_REQUIREMENT_CONFIDENCE = 0.7;
 
 /** Shortlist size cap. Fewer is fine; we never pad past the gate. */
 export const SHORTLIST_SIZE = 20;
+
+// ===================================================================
+// Strictness modes — how aggressively the gate filters candidates
+// ===================================================================
+
+/**
+ * Per-run matching strictness. `strict` is the historical fail-closed behavior
+ * (every hard requirement met, high confidence). `balanced`/`broad` lower the
+ * confidence floor and tolerate a few unmet requirements, keeping those
+ * candidates as flagged "near-misses" instead of dropping them — so a small or
+ * niche talent pool still returns useful results.
+ */
+export type StrictnessMode = "strict" | "balanced" | "broad";
+
+export interface StrictnessConfig {
+  /** minimum gate confidence for a requirement to count as met. */
+  minConfidence: number;
+  /** how many hard requirements may be unmet and still keep the candidate (flagged). */
+  maxMissed: number;
+  /** shortlist target for this mode (clamped by the operator shortlist cap). */
+  shortlist: number;
+}
+
+export const STRICTNESS_CONFIG: Record<StrictnessMode, StrictnessConfig> = {
+  strict: { minConfidence: 0.7, maxMissed: 0, shortlist: 20 },
+  balanced: { minConfidence: 0.6, maxMissed: 1, shortlist: 30 },
+  broad: { minConfidence: 0.5, maxMissed: 2, shortlist: 40 },
+};
+
+export const DEFAULT_STRICTNESS: StrictnessMode = "balanced";
+
+export function isStrictnessMode(value: unknown): value is StrictnessMode {
+  return value === "strict" || value === "balanced" || value === "broad";
+}
+
+/** A hard requirement a near-miss candidate did NOT satisfy (kept for display). */
+export interface MissedRequirement {
+  id: string;
+  label_ru: string;
+  label_uz: string;
+  label_en?: string;
+}
 
 // ===================================================================
 // Provenance + normalized profile (what a connector emits, what the AI reads)
@@ -167,7 +210,12 @@ export interface RequirementResult {
 }
 
 export interface GateOutcome {
+  /** true only when ZERO hard requirements were unmet. */
   meets_all_requirements: boolean;
+  /** how many hard requirements were not met. */
+  missed_count: number;
+  /** ids of the unmet hard requirements (drives the near-miss display). */
+  missed_requirement_ids: string[];
   results: RequirementResult[];
 }
 
