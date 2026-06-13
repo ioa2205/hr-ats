@@ -446,6 +446,16 @@ export const uz: Translations = {
   "sourcing.results.status.completed": "Tugadi",
   "sourcing.results.status.partial": "Qisman",
   "sourcing.results.status.failed": "Xatolik",
+  "sourcing.results.status.canceled": "Bekor qilindi",
+  "sourcing.actions.stop": "Qidiruvni to'xtatish",
+  "sourcing.actions.stopped": "Qidiruv to'xtatildi",
+  "sourcing.actions.stop_failed": "Qidiruvni to'xtatib bo'lmadi",
+  "sourcing.actions.delete": "O'chirish",
+  "sourcing.actions.delete_confirm_title": "Bu qidiruv o'chirilsinmi?",
+  "sourcing.actions.delete_confirm_body":
+    "Qidiruv va topilgan nomzodlar butunlay o'chiriladi. Buni qaytarib bo'lmaydi.",
+  "sourcing.actions.deleted": "Qidiruv o'chirildi",
+  "sourcing.actions.delete_failed": "Qidiruvni o'chirib bo'lmadi",
   "sourcing.results.running_hint":
     "Qidiruv fonda bajarilmoqda. Qisqa ro‘yxat tayyor bo‘lganda bu sahifa yangilanadi.",
   "sourcing.results.failed_hint": "Qidiruv muvaffaqiyatsiz tugadi. Qaytadan urinib ko‘ring.",

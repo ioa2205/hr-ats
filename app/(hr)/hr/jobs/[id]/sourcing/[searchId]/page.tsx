@@ -12,6 +12,7 @@ import type { BadgeTone } from "@/components/ui";
 import { funnelDrops, type FunnelDrop } from "@/lib/sourcing/summary";
 import { safeHttpUrl } from "@/lib/utils";
 import { FindCandidatesButton } from "@/components/hr/sourcing/find-candidates-button";
+import { SourcingActions } from "@/components/hr/sourcing/sourcing-actions";
 import { SourcingAutoRefresh } from "@/components/hr/sourcing/sourcing-auto-refresh";
 import {
   SourcedCandidateCard,
@@ -35,12 +36,16 @@ import type {
   SourcingStatus,
 } from "@/lib/sourcing/types";
 
-const STATUS_KEY: Record<SourcingStatus, TranslationKey> = {
+// 'canceled' is a post-Docker enum value absent from the generated SourcingStatus.
+type UiSourcingStatus = SourcingStatus | "canceled";
+
+const STATUS_KEY: Record<UiSourcingStatus, TranslationKey> = {
   queued: "sourcing.results.status.queued",
   running: "sourcing.results.status.running",
   completed: "sourcing.results.status.completed",
   partial: "sourcing.results.status.partial",
   failed: "sourcing.results.status.failed",
+  canceled: "sourcing.results.status.canceled",
 };
 
 const SOURCE_KEY: Record<SourceKind, TranslationKey> = {
@@ -64,12 +69,13 @@ const DROP_KEPT_KEY: Record<FunnelDrop["stage"], TranslationKey> = {
   verify: "sourcing.results.stat.verified",
 };
 
-const STATUS_TONE: Record<SourcingStatus, BadgeTone> = {
+const STATUS_TONE: Record<UiSourcingStatus, BadgeTone> = {
   queued: "neutral",
   running: "info",
   completed: "success",
   partial: "warning",
   failed: "danger",
+  canceled: "neutral",
 };
 
 export default async function SourcingResultsPage({
@@ -115,7 +121,7 @@ export default async function SourcingResultsPage({
     .eq("sourcing_search_id", searchId)
     .order("rank", { ascending: true });
 
-  const status = search.status as SourcingStatus;
+  const status = search.status as UiSourcingStatus;
   const stats = (search.stats ?? {}) as Partial<SourcingStats>;
   const isRunning = status === "queued" || status === "running";
   const drops = funnelDrops(stats);
@@ -251,7 +257,7 @@ export default async function SourcingResultsPage({
             )}
           </div>
         </div>
-        <div className="shrink-0">
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           <FindCandidatesButton
             jobId={jobId}
             variant="secondary"
@@ -261,6 +267,7 @@ export default async function SourcingResultsPage({
             defaultKeywords={rerunKeywords}
             defaultAreaId={overrides?.area_id}
           />
+          <SourcingActions jobId={jobId} searchId={searchId} inFlight={isRunning} />
         </div>
       </div>
 

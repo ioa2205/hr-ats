@@ -444,6 +444,16 @@ export const ru: Translations = {
   "sourcing.results.status.completed": "Завершён",
   "sourcing.results.status.partial": "Частично",
   "sourcing.results.status.failed": "Ошибка",
+  "sourcing.results.status.canceled": "Отменён",
+  "sourcing.actions.stop": "Остановить поиск",
+  "sourcing.actions.stopped": "Поиск остановлен",
+  "sourcing.actions.stop_failed": "Не удалось остановить поиск",
+  "sourcing.actions.delete": "Удалить",
+  "sourcing.actions.delete_confirm_title": "Удалить этот поиск?",
+  "sourcing.actions.delete_confirm_body":
+    "Поиск и найденные кандидаты будут удалены безвозвратно. Это действие необратимо.",
+  "sourcing.actions.deleted": "Поиск удалён",
+  "sourcing.actions.delete_failed": "Не удалось удалить поиск",
   "sourcing.results.running_hint":
     "Поиск выполняется в фоне. Эта страница обновится, когда шорт-лист будет готов.",
   "sourcing.results.failed_hint": "Поиск не удался. Попробуйте запустить его снова.",

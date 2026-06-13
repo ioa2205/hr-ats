@@ -15,20 +15,25 @@ import type { BadgeTone } from "@/components/ui";
 import type { TranslationKey } from "@/lib/i18n/types";
 import type { SourcingStats, SourcingStatus } from "@/lib/sourcing/types";
 
-const STATUS_KEY: Record<SourcingStatus, TranslationKey> = {
+// 'canceled' is a post-Docker enum value absent from the generated SourcingStatus.
+type UiSourcingStatus = SourcingStatus | "canceled";
+
+const STATUS_KEY: Record<UiSourcingStatus, TranslationKey> = {
   queued: "sourcing.results.status.queued",
   running: "sourcing.results.status.running",
   completed: "sourcing.results.status.completed",
   partial: "sourcing.results.status.partial",
   failed: "sourcing.results.status.failed",
+  canceled: "sourcing.results.status.canceled",
 };
 
-const STATUS_TONE: Record<SourcingStatus, BadgeTone> = {
+const STATUS_TONE: Record<UiSourcingStatus, BadgeTone> = {
   queued: "neutral",
   running: "info",
   completed: "success",
   partial: "warning",
   failed: "danger",
+  canceled: "neutral",
 };
 
 export default async function SourcingRunsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -114,7 +119,7 @@ export default async function SourcingRunsPage({ params }: { params: Promise<{ i
         ) : (
           <ul>
             {rows.map((run) => {
-              const status = run.status as SourcingStatus;
+              const status = run.status as UiSourcingStatus;
               const stats = (run.stats ?? {}) as Partial<SourcingStats>;
               return (
                 <li key={run.id} className="border-b border-[var(--color-line)] last:border-b-0">

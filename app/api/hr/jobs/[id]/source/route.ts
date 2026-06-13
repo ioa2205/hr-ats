@@ -9,7 +9,7 @@ import {
   refundSourcingQuota,
   SOURCING_UNITS_PER_SEARCH,
 } from "@/lib/companies/quota";
-import { runSourcingSearch } from "@/lib/sourcing/run";
+import { kickSourcingWorker } from "@/lib/sourcing/kick";
 import { availableSourcesForCompany } from "@/lib/sourcing/availability";
 import type { SearchOverrides, SourceKind } from "@/lib/sourcing/types";
 import type { Database, Json } from "@/types/supabase";
@@ -147,14 +147,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       metadata: { job_posting_id: jobPostingId, title: job.title, sources, has_overrides: overrides != null },
     });
 
-    // Immediate background kick (the pickup cron is the backstop).
-    after(async () => {
-      try {
-        await runSourcingSearch(search.id);
-      } catch (err) {
-        logger.error({ err: String(err), searchId: search.id }, "[sourcing] kick crashed");
-      }
-    });
+    // Quick fire-and-forget kick to the dedicated worker route, which runs the
+    // funnel inline. Runs in after() (a fast HTTP dispatch, unlike the full
+    // funnel) so the 202 returns immediately; the pickup cron is the backstop.
+    after(() => kickSourcingWorker(search.id));
 
     revalidatePath(`/hr/jobs/${jobPostingId}`);
     return NextResponse.json({ searchId: search.id }, { status: 202 });

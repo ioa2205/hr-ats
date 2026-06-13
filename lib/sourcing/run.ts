@@ -49,6 +49,9 @@ type SearchRow = Database["public"]["Tables"]["sourcing_searches"]["Row"];
 type AdminClient = ReturnType<typeof createAdminClient>;
 
 const MAX_ATTEMPTS = 3;
+// 'canceled' is a post-Docker enum value absent from the generated types; cast
+// once so the status guards below stay type-clean.
+const CANCELED_STATUS = "canceled" as unknown as SearchRow["status"];
 
 function truncate(str: string, max = 500): string {
   return str.length > max ? str.slice(0, max) : str;
@@ -251,14 +254,21 @@ async function failSearch(
   reason: string,
   jobTitle: string,
 ): Promise<void> {
-  await admin
+  // Don't resurrect a user-canceled search, and only refund/notify if THIS
+  // update actually flipped the row to failed (guards against double-refund
+  // when a cancel already refunded the unit).
+  const { data: updated } = await admin
     .from("sourcing_searches")
     .update({
       status: "failed",
       error: redactSecrets(truncate(reason)),
       completed_at: new Date().toISOString(),
     })
-    .eq("id", search.id);
+    .eq("id", search.id)
+    .neq("status", CANCELED_STATUS)
+    .select("id")
+    .maybeSingle();
+  if (!updated) return;
   // Refund the consumed unit so an infra/connector failure doesn't burn a slot.
   await refundSourcingQuota(search.company_id, SOURCING_UNITS_PER_SEARCH);
   await notifyFailed(admin, search, jobTitle);
@@ -396,6 +406,18 @@ export async function runSourcingSearch(searchId: string): Promise<void> {
       deps,
     );
 
+    // If the recruiter canceled mid-run, drop the results and stop — don't
+    // resurrect the search or send a "complete" notification.
+    const { data: still } = await admin
+      .from("sourcing_searches")
+      .select("status")
+      .eq("id", searchId)
+      .maybeSingle();
+    if ((still?.status as string | undefined) === "canceled") {
+      logger.info({ searchId }, "[sourcing] run canceled mid-flight; discarding results");
+      return;
+    }
+
     // Idempotent persist: clear any prior rows for this search, then insert.
     await admin.from("sourced_candidates").delete().eq("sourcing_search_id", searchId);
     if (result.shortlist.length > 0) {
@@ -405,7 +427,7 @@ export async function runSourcingSearch(searchId: string): Promise<void> {
       if (insErr) throw new Error(`persist_failed: ${insErr.message}`);
     }
 
-    await admin
+    const { data: finalized } = await admin
       .from("sourcing_searches")
       .update({
         status: result.status,
@@ -416,7 +438,15 @@ export async function runSourcingSearch(searchId: string): Promise<void> {
         error: null,
         completed_at: new Date().toISOString(),
       })
-      .eq("id", searchId);
+      .eq("id", searchId)
+      .neq("status", CANCELED_STATUS)
+      .select("id")
+      .maybeSingle();
+    // Lost a race with a cancel between the check and the write — leave it.
+    if (!finalized) {
+      await admin.from("sourced_candidates").delete().eq("sourcing_search_id", searchId);
+      return;
+    }
 
     logger.info(
       { searchId, shortlisted: result.shortlist.length, status: result.status },
@@ -430,11 +460,12 @@ export async function runSourcingSearch(searchId: string): Promise<void> {
       await failSearch(admin, claimed, message, jobTitle);
     } else {
       // Re-queue: the pickup cron retries; the frozen profile is reused so the
-      // extraction Pro call is not repeated.
+      // extraction Pro call is not repeated. Never resurrect a canceled search.
       await admin
         .from("sourcing_searches")
         .update({ status: "queued", error: redactSecrets(truncate(message)) })
-        .eq("id", searchId);
+        .eq("id", searchId)
+        .neq("status", CANCELED_STATUS);
     }
   }
 }

@@ -441,6 +441,16 @@ export const en: Translations = {
   "sourcing.results.status.completed": "Completed",
   "sourcing.results.status.partial": "Partial",
   "sourcing.results.status.failed": "Failed",
+  "sourcing.results.status.canceled": "Canceled",
+  "sourcing.actions.stop": "Stop search",
+  "sourcing.actions.stopped": "Search stopped",
+  "sourcing.actions.stop_failed": "Couldn't stop the search",
+  "sourcing.actions.delete": "Delete",
+  "sourcing.actions.delete_confirm_title": "Delete this search?",
+  "sourcing.actions.delete_confirm_body":
+    "This permanently removes the search and its sourced candidates. This can't be undone.",
+  "sourcing.actions.deleted": "Search deleted",
+  "sourcing.actions.delete_failed": "Couldn't delete the search",
   "sourcing.results.running_hint":
     "The search is running in the background. This page updates when the shortlist is ready.",
   "sourcing.results.failed_hint": "The search failed. Try running it again.",

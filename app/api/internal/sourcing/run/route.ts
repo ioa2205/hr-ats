@@ -1,4 +1,4 @@
-import { NextResponse, after, type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { z } from "zod/v4";
 import { env } from "@/lib/env";
@@ -7,9 +7,15 @@ import { runSourcingSearch } from "@/lib/sourcing/run";
 import { recordWorkerHeartbeat, WORKER } from "@/lib/observability/heartbeat";
 
 // Background worker route. Invoked by the pickup / stuck-run pg_cron job and by
-// the trigger's immediate kick. Authenticated with the service-role key (the
-// cron sends it as a bearer). Long-running on Railway's persistent server; the
-// funnel runs in after() so the caller (pg_net / the trigger) gets a fast 202.
+// the trigger's fire-and-forget kick. Authenticated with the service-role key.
+//
+// The funnel runs INLINE within this request (not in after()) so the heavy,
+// multi-minute work executes inside an active request — the reliable execution
+// context on Railway's persistent server. Callers don't wait for the body:
+// pg_net fires async, and the trigger's kick aborts its wait after a few
+// seconds while this handler keeps running to completion. A crash mid-run
+// leaves the search in 'running'; the stale-run cron re-invokes and
+// claim_sourcing_search resumes or, past MAX_ATTEMPTS, fails it loudly.
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
@@ -28,19 +34,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "invalid_body" }, { status: 400 });
   }
 
-  // Run after the response. A crash mid-run leaves the search in 'running';
-  // the stale-run cron re-invokes and claim_sourcing_search resumes or, past
-  // MAX_ATTEMPTS, fails it loudly — it never hangs.
-  after(async () => {
-    try {
-      await runSourcingSearch(searchId);
-      await recordWorkerHeartbeat(WORKER.sourcingRun, true);
-    } catch (err) {
-      logger.error({ err: String(err), searchId }, "[sourcing] worker after() crashed");
-      Sentry.captureException(err, { tags: { worker: WORKER.sourcingRun }, extra: { searchId } });
-      await recordWorkerHeartbeat(WORKER.sourcingRun, false, String(err));
-    }
-  });
-
-  return NextResponse.json({ ok: true, accepted: true }, { status: 202 });
+  try {
+    await runSourcingSearch(searchId);
+    await recordWorkerHeartbeat(WORKER.sourcingRun, true);
+    return NextResponse.json({ ok: true, done: true }, { status: 200 });
+  } catch (err) {
+    logger.error({ err: String(err), searchId }, "[sourcing] worker run crashed");
+    Sentry.captureException(err, { tags: { worker: WORKER.sourcingRun }, extra: { searchId } });
+    await recordWorkerHeartbeat(WORKER.sourcingRun, false, String(err));
+    return NextResponse.json({ error: "run_failed" }, { status: 500 });
+  }
 }
