@@ -101,22 +101,30 @@ describe("normalizeHhResume — provenance discipline", () => {
 });
 
 describe("buildQueryText", () => {
-  it("prefers search keywords, de-duplicated case-insensitively", () => {
+  it("OR-joins search keywords, de-duplicated case-insensitively (broad recall)", () => {
     expect(
       buildQueryText(profile({ search_keywords: ["driver", "Driver", "logistics"] })),
-    ).toBe("driver logistics");
+    ).toBe("driver OR logistics");
   });
 
-  it("falls back to title + required skills when no keywords", () => {
+  it("quotes multi-word phrases so hh treats them as one term, not AND-of-words", () => {
+    expect(
+      buildQueryText(
+        profile({ search_keywords: ["системный администратор", "сисадмин", "system administrator"] }),
+      ),
+    ).toBe('"системный администратор" OR сисадмин OR "system administrator"');
+  });
+
+  it("falls back to title + required skills (OR-joined) when no keywords", () => {
     expect(buildQueryText(profile({ title: "Driver", required_skills: ["B category"] }))).toBe(
-      "Driver B category",
+      'Driver OR "B category"',
     );
   });
 });
 
 describe("joinKeywords (user keyword override → hh text)", () => {
-  it("trims, de-duplicates case-insensitively, and space-joins", () => {
-    expect(joinKeywords(["React", "react", " frontend ", ""])).toBe("React frontend");
+  it("trims, de-duplicates case-insensitively, and OR-joins (quoting phrases)", () => {
+    expect(joinKeywords(["React", "react", " frontend ", ""])).toBe("React OR frontend");
   });
 
   it("returns an empty string for an all-blank list", () => {
@@ -208,6 +216,21 @@ describe("createHhConnector.fetch — pagination + budget", () => {
       out.push(r);
     }
     expect(search).toHaveBeenCalledWith(expect.objectContaining({ text: "driver" }));
+  });
+
+  it("OR-joins multiple profile keywords into the hh query (broad recall)", async () => {
+    const search = vi.fn().mockResolvedValueOnce(pageOf(["a"], 0));
+    const connector = createHhConnector({ search, isConfigured: () => true, perPage: 2 });
+    const out = [];
+    for await (const r of connector.fetch(
+      profile({ search_keywords: ["сисадмин", "system administrator"] }),
+      BUDGET,
+    )) {
+      out.push(r);
+    }
+    expect(search).toHaveBeenCalledWith(
+      expect.objectContaining({ text: 'сисадмин OR "system administrator"' }),
+    );
   });
 });
 

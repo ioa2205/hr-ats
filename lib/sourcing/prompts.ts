@@ -96,7 +96,12 @@ ${HARD_RULES}
 
 Treat the posting as the <source>. Additionally:
 - The job's hard_requirements are the NON-NEGOTIABLE gate. They are handled separately by the system — do NOT output them, do NOT soften/merge/drop them, and do NOT restate them as must_haves.
-- From the free-text description extract: must_haves[], nice_to_haves[] (each with a weight 1–5), seniority, required_languages (uz/ru/en + level), and search_keywords[] (synonyms / role titles that widen retrieval). Mark anything you are unsure about as a nice_to_have, never as a must_have.
+- From the free-text description extract: must_haves[], nice_to_haves[] (each with a weight 1–5), seniority, required_languages (uz/ru/en + level), and search_keywords[]. Mark anything you are unsure about as a nice_to_have, never as a must_have.
+- search_keywords[] drive an OR-based resume search on hh.uz, a Russian-language job board for the Uzbek market. The goal is RECALL — cast a wide net so we don't miss good candidates; precision is handled later by the gate. So:
+    • Output 8–16 keywords as a flat array of single terms or short phrases (a phrase = a job title or tight skill, e.g. "системный администратор").
+    • MULTILINGUAL: include the role title and its common synonyms in BOTH Russian AND English, since most hh.uz resumes are in Russian. Add Uzbek (Latin) only where a term is genuinely used. Example for an IT infra/sysadmin role: "системный администратор", "сисадмин", "system administrator", "администратор серверов", "Windows Server", "Linux", "DevOps инженер", "network administrator", "сетевой администратор".
+    • Include real-world job-title variants and adjacent roles a strong candidate might use on their CV, NOT a restatement of every requirement. Prefer terms people actually put in a resume headline.
+    • Do NOT bundle many words into one keyword (that narrows the search). Keep each entry independently searchable.
 - seniority: the level the ROLE targets (intern / junior / middle / senior / lead / principal). READ it from the title or description — if the title names a level (e.g. "Senior Frontend Developer" ⇒ senior, "Junior QA" ⇒ junior), use that level. Return an empty string only when no level is stated or named in the title. Do not invent a level the posting does not support.
 - Output strictly in the provided schema. No prose.`;
 

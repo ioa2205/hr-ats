@@ -23,8 +23,23 @@ function clampPerPage(value: number): number {
   return Math.min(Math.max(Math.trunc(value), 1), 100);
 }
 
-/** Trim, case-insensitively dedupe, and space-join terms into an hh `text` query. */
-function joinTerms(parts: string[]): string {
+/** hh caps query length; keep the OR list focused on the strongest synonyms. */
+const MAX_QUERY_TERMS = 14;
+
+/** Quote multi-word phrases so hh treats them as ONE term (not AND-of-words). */
+function quoteTerm(term: string): string {
+  return /\s/.test(term) ? `"${term}"` : term;
+}
+
+/**
+ * Build a BROAD hh `text` query: trim, case-insensitively dedupe, then OR-join
+ * the terms. hh's default `text` logic requires ALL words to appear, so the old
+ * space-join meant a resume had to contain every keyword at once → near-zero
+ * hits. OR-joining retrieves a resume matching ANY term (role-title synonyms in
+ * RU/EN/UZ, key skills); the funnel's gate + scoring then enforce relevance, so
+ * casting a wide net is intentional — we want more candidates to judge, not fewer.
+ */
+export function buildOrQuery(parts: string[]): string {
   const seen = new Set<string>();
   const terms: string[] = [];
   for (const raw of parts) {
@@ -32,31 +47,33 @@ function joinTerms(parts: string[]): string {
     const key = term.toLowerCase();
     if (term.length === 0 || seen.has(key)) continue;
     seen.add(key);
-    terms.push(term);
+    terms.push(quoteTerm(term));
+    if (terms.length >= MAX_QUERY_TERMS) break;
   }
-  return terms.join(" ");
+  return terms.join(" OR ");
 }
 
 /**
  * The hh `text` query from the frozen requirement profile. Prefers the
- * AI-extracted search keywords; falls back to the job title + required skills
- * so a thin profile still produces a meaningful search.
+ * AI-extracted search keywords (RU/EN/UZ synonyms); falls back to the job title
+ * + required skills so a thin profile still produces a meaningful search.
  */
 export function buildQueryText(profile: RequirementProfile): string {
   const parts =
     profile.search_keywords.length > 0
       ? profile.search_keywords
       : [profile.title, ...profile.required_skills];
-  return joinTerms(parts);
+  return buildOrQuery(parts);
 }
 
 /**
  * The hh `text` query from a user's free-text keyword override (same trim /
- * dedupe / join as the AI-derived query, so the displayed and searched strings
- * match). Empty result ⇒ no usable override (caller falls back to the profile).
+ * dedupe / OR-join as the AI-derived query, so the displayed and searched
+ * strings match). Empty result ⇒ no usable override (caller falls back to the
+ * profile).
  */
 export function joinKeywords(keywords: string[]): string {
-  return joinTerms(keywords);
+  return buildOrQuery(keywords);
 }
 
 export function createHhConnector(deps: HhConnectorDeps): SourceConnector {
