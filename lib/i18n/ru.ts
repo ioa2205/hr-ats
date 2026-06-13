@@ -1193,6 +1193,7 @@ export const ru: Translations = {
   "landing.pricing.pro_badge_new": "ДЛЯ КОМАНД",
   "landing.pricing.pro_cta_new": "Поговорить с командой",
   "landing.pricing.pro_note_new": "Финальная цена — от размера команды и объёма найма",
+  "landing.pricing.pro_coming_soon": "Скоро",
   "landing.pricing.trial_f1_new": "До 3 активных вакансий — достаточно для первой подборки",
   "landing.pricing.trial_f2_new": "До 50 CV в месяц — хватит на полный пайплайн",
   "landing.pricing.trial_f3_new": "Полный ИИ-скрининг — RU · UZ · EN",

@@ -1116,6 +1116,7 @@ export type TranslationKey =
   | "landing.pricing.pro_badge_new"
   | "landing.pricing.pro_cta_new"
   | "landing.pricing.pro_note_new"
+  | "landing.pricing.pro_coming_soon"
   | "landing.pricing.trial_f1_new"
   | "landing.pricing.trial_f2_new"
   | "landing.pricing.trial_f3_new"

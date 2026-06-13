@@ -1198,6 +1198,7 @@ export const uz: Translations = {
   "landing.pricing.pro_badge_new": "JAMOALAR UCHUN",
   "landing.pricing.pro_cta_new": "Jamoa bilan gaplashish",
   "landing.pricing.pro_note_new": "Yakuniy narx — jamoa va yollash hajmidan",
+  "landing.pricing.pro_coming_soon": "Tez orada",
   "landing.pricing.trial_f1_new": "3 ta faol vakansiyagacha — birinchi tanlov uchun yetarli",
   "landing.pricing.trial_f2_new": "Oyiga 50 ta CVgacha — to'liq pipeline uchun yetarli",
   "landing.pricing.trial_f3_new": "To'liq AI-skrining — RU · UZ · EN",

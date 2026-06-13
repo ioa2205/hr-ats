@@ -7,9 +7,10 @@ export interface PlanCardProps {
   tagBadge?: string;
   name: string;
   tagline: string;
-  priceLine: string;
+  priceLine?: string;
   priceSub?: string;
-  unit: string;
+  unit?: string;
+  comingSoonLabel?: string;
   features: string[];
   note?: string;
   variant: "primary" | "secondary";
@@ -24,6 +25,7 @@ export function PlanCard({
   priceLine,
   priceSub,
   unit,
+  comingSoonLabel,
   features,
   note,
   variant,
@@ -71,16 +73,27 @@ export function PlanCard({
       </div>
 
       <div className="mt-6 flex flex-wrap items-baseline gap-x-2.5 gap-y-1 border-b pb-5" style={{ borderColor: "var(--rule)" }}>
-        <span className="mono" style={{ fontSize: "clamp(40px, 4vw + 12px, 56px)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 0.95, color: "var(--ink)" }}>
-          {priceLine}
-        </span>
-        <span className="mono" style={{ fontSize: 12, letterSpacing: "0.1em", color: "var(--ink-3)", marginBottom: 6 }}>
-          {unit}
-        </span>
-        {priceSub && (
-          <span className="mono w-full pt-1" style={{ fontSize: 11, letterSpacing: "0.04em", color: "var(--ink-4)" }}>
-            {priceSub}
+        {comingSoonLabel ? (
+          <span
+            className="mono"
+            style={{ fontSize: "clamp(26px, 2.4vw + 10px, 34px)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.05, color: "var(--ink)" }}
+          >
+            {comingSoonLabel}
           </span>
+        ) : (
+          <>
+            <span className="mono" style={{ fontSize: "clamp(40px, 4vw + 12px, 56px)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 0.95, color: "var(--ink)" }}>
+              {priceLine}
+            </span>
+            <span className="mono" style={{ fontSize: 12, letterSpacing: "0.1em", color: "var(--ink-3)", marginBottom: 6 }}>
+              {unit}
+            </span>
+            {priceSub && (
+              <span className="mono w-full pt-1" style={{ fontSize: 11, letterSpacing: "0.04em", color: "var(--ink-4)" }}>
+                {priceSub}
+              </span>
+            )}
+          </>
         )}
       </div>
 
@@ -107,9 +120,20 @@ export function PlanCard({
   );
 }
 
-export function PlanCtaLink({ href, label, isPrimary }: { href: string; label: string; isPrimary: boolean }) {
+export function PlanCtaLink({
+  href,
+  label,
+  isPrimary,
+  external,
+}: {
+  href: string;
+  label: string;
+  isPrimary: boolean;
+  external?: boolean;
+}) {
+  const externalProps = external ? { target: "_blank", rel: "noopener noreferrer" } : {};
   return (
-    <Link href={href} className={isPrimary ? "btn-primary w-full" : "btn-ghost w-full"}>
+    <Link href={href} className={isPrimary ? "btn-primary w-full" : "btn-ghost w-full"} {...externalProps}>
       {label}
     </Link>
   );

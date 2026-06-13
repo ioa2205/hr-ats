@@ -1189,6 +1189,7 @@ export const en: Translations = {
   "landing.pricing.pro_badge_new": "FOR TEAMS",
   "landing.pricing.pro_cta_new": "Talk to the team",
   "landing.pricing.pro_note_new": "Final price depends on team size and hiring volume",
+  "landing.pricing.pro_coming_soon": "Coming soon",
   "landing.pricing.trial_f1_new": "Up to 3 active jobs — enough for a first pipeline",
   "landing.pricing.trial_f2_new": "Up to 50 CVs / month — a real first batch",
   "landing.pricing.trial_f3_new": "Full AI screening — RU · UZ · EN",

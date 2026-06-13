@@ -1,26 +1,16 @@
 import { getT } from "@/lib/i18n/server";
-import { formatUZS } from "@/lib/landing/format";
-import { SIGNUP_HREF } from "../constants";
+import { SIGNUP_HREF, TELEGRAM_URL } from "../constants";
 import { SectionHeader } from "../section";
 import { ComparisonTable } from "./comparison-table";
 import { FAQ } from "./faq";
 import { PlanCard, PlanCtaLink } from "./plan-card";
 
-const PRO_MIN_UZS = 1_500_000;
-const PRO_MIN_USD = 120;
-
 const TRIAL_HREF = `${SIGNUP_HREF}?utm_source=landing&utm_section=pricing_trial`;
-const PRO_HREF = "/upgrade?source=landing_pricing";
+// Paid billing isn't live yet — the Pro plan routes to the team instead of a checkout flow.
+const PRO_HREF = TELEGRAM_URL;
 
 export async function Pricing() {
-  const { locale, t } = await getT();
-
-  const useUSD = locale === "en";
-  const proPrice = useUSD ? `$${PRO_MIN_USD}` : formatUZS(PRO_MIN_UZS, locale).split(" ")[0];
-  const proUnit = useUSD ? t("landing.pricing.pro_unit_en") : t("landing.pricing.pro_unit");
-  const proPriceSub = useUSD
-    ? t("landing.pricing.pro_subline_uzs", { value: formatUZS(PRO_MIN_UZS, locale) })
-    : t("landing.pricing.pro_subline_usd", { value: `$${PRO_MIN_USD}` });
+  const { t } = await getT();
 
   const comparisonRows = [
     { label: t("landing.pricing.cmp.active_jobs"), trial: t("landing.pricing.cmp.active_jobs_trial"), pro: t("landing.pricing.cmp.active_jobs_pro") },
@@ -75,9 +65,7 @@ export async function Pricing() {
             tagBadge={t("landing.pricing.pro_badge_new")}
             name={t("landing.pricing.pro_name")}
             tagline={t("landing.pricing.pro_tagline")}
-            priceLine={t("landing.pricing.pro_price_line", { price: proPrice })}
-            priceSub={proPriceSub}
-            unit={proUnit}
+            comingSoonLabel={t("landing.pricing.pro_coming_soon")}
             features={[
               t("landing.pricing.pro_f1_new"),
               t("landing.pricing.pro_f2_new"),
@@ -85,7 +73,7 @@ export async function Pricing() {
               t("landing.pricing.pro_f4_new"),
               t("landing.pricing.pro_f5_new"),
             ]}
-            ctaSlot={<PlanCtaLink href={PRO_HREF} label={t("landing.pricing.pro_cta_new")} isPrimary={false} />}
+            ctaSlot={<PlanCtaLink href={PRO_HREF} label={t("landing.pricing.pro_cta_new")} isPrimary={false} external />}
             note={t("landing.pricing.pro_note_new")}
             variant="secondary"
           />
