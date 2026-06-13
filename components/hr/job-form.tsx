@@ -109,6 +109,13 @@ export function JobForm({ mode, jobId, defaultValues }: JobFormProps) {
         toast({ variant: "error", title: t("hr.job.ai.error") });
         return;
       }
+      type DraftQuestion = {
+        label_ru: string;
+        label_uz: string;
+        label_en: string;
+        type: "boolean" | "number";
+        min_value?: number | null;
+      };
       const body = (await res.json()) as {
         draft: {
           title_ru: string;
@@ -118,12 +125,12 @@ export function JobForm({ mode, jobId, defaultValues }: JobFormProps) {
           description_uz: string;
           description_en: string;
           required_skills: string[];
-          hard_requirements: Array<{
-            label_ru: string;
-            label_uz: string;
-            label_en: string;
-            type: "boolean" | "number";
-            min_value?: number | null;
+          hard_requirements: DraftQuestion[];
+          optional_questions?: DraftQuestion[];
+          open_questions?: Array<{
+            prompt_ru: string;
+            prompt_uz: string;
+            prompt_en: string;
           }>;
         };
       };
@@ -144,6 +151,30 @@ export function JobForm({ mode, jobId, defaultValues }: JobFormProps) {
           label_en: r.label_en,
           type: r.type,
           min_value: r.min_value ?? null,
+          order: i,
+        })),
+        { shouldDirty: true },
+      );
+      setValue(
+        "optional_questions",
+        (d.optional_questions ?? []).map((r, i) => ({
+          id: crypto.randomUUID(),
+          label_ru: r.label_ru,
+          label_uz: r.label_uz,
+          label_en: r.label_en,
+          type: r.type,
+          min_value: r.min_value ?? null,
+          order: i,
+        })),
+        { shouldDirty: true },
+      );
+      setValue(
+        "open_questions",
+        (d.open_questions ?? []).map((q, i) => ({
+          id: crypto.randomUUID(),
+          prompt_ru: q.prompt_ru,
+          prompt_uz: q.prompt_uz,
+          prompt_en: q.prompt_en,
           order: i,
         })),
         { shouldDirty: true },

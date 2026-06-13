@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getMessages } from "@/lib/i18n";
 import { TranslationsProvider } from "@/lib/i18n/provider";
 import type { Locale } from "@/lib/i18n/types";
-import type { HardRequirement } from "@/types";
+import type { HardRequirement, OpenQuestion, OptionalQuestion } from "@/types";
 import { PublicShell } from "@/components/candidate/public-shell";
 import { ApplyForm } from "@/components/candidate/apply-form";
 import { ClosedState } from "@/components/candidate/closed-state";
@@ -50,6 +50,44 @@ const REQUIREMENTS: HardRequirement[] = [
   } as HardRequirement,
 ];
 
+const OPTIONAL_QUESTIONS: OptionalQuestion[] = [
+  {
+    id: "english_level",
+    label_ru: "Английский язык (Upper-Intermediate и выше)",
+    label_uz: "Ingliz tili (Upper-Intermediate va undan yuqori)",
+    label_en: "English (Upper-Intermediate or higher)",
+    type: "boolean",
+    min_value: null,
+    order: 0,
+  },
+  {
+    id: "startup_years",
+    label_ru: "Опыт работы в стартапе (лет)",
+    label_uz: "Startapda ish tajribasi (yil)",
+    label_en: "Startup experience (years)",
+    type: "number",
+    min_value: 1,
+    order: 1,
+  },
+];
+
+const OPEN_QUESTIONS: OpenQuestion[] = [
+  {
+    id: "why_role",
+    prompt_ru: "Почему вас заинтересовала эта позиция?",
+    prompt_uz: "Nega bu lavozim sizni qiziqtirdi?",
+    prompt_en: "Why are you interested in this role?",
+    order: 0,
+  },
+  {
+    id: "proud_project",
+    prompt_ru: "Опишите проект, которым вы гордитесь.",
+    prompt_uz: "Faxrlanadigan loyihangizni tasvirlab bering.",
+    prompt_en: "Describe a project you're proud of.",
+    order: 1,
+  },
+];
+
 const DESCRIPTION = `## О роли
 Мы ищем внимательного и быстрого специалиста, который любит доводить дело до конца и работать в команде.
 
@@ -69,8 +107,8 @@ const POSTING = {
   description: DESCRIPTION,
   public_token: "preview-token",
   hard_requirements: REQUIREMENTS,
-  optional_questions: [],
-  open_questions: [],
+  optional_questions: OPTIONAL_QUESTIONS,
+  open_questions: OPEN_QUESTIONS,
 };
 
 const COMPANY = { name: "Tashkent Digital Solutions LLC", logo_url: null };

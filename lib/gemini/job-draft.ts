@@ -36,6 +36,36 @@ export const jobDraftJsonSchema = {
       minItems: 0,
       maxItems: 8,
     },
+    optional_questions: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          label_ru: { type: "string", maxLength: 120 },
+          label_uz: { type: "string", maxLength: 120 },
+          label_en: { type: "string", maxLength: 120 },
+          type: { type: "string", enum: ["boolean", "number"] },
+          min_value: { type: "integer", minimum: 0, maximum: 50 },
+        },
+        required: ["label_ru", "label_uz", "label_en", "type"],
+      },
+      minItems: 0,
+      maxItems: 5,
+    },
+    open_questions: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          prompt_ru: { type: "string", maxLength: 160 },
+          prompt_uz: { type: "string", maxLength: 160 },
+          prompt_en: { type: "string", maxLength: 160 },
+        },
+        required: ["prompt_ru", "prompt_uz", "prompt_en"],
+      },
+      minItems: 0,
+      maxItems: 5,
+    },
   },
   required: [
     "title_ru",
@@ -46,6 +76,8 @@ export const jobDraftJsonSchema = {
     "description_en",
     "required_skills",
     "hard_requirements",
+    "optional_questions",
+    "open_questions",
   ],
 } as const;
 
@@ -68,6 +100,28 @@ export const JobDraftZod = z.object({
       }),
     )
     .max(8),
+  optional_questions: z
+    .array(
+      z.object({
+        label_ru: z.string().min(1).max(120),
+        label_uz: z.string().min(1).max(120),
+        label_en: z.string().min(1).max(120),
+        type: z.enum(["boolean", "number"]),
+        min_value: z.number().int().min(0).max(50).nullable().optional(),
+      }),
+    )
+    .max(5)
+    .default([]),
+  open_questions: z
+    .array(
+      z.object({
+        prompt_ru: z.string().min(1).max(160),
+        prompt_uz: z.string().min(1).max(160),
+        prompt_en: z.string().min(1).max(160),
+      }),
+    )
+    .max(5)
+    .default([]),
 });
 
 export type JobDraft = z.infer<typeof JobDraftZod>;
@@ -98,14 +152,36 @@ Return ONLY valid JSON matching the provided schema. No markdown, no preamble.
 - required_skills: 4-10 items. Brand-name technologies (Python, React, SQL)
   or narrowly-defined hard skills. Keep these in English/original spelling —
   they are shared across all three languages.
-- hard_requirements: 2-5 items. These are binary or numeric gates candidates
-  must self-declare on the apply form. Examples:
+- hard_requirements: 2-5 items. These are the MANDATORY binary or numeric gates
+  candidates must self-declare on the apply form — missing one flags the
+  candidate. Examples:
     { label_ru: "Опыт работы от 3 лет", label_uz: "3+ yil tajriba",
       label_en: "3+ years experience", type: "number", min_value: 3 }
     { label_ru: "Разрешение на работу в Узбекистане",
       label_uz: "O'zbekistonda ishlash uchun ruxsat",
       label_en: "Authorized to work in Uzbekistan", type: "boolean" }
   Prefer number-gated experience and boolean gates for credentials.
+- optional_questions: 1-3 items, SAME shape as hard_requirements (boolean/number
+  with label_ru/uz/en). These are NICE-TO-HAVE signals that never block the
+  candidate — they only enrich the AI screen. Use them for desirable-but-not-
+  required traits. Do NOT repeat anything already in hard_requirements. Examples:
+    { label_ru: "Знание английского (Upper-Intermediate+)",
+      label_uz: "Ingliz tili (Upper-Intermediate+)",
+      label_en: "English (Upper-Intermediate+)", type: "boolean" }
+    { label_ru: "Опыт в стартапе (лет)", label_uz: "Startapda tajriba (yil)",
+      label_en: "Startup experience (years)", type: "number", min_value: 1 }
+  Return an empty array if nothing sensible fits.
+- open_questions: 2-3 items. These are FREE-TEXT prompts the candidate answers in
+  prose (no type, no threshold) — each is a trilingual prompt_ru/uz/en. Use them
+  to surface motivation, judgment, or context a CV can't. Phrase as a clear,
+  answerable question. Examples:
+    { prompt_ru: "Почему вас заинтересовала эта позиция?",
+      prompt_uz: "Nega bu lavozim sizni qiziqtirdi?",
+      prompt_en: "Why are you interested in this role?" }
+    { prompt_ru: "Опишите проект, которым вы гордитесь.",
+      prompt_uz: "Faxrlanadigan loyihangizni tasvirlab bering.",
+      prompt_en: "Describe a project you're proud of." }
+  Return an empty array only if the role truly warrants none.
 
 === LANGUAGE RULES ===
 - Russian: Standard business Russian as used in Uzbek corporate contexts.
