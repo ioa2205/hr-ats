@@ -88,9 +88,11 @@ export default async function SourcingResultsPage({
   const locale = await getLocale();
   const admin = createAdminClient();
 
+  // Explicit field list (never "*"): per-run AI token and dollar cost are
+  // operator-only telemetry and must not reach the HR browser via the RSC payload.
   const { data: search } = await admin
     .from("sourcing_searches")
-    .select("*")
+    .select("status, stats, sources, requirement_profile, search_overrides")
     .eq("id", searchId)
     .eq("company_id", companyId)
     .eq("job_posting_id", jobId)
@@ -249,12 +251,6 @@ export default async function SourcingResultsPage({
             <Badge tone={STATUS_TONE[status]} variant={isRunning ? "pulse" : "default"}>
               {t("sourcing.results.status_label", locale)}: {t(STATUS_KEY[status], locale)}
             </Badge>
-            {search.cost_usd != null && (
-              <span className="data-mono text-[11px] text-[var(--color-text-subtle)]">
-                {t("sourcing.results.cost_label", locale)} ${Number(search.cost_usd).toFixed(4)} ·{" "}
-                {(search.input_tokens ?? 0) + (search.output_tokens ?? 0)} tok
-              </span>
-            )}
           </div>
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2">

@@ -37,6 +37,8 @@ const DASHBOARD: DashboardData = {
     candidatesProcessed: 30 + ((i * 7) % 40),
     dailyActiveUsers: 12 + ((i * 3) % 20),
     aiCostUsd: 3 + (i % 5) * 0.5,
+    cvCostUsd: 2.4 + (i % 5) * 0.4,
+    sourcingCostUsd: 0.6 + (i % 5) * 0.1,
   })),
   topMovers: {
     growing: [
@@ -157,7 +159,13 @@ const COMPANY_DETAIL = {
     sourcing_quota_used: 14,
     sourcing_quota_limit: 100,
   },
-  usage: { ai_cost_usd_30d: 42.18, candidate_count_30d: 318, active_job_count: 9 },
+  usage: {
+    ai_cost_usd_30d: 42.18,
+    cv_cost_usd_30d: 35.1,
+    sourcing_cost_usd_30d: 7.08,
+    candidate_count_30d: 318,
+    active_job_count: 9,
+  },
 };
 
 const INCIDENTS = {

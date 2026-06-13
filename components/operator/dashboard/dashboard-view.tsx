@@ -35,6 +35,8 @@ export interface DashboardData {
     candidatesProcessed: number;
     dailyActiveUsers: number;
     aiCostUsd: number;
+    cvCostUsd: number;
+    sourcingCostUsd: number;
   }>;
   topMovers: {
     growing: Array<{ companyId: string; name: string; delta: number; candidates: number }>;
@@ -144,7 +146,7 @@ export function DashboardView({ initial }: { initial: DashboardData }) {
       <WorkersCard workers={data.workers} t={t} />
 
       {/* Time-series cards */}
-      <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <TimeSeriesCard
           title={t("operator.dashboard.series.active_companies")}
           value={data.timeseries.at(-1)?.activeCompanies ?? 0}
@@ -167,6 +169,21 @@ export function DashboardView({ initial }: { initial: DashboardData }) {
           icon={<Flame className="h-4 w-4" />}
           stroke="var(--color-success)"
           fill="var(--color-success-container)"
+        />
+        {/* AI spend = screening + sourcing, with the split called out below. */}
+        <TimeSeriesCard
+          title={t("operator.dashboard.series.ai_spend")}
+          value={0}
+          headline={`$${data.timeseries.reduce((s, p) => s + p.aiCostUsd, 0).toFixed(2)}`}
+          subtitle={t("operator.dashboard.series.ai_spend_sub", {
+            cv: `$${data.timeseries.reduce((s, p) => s + p.cvCostUsd, 0).toFixed(2)}`,
+            sourcing: `$${data.timeseries.reduce((s, p) => s + p.sourcingCostUsd, 0).toFixed(2)}`,
+          })}
+          series={data.timeseries.map((p) => ({ day: p.day, value: p.aiCostUsd }))}
+          icon={<DollarSign className="h-4 w-4" />}
+          stroke="var(--color-accent)"
+          fill="var(--color-accent-container)"
+          format={(v) => `$${v.toFixed(2)}`}
         />
       </section>
 
@@ -409,19 +426,25 @@ function HealthPill({
 function TimeSeriesCard({
   title,
   value,
+  headline,
   subtitle,
   series,
   icon,
   stroke,
   fill,
+  format,
 }: {
   title: string;
   value: number;
+  /** Overrides the numeric headline (e.g. a pre-formatted "$42.18"). */
+  headline?: string;
   subtitle?: string;
   series: Array<{ day: string; value: number }>;
   icon: React.ReactNode;
   stroke?: string;
   fill?: string;
+  /** Chart tooltip/axis formatter; defaults to a rounded integer. */
+  format?: (v: number) => string;
 }) {
   return (
     <div className="flex flex-col gap-2 rounded-[var(--radius-md)] border border-[var(--color-line-strong)] bg-[var(--color-surface)] p-4">
@@ -432,7 +455,7 @@ function TimeSeriesCard({
         </span>
       </div>
       <p className="nums text-[22px] font-semibold tabular-nums leading-none text-[var(--color-text)]">
-        {value.toLocaleString()}
+        {headline ?? value.toLocaleString()}
       </p>
       {subtitle && <p className="text-[11px] text-[var(--color-text-muted)]">{subtitle}</p>}
       <div className="mt-1">
@@ -440,7 +463,7 @@ function TimeSeriesCard({
           data={series}
           stroke={stroke}
           fill={fill}
-          format={(v) => Math.round(v).toLocaleString()}
+          format={format ?? ((v) => Math.round(v).toLocaleString())}
         />
       </div>
     </div>

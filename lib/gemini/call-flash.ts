@@ -1,3 +1,4 @@
+import { ThinkingLevel } from "@google/genai";
 import { getGeminiClient, MODEL_FLASH } from "./client";
 
 interface FlashCallOpts {
@@ -32,6 +33,12 @@ export async function callGeminiFlashJson(opts: FlashCallOpts): Promise<FlashCal
       responseSchema: opts.responseSchema,
       temperature: opts.temperature ?? 0.3,
       maxOutputTokens: opts.maxOutputTokens ?? 4096,
+      // Gemini 3 enables an "automatic" thinking budget by default; left unset,
+      // a heavier prompt can spend the whole maxOutputTokens on thinking and
+      // return EMPTY text — which the callers then mis-report as "invalid JSON".
+      // Pin LOW (matches the proven process-cv path): fast, deterministic, and
+      // leaves the token budget for the actual JSON answer.
+      thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
     },
   });
 
@@ -39,8 +46,16 @@ export async function callGeminiFlashJson(opts: FlashCallOpts): Promise<FlashCal
     | { promptTokenCount?: number; candidatesTokenCount?: number }
     | undefined;
 
+  const text = result.text ?? "";
+  if (text.trim().length === 0) {
+    // No usable output (e.g. safety block or a token-budget exhaustion). Surface
+    // a precise reason instead of letting JSON.parse throw a misleading error.
+    const finishReason = result.candidates?.[0]?.finishReason ?? "unknown";
+    throw new Error(`gemini_empty_response: finishReason=${finishReason}`);
+  }
+
   return {
-    text: result.text ?? "",
+    text,
     durationMs: Date.now() - start,
     promptTokens: usage?.promptTokenCount ?? null,
     outputTokens: usage?.candidatesTokenCount ?? null,

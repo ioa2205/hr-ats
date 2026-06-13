@@ -24,7 +24,11 @@ export interface DashboardResponse {
     activeCompanies: number;
     candidatesProcessed: number;
     dailyActiveUsers: number;
+    // aiCostUsd is the total (screening + sourcing); the two splits below break
+    // it down so the operator sees how much spend is outbound sourcing.
     aiCostUsd: number;
+    cvCostUsd: number;
+    sourcingCostUsd: number;
   }>;
   topMovers: {
     growing: Array<{ companyId: string; name: string; delta: number; candidates: number }>;
@@ -110,7 +114,9 @@ async function computeDashboard(range: 30 | 90): Promise<DashboardResponse> {
     ] = await Promise.all([
       admin
         .from("operator_daily_metrics")
-        .select("day, active_companies, candidates_processed, daily_active_users, ai_cost_usd")
+        .select(
+          "day, active_companies, candidates_processed, daily_active_users, ai_cost_usd, cv_cost_usd, sourcing_cost_usd",
+        )
         .gte("day", rangeStart)
         .order("day", { ascending: true }),
 
@@ -232,6 +238,8 @@ async function computeDashboard(range: 30 | 90): Promise<DashboardResponse> {
       candidatesProcessed: Number(r.candidates_processed ?? 0),
       dailyActiveUsers: Number(r.daily_active_users ?? 0),
       aiCostUsd: Number(r.ai_cost_usd ?? 0),
+      cvCostUsd: Number(r.cv_cost_usd ?? 0),
+      sourcingCostUsd: Number(r.sourcing_cost_usd ?? 0),
     }));
 
     // Top movers: growing by candidate_count_30d (heuristic until we track diffs).

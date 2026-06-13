@@ -59,7 +59,7 @@ export default async function SourcingRunsPage({ params }: { params: Promise<{ i
 
   const { data: runs } = await admin
     .from("sourcing_searches")
-    .select("id, created_at, status, stats, cost_usd, input_tokens, output_tokens")
+    .select("id, created_at, status, stats")
     .eq("job_posting_id", jobId)
     .eq("company_id", companyId)
     .order("created_at", { ascending: false });
@@ -144,9 +144,6 @@ export default async function SourcingRunsPage({ params }: { params: Promise<{ i
                           fetched: String(stats.fetched ?? 0),
                           shortlisted: String(stats.shortlisted ?? 0),
                         })}
-                      </span>
-                      <span className="data-mono text-[11px] text-[var(--color-text-subtle)]">
-                        ${Number(run.cost_usd ?? 0).toFixed(4)}
                       </span>
                       <ChevronRight className="h-4 w-4 shrink-0 text-[var(--color-text-subtle)]" />
                     </div>

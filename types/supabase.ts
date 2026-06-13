@@ -1398,10 +1398,13 @@ export type Database = {
       };
       company_usage_30d: {
         Row: {
+          active_job_count: number | null;
           ai_cost_usd_30d: number | null;
           candidate_count_30d: number | null;
           company_id: string | null;
+          cv_cost_usd_30d: number | null;
           name: string | null;
+          sourcing_cost_usd_30d: number | null;
           storage_bytes: number | null;
         };
         Relationships: [];

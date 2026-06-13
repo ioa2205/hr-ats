@@ -48,6 +48,8 @@ interface CompanyMember {
 
 interface UsageRow {
   ai_cost_usd_30d: number | null;
+  cv_cost_usd_30d: number | null;
+  sourcing_cost_usd_30d: number | null;
   candidate_count_30d: number | null;
   active_job_count: number | null;
 }
@@ -271,6 +273,13 @@ export default function CompanyDetailPage() {
             </p>
             <p className="nums text-[var(--color-text)] text-2xl font-semibold">
               ${Number(usage?.ai_cost_usd_30d ?? 0).toFixed(2)}
+            </p>
+            <p className="nums text-[var(--color-text-subtle)] mt-1 text-[11px]">
+              {t("operator.company_detail.cost_cv")} $
+              {Number(usage?.cv_cost_usd_30d ?? 0).toFixed(2)}
+              {" · "}
+              {t("operator.company_detail.cost_sourcing")} $
+              {Number(usage?.sourcing_cost_usd_30d ?? 0).toFixed(2)}
             </p>
           </CardContent>
         </Card>
