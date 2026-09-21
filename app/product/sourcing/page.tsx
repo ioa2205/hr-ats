@@ -7,7 +7,8 @@ import { getT } from "@/lib/i18n/server";
 export const metadata: Metadata = {
   title: "Active sourcing — TezHR",
   description:
-    "Don't wait for applicants. TezHR searches your own candidate pool, hh.uz, and public Telegram channels — then screens, ranks, and verifies everyone against your exact requirements.",
+    "Search your existing candidate pool, a connected hh.uz account, and configured public Telegram sources from a TezHR vacancy.",
+  alternates: { canonical: "https://tezhr.uz/product/sourcing" },
 };
 
 export default async function SourcingProductPage() {

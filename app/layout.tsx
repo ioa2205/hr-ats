@@ -20,8 +20,19 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TezHR",
-  description: "Applicant Tracking System",
+  metadataBase: new URL("https://tezhr.uz"),
+  applicationName: "TezHR",
+  title: {
+    default: "TezHR — AI-assisted ATS for Uzbekistan",
+    template: "%s",
+  },
+  description:
+    "Applicant tracking, multilingual CV screening, active sourcing, and interview workflows for teams hiring in Uzbekistan.",
+  category: "business",
+  openGraph: {
+    siteName: "TezHR",
+    type: "website",
+  },
 };
 
 export default async function RootLayout({

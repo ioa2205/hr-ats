@@ -5,14 +5,19 @@ import { LandingJsonLd } from "@/components/landing/jsonld";
 import { getT } from "@/lib/i18n/server";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { locale, t } = await getT();
+  const { locale } = await getT();
   const title =
     locale === "en"
-      ? "TezHR — 200 résumés, ranked in 30 seconds"
+      ? "TezHR — AI-assisted ATS for Uzbekistan"
       : locale === "uz"
-        ? "TezHR — 200 ta rezyume, 30 soniyada tartiblanadi"
-        : "TezHR — 200 резюме, ранжировано за 30 секунд";
-  const description = t("landing.hero.subhead_plain");
+        ? "TezHR — O‘zbekiston uchun AI yordamidagi ATS"
+        : "TezHR — ATS с поддержкой AI для Узбекистана";
+  const description =
+    locale === "en"
+      ? "Collect applicants, compare CV evidence, source candidates, and manage interviews in Russian, Uzbek, and English."
+      : locale === "uz"
+        ? "Arizalarni yig‘ing, CV dalillarini solishtiring, nomzodlarni qidiring va suhbatlarni rus, o‘zbek va ingliz tillarida boshqaring."
+        : "Собирайте отклики, сравнивайте факты из CV, ищите кандидатов и управляйте интервью на русском, узбекском и английском.";
   const origin = "https://tezhr.uz";
   return {
     title,

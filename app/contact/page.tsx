@@ -6,7 +6,8 @@ import { ContactContent } from "@/components/landing/contact-content";
 export const metadata: Metadata = {
   title: "Contact — TezHR",
   description:
-    "Questions, pitches, ideas — write to TezHR. Fast replies on email or Telegram.",
+    "Contact TezHR about the product, your workspace, or a Pro request by form or Telegram.",
+  alternates: { canonical: "https://tezhr.uz/contact" },
 };
 
 export default function ContactPage() {

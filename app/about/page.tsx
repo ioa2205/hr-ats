@@ -5,8 +5,8 @@ import { AboutContent } from "@/components/landing/about-content";
 
 export const metadata: Metadata = {
   title: "About — TezHR",
-  description:
-    "Why TezHR exists, what we believe, and who we're building for. Made in Tashkent.",
+  description: "Why TezHR exists, what we believe, and who we're building for. Made in Tashkent.",
+  alternates: { canonical: "https://tezhr.uz/about" },
 };
 
 export default function AboutPage() {

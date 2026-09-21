@@ -1,45 +1,26 @@
 import Link from "next/link";
 import { getT } from "@/lib/i18n/server";
-import { TezSignalWordmark } from "@/components/brand/tez-signal";
-import { TelegramIcon } from "../icons";
+import type { Locale } from "@/lib/i18n/types";
 import { TELEGRAM_URL } from "../constants";
+import { TelegramIcon } from "../icons";
 import { LocaleSwitcher } from "./locale-switcher";
-import { StatusPill } from "./status-pill";
 
-interface FooterLink {
-  label: string;
-  href: string;
-  external?: boolean;
-}
+const TAGLINE: Record<Locale, string> = {
+  en: "AI-assisted recruiting for teams hiring in Uzbekistan.",
+  ru: "Найм с поддержкой AI для команд в Узбекистане.",
+  uz: "O‘zbekistonda yollayotgan jamoalar uchun AI yordamidagi rekruting.",
+};
 
-function Col({ title, items }: { title: string; items: FooterLink[] }) {
+type FooterLink = { label: string; href: string };
+
+function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) {
   return (
-    <div>
-      <div className="lp-eyebrow is-plain mb-4" style={{ color: "var(--ink-4)" }}>
-        {title}
-      </div>
-      <ul className="m-0 flex list-none flex-col gap-3 p-0">
-        {items.map((item) => (
-          <li key={item.href + item.label}>
-            {item.external ? (
-              <a
-                href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[14px] leading-tight transition-colors hover:text-[var(--ikat)]"
-                style={{ color: "var(--ink-2)" }}
-              >
-                {item.label}
-              </a>
-            ) : (
-              <Link
-                href={item.href}
-                className="text-[14px] leading-tight transition-colors hover:text-[var(--ikat)]"
-                style={{ color: "var(--ink-2)" }}
-              >
-                {item.label}
-              </Link>
-            )}
+    <div className="craft-footer-column">
+      <h2>{title}</h2>
+      <ul>
+        {links.map((link) => (
+          <li key={link.href}>
+            <Link href={link.href}>{link.label}</Link>
           </li>
         ))}
       </ul>
@@ -48,84 +29,50 @@ function Col({ title, items }: { title: string; items: FooterLink[] }) {
 }
 
 export async function LandingFooter() {
-  const { t } = await getT();
-
-  const product: FooterLink[] = [
-    { label: t("landing.footer.n_features"), href: "/#product" },
-    { label: t("landing.footer.n_pricing"), href: "/#pricing" },
-    { label: t("landing.footer.n_security"), href: "/security" },
-  ];
-  const customers: FooterLink[] = [
-    { label: t("landing.footer.n_case_studies"), href: "/#customers" },
-    { label: t("landing.footer.n_multilingual"), href: "/product/multilingual" },
-    { label: t("landing.footer.n_local_market"), href: "/product/local-market" },
-  ];
-  const company: FooterLink[] = [
-    { label: t("landing.footer.n_about"), href: "/about" },
-    { label: t("landing.footer.n_contact"), href: "/contact" },
-    { label: t("landing.footer.legal_candidate_rights"), href: "/for-candidates" },
-  ];
-
+  const { locale, t } = await getT();
   return (
-    <footer
-      id="contact"
-      style={{
-        position: "relative",
-        background: "var(--paper-2)",
-        borderTop: "1px solid var(--rule)",
-        padding: "64px 24px 28px",
-      }}
-    >
-      <div className="mx-auto" style={{ maxWidth: 1200 }}>
-        <div className="grid gap-10 md:grid-cols-[1.8fr_1fr_1fr_1fr]">
-          <div className="flex max-w-[360px] flex-col gap-4">
-            <TezSignalWordmark size={26} suffix="Tashkent" />
-            <p className="m-0 text-[15px] leading-[1.55]" style={{ color: "var(--ink-3)" }}>
-              {t("landing.footer.tagline")}
-            </p>
-            <div className="mt-2">
-              <LocaleSwitcher />
-            </div>
+    <footer className="craft-footer craft-paper" id="contact">
+      <div className="craft-container">
+        <div className="craft-footer-grid">
+          <div className="craft-footer-brand">
+            <Link href="/" className="craft-wordmark">
+              TezHR
+            </Link>
+            <p>{TAGLINE[locale]}</p>
+            <LocaleSwitcher size="sm" />
           </div>
-          <Col title={t("landing.footer.col_product")} items={product} />
-          <Col title={t("landing.footer.col_customers")} items={customers} />
-          <Col title={t("landing.footer.col_company_new")} items={company} />
+          <FooterColumn
+            title={t("landing.footer.col_product")}
+            links={[
+              { label: t("landing.footer.n_features"), href: "/#product" },
+              { label: t("landing.footer.n_pricing"), href: "/pricing" },
+              { label: t("landing.nav.sourcing"), href: "/product/sourcing" },
+              { label: t("landing.footer.n_multilingual"), href: "/product/multilingual" },
+              { label: t("landing.footer.n_local_market"), href: "/product/local-market" },
+            ]}
+          />
+          <FooterColumn
+            title={t("landing.footer.col_company_new")}
+            links={[
+              { label: t("landing.footer.n_about"), href: "/about" },
+              { label: t("landing.footer.n_contact"), href: "/contact" },
+              { label: t("landing.footer.n_security"), href: "/security" },
+              { label: t("landing.footer.legal_candidate_rights"), href: "/for-candidates" },
+            ]}
+          />
+          <FooterColumn
+            title={t("landing.footer.n_legal")}
+            links={[
+              { label: t("landing.footer.legal_terms"), href: "/terms" },
+              { label: t("landing.footer.legal_privacy"), href: "/privacy" },
+            ]}
+          />
         </div>
-
-        <div
-          className="mt-12 flex flex-col gap-4 border-t pt-6 md:flex-row md:items-center md:justify-between"
-          style={{ borderColor: "var(--rule)" }}
-        >
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span className="mono text-[11px] tracking-[0.06em]" style={{ color: "var(--ink-4)" }}>
-              {t("landing.footer.copy")}
-            </span>
-            <Link href="/terms" className="text-[13px] transition-colors hover:text-[var(--ikat)]" style={{ color: "var(--ink-3)" }}>
-              {t("landing.footer.legal_terms")}
-            </Link>
-            <Link href="/privacy" className="text-[13px] transition-colors hover:text-[var(--ikat)]" style={{ color: "var(--ink-3)" }}>
-              {t("landing.footer.legal_privacy")}
-            </Link>
-            <Link
-              href="/for-candidates"
-              className="text-[13px] transition-colors hover:text-[var(--ikat)]"
-              style={{ color: "var(--ink-3)" }}
-            >
-              {t("landing.footer.legal_candidate_rights")}
-            </Link>
-          </div>
-          <div className="flex items-center gap-5">
-            <StatusPill />
-            <a
-              href={TELEGRAM_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-[13px] transition-colors hover:text-[var(--ikat)]"
-              style={{ color: "var(--ink-2)" }}
-            >
-              <TelegramIcon size={15} /> Telegram
-            </a>
-          </div>
+        <div className="craft-footer-bottom">
+          <span>{t("landing.footer.copy")}</span>
+          <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">
+            <TelegramIcon size={15} /> Telegram
+          </a>
         </div>
       </div>
     </footer>

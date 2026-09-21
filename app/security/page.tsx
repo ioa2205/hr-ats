@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Security & data protection — TezHR",
   description:
     "Where candidate data lives, who can see it, how deletion works. Honest specifics — no marketing theatre.",
+  alternates: { canonical: "https://tezhr.uz/security" },
 };
 
 export default async function SecurityPage() {

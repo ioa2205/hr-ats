@@ -7,7 +7,8 @@ import { getT } from "@/lib/i18n/server";
 export const metadata: Metadata = {
   title: "Built for the Uzbek market — TezHR",
   description:
-    "Local title and skill taxonomy — 1С, Главбух, SAP, Uzum, UzCard. TezHR knows what each one means in context.",
+    "Screen CVs using the role titles, skills, languages, and spelling conventions your team uses in Uzbekistan.",
+  alternates: { canonical: "https://tezhr.uz/product/local-market" },
 };
 
 export default async function LocalMarketPage() {

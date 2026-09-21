@@ -7,7 +7,8 @@ import { getT } from "@/lib/i18n/server";
 export const metadata: Metadata = {
   title: "For candidates — TezHR",
   description:
-    "If someone shared a tezhr.uz/j/ link with you: this is what happens next. Privacy, response times, and your rights.",
+    "What happens when you apply through a TezHR link, how your CV is processed, and how to request help with your data.",
+  alternates: { canonical: "https://tezhr.uz/for-candidates" },
 };
 
 export default async function ForCandidatesPage() {

@@ -1,117 +1,234 @@
-"use client";
-
+import Image from "next/image";
 import Link from "next/link";
-import { useTranslation } from "@/lib/i18n/provider";
-import { SIGNUP_HREF, TELEGRAM_URL } from "./shared";
-import { Icon } from "./mockups";
+import { ArrowRight } from "lucide-react";
+import type { Locale } from "@/lib/i18n/types";
+import { getT } from "@/lib/i18n/server";
+import { SIGNUP_HREF } from "./constants";
 
-export function AboutContent() {
-  const { t } = useTranslation();
+const COPY: Record<
+  Locale,
+  {
+    kicker: string;
+    titleA: string;
+    titleB: string;
+    body: string;
+    meta: string;
+    principles: Array<[string, string]>;
+    valuesKicker: string;
+    values: Array<[string, string]>;
+    language: string;
+    languageBody: string;
+    final: string;
+    finalBody: string;
+    cta: string;
+  }
+> = {
+  en: {
+    kicker: "About TezHR",
+    titleA: "Hiring, as it",
+    titleB: "should be.",
+    body: "TezHR has one job: help recruiting teams in Uzbekistan turn a crowded applicant queue into a clear, evidence-backed next step.",
+    meta: "Since 2026 · Tashkent",
+    principles: [
+      [
+        "Make the queue readable.",
+        "CVs become structured profiles with scores, strengths, gaps, and the source evidence a recruiter can inspect.",
+      ],
+      [
+        "Take every language seriously.",
+        "Russian, Uzbek in Cyrillic or Latin, and English belong in one consistent screening workflow.",
+      ],
+      [
+        "Keep people in charge.",
+        "AI supports the review. Recruiters read, compare, invite, reject, and remain responsible for the decision.",
+      ],
+    ],
+    valuesKicker: "What we believe",
+    values: [
+      [
+        "Useful speed",
+        "Automation should remove repetitive reading without hiding the evidence behind the result.",
+      ],
+      [
+        "Honest algorithms",
+        "A score needs an explanation. If the evidence is thin, the product should make that visible.",
+      ],
+      [
+        "Made for Uzbekistan",
+        "Local languages, hiring channels, payment rails, and working habits are product requirements, not afterthoughts.",
+      ],
+    ],
+    language: "RU · UZ · EN",
+    languageBody: "Every language taken seriously.",
+    final: "Give HR back the time lost inside PDFs.",
+    finalBody: "Start with 14 days, 3 active jobs, and 50 CV analyses. No card required.",
+    cta: "Start free",
+  },
+  ru: {
+    kicker: "О TezHR",
+    titleA: "Найм, каким он",
+    titleB: "должен быть.",
+    body: "У TezHR одна задача: помочь командам найма в Узбекистане превратить переполненную очередь откликов в понятный следующий шаг, подтверждённый фактами.",
+    meta: "С 2026 года · Ташкент",
+    principles: [
+      [
+        "Сделать очередь понятной.",
+        "CV превращаются в структурированные профили с оценкой, сильными сторонами, пробелами и проверяемыми фрагментами резюме.",
+      ],
+      [
+        "Серьёзно относиться к каждому языку.",
+        "Русский, узбекский на кириллице или латинице и английский работают в одном процессе скрининга.",
+      ],
+      [
+        "Оставить решение людям.",
+        "AI помогает с разбором. Рекрутер читает, сравнивает, приглашает, отказывает и отвечает за итоговое решение.",
+      ],
+    ],
+    valuesKicker: "Во что мы верим",
+    values: [
+      [
+        "Полезная скорость",
+        "Автоматизация должна убирать повторяющееся чтение, но не скрывать доказательства результата.",
+      ],
+      [
+        "Честные алгоритмы",
+        "Оценке нужно объяснение. Если доказательств мало, продукт обязан это показать.",
+      ],
+      [
+        "Сделано для Узбекистана",
+        "Местные языки, каналы найма, способы оплаты и рабочие привычки — требования к продукту, а не дополнения.",
+      ],
+    ],
+    language: "RU · UZ · EN",
+    languageBody: "Каждый язык важен.",
+    final: "Вернуть HR время, потерянное внутри PDF.",
+    finalBody: "Начните с 14 дней, 3 активных вакансий и 50 анализов CV. Карта не нужна.",
+    cta: "Начать бесплатно",
+  },
+  uz: {
+    kicker: "TezHR haqida",
+    titleA: "Yollash qanday",
+    titleB: "bo‘lishi kerak.",
+    body: "TezHRning bitta vazifasi bor: O‘zbekistondagi yollash jamoalariga arizalar navbatini dalillarga tayangan aniq keyingi qadamga aylantirishga yordam berish.",
+    meta: "2026-yildan · Toshkent",
+    principles: [
+      [
+        "Navbatni tushunarli qilish.",
+        "CVlar ball, kuchli tomonlar, bo‘shliqlar va tekshiriladigan manba dalillari bilan tuzilgan profilga aylanadi.",
+      ],
+      [
+        "Har bir tilga jiddiy qarash.",
+        "Rus, kirill yoki lotindagi o‘zbek va ingliz tillari bitta skrining jarayonida ishlaydi.",
+      ],
+      [
+        "Qarorni insonda qoldirish.",
+        "AI tahlilga yordam beradi. Rekruter o‘qiydi, solishtiradi, taklif qiladi, rad etadi va yakuniy qaror uchun javob beradi.",
+      ],
+    ],
+    valuesKicker: "Biz nimaga ishonamiz",
+    values: [
+      [
+        "Foydali tezlik",
+        "Avtomatlashtirish takroriy o‘qishni kamaytirishi, lekin natija ortidagi dalilni yashirmasligi kerak.",
+      ],
+      [
+        "Halol algoritmlar",
+        "Har bir ball izohga ega bo‘lishi kerak. Dalil yetarli bo‘lmasa, mahsulot buni ko‘rsatadi.",
+      ],
+      [
+        "O‘zbekiston uchun",
+        "Mahalliy tillar, yollash kanallari, to‘lov usullari va ish odatlari — mahsulotning asosiy talablari.",
+      ],
+    ],
+    language: "RU · UZ · EN",
+    languageBody: "Har bir til jiddiy qabul qilinadi.",
+    final: "HRga PDFlar ichida yo‘qotgan vaqtini qaytarish.",
+    finalBody: "14 kun, 3 ta faol vakansiya va 50 ta CV tahlili bilan boshlang. Karta kerak emas.",
+    cta: "Bepul boshlash",
+  },
+};
 
-  const values = [
-    { t: t("about.values.v1_t"), b: t("about.values.v1_b") },
-    { t: t("about.values.v2_t"), b: t("about.values.v2_b") },
-    { t: t("about.values.v3_t"), b: t("about.values.v3_b") },
-  ];
-
+export async function AboutContent() {
+  const { locale } = await getT();
+  const c = COPY[locale];
   return (
-    <>
-      {/* Hero */}
-      <section style={{ background: "var(--paper)", padding: "clamp(48px, 6vw, 80px) 24px clamp(56px, 6vw, 80px)" }}>
-        <div className="mx-auto" style={{ maxWidth: 1100 }}>
-          <div className="lp-eyebrow is-accent mb-6">{t("about.kicker")}</div>
-          <h1 className="lp-display" style={{ margin: 0, maxWidth: 980 }}>
-            {t("about.title_a")} <span className="lp-accent">{t("about.title_b")}</span>
+    <main id="main">
+      <section className="craft-page-hero craft-about-hero craft-paper-blue">
+        <div className="craft-container">
+          <p className="craft-kicker">{c.kicker}</p>
+          <h1 className="craft-display">
+            {c.titleA}
+            <br />
+            {c.titleB}
           </h1>
-          <p className="lp-lede" style={{ marginTop: 28, maxWidth: 680 }}>
-            {t("about.subtitle")}
-          </p>
+          <p className="craft-lede">{c.body}</p>
+          <p className="craft-page-meta">{c.meta}</p>
         </div>
+        <Image
+          className="craft-skyline craft-skyline-page"
+          src="/marketing/tashkent-skyline.png"
+          alt=""
+          width={2172}
+          height={724}
+          priority
+          sizes="100vw"
+        />
       </section>
 
-      {/* Story */}
-      <section style={{ background: "var(--paper-2)", padding: "clamp(64px, 7vw, 96px) 24px", borderTop: "1px solid var(--rule)" }}>
-        <div className="mx-auto" style={{ maxWidth: 1100 }}>
-          <div className="lp-eyebrow mb-10">{t("about.story.kicker")}</div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {[t("about.story.p1"), t("about.story.p2"), t("about.story.p3")].map((para, i) => (
-              <div key={i} className="lp-panel" style={{ padding: "26px 24px" }}>
-                <div
-                  className="mono mb-4 grid h-10 w-10 place-items-center rounded-lg text-[14px]"
-                  style={{ background: "var(--ikat-tint)", color: "var(--ikat-on-tint)", fontWeight: 700 }}
-                >
-                  {String(i + 1).padStart(2, "0")}
+      <section className="craft-page-body craft-paper">
+        <div className="craft-container">
+          <ol className="craft-numbered-list">
+            {c.principles.map(([title, body], index) => (
+              <li key={title}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <h2>{title}</h2>
+                  <p>{body}</p>
                 </div>
-                <p className="m-0 text-[15.5px] leading-[1.6]" style={{ color: "var(--ink-2)" }}>
-                  {para}
-                </p>
-              </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
-      {/* Values */}
-      <section style={{ background: "var(--paper)", padding: "clamp(64px, 7vw, 96px) 24px", borderTop: "1px solid var(--rule)" }}>
-        <div className="mx-auto" style={{ maxWidth: 1100 }}>
-          <div className="mb-10 flex flex-wrap items-center gap-x-5 gap-y-2">
-            <span className="lp-eyebrow">{t("about.values.kicker")}</span>
-            <span className="lp-h3" style={{ color: "var(--ink-3)" }}>
-              {t("about.values.title")}
-            </span>
-          </div>
-          <div className="grid gap-5 md:grid-cols-3">
-            {values.map((v, i) => (
-              <div key={v.t} className="lp-panel flex flex-col gap-3" style={{ padding: "28px 26px" }}>
-                <div className="mono" style={{ fontSize: 10, letterSpacing: "0.14em", color: "var(--ink-4)" }}>
-                  {String(i + 1).padStart(2, "0")}
-                </div>
-                <h3 className="lp-h3 m-0">{v.t}</h3>
-                <p className="m-0 text-[14.5px] leading-[1.6]" style={{ color: "var(--ink-3)" }}>
-                  {v.b}
-                </p>
-              </div>
+      <section className="craft-values craft-paper-sage">
+        <div className="craft-container">
+          <p className="craft-kicker">{c.valuesKicker}</p>
+          <ul className="craft-values-list">
+            {c.values.map(([title, body]) => (
+              <li key={title}>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
-      {/* Mission — single calm statement band */}
-      <section style={{ background: "var(--night)", color: "var(--on-night)", padding: "clamp(80px, 9vw, 120px) 24px", textAlign: "center" }}>
-        <div className="mx-auto" style={{ maxWidth: 940 }}>
-          <div className="mb-6 flex items-center justify-center gap-2">
-            <span className="lp-signal" aria-hidden />
-            <span className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8fc2f5" }}>
-              {t("about.mission.kicker")}
-            </span>
-          </div>
-          <p className="lp-h2" style={{ margin: 0, color: "var(--on-night)", fontWeight: 700 }}>
-            {t("about.mission.text")}
-          </p>
+      <section className="craft-language craft-paper-sun">
+        <div className="craft-container craft-language-centered">
+          <h2 className="craft-display craft-display-small">{c.language}</h2>
+          <p>{c.languageBody}</p>
         </div>
       </section>
 
-      {/* CTA */}
-      <section style={{ background: "var(--paper)", padding: "clamp(64px, 7vw, 96px) 24px", textAlign: "center" }}>
-        <div className="mx-auto" style={{ maxWidth: 760 }}>
-          <div className="lp-eyebrow is-accent mb-4 justify-center" style={{ display: "inline-flex" }}>
-            {t("about.cta.kicker")}
+      <section className="craft-final craft-paper-ink">
+        <div className="craft-container craft-final-grid">
+          <div>
+            <h2 className="craft-display craft-display-medium">{c.final}</h2>
+            <p>{c.finalBody}</p>
           </div>
-          <p className="lp-h3" style={{ margin: "0 auto", maxWidth: 600, color: "var(--ink-2)", fontWeight: 600 }}>
-            {t("about.cta.text")}
-          </p>
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-            <Link href={SIGNUP_HREF} className="btn-primary">
-              {t("about.cta.primary")}
-              <Icon.arrow size={16} color="var(--color-on-primary)" />
+          <div className="craft-actions craft-actions-end">
+            <Link
+              href={`${SIGNUP_HREF}?utm_source=about&utm_section=final`}
+              className="craft-button craft-button-coral"
+            >
+              {c.cta}
+              <ArrowRight aria-hidden size={17} />
             </Link>
-            <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="btn-ghost">
-              <Icon.telegram size={15} color="var(--ikat)" />
-              {t("about.cta.secondary")}
-            </a>
           </div>
         </div>
       </section>
-    </>
+    </main>
   );
 }

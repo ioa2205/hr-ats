@@ -1,188 +1,278 @@
 "use client";
 
-import { useActionState, useState, type CSSProperties } from "react";
+import Image from "next/image";
+import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { Send } from "lucide-react";
 import { submitContactMessage, type ContactState } from "@/lib/actions/contact";
+import type { Locale } from "@/lib/i18n/types";
 import { useTranslation } from "@/lib/i18n/provider";
-import type { TranslationKey } from "@/lib/i18n/types";
-import { TELEGRAM_URL } from "./shared";
-import { Icon } from "./mockups";
+import { TELEGRAM_URL } from "./constants";
+import { TelegramIcon } from "./icons";
 
-const ERR_KEYS: Record<string, TranslationKey> = {
-  invalid_input: "contact.form.err_invalid",
-  too_many: "contact.form.err_too_many",
-  generic: "contact.form.err_generic",
+type ContactCopy = {
+  kicker: string;
+  title: string;
+  subtitle: string;
+  form: string;
+  name: string;
+  namePh: string;
+  email: string;
+  emailPh: string;
+  company: string;
+  optional: string;
+  companyPh: string;
+  message: string;
+  messagePh: string;
+  hint: string;
+  submit: string;
+  sending: string;
+  success: string;
+  successBody: string;
+  another: string;
+  invalid: string;
+  rate: string;
+  generic: string;
+  fast: string;
+  telegram: string;
+  telegramBody: string;
+  open: string;
+  note: string;
 };
 
-const labelStyle: CSSProperties = {
-  display: "block",
-  marginBottom: 7,
-  fontFamily: "var(--font-jetbrains-mono),monospace",
-  fontSize: 10,
-  letterSpacing: "0.12em",
-  textTransform: "uppercase",
-  color: "var(--ink-3)",
+const COPY: Record<Locale, ContactCopy> = {
+  en: {
+    kicker: "Contact",
+    title: "Say hello. We read every message.",
+    subtitle:
+      "Questions about the product, a Pro request, or a problem with your workspace — send the useful context and the team will reply through the email you provide.",
+    form: "Leave a message",
+    name: "Your name",
+    namePh: "Diyora Rakhimova",
+    email: "Email for reply",
+    emailPh: "diyora@company.uz",
+    company: "Company",
+    optional: "optional",
+    companyPh: "Company LLC",
+    message: "Message",
+    messagePh: "Tell us what you are trying to do and where you are blocked.",
+    hint: "10–2,000 characters. Specific context helps us give a useful answer.",
+    submit: "Send message",
+    sending: "Sending…",
+    success: "Message sent.",
+    successBody: "We received it and will reply to the email you provided.",
+    another: "Send another",
+    invalid:
+      "Check the fields: name, a valid email, and a 10–2,000 character message are required.",
+    rate: "Too many messages from this connection. Please try later or use Telegram.",
+    generic: "The message could not be sent. Try again or use Telegram.",
+    fast: "Direct channel",
+    telegram: "Message us on Telegram",
+    telegramBody:
+      "Use Telegram for account or product questions when that is more convenient than email.",
+    open: "Open Telegram",
+    note: "Specific questions get better answers.",
+  },
+  ru: {
+    kicker: "Контакты",
+    title: "Напишите нам. Каждое сообщение прочитают.",
+    subtitle:
+      "Вопрос о продукте, запрос Pro или проблема в рабочем пространстве — добавьте полезный контекст, и команда ответит на указанный email.",
+    form: "Оставить сообщение",
+    name: "Ваше имя",
+    namePh: "Диёрa Рахимова",
+    email: "Email для ответа",
+    emailPh: "diyora@company.uz",
+    company: "Компания",
+    optional: "необязательно",
+    companyPh: "Компания ООО",
+    message: "Сообщение",
+    messagePh: "Расскажите, что вы хотите сделать и где возникла проблема.",
+    hint: "От 10 до 2 000 знаков. Конкретный контекст помогает дать полезный ответ.",
+    submit: "Отправить",
+    sending: "Отправляем…",
+    success: "Сообщение отправлено.",
+    successBody: "Мы его получили и ответим на указанный email.",
+    another: "Отправить ещё одно",
+    invalid: "Проверьте поля: нужны имя, корректный email и сообщение длиной 10–2 000 знаков.",
+    rate: "Слишком много сообщений с этого подключения. Попробуйте позже или напишите в Telegram.",
+    generic: "Не удалось отправить сообщение. Попробуйте ещё раз или используйте Telegram.",
+    fast: "Прямой канал",
+    telegram: "Напишите нам в Telegram",
+    telegramBody:
+      "Используйте Telegram для вопросов об аккаунте или продукте, если так удобнее, чем по email.",
+    open: "Открыть Telegram",
+    note: "Конкретные вопросы получают более полезные ответы.",
+  },
+  uz: {
+    kicker: "Aloqa",
+    title: "Bizga yozing. Har bir xabar o‘qiladi.",
+    subtitle:
+      "Mahsulot savoli, Pro so‘rovi yoki ish maydonidagi muammo — kerakli kontekstni yuboring, jamoa ko‘rsatgan emailingiz orqali javob beradi.",
+    form: "Xabar qoldiring",
+    name: "Ismingiz",
+    namePh: "Diyora Rahimova",
+    email: "Javob uchun email",
+    emailPh: "diyora@company.uz",
+    company: "Kompaniya",
+    optional: "ixtiyoriy",
+    companyPh: "Kompaniya MChJ",
+    message: "Xabar",
+    messagePh: "Nima qilmoqchi ekaningizni va qayerda to‘xtab qolganingizni yozing.",
+    hint: "10–2 000 belgi. Aniq kontekst foydali javob berishga yordam beradi.",
+    submit: "Xabar yuborish",
+    sending: "Yuborilmoqda…",
+    success: "Xabar yuborildi.",
+    successBody: "Xabaringizni oldik va ko‘rsatgan emailingizga javob beramiz.",
+    another: "Yana xabar yuborish",
+    invalid: "Maydonlarni tekshiring: ism, to‘g‘ri email va 10–2 000 belgili xabar kerak.",
+    rate: "Bu ulanishdan juda ko‘p xabar yuborildi. Keyinroq urinib ko‘ring yoki Telegramdan foydalaning.",
+    generic: "Xabar yuborilmadi. Qayta urinib ko‘ring yoki Telegramdan foydalaning.",
+    fast: "To‘g‘ridan-to‘g‘ri kanal",
+    telegram: "Telegram orqali yozing",
+    telegramBody:
+      "Akkaunt yoki mahsulot savollari uchun emaildan ko‘ra qulay bo‘lsa, Telegramdan foydalaning.",
+    open: "Telegramni ochish",
+    note: "Aniq savollar foydaliroq javob beradi.",
+  },
 };
 
-const inputStyle: CSSProperties = {
-  width: "100%",
-  padding: "11px 13px",
-  fontSize: 15,
-  background: "var(--paper)",
-  border: "1px solid var(--rule-strong)",
-  borderRadius: "var(--radius-md)",
-  color: "var(--ink)",
-  fontFamily: "var(--font-manrope),sans-serif",
-  outline: "none",
-};
-
-function SubmitButton() {
-  const { t } = useTranslation();
+function SubmitButton({ copy }: { copy: ContactCopy }) {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className="btn-primary w-full" disabled={pending} style={{ opacity: pending ? 0.7 : 1, cursor: pending ? "progress" : "pointer" }}>
-      {pending ? t("contact.form.sending") : t("contact.form.submit")}
+    <button type="submit" className="craft-button craft-button-sage" disabled={pending}>
+      {pending ? copy.sending : copy.submit}
+      <Send aria-hidden size={16} />
     </button>
   );
 }
 
-function SuccessCard({ onReset }: { onReset: () => void }) {
-  const { t } = useTranslation();
-  return (
-    <div style={{ paddingTop: 4 }}>
-      <div className="lp-eyebrow is-accent mb-4">✓ {t("contact.form.kicker")}</div>
-      <h2 className="lp-h2 m-0" style={{ fontSize: "clamp(28px,3vw+8px,40px)" }}>
-        {t("contact.form.success_title")}
-      </h2>
-      <p className="mt-5 max-w-[460px] text-[16px] leading-[1.6]" style={{ color: "var(--ink-2)" }}>
-        {t("contact.form.success_body")}
-      </p>
-      <button type="button" onClick={onReset} className="btn-ghost mt-7" style={{ minHeight: 40 }}>
-        {t("contact.form.success_another")}
-      </button>
-    </div>
-  );
-}
-
-function ContactForm({ onDone }: { onDone: () => void }) {
-  const { t } = useTranslation();
-  const [state, formAction] = useActionState<ContactState, FormData>(submitContactMessage, null);
-
+function ContactForm({ copy, onReset }: { copy: ContactCopy; onReset: () => void }) {
+  const [state, action] = useActionState<ContactState, FormData>(submitContactMessage, null);
   if (state?.ok) {
-    return <SuccessCard onReset={onDone} />;
+    return (
+      <div className="craft-contact-success" role="status">
+        <p className="craft-kicker">✓ {copy.success}</p>
+        <h2>{copy.success}</h2>
+        <p>{copy.successBody}</p>
+        <button type="button" className="craft-text-link" onClick={onReset}>
+          {copy.another}
+        </button>
+      </div>
+    );
   }
-
-  const errorKey = state?.error ? (ERR_KEYS[state.error] ?? "contact.form.err_generic") : null;
-
+  const error =
+    state?.error === "invalid_input"
+      ? copy.invalid
+      : state?.error === "too_many"
+        ? copy.rate
+        : state?.error
+          ? copy.generic
+          : null;
   return (
-    <form action={formAction} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-      <div className="lp-eyebrow is-accent">{t("contact.form.kicker")}</div>
-      <h2 className="lp-h3 m-0" style={{ fontSize: 26 }}>
-        {t("contact.form.title")}
-      </h2>
-
-      <div>
-        <label htmlFor="contact-name" style={labelStyle}>
-          {t("contact.form.name_label")}
-        </label>
-        <input id="contact-name" name="name" type="text" required minLength={2} maxLength={120} placeholder={t("contact.form.name_placeholder")} style={inputStyle} />
-      </div>
-
-      <div>
-        <label htmlFor="contact-email" style={labelStyle}>
-          {t("contact.form.email_label")}
-        </label>
-        <input id="contact-email" name="email" type="email" required maxLength={200} placeholder={t("contact.form.email_placeholder")} style={inputStyle} />
-      </div>
-
-      <div>
-        <label htmlFor="contact-company" style={labelStyle}>
-          {t("contact.form.company_label")} ({t("contact.form.company_optional")})
-        </label>
-        <input id="contact-company" name="company" type="text" maxLength={120} placeholder={t("contact.form.company_placeholder")} style={inputStyle} />
-      </div>
-
-      <div>
-        <label htmlFor="contact-message" style={labelStyle}>
-          {t("contact.form.message_label")}
-        </label>
+    <form action={action} className="craft-contact-form">
+      <h2>{copy.form}</h2>
+      <label>
+        <span>{copy.name}</span>
+        <input
+          name="name"
+          required
+          minLength={2}
+          maxLength={120}
+          placeholder={copy.namePh}
+          autoComplete="name"
+        />
+      </label>
+      <label>
+        <span>{copy.email}</span>
+        <input
+          name="email"
+          type="email"
+          required
+          maxLength={200}
+          placeholder={copy.emailPh}
+          autoComplete="email"
+        />
+      </label>
+      <label>
+        <span>
+          {copy.company} <small>· {copy.optional}</small>
+        </span>
+        <input
+          name="company"
+          maxLength={120}
+          placeholder={copy.companyPh}
+          autoComplete="organization"
+        />
+      </label>
+      <label>
+        <span>{copy.message}</span>
         <textarea
-          id="contact-message"
           name="message"
           required
           minLength={10}
           maxLength={2000}
           rows={6}
-          placeholder={t("contact.form.message_placeholder")}
-          style={{ ...inputStyle, resize: "vertical", lineHeight: 1.55 }}
+          placeholder={copy.messagePh}
         />
-        <div className="mt-1.5 text-[12px]" style={{ color: "var(--ink-4)" }}>
-          {t("contact.form.message_hint")}
-        </div>
-      </div>
-
-      {errorKey && (
-        <div role="alert" className="rounded-lg px-3.5 py-2.5 text-[13px] leading-[1.45]" style={{ background: "var(--color-danger-container)", color: "var(--color-danger)" }}>
-          {t(errorKey)}
-        </div>
+        <small>{copy.hint}</small>
+      </label>
+      {error && (
+        <p className="craft-form-error" role="alert">
+          {error}
+        </p>
       )}
-
-      <SubmitButton />
+      <SubmitButton copy={copy} />
     </form>
   );
 }
 
 export function ContactContent() {
-  const { t } = useTranslation();
-  const [formKey, setFormKey] = useState(0);
-
+  const { locale } = useTranslation();
+  const c = COPY[locale];
+  const [key, setKey] = useState(0);
   return (
-    <section className="relative" style={{ background: "var(--paper)", padding: "clamp(48px, 6vw, 80px) 24px clamp(80px, 9vw, 120px)" }}>
-      <div className="mx-auto" style={{ maxWidth: 1100 }}>
-        <div className="lp-eyebrow is-accent mb-6">{t("contact.kicker")}</div>
-        <h1 className="lp-display" style={{ margin: 0, maxWidth: 900 }}>
-          {t("contact.title_a")} <span className="lp-accent">{t("contact.title_b")}</span>
-        </h1>
-        <p className="lp-lede" style={{ marginTop: 28, maxWidth: 640 }}>
-          {t("contact.subtitle")}
-        </p>
-
-        <div className="mt-14 grid items-stretch gap-6 lg:grid-cols-[1.25fr_1fr]">
-          <div className="lp-panel" style={{ padding: "32px 30px" }}>
-            <ContactForm key={formKey} onDone={() => setFormKey((k) => k + 1)} />
-          </div>
-
-          <div
-            className="flex flex-col rounded-2xl p-8"
-            style={{ background: "var(--night)", color: "var(--on-night)", boxShadow: "var(--shadow-level-2)" }}
-          >
-            <div className="mono" style={{ fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: "#8fc2f5" }}>
-              {t("contact.telegram.kicker")}
-            </div>
-            <h3 className="lp-h2 mt-3.5" style={{ margin: 0, fontSize: "clamp(26px,3vw+8px,36px)", color: "var(--on-night)" }}>
-              {t("contact.telegram.title")}
-            </h3>
-            <p className="mt-4 text-[16px] leading-[1.6]" style={{ color: "var(--on-night-muted)" }}>
-              {t("contact.telegram.body")}
-            </p>
-            <div className="mt-auto pt-9">
-              <a
-                href={TELEGRAM_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary"
-                style={{ minHeight: 44 }}
-              >
-                <Icon.telegram size={16} color="var(--color-on-primary)" />
-                {t("contact.telegram.cta")}
-              </a>
-              <div className="mono mt-4" style={{ fontSize: 11, letterSpacing: "0.08em", color: "var(--on-night-muted)" }}>
-                {t("contact.telegram.hours")}
-              </div>
-            </div>
-          </div>
+    <main id="main">
+      <section className="craft-contact-hero craft-page-hero craft-paper">
+        <div className="craft-container">
+          <p className="craft-kicker">{c.kicker}</p>
+          <h1 className="craft-display">{c.title}</h1>
+          <p className="craft-lede">{c.subtitle}</p>
         </div>
-      </div>
-    </section>
+        <Image
+          className="craft-skyline craft-skyline-page"
+          src="/marketing/tashkent-skyline.png"
+          alt=""
+          width={2172}
+          height={724}
+          priority
+          sizes="100vw"
+        />
+      </section>
+      <section className="craft-contact-band craft-paper-blue">
+        <div className="craft-container craft-contact-grid">
+          <ContactForm key={key} copy={c} onReset={() => setKey((value) => value + 1)} />
+          <aside aria-label={c.fast}>
+            <p className="craft-kicker">{c.fast}</p>
+            <h2>{c.telegram}</h2>
+            <p>{c.telegramBody}</p>
+            <a
+              className="craft-button craft-button-coral"
+              href={TELEGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <TelegramIcon size={17} />
+              {c.open}
+            </a>
+          </aside>
+        </div>
+      </section>
+      <section className="craft-contact-note craft-paper-sun">
+        <div className="craft-container">
+          <p>{c.note}</p>
+        </div>
+      </section>
+    </main>
   );
 }

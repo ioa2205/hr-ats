@@ -7,7 +7,8 @@ import { getT } from "@/lib/i18n/server";
 export const metadata: Metadata = {
   title: "Trilingual screening — TezHR",
   description:
-    "How TezHR reads CVs in Russian, Uzbek (Cyrillic and Latin), and English with consistent ranking.",
+    "How TezHR screens CVs in Russian, Uzbek (Cyrillic and Latin), and English against one job rubric.",
+  alternates: { canonical: "https://tezhr.uz/product/multilingual" },
 };
 
 export default async function MultilingualPage() {

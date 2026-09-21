@@ -1,5 +1,4 @@
 import { getT } from "@/lib/i18n/server";
-import { TezSignalWordmark } from "@/components/brand/tez-signal";
 import { LOGIN_HREF, SIGNUP_HREF } from "../constants";
 import { ScrollSpyNav } from "./scroll-spy-nav";
 
@@ -12,9 +11,9 @@ export interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { id: "product", href: "/#product", labelKey: "landing.nav.product" },
   { id: "how", href: "/#how", labelKey: "landing.nav.how" },
-  { id: "sourcing", href: "/#sourcing", labelKey: "landing.nav.sourcing" },
-  { id: "customers", href: "/#customers", labelKey: "landing.nav.customers" },
-  { id: "pricing", href: "/#pricing", labelKey: "landing.nav.pricing" },
+  { id: "security", href: "/security", labelKey: "landing.footer.n_security" },
+  { id: "pricing", href: "/pricing", labelKey: "landing.nav.pricing" },
+  { id: "about", href: "/about", labelKey: "landing.footer.n_about" },
 ];
 
 export async function LandingNav() {
@@ -29,12 +28,11 @@ export async function LandingNav() {
         menuOpen: t("landing.nav.menu_open"),
         menuClose: t("landing.nav.menu_close"),
         sectionsHeading: t("landing.nav.sections_heading"),
-        themeToggle: t("landing.nav.theme_toggle"),
       }}
       signupHref={SIGNUP_HREF}
       loginHref={LOGIN_HREF}
-      brand={<TezSignalWordmark size={22} />}
-      brandMobile={<TezSignalWordmark size={20} />}
+      brand={<span className="craft-wordmark">TezHR</span>}
+      brandMobile={<span className="craft-wordmark craft-wordmark-small">TezHR</span>}
       homeHref="/"
     />
   );

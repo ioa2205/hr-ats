@@ -1,14 +1,15 @@
 import { getT } from "@/lib/i18n/server";
 
-interface FaqItem {
-  q: string;
-  a: string;
-}
-
 export async function LandingJsonLd() {
-  const { locale, t } = await getT();
+  const { locale } = await getT();
   const origin = "https://tezhr.uz";
   const url = origin + (locale === "ru" ? "/" : `/?lang=${locale}`);
+  const description =
+    locale === "en"
+      ? "AI-assisted applicant tracking for teams hiring in Uzbekistan, with CV screening in Russian, Uzbek, and English."
+      : locale === "uz"
+        ? "O‘zbekistonda yollayotgan jamoalar uchun rus, o‘zbek va ingliz tillarida CV skriningi bilan AI yordamidagi ATS."
+        : "ATS с поддержкой AI для команд в Узбекистане и скринингом CV на русском, узбекском и английском.";
 
   const organization = {
     "@context": "https://schema.org",
@@ -16,7 +17,7 @@ export async function LandingJsonLd() {
     name: "TezHR",
     url: origin,
     logo: `${origin}/favicon.ico`,
-    description: t("landing.hero.subhead_plain"),
+    description,
     sameAs: ["https://t.me/ibodullo"],
     address: {
       "@type": "PostalAddress",
@@ -32,31 +33,13 @@ export async function LandingJsonLd() {
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     url: origin,
-    description: t("landing.hero.subhead_plain"),
+    description,
     offers: {
       "@type": "Offer",
       price: "0",
       priceCurrency: "UZS",
-      description: t("landing.pricing.trial_tagline"),
+      description: "14-day trial with 3 active jobs and 50 CV analyses",
     },
-  };
-
-  const faqItems: FaqItem[] = [1, 2, 3, 4, 5, 6, 7, 8].map((i) => ({
-    q: t(`landing.pricing.faq_q_${i}` as "landing.pricing.faq_q_1"),
-    a: t(`landing.pricing.faq_a_${i}` as "landing.pricing.faq_a_1"),
-  }));
-
-  const faqPage = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqItems.map((item) => ({
-      "@type": "Question",
-      name: item.q,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.a,
-      },
-    })),
   };
 
   const breadcrumbs = {
@@ -81,10 +64,6 @@ export async function LandingJsonLd() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(software) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPage) }}
       />
       <script
         type="application/ld+json"

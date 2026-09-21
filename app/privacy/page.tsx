@@ -6,6 +6,7 @@ import { LegalContent } from "@/components/landing/legal-content";
 export const metadata: Metadata = {
   title: "Privacy — TezHR",
   description: "What data TezHR processes and why.",
+  alternates: { canonical: "https://tezhr.uz/privacy" },
 };
 
 export default function PrivacyPage() {

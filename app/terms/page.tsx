@@ -6,6 +6,7 @@ import { LegalContent } from "@/components/landing/legal-content";
 export const metadata: Metadata = {
   title: "Terms — TezHR",
   description: "Terms of use for the TezHR service.",
+  alternates: { canonical: "https://tezhr.uz/terms" },
 };
 
 export default function TermsPage() {
