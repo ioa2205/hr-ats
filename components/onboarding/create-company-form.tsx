@@ -101,7 +101,10 @@ export function CreateCompanyForm({ labels, intent }: CreateCompanyFormProps) {
           {labels.default_locale}
         </label>
         <Select value={defaultLocale} onValueChange={setDefaultLocale}>
-          <SelectTrigger id="onboarding-default-locale" className="h-11 text-[14.5px]">
+          <SelectTrigger
+            id="onboarding-default-locale"
+            className="h-[52px] rounded-[12px] text-[15px]"
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -130,7 +133,10 @@ export function CreateCompanyForm({ labels, intent }: CreateCompanyFormProps) {
           className="flex-1"
         >
           {creating && (
-            <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+            <Loader2
+              className="h-4 w-4 animate-spin motion-reduce:animate-none"
+              aria-hidden="true"
+            />
           )}
           {creating ? labels.creating : labels.create}
         </Button>

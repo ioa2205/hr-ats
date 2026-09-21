@@ -15,28 +15,26 @@ interface AuthPanelProps {
  */
 export function AuthPanel({ eyebrow, title, subtitle, children, footer }: AuthPanelProps) {
   return (
-    <div className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-line)] bg-[var(--color-surface)] shadow-level-1">
-      <div className="flex flex-col gap-6 px-5 py-6 sm:px-7 sm:py-7">
-        <div className="flex flex-col gap-1.5">
+    <section className="account-panel">
+      <div className="flex flex-col gap-7">
+        <div className="flex flex-col gap-2">
           {eyebrow && (
-            <span className="data-mono text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-subtle)]">
+            <span className="text-[11px] font-bold tracking-[0.12em] text-[var(--color-text-muted)] uppercase">
               {eyebrow}
             </span>
           )}
-          <h1 className="text-[24px] font-bold leading-[1.18] tracking-[-0.02em] text-[var(--color-text)] sm:text-[26px]">
+          <h1 className="text-[34px] leading-[1.08] font-extrabold tracking-[-0.04em] text-[var(--color-text)] sm:text-[40px]">
             {title}
           </h1>
           {subtitle && (
-            <p className="text-[14px] leading-[1.55] text-[var(--color-text-muted)]">{subtitle}</p>
+            <p className="max-w-[48ch] text-[15px] leading-[1.6] text-[var(--color-text-muted)] sm:text-[16px]">
+              {subtitle}
+            </p>
           )}
         </div>
         {children}
       </div>
-      {footer && (
-        <div className="border-t border-[var(--color-line)] bg-[var(--color-surface-subtle)] px-5 py-3 sm:px-7">
-          {footer}
-        </div>
-      )}
-    </div>
+      {footer && <div className="mt-6 border-t border-[var(--color-line)] pt-4">{footer}</div>}
+    </section>
   );
 }

@@ -7,9 +7,20 @@ import { Button } from "@/components/ui";
 import { signInWithGoogle } from "@/lib/actions/auth";
 import { useTranslation } from "@/lib/i18n/provider";
 
-export function OAuthButtons() {
+interface OAuthButtonsProps {
+  nextPath?: string;
+  pinnedEmail?: string;
+}
+
+export function OAuthButtons({ nextPath, pinnedEmail }: OAuthButtonsProps = {}) {
   const { t } = useTranslation();
   const [isPending, startTransition] = useTransition();
+  const phoneParams = new URLSearchParams();
+  if (nextPath) phoneParams.set("next", nextPath);
+  if (pinnedEmail) phoneParams.set("email", pinnedEmail);
+  const phoneHref = phoneParams.size
+    ? `/auth/signup-phone?${phoneParams.toString()}`
+    : "/auth/signup-phone";
 
   return (
     <div className="flex flex-col gap-2">
@@ -19,13 +30,10 @@ export function OAuthButtons() {
         size="lg"
         fullWidth
         disabled={isPending}
-        onClick={() => startTransition(() => signInWithGoogle())}
+        onClick={() => startTransition(() => signInWithGoogle(nextPath))}
       >
         {isPending ? (
-          <Loader2
-            className="h-4 w-4 animate-spin motion-reduce:animate-none"
-            aria-hidden="true"
-          />
+          <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
         ) : (
           <GoogleIcon />
         )}
@@ -33,7 +41,7 @@ export function OAuthButtons() {
       </Button>
 
       <Button asChild variant="secondary" size="lg" fullWidth>
-        <Link href="/auth/signup-phone">
+        <Link href={phoneHref}>
           <Phone className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
           {t("auth.continue_with_phone")}
         </Link>

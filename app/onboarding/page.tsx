@@ -48,6 +48,7 @@ export default async function OnboardingPage({
     error_invite_invalid: t("onboarding.error_invite_invalid", locale),
     error_invite_expired: t("onboarding.error_invite_expired", locale),
     error_invite_used: t("onboarding.error_invite_used", locale),
+    error_invite_email_mismatch: t("invite.error_email_mismatch", locale),
     error_already_member: t("onboarding.error_already_member", locale),
     error_accept_failed: t("onboarding.error_accept_failed", locale),
   };

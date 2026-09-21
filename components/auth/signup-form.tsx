@@ -12,6 +12,7 @@ import type { TranslationKey } from "@/lib/i18n/types";
 const errorMessageKeys: Record<string, TranslationKey> = {
   invalid_input: "auth.signup_invalid_input",
   email_taken: "auth.signup_email_taken",
+  signup_rate_limit: "auth.signup_rate_limit",
   signup_failed: "auth.signup_generic_failed",
 };
 
@@ -46,7 +47,7 @@ export function SignupForm({ pinnedEmail, inviteToken, intent }: SignupFormProps
         required
         minLength={2}
         maxLength={120}
-        placeholder="Jane Doe"
+        placeholder={t("auth.full_name_placeholder")}
       />
 
       <AuthField

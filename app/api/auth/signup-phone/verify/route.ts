@@ -1,7 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { randomBytes } from "crypto";
 import { phoneOtpVerifySchema, phoneSignupCompleteSchema } from "@/lib/validations/auth";
-import { verifyOtp } from "@/lib/auth/otp";
+import {
+  createPhoneVerificationTicket,
+  verifyOtp,
+  verifyPhoneVerificationTicket,
+} from "@/lib/auth/otp";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logger } from "@/lib/logger";
 
@@ -58,7 +62,11 @@ async function handleVerify(body: Record<string, unknown>): Promise<NextResponse
     );
   }
 
-  return NextResponse.json({ ok: true, verified: true });
+  return NextResponse.json({
+    ok: true,
+    verified: true,
+    verification_ticket: createPhoneVerificationTicket(parsed.data.phone),
+  });
 }
 
 async function handleComplete(body: Record<string, unknown>): Promise<NextResponse> {
@@ -68,8 +76,17 @@ async function handleComplete(body: Record<string, unknown>): Promise<NextRespon
     return NextResponse.json({ error: "invalid_input" }, { status: 400 });
   }
 
-  const { phone, email, full_name } = parsed.data;
+  const { phone, email, full_name, verification_ticket } = parsed.data;
+  const nextPath =
+    parsed.data.next?.startsWith("/") && !parsed.data.next.startsWith("//")
+      ? parsed.data.next
+      : "/onboarding";
   const supabase = createAdminClient();
+
+  if (!verifyPhoneVerificationTicket(verification_ticket, phone)) {
+    logger.warn({ phone }, "[auth] phone signup complete with invalid verification ticket");
+    return NextResponse.json({ error: "otp_not_verified" }, { status: 403 });
+  }
 
   // Require a recently-verified OTP for this phone before creating an account.
   // Why: without this check, /auth/signup-phone/verify?action=complete would
@@ -176,7 +193,7 @@ async function handleComplete(body: Record<string, unknown>): Promise<NextRespon
   if (token) {
     return NextResponse.json({
       ok: true,
-      redirect: `/auth/callback?token_hash=${encodeURIComponent(token)}&type=magiclink&next=/onboarding`,
+      redirect: `/auth/callback?token_hash=${encodeURIComponent(token)}&type=magiclink&next=${encodeURIComponent(nextPath)}`,
     });
   }
 

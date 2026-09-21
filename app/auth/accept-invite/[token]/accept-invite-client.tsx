@@ -27,6 +27,7 @@ const errorKeys: Record<string, TranslationKey> = {
   already_member: "invite.error_already_member",
   invite_expired: "invite.error_expired",
   invite_used: "invite.error_used",
+  invite_email_mismatch: "invite.error_email_mismatch",
 };
 
 export function AcceptInviteClient({ token, companyName, role, email }: AcceptInviteClientProps) {
@@ -49,7 +50,9 @@ export function AcceptInviteClient({ token, companyName, role, email }: AcceptIn
       if (!res.ok) {
         const data = (await res.json().catch(() => ({}))) as { error?: string };
         setError(
-          data.error && errorKeys[data.error] ? t(errorKeys[data.error]) : t("invite.error_generic"),
+          data.error && errorKeys[data.error]
+            ? t(errorKeys[data.error])
+            : t("invite.error_generic"),
         );
         return;
       }
@@ -57,6 +60,8 @@ export function AcceptInviteClient({ token, companyName, role, email }: AcceptIn
       startAccepting(() => {
         router.push("/hr/dashboard");
       });
+    } catch {
+      setError(t("invite.error_generic"));
     } finally {
       setSubmitting(false);
     }
@@ -75,8 +80,10 @@ export function AcceptInviteClient({ token, companyName, role, email }: AcceptIn
           {companyName.slice(0, 1).toUpperCase()}
         </span>
         <div className="min-w-0">
-          <p className="truncate text-[14px] font-semibold text-[var(--color-text)]">{companyName}</p>
-          <p className="data-mono mt-0.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-muted)]">
+          <p className="truncate text-[14px] font-semibold text-[var(--color-text)]">
+            {companyName}
+          </p>
+          <p className="data-mono mt-0.5 text-[10.5px] font-semibold tracking-[0.12em] text-[var(--color-text-muted)] uppercase">
             <Building2 className="mr-1 inline h-3 w-3 align-[-1px]" aria-hidden="true" />
             {t("invite.invited_as")} · {t(roleKey[role])}
           </p>

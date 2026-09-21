@@ -11,9 +11,10 @@ const COOLDOWN_SECONDS = 60;
 
 interface ResendVerificationButtonProps {
   email?: string;
+  nextPath?: string;
 }
 
-export function ResendVerificationButton({ email }: ResendVerificationButtonProps) {
+export function ResendVerificationButton({ email, nextPath }: ResendVerificationButtonProps) {
   const { t } = useTranslation();
   const [state, formAction, isPending] = useActionState<AuthState, FormData>(
     resendVerification,
@@ -65,6 +66,7 @@ export function ResendVerificationButton({ email }: ResendVerificationButtonProp
   return (
     <form action={handleSubmit} className="flex flex-col gap-3">
       <input type="hidden" name="email" value={email} />
+      {nextPath && <input type="hidden" name="next" value={nextPath} />}
       {bannerNode}
       <Button type="submit" variant="secondary" fullWidth disabled={disabled}>
         {isPending ? (

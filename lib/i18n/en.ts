@@ -12,7 +12,8 @@ export const en: Translations = {
   "apply.title": "Apply for this position",
   "apply.requirements_heading": "Required qualifications",
   "apply.optional_heading": "Optional questions",
-  "apply.optional_hint": "These are optional — answer the ones you can. They won't affect whether you can apply.",
+  "apply.optional_hint":
+    "These are optional — answer the ones you can. They won't affect whether you can apply.",
   "apply.open_heading": "A few open questions",
   "apply.open_hint": "Optional. Anything you share here helps us understand you better.",
   "apply.open_placeholder": "Your answer…",
@@ -42,6 +43,7 @@ export const en: Translations = {
   "auth.email": "Email",
   "auth.password": "Password",
   "auth.full_name": "Full name",
+  "auth.full_name_placeholder": "Jane Doe",
   "auth.invalid_credentials": "Invalid email or password",
   "auth.sign_out": "Sign out",
   "auth.or": "or",
@@ -376,6 +378,7 @@ export const en: Translations = {
     "Please check your inputs — name ≥ 2 chars, valid email, password ≥ 8 chars.",
   "auth.signup_email_taken": "An account with this email already exists.",
   "auth.signup_generic_failed": "Sign-up failed. Please try again.",
+  "auth.signup_rate_limit": "Too many sign-up attempts. Please try again in an hour.",
   "auth.email_locked": "Email is locked to the invited address.",
   "auth.password_hint": "At least 8 characters.",
   "auth.reset_sent_desc":
@@ -602,8 +605,23 @@ export const en: Translations = {
   "auth.phone_change_number": "Change number",
   "auth.phone_email_hint": "Required for account recovery and billing.",
   "auth.phone_digit_hint": "+998 followed by 9 digits.",
+  "auth.phone_invalid": "Enter the 9 digits after +998.",
+  "auth.otp_not_verified": "Verify your phone number again before completing sign-up.",
+  "auth.email_not_verified": "Verify your email before signing in.",
+  "auth.verify_email_action": "Open email verification",
+  "auth.callback_failed": "This sign-in link is invalid or has expired. Please try again.",
+  "auth.account_created_notice": "Your account was created. Sign in to continue.",
+  "auth.story.login": "Welcome back.",
+  "auth.story.signup": "Start with a real hiring batch.",
+  "auth.story.phone": "Verify your number.",
+  "auth.story.verify": "One click, then you’re in.",
+  "auth.story.reset": "A fresh start, securely.",
+  "auth.story.invitation": "Your team is waiting.",
+  "auth.story.onboarding": "Choose where you belong.",
+  "auth.story.company": "Give your hiring a home.",
   "invite.join_heading": "Join {name}",
   "invite.invited_as": "You've been invited to join as",
+  "invite.error_email_mismatch": "Sign in with the email address that received this invitation.",
   "onboarding.welcome_eyebrow": "Welcome",
   "errors.not_found.home": "Go home",
   "apply.cv.remove_label": "Remove file",
@@ -814,8 +832,8 @@ export const en: Translations = {
   "landing.ai.gaps": "— GAPS",
   "landing.ai.recommend_invite": "→ WE RECOMMEND INVITING FIRST",
   "landing.ai.interview_cta": "INTERVIEW →",
-  "landing.ai.str.1": "6 years in B2B SaaS — exact profile",
-  "landing.ai.str.2": "Portfolio: 3 fintech projects with metrics",
+  "landing.ai.str.1": "Relevant experience found in the CV",
+  "landing.ai.str.2": "Project outcomes cited in the source file",
   "landing.ai.str.3": "Design-system experience (Figma Variables)",
   "landing.ai.str.4": "Fluent English — confirmed in CV",
   "landing.ai.gap.1": "No mobile-app experience",
@@ -830,7 +848,7 @@ export const en: Translations = {
   "landing.how.step1_title": "Create a job post",
   "landing.how.step1_subtitle": "Vakansiya yarating",
   "landing.how.step1_desc":
-    "Specify the role, experience, languages, and skills. Get a candidate link in under a minute.",
+    "Specify the role, experience, languages, and skills, then share the public application link.",
   "landing.how.step1_time": "1 min",
   "landing.how.step2_label": "COLLECT",
   "landing.how.step2_title": "Candidates submit résumés",
@@ -839,10 +857,10 @@ export const en: Translations = {
     "Résumés upload as PDFs. The AI extracts data and verifies requirements automatically.",
   "landing.how.step2_time": "auto",
   "landing.how.step3_label": "RANK",
-  "landing.how.step3_title": "AI ranks in seconds",
+  "landing.how.step3_title": "Review the ranked queue",
   "landing.how.step3_subtitle": "AI tezroq saralaydi",
   "landing.how.step3_desc":
-    "Every résumé gets a score, a list of strengths, and gaps — all in plain language.",
+    "Each completed analysis shows a score, strengths, gaps, and evidence for the recruiter to inspect.",
   "landing.how.step3_time": "30 sec",
   "landing.step1.kicker": "NEW POSTING #DES-042",
   "landing.step1.role": "Senior Product Designer",
@@ -1085,42 +1103,42 @@ export const en: Translations = {
   "landing.why.card_3_point_2": "Encrypted at rest and in transit — isolated per company",
   "landing.why.card_3_point_3": "Candidates can delete their data with one email",
   "landing.product.back_home": "← Back to home",
-  "landing.product.ml.headline": "Three languages. One score.",
+  "landing.product.ml.headline": "Three languages. One review queue.",
   "landing.product.ml.lede":
-    "TezHR reads résumés in Russian, Uzbek (both Cyrillic and Latin), and English. The same candidate gets the same rank — no matter which language they chose to write in.",
+    "TezHR reads résumés in Russian, Uzbek (Cyrillic and Latin), and English, then evaluates them against the same job requirements and scoring rubric.",
   "landing.product.ml.sec_1_title": "Why this matters in Uzbekistan",
   "landing.product.ml.sec_1_body":
-    "On real tezhr.uz postings, 62% of CVs arrive in Russian, 31% in Uzbek, 7% in English. ATSs that claim «Russian support» often fail to recognize Uzbek names in Cyrillic or skills in Latin. We trained the model on exactly this mix.",
+    "Hiring teams in Uzbekistan routinely receive CVs across several languages and alphabets. TezHR keeps those applications in one queue instead of forcing recruiters to translate or split the review process.",
   "landing.product.ml.sec_2_title": "What we do differently",
   "landing.product.ml.sec_2_body":
-    "A CV is normalized into an internal representation before scoring. Ranking is language-independent — we compare skills and experience, not words. That means a candidate who wrote «HTML / CSS / React» in English and one who wrote «вёрстка / стили / React» in Russian get the same score when the rest of the context is identical.",
+    "The analysis turns each CV into a structured assessment of experience, skills, languages, strengths, and gaps. Recruiters can inspect the original CV and the cited evidence before acting on the score.",
   "landing.product.ml.sec_3_title": "What else is in flight",
   "landing.product.ml.sec_3_body":
-    "A dedicated page walking through real cases is coming — how the model handles dual transliteration («Shoxruh» vs «Шохрух») and mixed-alphabet CVs. If you want to see the technical detail before it ships, drop us a line.",
+    "Mixed alphabets and transliterated names can still need human judgment. TezHR keeps the original file available so recruiters can verify the analysis instead of treating the model as a black box.",
   "landing.product.lm.headline": "Built for Tashkent.",
   "landing.product.lm.lede":
-    "TezHR recognizes «Главбух», «1С», «Uzum Nasiya», and «Navoi FEZ» without explanation. We're not building a generic ATS — we're building a tool that knows how hiring works in Uzbekistan.",
+    "TezHR lets teams describe roles with the titles, tools, languages, and spelling conventions they use in Uzbekistan — then keeps that context visible throughout screening.",
   "landing.product.lm.sec_1_title": "Local taxonomy",
   "landing.product.lm.sec_1_body":
-    "We maintain roughly 12,000 localized role and skill synonyms: from «Главный бухгалтер» to «1С: Предприятие 8.3», from «UzCard / Humo» to «Uzbekistan PFR». This taxonomy is maintained for the Uzbek market and updated regularly.",
+    "Job requirements can use the titles, tools, and spelling conventions your team already uses — including Cyrillic and Latin text. The model assesses that context against the candidate's CV.",
   "landing.product.lm.sec_2_title": "Local companies",
   "landing.product.lm.sec_2_body":
-    "The model knows that Uzum is a marketplace, Humans is a telco, and Astrum IT Academy is a developer feeder school. That helps it score experience more accurately and filter relevant CVs.",
+    "Recruiters can define hard requirements, optional questions, language needs, and role-specific skills. Those inputs — not a generic global template — shape the screening result.",
   "landing.product.lm.sec_3_title": "What's next",
   "landing.product.lm.sec_3_body":
-    "We're expanding coverage beyond IT: retail, banking, healthcare, education. If you hire in a specific vertical, let us know — we'll fold its taxonomy into the next update.",
+    "Use notes, candidate comparison, interview questions, and scheduling to carry the local context through the rest of the hiring process.",
   "landing.product.sec.headline": "Straight talk on security.",
   "landing.product.sec.lede":
     "No marketing theatre — just specifics. Where the data lives, who can see it, how deletion works.",
   "landing.product.sec.sec_1_title": "How data is stored",
   "landing.product.sec.sec_1_body":
-    "Every company's data is isolated at the row level — one team never sees another's candidates, by design. CVs live in a private bucket, encrypted at rest and in transit. Access is gated by your team roles (Owner / Admin / Recruiter); candidates themselves have no account, no login, no presence on the platform beyond the CV they sent.",
+    "Company data is separated at the row level so one workspace cannot read another workspace's candidates. CVs live in private file storage and are served through short-lived signed links. Access is gated by the Owner, Admin, and Recruiter roles.",
   "landing.product.sec.sec_2_title": "Who can see CVs",
   "landing.product.sec.sec_2_body":
-    "Within your company: only Owner / Admin / Recruiter roles. On our side (TezHR): only staff with operator access, and only within an explicit support session that is written to the audit log. Every view is logged. You can download the log and verify.",
+    "Within your company, access follows the Owner, Admin, and Recruiter roles. TezHR operator access is restricted to designated platform operators; support impersonation sessions require a reason and are recorded in the operator audit log.",
   "landing.product.sec.sec_3_title": "Deleting data",
   "landing.product.sec.sec_3_body":
-    "Candidates can email privacy@tezhr.uz to request deletion — we remove the CV and every derived AI artefact within 30 days. Your company can trigger a full account deletion from Settings → Company → Delete, with a 14-day undo window.",
+    "Candidates can email privacy@tezhr.uz to request deletion. A workspace owner can also soft-delete the company from Settings → Company; members are detached and returned to onboarding.",
   "landing.product.src.kicker": "OUTBOUND SOURCING",
   "landing.product.src.headline": "Don't wait for the right candidate. Go find them.",
   "landing.product.src.lede":
@@ -1130,7 +1148,7 @@ export const en: Translations = {
     "Your internal pool of past applicants, hh.uz's CV database, and public Telegram hiring channels — searched together from a single role. Choose which sources to use, set keywords and region, and re-run any time.",
   "landing.product.src.sec_2_title": "Proven, not just found",
   "landing.product.src.sec_2_body":
-    "Every candidate passes a fail-closed gate on your hard requirements and an independent verification pass. If a requirement can't be backed by a direct quote from their profile, they're not shown. No false positives, no wishful matching.",
+    "Candidates are checked against hard requirements and the product stores requirement-level evidence from the source profile. Recruiters can inspect that evidence and any gaps before promoting someone into the main pipeline.",
   "landing.product.src.sec_3_title": "From open role to ranked shortlist",
   "landing.product.src.sec_3_body":
     "TezHR extracts the role profile, fetches candidates, removes duplicates, scores fit, verifies the evidence, and ranks the top 20 — automatically, in the background. You come back to a shortlist, not a search queue.",
@@ -1290,19 +1308,19 @@ export const en: Translations = {
   "landing.candidates.page_kicker": "FOR CANDIDATES",
   "landing.candidates.page_headline": "What actually happens after you submit a CV.",
   "landing.candidates.page_lede":
-    "We respect your time and your privacy. Here is the plain-words version: how the process works, how long to expect a reply, and what you control.",
+    "A plain-language explanation of how the application flow works, what the hiring company can see, and where to ask about your data.",
   "landing.candidates.page_sec_1_title": "What happens to your résumé",
   "landing.candidates.page_sec_1_body":
-    "Your CV lands in the private storage of the company that posted the job. An AI reads it and extracts key information (experience, skills, languages). The original file is not published, not shared with advertisers, and not used to train models.",
-  "landing.candidates.page_sec_2_title": "When to expect a reply",
+    "Your CV is stored privately for the company that posted the job. TezHR can extract information such as experience, skills, and languages, then compare it with that job's requirements. The hiring team can also review the original file.",
+  "landing.candidates.page_sec_2_title": "Who makes the decision",
   "landing.candidates.page_sec_2_body":
-    "TezHR helps HR teams sort CVs faster — which means you're more likely to hear back within a business week. If more than two weeks have passed, it usually means there were many candidates and HR couldn't reply to everyone personally. We encourage companies to reply to everyone, but we can't enforce it.",
+    "TezHR provides a score, strengths, gaps, and interview tools to the hiring team. The employer decides whether to move an application forward and controls its own response timeline; TezHR does not make the hiring decision.",
   "landing.candidates.page_sec_3_title": "Your rights over your data",
   "landing.candidates.page_sec_3_body":
-    "You can request a copy or deletion of your data at any time — email privacy@tezhr.uz. We will delete your CV and all derived AI artefacts within 30 days. The company that received your CV is notified of the deletion.",
+    "For questions or a request concerning data submitted through TezHR, email privacy@tezhr.uz and identify the company and vacancy involved. We will review the request with the workspace responsible for that application.",
   "landing.candidates.page_sec_4_title": "Will we contact you?",
   "landing.candidates.page_sec_4_body":
-    "We don't contact candidates directly — only the company you applied to does. If you get a suspicious email from «TezHR» asking for data or payment, it's not us. Email privacy@tezhr.uz and we'll sort it.",
+    "The hiring company may contact you through the details you submitted, including an interview invitation generated through TezHR. A public application never asks a candidate to pay TezHR. Report suspicious messages to privacy@tezhr.uz.",
   // --- PR #8: final CTA + footer + status ---
   "landing.final.kicker_new": "YOUR NEXT HIRE",
   "landing.final.heading_a_new": "Faster.",
@@ -1443,12 +1461,12 @@ export const en: Translations = {
   "legal.terms.intro_p1":
     "This is a working document — we’re preparing the full legal version for public launch. Below is a brief overview of what the agreement between you and TezHR covers.",
   "legal.terms.intro_p2":
-    "You can always get the current text personally on Telegram — message us and we’ll send the live PDF revision.",
+    "Questions about these working terms can be sent through the Contact page or Telegram.",
   "legal.terms.topics_label": "WHAT THE TERMS COVER",
   "legal.terms.topic_1":
     "Registration, accounts, access to the TezHR service, and HR users’ responsibility for their actions in the system.",
   "legal.terms.topic_2":
-    "Payment, subscriptions, the 30-day / 50-résumé trial, renewal terms, refunds.",
+    "Payment, subscriptions, the 14-day / 50-résumé trial, renewal terms, and cancellation requests.",
   "legal.terms.topic_3":
     "Intellectual property: rights to uploaded CVs, to AI analysis output, and to the product itself.",
   "legal.terms.topic_4":
@@ -1456,14 +1474,14 @@ export const en: Translations = {
   "legal.terms.topic_5":
     "Termination of access, data export, retention period after account closure.",
   "legal.terms.contact_note":
-    "Questions about the terms — message us on Telegram. We reply personally, usually within an hour.",
+    "Questions about the terms can be sent through the Contact page or Telegram.",
   "legal.privacy.kicker": "PRIVACY · WORKING DRAFT",
   "legal.privacy.title": "Privacy policy",
   "legal.privacy.updated": "Updated: April 18, 2026",
   "legal.privacy.intro_p1":
-    "We store only what the service needs to run. Résumés are processed encrypted; access is limited to your company’s HR users and to TezHR operators during technical support.",
+    "We store the data the service needs to run. Résumés use private file storage; access is limited by company membership and role, with designated TezHR operators available for platform support.",
   "legal.privacy.intro_p2":
-    "The full legal version is in progress. Below is what we process and why. For details, message us on Telegram.",
+    "The full legal version is in progress. Below is a working summary of what the product processes and why.",
   "legal.privacy.topics_label": "WHAT WE PROCESS",
   "legal.privacy.topic_1":
     "HR user data: name, email, phone (via Eskiz.uz), interface language, role in the company.",
@@ -1472,11 +1490,11 @@ export const en: Translations = {
   "legal.privacy.topic_3":
     "Technical metadata: IP for spam protection, cookies for session and language, logs for error diagnostics.",
   "legal.privacy.topic_4":
-    "Third-party sharing: Google Gemini for CV analysis (anonymized), Supabase for storage (Amsterdam, EU), Eskiz.uz for SMS OTP.",
+    "Service providers used by the product: Google Gemini for CV analysis, Supabase for authentication, database, and private file storage, and Eskiz.uz for SMS OTP.",
   "legal.privacy.topic_5":
-    "Your rights: export, deletion, restriction of processing. All requests — via Telegram, handled within 30 days.",
+    "Data requests: candidates can contact privacy@tezhr.uz; workspace owners can soft-delete the workspace from Settings, and designated TezHR operators have an administrative company-data export tool.",
   "legal.privacy.contact_note":
-    "Questions about data — message us on Telegram. Account deletion requests are handled within 30 days.",
+    "Questions about data can be sent through the Contact page, Telegram, or privacy@tezhr.uz.",
 
   // --- operator inbox ---
   "inbox.title": "Inbox",

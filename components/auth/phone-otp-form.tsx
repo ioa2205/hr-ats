@@ -14,7 +14,7 @@ import { logger } from "@/lib/logger";
 type Step = "phone" | "otp" | "details";
 
 const errorKeys: Record<string, TranslationKey> = {
-  invalid_phone: "auth.phone_hint",
+  invalid_phone: "auth.phone_invalid",
   otp_rate_limited: "auth.otp_rate_limited",
   phone_taken: "auth.phone_taken",
   sms_failed: "auth.sms_failed",
@@ -25,6 +25,7 @@ const errorKeys: Record<string, TranslationKey> = {
   otp_invalid: "auth.otp_invalid",
   otp_too_many_attempts: "auth.otp_too_many_attempts",
   otp_not_found: "auth.otp_not_found",
+  otp_not_verified: "auth.otp_not_verified",
   email_taken: "auth.signup_email_taken",
   signup_failed: "auth.signup_generic_failed",
 };
@@ -32,25 +33,42 @@ const errorKeys: Record<string, TranslationKey> = {
 const RESEND_COOLDOWN = 60;
 
 function Spin() {
-  return (
-    <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-  );
+  return <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />;
 }
 
 const linkButtonClass =
   "rounded-[var(--radius-sm)] font-medium text-[var(--color-text-muted)] underline-offset-2 transition-colors hover:text-[var(--color-text)] hover:underline disabled:opacity-50";
 
-export function PhoneOtpForm() {
+interface PhoneOtpFormProps {
+  nextPath?: string;
+  pinnedEmail?: string;
+}
+
+function toUzbekPhone(value: string): string {
+  let digits = value.replace(/\D/g, "");
+  if (digits.startsWith("998")) digits = digits.slice(3);
+  return `+998${digits.slice(0, 9)}`;
+}
+
+function formatUzbekPhone(phone: string): string {
+  const digits = phone.replace(/^\+998/, "");
+  if (digits.length !== 9) return phone;
+  return `+998 ${digits.slice(0, 2)} ${digits.slice(2, 5)} ${digits.slice(5, 7)} ${digits.slice(7)}`;
+}
+
+export function PhoneOtpForm({ nextPath, pinnedEmail }: PhoneOtpFormProps = {}) {
   const { t } = useTranslation();
   const router = useRouter();
   const [step, setStep] = useState<Step>("phone");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("+998");
   const [code, setCode] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(pinnedEmail ?? "");
   const [fullName, setFullName] = useState("");
+  const [verificationTicket, setVerificationTicket] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
+  const [retryAfter, setRetryAfter] = useState<number | null>(null);
 
   useEffect(() => {
     if (resendTimer <= 0) return;
@@ -69,6 +87,7 @@ export function PhoneOtpForm() {
       });
       const data = await res.json();
       if (!res.ok) {
+        setRetryAfter(typeof data.retryAfter === "number" ? data.retryAfter : null);
         setError(data.error ?? "sms_failed");
         return false;
       }
@@ -85,7 +104,11 @@ export function PhoneOtpForm() {
 
   async function handlePhoneSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const normalizedPhone = phone.trim().replace(/[\s-]/g, "");
+    const normalizedPhone = toUzbekPhone(phone);
+    if (!/^\+998\d{9}$/.test(normalizedPhone)) {
+      setError("invalid_phone");
+      return;
+    }
     setPhone(normalizedPhone);
     const ok = await sendOtp(normalizedPhone);
     if (ok) setStep("otp");
@@ -106,6 +129,11 @@ export function PhoneOtpForm() {
         setError(data.error ?? "otp_invalid");
         return;
       }
+      if (typeof data.verification_ticket !== "string") {
+        setError("otp_not_verified");
+        return;
+      }
+      setVerificationTicket(data.verification_ticket);
       setStep("details");
     } catch (err) {
       logger.error({ err }, "[phone-otp] verify failed");
@@ -123,7 +151,14 @@ export function PhoneOtpForm() {
       const res = await fetch("/api/auth/signup-phone/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "complete", phone, email, full_name: fullName }),
+        body: JSON.stringify({
+          action: "complete",
+          phone,
+          email,
+          full_name: fullName,
+          verification_ticket: verificationTicket,
+          next: nextPath,
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -145,7 +180,14 @@ export function PhoneOtpForm() {
 
   const errorNode = error ? (
     <AuthBanner tone="error">
-      {errorKeys[error] ? t(errorKeys[error]) : t("auth.signup_generic_failed")}
+      {errorKeys[error]
+        ? t(
+            errorKeys[error],
+            error === "otp_rate_limited"
+              ? { seconds: String(Math.max(1, retryAfter ?? 60)) }
+              : undefined,
+          )
+        : t("auth.signup_generic_failed")}
     </AuthBanner>
   ) : null;
 
@@ -155,19 +197,54 @@ export function PhoneOtpForm() {
       <form onSubmit={handlePhoneSubmit} className="flex flex-col gap-4">
         {errorNode}
 
-        <AuthField
-          label={t("auth.phone_number")}
-          name="phone"
-          type="tel"
-          autoComplete="tel"
-          required
-          placeholder={t("auth.phone_hint")}
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          helper={t("auth.phone_digit_hint")}
-        />
+        <div className="flex flex-col gap-1.5">
+          <label
+            htmlFor="phone-national"
+            className="text-[13.5px] font-semibold tracking-[-0.01em] text-[var(--color-text)]"
+          >
+            {t("auth.phone_number")}
+          </label>
+          <div
+            className={`field-focus-ring flex h-[52px] items-center rounded-[12px] border bg-[var(--color-surface)] ${
+              error === "invalid_phone"
+                ? "border-[var(--color-danger)]"
+                : "border-[var(--color-line-strong)]"
+            }`}
+          >
+            <span className="border-r border-[var(--color-line)] px-4 text-[15px] font-semibold text-[var(--color-text)]">
+              +998
+            </span>
+            <input
+              id="phone-national"
+              name="phone"
+              type="tel"
+              inputMode="numeric"
+              autoComplete="tel-national"
+              required
+              maxLength={13}
+              aria-invalid={error === "invalid_phone" || undefined}
+              aria-describedby="phone-national-helper"
+              placeholder={t("auth.phone_hint").replace("+998", "").trim()}
+              value={phone.replace(/^\+998/, "")}
+              onChange={(e) => {
+                setPhone(toUzbekPhone(e.target.value));
+                setError(null);
+              }}
+              className="h-full min-w-0 flex-1 bg-transparent px-4 text-[15px] text-[var(--color-text)] outline-none placeholder:text-[var(--color-text-subtle)]"
+            />
+          </div>
+          <p id="phone-national-helper" className="text-[12.5px] text-[var(--color-text-muted)]">
+            {t("auth.phone_digit_hint")}
+          </p>
+        </div>
 
-        <Button type="submit" size="lg" fullWidth disabled={loading} className="mt-1">
+        <Button
+          type="submit"
+          size="lg"
+          fullWidth
+          disabled={loading || phone === "+998"}
+          className="mt-1"
+        >
           {loading && <Spin />}
           {loading ? t("auth.sending_code") : t("auth.send_code")}
         </Button>
@@ -192,7 +269,7 @@ export function PhoneOtpForm() {
         {errorNode}
 
         <p className="text-[14px] leading-[1.55] text-[var(--color-text-muted)]">
-          {t("auth.enter_code_desc", { phone })}
+          {t("auth.enter_code_desc", { phone: formatUzbekPhone(phone) })}
         </p>
 
         <AuthField
@@ -241,7 +318,12 @@ export function PhoneOtpForm() {
               {t("auth.resend_in", { seconds: String(resendTimer) })}
             </span>
           ) : (
-            <button type="button" onClick={handleResend} disabled={loading} className={linkButtonClass}>
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={loading}
+              className={linkButtonClass}
+            >
               {t("auth.resend_code")}
             </button>
           )}
@@ -273,7 +355,7 @@ export function PhoneOtpForm() {
         maxLength={120}
         value={fullName}
         onChange={(e) => setFullName(e.target.value)}
-        placeholder="Jane Doe"
+        placeholder={t("auth.full_name_placeholder")}
       />
 
       <AuthField
@@ -284,7 +366,8 @@ export function PhoneOtpForm() {
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        helper={t("auth.phone_email_hint")}
+        readOnly={Boolean(pinnedEmail)}
+        helper={pinnedEmail ? t("auth.email_locked") : t("auth.phone_email_hint")}
         placeholder="you@example.com"
       />
 

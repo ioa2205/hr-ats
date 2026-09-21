@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { generateOtp, hashOtp } from "@/lib/auth/otp";
+import {
+  createPhoneVerificationTicket,
+  generateOtp,
+  hashOtp,
+  verifyPhoneVerificationTicket,
+} from "@/lib/auth/otp";
 import {
   phoneOtpStartSchema,
   phoneOtpVerifySchema,
@@ -40,6 +45,19 @@ describe("hashOtp", () => {
 
   it("different codes produce different hashes", () => {
     expect(hashOtp("123456")).not.toBe(hashOtp("654321"));
+  });
+});
+
+describe("phone verification tickets", () => {
+  it("binds a short-lived signed ticket to the verified phone", () => {
+    const ticket = createPhoneVerificationTicket("+998901234567");
+    expect(verifyPhoneVerificationTicket(ticket, "+998901234567")).toBe(true);
+    expect(verifyPhoneVerificationTicket(ticket, "+998901234568")).toBe(false);
+  });
+
+  it("rejects tampered tickets", () => {
+    const ticket = createPhoneVerificationTicket("+998901234567");
+    expect(verifyPhoneVerificationTicket(`${ticket}x`, "+998901234567")).toBe(false);
   });
 });
 
@@ -101,6 +119,7 @@ describe("phoneSignupCompleteSchema", () => {
     phone: "+998901234567",
     email: "user@example.com",
     full_name: "Alisher Navoiy",
+    verification_ticket: "a".repeat(32),
   };
 
   it("accepts valid complete signup", () => {

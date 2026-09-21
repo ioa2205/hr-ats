@@ -18,6 +18,7 @@ test.describe("Team Management", () => {
   test.beforeAll(async () => {
     admin = getAdminClient();
     tenant = await createTenant(admin, { tag: "team" });
+    await admin.from("profiles").update({ locale: "en" }).eq("id", tenant.userId);
   });
 
   test.afterAll(async () => {
@@ -25,6 +26,9 @@ test.describe("Team Management", () => {
   });
 
   test.beforeEach(async ({ page }) => {
+    await page.context().addCookies([
+      { name: "locale", value: "en", url: "http://localhost:3000", sameSite: "Lax" },
+    ]);
     await signInOnPage(page, tenant.email, tenant.password);
   });
 
@@ -59,8 +63,9 @@ test.describe("Team Management", () => {
     const revokeButton = page.getByLabel(`Revoke invite for ${inviteEmail}`);
     await revokeButton.click();
 
-    // Verify invite is removed from pending list
-    await expect(page.getByText("Pending invites")).not.toBeVisible();
+    // Verify the revoked address is removed from the pending list. The section
+    // heading intentionally remains visible as an empty-state anchor.
+    await expect(page.getByLabel(`Revoke invite for ${inviteEmail}`)).toHaveCount(0);
   });
 
   test("owner sees correct role badges", async ({ page }) => {
@@ -68,11 +73,11 @@ test.describe("Team Management", () => {
 
     // Owner should see their own role badge (in the main content area)
     await expect(
-      page.getByRole("main").locator("span.capitalize", { hasText: "owner" }),
+      page.getByRole("main").locator("span.capitalize", { hasText: "owner" }).first(),
     ).toBeVisible();
 
     // Owner should see "(you)" next to their name
-    await expect(page.getByRole("main").getByText("(you)")).toBeVisible();
+    await expect(page.getByRole("main").getByText("(you)").first()).toBeVisible();
   });
 
   test("invite accept page shows correct info for valid invite", async ({ browser }) => {
@@ -123,7 +128,7 @@ test.describe("Team Management", () => {
     if (!invite) throw new Error("Failed to create test invite");
 
     await page.goto(`/auth/accept-invite/${invite.token}`);
-    await expect(page.getByText("Invite expired")).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText("Invitation expired")).toBeVisible({ timeout: 15000 });
 
     // Clean up
     await admin.from("company_invites").delete().eq("token", invite.token);
@@ -131,6 +136,6 @@ test.describe("Team Management", () => {
 
   test("accept invite page shows invalid state for bad token", async ({ page }) => {
     await page.goto("/auth/accept-invite/00000000-0000-0000-0000-000000000000");
-    await expect(page.getByText("Invalid invite")).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText("Invalid invitation")).toBeVisible({ timeout: 15000 });
   });
 });

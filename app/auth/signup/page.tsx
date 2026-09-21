@@ -20,6 +20,11 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
   const rawInvite = typeof sp.invite === "string" ? sp.invite : undefined;
   const rawIntent = sp.intent === "pro" ? "pro" : undefined;
   const locale = await getLocale();
+  const nextPath = rawInvite
+    ? `/auth/accept-invite/${encodeURIComponent(rawInvite)}`
+    : rawIntent === "pro"
+      ? "/onboarding?intent=pro"
+      : "/onboarding";
 
   return (
     <div className="flex flex-col gap-4">
@@ -28,7 +33,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
         title={t("auth.create_account", locale)}
         subtitle={t("auth.signup_sub", locale)}
       >
-        <OAuthButtons />
+        <OAuthButtons nextPath={nextPath} pinnedEmail={rawEmail} />
         <AuthDivider label={t("auth.or", locale)} />
         <SignupForm pinnedEmail={rawEmail} inviteToken={rawInvite} intent={rawIntent} />
       </AuthPanel>

@@ -55,6 +55,8 @@ export const phoneSignupCompleteSchema = z.object({
     .trim()
     .min(2, { message: "Full name must be at least 2 characters" })
     .max(120),
+  verification_ticket: z.string().min(32),
+  next: z.string().max(500).optional(),
 });
 
 export type PhoneOtpStartInput = z.infer<typeof phoneOtpStartSchema>;

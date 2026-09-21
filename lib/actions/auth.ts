@@ -13,7 +13,7 @@ import {
   completePasswordResetSchema,
 } from "@/lib/validations/auth";
 
-export type AuthState = { error?: string; ok?: boolean } | null;
+export type AuthState = { error?: string; ok?: boolean; email?: string } | null;
 
 async function getOrigin(): Promise<string> {
   if (env.APP_URL) return env.APP_URL;
@@ -42,9 +42,15 @@ export async function signUpWithEmail(_prev: AuthState, formData: FormData): Pro
 
   const supabase = await createClient();
   const origin = await getOrigin();
-  const nextPath = formData.get("intent") === "pro" ? "/onboarding?intent=pro" : "/onboarding";
+  const rawInvite = formData.get("invite");
+  const inviteToken = typeof rawInvite === "string" ? rawInvite.trim() : "";
+  const nextPath = inviteToken
+    ? `/auth/accept-invite/${encodeURIComponent(inviteToken)}`
+    : formData.get("intent") === "pro"
+      ? "/onboarding?intent=pro"
+      : "/onboarding";
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
@@ -57,13 +63,22 @@ export async function signUpWithEmail(_prev: AuthState, formData: FormData): Pro
 
   if (error) {
     logger.warn({ err: error.message }, "[auth] sign-up failed");
-    if (error.message.toLowerCase().includes("already")) {
+    const message = error.message.toLowerCase();
+    if (message.includes("rate limit")) {
+      return { error: "signup_rate_limit" };
+    }
+    if (message.includes("already")) {
       return { error: "email_taken" };
     }
     return { error: "signup_failed" };
   }
 
-  redirect(`/auth/verify?email=${encodeURIComponent(parsed.data.email)}`);
+  if (data.session) {
+    redirect(nextPath);
+  }
+
+  const verifyParams = new URLSearchParams({ email: parsed.data.email, next: nextPath });
+  redirect(`/auth/verify?${verifyParams.toString()}`);
 }
 
 export async function signInWithEmail(_prev: AuthState, formData: FormData): Promise<AuthState> {
@@ -85,24 +100,33 @@ export async function signInWithEmail(_prev: AuthState, formData: FormData): Pro
   if (error) {
     logger.warn({ err: error.message }, "[auth] sign-in failed");
     if (error.message.toLowerCase().includes("email not confirmed")) {
-      return { error: "email_not_verified" };
+      return { error: "email_not_verified", email: parsed.data.email };
     }
     return { error: "invalid_credentials" };
   }
 
   const isOperator = data.user?.app_metadata?.is_operator === true;
   const nextPath = safeNextPath(formData.get("next"), "");
-  redirect(nextPath || (isOperator ? "/operator" : "/hr/dashboard"));
+  if (nextPath) redirect(nextPath);
+  if (isOperator) redirect("/operator");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("current_company_id")
+    .eq("id", data.user.id)
+    .maybeSingle();
+  redirect(profile?.current_company_id ? "/hr/dashboard" : "/onboarding");
 }
 
-export async function signInWithGoogle(): Promise<void> {
+export async function signInWithGoogle(nextPath?: string): Promise<void> {
   const supabase = await createClient();
   const origin = await getOrigin();
+  const safeNext = safeNextPath(nextPath ?? null, "/onboarding");
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${origin}/auth/callback?next=/onboarding`,
+      redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(safeNext)}`,
     },
   });
 
@@ -201,10 +225,11 @@ export async function resendVerification(_prev: AuthState, formData: FormData): 
 
   const supabase = await createClient();
   const origin = await getOrigin();
+  const nextPath = safeNextPath(formData.get("next"), "/onboarding");
   const { error } = await supabase.auth.resend({
     type: "signup",
     email: parsed.data.email,
-    options: { emailRedirectTo: `${origin}/auth/callback?next=/onboarding` },
+    options: { emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}` },
   });
 
   if (error) {

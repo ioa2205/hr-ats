@@ -24,6 +24,12 @@ const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const hasSupabase = Boolean(SUPABASE_URL && SERVICE_ROLE);
 
+test.beforeEach(async ({ context }) => {
+  await context.addCookies([
+    { name: "locale", value: "en", url: "http://localhost:3000", sameSite: "Lax" },
+  ]);
+});
+
 test.describe("Auth: phone OTP signup", () => {
   test.skip(!hasSupabase, "Requires NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY");
 
@@ -59,7 +65,7 @@ test.describe("Auth: phone OTP signup", () => {
     // Should show an error (API returns 400 for invalid phone).
     // Scope to the visible error copy — Next's __next-route-announcer__ also
     // has role=alert and would trip strict mode.
-    await expect(page.getByText(/invalid phone number/i)).toBeVisible();
+    await expect(page.getByText(/enter the 9 digits after \+998/i)).toBeVisible();
   });
 
   test("full phone signup flow with mocked OTP", async ({ page }) => {
@@ -68,7 +74,7 @@ test.describe("Auth: phone OTP signup", () => {
     });
 
     const phone = `+998${900000000 + Math.floor(Math.random() * 99999999)}`;
-    const email = `e2e-phone-${Date.now()}@test.hrats.local`;
+    const email = `e2e-phone-${Date.now()}@example.com`;
     const fullName = "Phone Test User";
 
     // Manually insert a known OTP into the database so we know the code
@@ -108,7 +114,7 @@ test.describe("Auth: phone OTP signup", () => {
 
     await page.getByLabel(/full name/i).fill(fullName);
     await page.getByLabel(/email/i).fill(email);
-    await page.getByRole("button", { name: /create account/i }).click();
+    await page.getByRole("button", { name: /complete sign-up/i }).click();
 
     // Should redirect to onboarding or login
     await page.waitForURL(/\/(onboarding|auth\/login|hr\/dashboard)/, {

@@ -12,9 +12,11 @@ export const uz: Translations = {
   "apply.title": "Ariza topshirish",
   "apply.requirements_heading": "Majburiy talablar",
   "apply.optional_heading": "Ixtiyoriy savollar",
-  "apply.optional_hint": "Bu ixtiyoriy — imkoningiz bo'lsa javob bering. Bu arizangizga ta'sir qilmaydi.",
+  "apply.optional_hint":
+    "Bu ixtiyoriy — imkoningiz bo'lsa javob bering. Bu arizangizga ta'sir qilmaydi.",
   "apply.open_heading": "Bir nechta ochiq savol",
-  "apply.open_hint": "Ixtiyoriy. Bu yerda yozganlaringiz sizni yaxshiroq tushunishimizga yordam beradi.",
+  "apply.open_hint":
+    "Ixtiyoriy. Bu yerda yozganlaringiz sizni yaxshiroq tushunishimizga yordam beradi.",
   "apply.open_placeholder": "Javobingiz…",
   "apply.yes": "Ha",
   "apply.no": "Yo'q",
@@ -42,6 +44,7 @@ export const uz: Translations = {
   "auth.email": "Elektron pochta",
   "auth.password": "Parol",
   "auth.full_name": "To'liq ism",
+  "auth.full_name_placeholder": "Dilnoza Karimova",
   "auth.invalid_credentials": "Email yoki parol noto'g'ri",
   "auth.sign_out": "Chiqish",
   "auth.or": "yoki",
@@ -380,6 +383,7 @@ export const uz: Translations = {
     "Iltimos, ma'lumotlarni tekshiring — ism ≥ 2 belgi, to'g'ri email, parol ≥ 8 belgi.",
   "auth.signup_email_taken": "Bu email bilan akkount allaqachon mavjud.",
   "auth.signup_generic_failed": "Ro'yxatdan o'tib bo'lmadi. Qayta urinib ko'ring.",
+  "auth.signup_rate_limit": "Ro'yxatdan o'tishga urinishlar ko'p. Bir soatdan keyin qayta urinib ko'ring.",
   "auth.email_locked": "Email taklif qilingan manzilga bog'langan.",
   "auth.password_hint": "Kamida 8 belgi.",
   "auth.reset_sent_desc":
@@ -608,8 +612,23 @@ export const uz: Translations = {
   "auth.phone_change_number": "Raqamni o'zgartirish",
   "auth.phone_email_hint": "Akkauntni tiklash va billing uchun zarur.",
   "auth.phone_digit_hint": "+998 va keyin 9 ta raqam.",
+  "auth.phone_invalid": "+998 dan keyingi 9 ta raqamni kiriting.",
+  "auth.otp_not_verified": "Ro‘yxatdan o‘tishni yakunlashdan oldin telefonni qayta tasdiqlang.",
+  "auth.email_not_verified": "Kirishdan oldin elektron pochtangizni tasdiqlang.",
+  "auth.verify_email_action": "Email tasdiqlashni ochish",
+  "auth.callback_failed": "Kirish havolasi yaroqsiz yoki eskirgan. Qayta urinib ko‘ring.",
+  "auth.account_created_notice": "Akkaunt yaratildi. Davom etish uchun kiring.",
+  "auth.story.login": "Qaytganingizdan xursandmiz.",
+  "auth.story.signup": "Haqiqiy yollashdan boshlang.",
+  "auth.story.phone": "Raqamingizni tasdiqlang.",
+  "auth.story.verify": "Bir bosish — va siz ichkaridasiz.",
+  "auth.story.reset": "Xavfsiz yangi boshlanish.",
+  "auth.story.invitation": "Jamoangiz sizni kutmoqda.",
+  "auth.story.onboarding": "O‘z o‘rningizni tanlang.",
+  "auth.story.company": "Yollash uchun makon yarating.",
   "invite.join_heading": "{name} ga qo'shilish",
   "invite.invited_as": "Siz quyidagi rolda qo'shilishga taklif qilindingiz:",
+  "invite.error_email_mismatch": "Taklif yuborilgan email manzili bilan kiring.",
   "onboarding.welcome_eyebrow": "Xush kelibsiz",
   "errors.not_found.home": "Bosh sahifaga",
   "apply.cv.remove_label": "Faylni o'chirish",
@@ -633,7 +652,8 @@ export const uz: Translations = {
   "apply.step_requirements": "Talablar",
   "apply.step_details": "Ma'lumotlaringiz",
   "apply.security_label": "Xavfsizlik tekshiruvi",
-  "apply.security_hint": "Yuborishdan oldin qisqa avtomatik tekshiruv. Hech narsa qilish shart emas.",
+  "apply.security_hint":
+    "Yuborishdan oldin qisqa avtomatik tekshiruv. Hech narsa qilish shart emas.",
   "apply.trust_title": "Ochiq vakansiya",
   "apply.error_retry_hint": "Ma'lumotlaringiz saqlandi. Shunchaki qaytadan yuboring.",
   "common.saving": "Saqlanmoqda...",
@@ -822,8 +842,8 @@ export const uz: Translations = {
   "landing.ai.gaps": "— KAMCHILIKLAR",
   "landing.ai.recommend_invite": "→ BIRINCHI BO‘LIB TAKLIF QILISHNI TAVSIYA ETAMIZ",
   "landing.ai.interview_cta": "INTERVYU →",
-  "landing.ai.str.1": "B2B SaaSda 6 yil — aniq mos profil",
-  "landing.ai.str.2": "Portfolio: 3 ta fintech loyihasi metrikalari bilan",
+  "landing.ai.str.1": "CVda tegishli tajriba topildi",
+  "landing.ai.str.2": "Loyiha natijalari manba faylda ko‘rsatilgan",
   "landing.ai.str.3": "Dizayn tizimlari tajribasi (Figma Variables)",
   "landing.ai.str.4": "Erkin ingliz tili — CVda tasdiqlangan",
   "landing.ai.gap.1": "Mobil ilovalar tajribasi yo‘q",
@@ -838,7 +858,7 @@ export const uz: Translations = {
   "landing.how.step1_title": "Vakansiya yarating",
   "landing.how.step1_subtitle": "Создайте вакансию",
   "landing.how.step1_desc":
-    "Lavozim, tajriba, tillar va ko‘nikmalarni belgilang. Bir daqiqada nomzodlar uchun havola oling.",
+    "Rol, tajriba, tillar va ko‘nikmalarni belgilang, so‘ng ochiq ariza havolasini ulashing.",
   "landing.how.step1_time": "1 daq.",
   "landing.how.step2_label": "COLLECT",
   "landing.how.step2_title": "Nomzodlar rezyume yuboradi",
@@ -847,10 +867,10 @@ export const uz: Translations = {
     "Rezyume PDF sifatida yuklanadi. AI ma’lumotlarni avtomatik ajratib, moslikni tekshiradi.",
   "landing.how.step2_time": "avto",
   "landing.how.step3_label": "RANK",
-  "landing.how.step3_title": "AI soniyalarda saralaydi",
+  "landing.how.step3_title": "Saralangan navbatni ko‘ring",
   "landing.how.step3_subtitle": "ИИ ранжирует за секунды",
   "landing.how.step3_desc":
-    "Har bir rezyume baho, kuchli tomonlar va kamchiliklar ro‘yxatini oladi — barchasi o‘zbek tilida.",
+    "Tayyor tahlil rekruter tekshirishi uchun ball, kuchli tomonlar, bo‘shliqlar va dalillarni ko‘rsatadi.",
   "landing.how.step3_time": "30 soniya",
   "landing.step1.kicker": "YANGI VAKANSIYA #DES-042",
   "landing.step1.role": "Senior Product Designer",
@@ -1094,42 +1114,42 @@ export const uz: Translations = {
   "landing.why.card_3_point_2": "Saqlashda va uzatishda shifrlash — kompaniyalar orasida ajratish",
   "landing.why.card_3_point_3": "Nomzod bitta xat bilan ma'lumotini o'chira oladi",
   "landing.product.back_home": "← Bosh sahifaga qaytish",
-  "landing.product.ml.headline": "Uch til. Bir ball.",
+  "landing.product.ml.headline": "Uch til. Bitta arizalar navbati.",
   "landing.product.ml.lede":
-    "TezHR ruscha, o'zbekcha (kirill va lotin) va inglizcha rezyumelarni o'qiydi. Bir xil nomzod — qaysi tilda yozganidan qat'iy nazar — bir xil ranglarni oladi.",
+    "TezHR rus, o‘zbek (kirill va lotin) va ingliz tillaridagi rezyumelarni o‘qiydi, so‘ng ularni bir xil vakansiya talablari va baholash mezoni asosida tahlil qiladi.",
   "landing.product.ml.sec_1_title": "Nega bu O'zbekistonda muhim",
   "landing.product.ml.sec_1_body":
-    "tezhr.uz dagi haqiqiy vakansiyalarda CV larning 62% ruscha, 31% o'zbekcha, 7% inglizcha keladi. «Rus tilini qo'llaydi» deb aytadigan ATS lar ko'pincha kirilldagi o'zbek ismlarini yoki lotindagi ko'nikmalarni tanimaydi. Biz modelni aynan shu aralashmada o'qitganmiz.",
+    "O‘zbekistondagi yollash jamoalari bir nechta til va alifbodagi CVlarni muntazam oladi. TezHR ularni tarjima qilish yoki jarayonni bo‘lish o‘rniga bitta navbatda saqlaydi.",
   "landing.product.ml.sec_2_title": "Biz nimani boshqacha qilamiz",
   "landing.product.ml.sec_2_body":
-    "CV baholashdan oldin ichki ko'rinishga normallashtirilgan tarzda tarjima qilinadi. Reyting tilga bog'liq emas — biz so'zlarni emas, ko'nikma va tajribani solishtiramiz. Bu degani, inglizchada «HTML / CSS / React» yozgan nomzod va ruschada «vyorstka / stili / React» yozgan nomzod — agar qolgan kontekst bir xil bo'lsa — bir xil ball oladi.",
+    "Tahlil har bir CVni tajriba, ko‘nikmalar, tillar, kuchli tomonlar va bo‘shliqlar bo‘yicha tuzilgan bahoga aylantiradi. Qarordan oldin rekruter asl CV va keltirilgan dalillarni tekshirishi mumkin.",
   "landing.product.ml.sec_3_title": "Yana nima ustida ishlayapmiz",
   "landing.product.ml.sec_3_body":
-    "Haqiqiy keyslar sharhi bilan alohida sahifa tayyorlayapmiz — model ikki xil transliteratsiyaga («Shoxruh» va «Шохрух») va bir CVdagi alifbolar aralashmasiga qanday qaraydi. Texnik tafsilotlarni chop etilgunga qadar ko'rmoqchi bo'lsangiz — bizga yozing.",
+    "Aralash alifbo va transliteratsiya inson tekshiruvini talab qilishi mumkin. Rekruter modelni qora quti sifatida qabul qilmasligi uchun asl fayl doimo ko‘rish uchun qoladi.",
   "landing.product.lm.headline": "Toshkent uchun qurilgan.",
   "landing.product.lm.lede":
-    "TezHR «Bosh buxgalter», «1С», «Uzum Nasiya» va «Navoiy EIZ»ni tushuntirmasdan taniydi. Biz universal ATS qurmayapmiz — O'zbekistonda qanday yollashni tushunadigan vosita quryapmiz.",
+    "TezHR jamoaga O‘zbekistonda ishlatiladigan lavozim nomlari, vositalar, tillar va yozilish usullari bilan rolni ta’riflash imkonini beradi — bu kontekst skrining davomida saqlanadi.",
   "landing.product.lm.sec_1_title": "Mahalliy taksonomiya",
   "landing.product.lm.sec_1_body":
-    "Biz ~12 000 mahalliylashtirilgan lavozim va ko'nikma sinonimlarini qo'llaymiz: «Bosh buxgalter»dan «1С: Предприятие 8.3»gacha, «UzCard / Humo»dan «O'zbekiston PFR»gacha. Bu taksonomiya o‘zbek bozori uchun yuritiladi va muntazam yangilanadi.",
+    "Vakansiya talablarida jamoangiz ishlatadigan lavozim nomlari, vositalar va yozilish usullaridan — kirill va lotin matnidan — foydalanish mumkin. Model shu kontekstni nomzod CVsi bilan solishtiradi.",
   "landing.product.lm.sec_2_title": "Mahalliy kompaniyalar",
   "landing.product.lm.sec_2_body":
-    "Model Uzum — marketpleys, Humans — aloqa operatori, Astrum IT Academy — dasturchilar kuznitsasi ekanini biladi. Bu tajribani aniqroq baholash va tegishli CVlarni filtrlash uchun yordam beradi.",
+    "Rekruter majburiy talablar, qo‘shimcha savollar, til ehtiyojlari va rol ko‘nikmalarini belgilaydi. Natijani umumiy global shablon emas, aynan shu ma’lumotlar shakllantiradi.",
   "landing.product.lm.sec_3_title": "Keyingi bosqich",
   "landing.product.lm.sec_3_body":
-    "IT dan tashqaridagi tarmoqlarga qamrovni kengaytiramiz: riteyl, banklar, tibbiyot, ta'lim. Agar aniq tarmoqda yollasangiz — bizga xabar bering, yaqindagi yangilanishga uning taksonomiyasini qo'shamiz.",
+    "Qaydlar, nomzodlarni solishtirish, suhbat savollari va rejalashtirish mahalliy kontekstni yollashning keyingi bosqichlarida ham saqlaydi.",
   "landing.product.sec.headline": "Xavfsizlik haqida rostini aytamiz.",
   "landing.product.sec.lede":
     "Marketing shtamplarsiz. Faqat aniqlik: ma'lumotlar qayerda yashaydi, kim ko'ra oladi, o'chirish qanday sodir bo'ladi.",
   "landing.product.sec.sec_1_title": "Ma'lumotlar qanday saqlanadi",
   "landing.product.sec.sec_1_body":
-    "Har bir kompaniya ma'lumotlari qator darajasida ajratilgan — bir jamoa hech qachon boshqa jamoaning nomzodlarini ko'rmaydi, loyihadan. CVlar xususiy saqlash joyida, saqlashda ham, uzatishda ham shifrlanadi. Kirish jamoangiz rollari (Owner / Admin / Recruiter) bilan cheklangan; nomzodlar o'zlari esa platformada umuman hisob qaydnomasiga ega emas — ular faqat yuborgan CV sifatida mavjud.",
+    "Kompaniya ma’lumotlari qator darajasida ajratilgan, shuning uchun bir ish maydoni boshqasining nomzodlarini o‘qiy olmaydi. CVlar yopiq fayl saqlash joyida turadi va qisqa muddatli imzolangan havolalar orqali ochiladi. Kirish Owner, Admin va Recruiter rollari bilan cheklangan.",
   "landing.product.sec.sec_2_title": "CVlarni kim ko'ra oladi",
   "landing.product.sec.sec_2_body":
-    "Kompaniyangiz ichida: faqat Owner / Admin / Recruiter rollari. Biz (TezHR) tomonidan — faqat operator kirishi bo'lgan xodimlar, va faqat audit jurnaliga yozilgan aniq qo'llab-quvvatlash sessiyasida. Har bir ko'rish qayd etiladi. Siz jurnalni yuklab olib o'zingiz tekshirishingiz mumkin.",
+    "Kompaniya ichida kirish Owner, Admin va Recruiter rollariga bog‘liq. TezHR operator kirishi tayinlangan platforma operatorlari bilan cheklangan; qo‘llab-quvvatlash impersonation sessiyasi sabab talab qiladi va operator auditida qayd etiladi.",
   "landing.product.sec.sec_3_title": "Ma'lumotlarni o'chirish",
   "landing.product.sec.sec_3_body":
-    "Nomzod privacy@tezhr.uz ga yozib o'z ma'lumotlarini o'chirishni so'rashi mumkin — biz CVni va barcha hosila AI-artefaktlarni 30 kun ichida o'chiramiz. Kompaniyangiz to'liq hisobni o'chirishni Settings → Company → Delete dan boshlashi mumkin, 14 kunlik tiklash oynasi bilan.",
+    "Nomzod privacy@tezhr.uz manziliga yozib o‘chirishni so‘rashi mumkin. Ish maydoni egasi Settings → Company orqali kompaniyani soft-delete qilishi mumkin; a’zolar ajratiladi va onboardingga qaytadi.",
   "landing.product.src.kicker": "FAOL QIDIRUV",
   "landing.product.src.headline": "Kerakli nomzodni kutmang. Uni toping.",
   "landing.product.src.lede":
@@ -1139,7 +1159,7 @@ export const uz: Translations = {
     "Avvalgi nomzodlarning ichki bazangiz, hh.uz rezyumelar bazasi va ochiq Telegram ish kanallari — bitta vakansiyadan qidiriladi. Manbalarni tanlang, kalit so'zlar va hududni belgilang, istalgan vaqtda qayta ishga tushiring.",
   "landing.product.src.sec_2_title": "Topilgan emas, isbotlangan",
   "landing.product.src.sec_2_body":
-    "Har bir nomzod majburiy talablar bo'yicha qat'iy filtrdan va mustaqil tekshiruvdan o'tadi. Agar talab profildan to'g'ridan-to'g'ri iqtibos bilan tasdiqlanmasa — nomzod ko'rsatilmaydi. Soxta mosliklar yo'q.",
+    "Nomzodlar majburiy talablar bo‘yicha tekshiriladi va mahsulot manba profildan har bir talab uchun dalilni saqlaydi. Asosiy pipelinega o‘tkazishdan oldin rekruter dalillar va bo‘shliqlarni ko‘radi.",
   "landing.product.src.sec_3_title": "Vakansiyadan saralangan short-listgacha",
   "landing.product.src.sec_3_body":
     "TezHR vakansiya profilini ajratadi, nomzodlarni topadi, dublikatlarni olib tashlaydi, moslikni baholaydi, dalillarni tekshiradi va top-20 ni saralaydi — avtomatik, fonda. Siz qidiruv navbatiga emas, tayyor short-listga qaytasiz.",
@@ -1300,19 +1320,19 @@ export const uz: Translations = {
   "landing.candidates.page_kicker": "NOMZODLAR UCHUN",
   "landing.candidates.page_headline": "CV yuborganingizda nima sodir bo'ladi.",
   "landing.candidates.page_lede":
-    "Biz sizning vaqtingiz va shaxsiy ma'lumotlaringizni hurmat qilamiz. Mana shaffof bayon: jarayon qanday ishlaydi, javobni qancha kutish kerak va nima siz nazorat qilasiz.",
+    "Ariza jarayoni qanday ishlashi, yollovchi kompaniya nimani ko‘rishi va ma’lumotlaringiz bo‘yicha qayerga murojaat qilish mumkinligi haqida sodda tushuntirish.",
   "landing.candidates.page_sec_1_title": "Rezyumengiz bilan nima bo'ladi",
   "landing.candidates.page_sec_1_body":
-    "CVingiz vakansiyani e'lon qilgan kompaniyaning xususiy saqlash joyiga tushadi. AI uni o'qiydi va asosiy ma'lumotlarni ajratib oladi (tajriba, ko'nikmalar, tillar). Asl fayl chop etilmaydi, reklama beruvchilarga uzatilmaydi va modellarni o'qitish uchun ishlatilmaydi.",
-  "landing.candidates.page_sec_2_title": "Qachon javob kutish kerak",
+    "CVingiz vakansiyani e’lon qilgan kompaniya uchun yopiq saqlanadi. TezHR tajriba, ko‘nikma va tillar kabi ma’lumotlarni ajratib, ularni rol talablari bilan solishtirishi mumkin. Yollash jamoasi asl faylni ham ko‘ra oladi.",
+  "landing.candidates.page_sec_2_title": "Qarorni kim qiladi",
   "landing.candidates.page_sec_2_body":
-    "TezHR HR jamoalariga CVlarni tezroq saralashga yordam beradi — bu demak, siz odatda ish haftasi ichida javob olasiz. Ikki haftadan ko'p o'tgan bo'lsa — bu ko'pincha nomzodlar ko'p bo'lganini va HR hammaga yozishga ulgurmaganini bildiradi. Biz kompaniyalardan hammaga javob berishni so'raymiz, lekin kafolat bera olmaymiz.",
+    "TezHR yollash jamoasiga ball, kuchli tomonlar, bo‘shliqlar va suhbat vositalarini ko‘rsatadi. Arizani davom ettirish va javob muddatini ish beruvchi belgilaydi; TezHR yollash qarorini qabul qilmaydi.",
   "landing.candidates.page_sec_3_title": "Ma'lumotlar bo'yicha huquqlaringiz",
   "landing.candidates.page_sec_3_body":
-    "Ma'lumotlaringiz nusxasini yoki o'chirishni istalgan vaqtda so'rashingiz mumkin — privacy@tezhr.uz ga yozing. Biz CVingizni va barcha hosila AI-artefaktlarni 30 kun ichida o'chiramiz. CVingizni olgan kompaniya o'chirish haqida xabardor qilinadi.",
+    "TezHR orqali yuborilgan ma’lumot bo‘yicha savol yoki so‘rov uchun privacy@tezhr.uz manziliga kompaniya va vakansiyani ko‘rsatib yozing. So‘rovni shu ariza uchun mas’ul ish maydoni bilan birga ko‘rib chiqamiz.",
   "landing.candidates.page_sec_4_title": "Bizda sizga savollar bormi?",
   "landing.candidates.page_sec_4_body":
-    "Biz nomzodlar bilan to'g'ridan-to'g'ri bog'lanmaymiz — faqat siz ariza topshirgan kompaniya bog'lanadi. Agar «TezHR»dan ma'lumot yoki to'lov so'ragan shubhali xat olsangiz — bu biz emas. privacy@tezhr.uz ga yozing, tekshiramiz.",
+    "Yollovchi kompaniya siz kiritgan aloqa ma’lumotlari orqali, jumladan TezHRda yaratilgan suhbat taklifi bilan bog‘lanishi mumkin. Ochiq ariza nomzoddan TezHRga to‘lov qilishni hech qachon so‘ramaydi. Shubhali xabarni privacy@tezhr.uz manziliga yuboring.",
   // --- PR #8: final CTA + footer + status ---
   "landing.final.kicker_new": "KEYINGI YOLLASHINGIZ",
   "landing.final.heading_a_new": "Tezroq.",
@@ -1457,12 +1477,12 @@ export const uz: Translations = {
   "legal.terms.intro_p1":
     "Bu ishchi hujjat: ommaviy ishga tushirishga to‘liq yuridik versiyani tayyorlamoqdamiz. Quyida siz va TezHR o‘rtasidagi shartnomada tartibga solinadigan narsalarning qisqacha sharhi.",
   "legal.terms.intro_p2":
-    "Dolzarb matnni har doim Telegramda shaxsan olish mumkin — bizga yozing, biz joriy PDF tahririni yuboramiz.",
+    "Ushbu ishchi shartlar bo‘yicha savollarni Aloqa sahifasi yoki Telegram orqali yuborish mumkin.",
   "legal.terms.topics_label": "TARTIBGA SOLINADIGAN MAVZULAR",
   "legal.terms.topic_1":
     "Ro‘yxatdan o‘tish, hisob yozuvlar, TezHR xizmatiga kirish va HR foydalanuvchilarining tizimdagi harakatlari uchun javobgarlik.",
   "legal.terms.topic_2":
-    "To‘lov, obunalar, 30 kunlik va 50 rezyumelik sinov muddati, uzaytirish shartlari, pul qaytarish.",
+    "To‘lov, obunalar, 14 kunlik va 50 rezyumelik sinov muddati, uzaytirish shartlari va bekor qilish so‘rovlari.",
   "legal.terms.topic_3":
     "Intellektual mulk: yuklangan rezyumelar, AI-tahlil natijalari va mahsulotning o‘ziga bo‘lgan huquqlar.",
   "legal.terms.topic_4":
@@ -1470,14 +1490,14 @@ export const uz: Translations = {
   "legal.terms.topic_5":
     "Kirishni to‘xtatish, ma’lumotlarni eksport qilish, akkaunt yopilgandan keyin saqlash muddati.",
   "legal.terms.contact_note":
-    "Shartlar bo‘yicha savollar — bizga Telegramga yozing. Shaxsan javob beramiz, odatda bir soat ichida.",
+    "Shartlar bo‘yicha savollarni Aloqa sahifasi yoki Telegram orqali yuborish mumkin.",
   "legal.privacy.kicker": "MAXFIYLIK · ISHCHI VERSIYA",
   "legal.privacy.title": "Maxfiylik siyosati",
   "legal.privacy.updated": "Yangilandi: 2026-yil 18-aprel",
   "legal.privacy.intro_p1":
-    "Faqat xizmat ishlashi uchun kerakli narsani saqlaymiz. Rezyumelar shifrlangan holda qayta ishlanadi, kirish — faqat sizning kompaniyangizning HR foydalanuvchilariga va texnik yordam paytida TezHR operatorlariga.",
+    "Xizmat ishlashi uchun kerakli ma’lumotlarni saqlaymiz. CVlar yopiq fayl omborida turadi; kirish kompaniya a’zoligi va rolga bog‘liq, tayinlangan TezHR operatorlari esa platforma yordamini ko‘rsatadi.",
   "legal.privacy.intro_p2":
-    "To‘liq yuridik versiya tayyorlanmoqda. Quyida biz nimani va nima uchun qayta ishlayotganimiz. Tafsilotlar uchun bizga Telegramga yozing.",
+    "To‘liq yuridik versiya tayyorlanmoqda. Quyida mahsulot nimani va nima uchun qayta ishlashining ishchi bayoni keltirilgan.",
   "legal.privacy.topics_label": "BIZ NIMANI QAYTA ISHLAYMIZ",
   "legal.privacy.topic_1":
     "HR foydalanuvchi ma’lumotlari: ism, email, telefon (Eskiz.uz orqali), interfeys tili, kompaniyadagi rol.",
@@ -1486,11 +1506,11 @@ export const uz: Translations = {
   "legal.privacy.topic_3":
     "Texnik metadata: spamdan himoya uchun IP, sessiya va til uchun cookie, xatoliklarni tashxislash uchun loglar.",
   "legal.privacy.topic_4":
-    "Uchinchi shaxslarga uzatish: rezyume tahlili uchun Google Gemini (anonimlashtirilgan), saqlash uchun Supabase (Amsterdam, YI), SMS-OTP uchun Eskiz.uz.",
+    "Mahsulot xizmat provayderlari: CV tahlili uchun Google Gemini, autentifikatsiya, ma’lumotlar bazasi va yopiq fayl ombori uchun Supabase, SMS-OTP uchun Eskiz.uz.",
   "legal.privacy.topic_5":
-    "Sizning huquqlaringiz: eksport, o‘chirish, qayta ishlashni cheklash. Barcha so‘rovlar — Telegram orqali, 30 kun ichida bajaramiz.",
+    "Ma’lumot so‘rovlari: nomzodlar privacy@tezhr.uz ga yozishi mumkin; egasi Settings orqali ish maydonini soft-delete qilishi, tayinlangan TezHR operatorlari esa ma’muriy kompaniya ma’lumotlari eksportidan foydalanishi mumkin.",
   "legal.privacy.contact_note":
-    "Ma’lumotlar bo‘yicha savollar — bizga Telegramga yozing. Akkauntni o‘chirish so‘rovini 30 kun ichida qayta ishlaymiz.",
+    "Ma’lumotlar bo‘yicha savollarni Aloqa sahifasi, Telegram yoki privacy@tezhr.uz orqali yuborish mumkin.",
 
   // --- operator inbox ---
   "inbox.title": "Kiruvchi xabarlar",
@@ -1524,7 +1544,8 @@ export const uz: Translations = {
   "hr.sourcing.subtitle":
     "Faqat kelgan arizalar bilan cheklanmang. Istalgan faol lavozim uchun tashqi izlashni ishga tushiring.",
   "hr.sourcing.empty_title": "Izlash uchun faol lavozimlar yo‘q",
-  "hr.sourcing.empty_hint": "Nomzodlarni izlashni boshlash uchun lavozim yarating yoki qayta oching.",
+  "hr.sourcing.empty_hint":
+    "Nomzodlarni izlashni boshlash uchun lavozim yarating yoki qayta oching.",
   "hr.sourcing.searches_count": "{n} ta izlash",
   "hr.sourcing.never_run": "Hali izlash bo‘lmagan",
   "hr.sourcing.find": "Nomzodlarni topish",
@@ -2416,7 +2437,8 @@ export const uz: Translations = {
   "operator.settings.field.sourcing_quota_label": "Standart nomzod qidirish (sinov)",
   "operator.settings.field.sourcing_quota_help": "Odatda 50.",
   "operator.settings.field.sourcing_max_fetched_label": "Qidiruv: maks. nomzodlar",
-  "operator.settings.field.sourcing_max_fetched_help": "Har bir ishga, barcha manbalar bo'yicha. Odatda 200.",
+  "operator.settings.field.sourcing_max_fetched_help":
+    "Har bir ishga, barcha manbalar bo'yicha. Odatda 200.",
   "operator.settings.field.sourcing_max_pro_calls_label": "Qidiruv: maks. AI chaqiruvlari",
   "operator.settings.field.sourcing_max_pro_calls_help":
     "Har bir ishga, baholash va tekshirish chaqiruvlari chegarasi. Odatda 450.",

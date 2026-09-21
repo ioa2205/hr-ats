@@ -1,10 +1,12 @@
 export const dynamic = "force-dynamic";
 
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { AlertCircle, Clock, CheckCircle2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { AuthPanel } from "@/components/auth/auth-panel";
+import { Button } from "@/components/ui";
 import { AcceptInviteClient } from "./accept-invite-client";
 import { getLocale, t } from "@/lib/i18n";
 
@@ -31,7 +33,9 @@ export default async function AcceptInvitePage({ params }: Props) {
         title={t("invite.invalid", locale)}
         subtitle={t("invite.invalid_desc", locale)}
       >
-        <p className="text-[13px] text-[var(--color-text-muted)]">{t("invite.error_generic", locale)}</p>
+        <Button asChild variant="secondary" size="lg" fullWidth>
+          <Link href="/auth/login">{t("auth.back_to_login", locale)}</Link>
+        </Button>
       </AuthPanel>
     );
   }
@@ -43,7 +47,9 @@ export default async function AcceptInvitePage({ params }: Props) {
         title={t("invite.used", locale)}
         subtitle={t("invite.used_desc", locale)}
       >
-        <p className="text-[13px] text-[var(--color-text-muted)]">{t("invite.error_used", locale)}</p>
+        <Button asChild size="lg" fullWidth>
+          <Link href="/auth/login">{t("auth.sign_in", locale)}</Link>
+        </Button>
       </AuthPanel>
     );
   }
@@ -55,7 +61,9 @@ export default async function AcceptInvitePage({ params }: Props) {
         title={t("invite.expired", locale)}
         subtitle={t("invite.expired_desc", locale)}
       >
-        <p className="text-[13px] text-[var(--color-text-muted)]">{t("invite.error_expired", locale)}</p>
+        <Button asChild variant="secondary" size="lg" fullWidth>
+          <Link href="/auth/login">{t("auth.back_to_login", locale)}</Link>
+        </Button>
       </AuthPanel>
     );
   }

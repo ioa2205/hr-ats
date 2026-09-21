@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type BrowserContext } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 
 /**
@@ -15,6 +15,16 @@ const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const hasSupabase = Boolean(SUPABASE_URL && SERVICE_ROLE);
 
+async function useEnglishLocale(context: BrowserContext) {
+  await context.addCookies([
+    { name: "locale", value: "en", url: "http://localhost:3000", sameSite: "Lax" },
+  ]);
+}
+
+test.beforeEach(async ({ context }) => {
+  await useEnglishLocale(context);
+});
+
 test.describe("Auth: password reset", () => {
   test.skip(!hasSupabase, "Requires NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY");
 
@@ -23,7 +33,7 @@ test.describe("Auth: password reset", () => {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
-    const email = `reset-${Date.now()}@test.hrats.local`;
+    const email = `reset-${Date.now()}@example.com`;
     const oldPassword = "OldPassword123!";
     const newPassword = "NewPassword456!";
 
@@ -49,7 +59,7 @@ test.describe("Auth: password reset", () => {
     // localized and depends on browser locale resolution. Just confirm
     // the form transitioned to the sent state by checking for the
     // back-to-login link being the only interactive element left.
-    await expect(page.getByRole("link", { name: /login|войти|kirish/i })).toBeVisible({
+    await expect(page.getByRole("link", { name: /sign in|войти|kirish/i })).toBeVisible({
       timeout: 10_000,
     });
 
@@ -61,11 +71,13 @@ test.describe("Auth: password reset", () => {
       options: { redirectTo: "http://localhost:3000/auth/callback?next=/auth/reset" },
     });
     expect(linkError, "generateLink should succeed").toBeNull();
-    const actionLink = linkData?.properties?.action_link;
-    expect(actionLink, "action_link should be present").toBeTruthy();
+    const tokenHash = linkData?.properties?.hashed_token;
+    expect(tokenHash, "hashed_token should be present").toBeTruthy();
 
     // ── 4. Follow the recovery link → callback → /auth/reset with session
-    await page.goto(actionLink!);
+    await page.goto(
+      `/auth/callback?token_hash=${encodeURIComponent(tokenHash!)}&type=recovery&next=/auth/reset`,
+    );
     await page.waitForURL(/\/auth\/reset/, { timeout: 15_000 });
 
     // ── 5. Set new password ───────────────────────────────────────────
@@ -80,6 +92,7 @@ test.describe("Auth: password reset", () => {
     // ── 6. Sign out + sign in with new password ──────────────────────
     await page.request.post("/api/auth/logout").catch(() => undefined);
     await page.context().clearCookies();
+    await useEnglishLocale(page.context());
 
     await page.goto("/auth/login");
     await page.getByLabel(/email/i).fill(email);

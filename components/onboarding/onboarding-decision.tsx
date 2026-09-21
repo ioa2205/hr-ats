@@ -20,6 +20,7 @@ export interface OnboardingLabels {
   error_invite_invalid: string;
   error_invite_expired: string;
   error_invite_used: string;
+  error_invite_email_mismatch: string;
   error_already_member: string;
   error_accept_failed: string;
 }
@@ -57,6 +58,7 @@ export function OnboardingDecision({ labels, intent }: OnboardingDecisionProps) 
           invite_not_found: labels.error_invite_invalid,
           invite_expired: labels.error_invite_expired,
           invite_used: labels.error_invite_used,
+          invite_email_mismatch: labels.error_invite_email_mismatch,
           already_member: labels.error_already_member,
         };
         setError(knownErrors[errorKey] ?? labels.error_accept_failed);
@@ -80,7 +82,7 @@ export function OnboardingDecision({ labels, intent }: OnboardingDecisionProps) 
         onClick={() =>
           router.push(intent === "pro" ? "/onboarding/create?intent=pro" : "/onboarding/create")
         }
-        className="group flex items-center gap-3 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface)] px-4 py-3.5 text-left outline-none transition-colors hover:border-[var(--color-line-strong)] hover:bg-[var(--color-surface-subtle)] focus-visible:border-[var(--color-focus)]"
+        className="group hover:shadow-level-1 flex items-center gap-4 rounded-[16px] border border-[var(--color-primary)] bg-[var(--color-primary-container)] px-5 py-4 text-left transition-all outline-none hover:-translate-y-px focus-visible:border-[var(--color-focus)]"
       >
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--color-primary)] text-[var(--color-on-primary)]">
           <Building2 className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
@@ -102,13 +104,21 @@ export function OnboardingDecision({ labels, intent }: OnboardingDecisionProps) 
       <AuthDivider label={labels.or} />
 
       {/* Join via invite — secondary path */}
-      <div className="flex flex-col gap-3">
+      <form
+        className="flex flex-col gap-3"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void handleJoin();
+        }}
+      >
         <div className="flex items-start gap-3">
           <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)]">
             <UserPlus className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-[14px] font-semibold text-[var(--color-text)]">{labels.join_company}</p>
+            <p className="text-[14px] font-semibold text-[var(--color-text)]">
+              {labels.join_company}
+            </p>
             <p className="mt-0.5 text-[12.5px] leading-[1.45] text-[var(--color-text-muted)]">
               {labels.join_company_desc}
             </p>
@@ -123,30 +133,27 @@ export function OnboardingDecision({ labels, intent }: OnboardingDecisionProps) 
             setToken(e.target.value);
             setError(null);
           }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              handleJoin();
-            }
-          }}
+          name="invite_token"
           autoComplete="off"
         />
         {error && <AuthBanner tone="error">{error}</AuthBanner>}
 
         <Button
-          type="button"
+          type="submit"
           variant="secondary"
           size="lg"
           fullWidth
-          onClick={handleJoin}
           disabled={joining || !token.trim()}
         >
           {joining && (
-            <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+            <Loader2
+              className="h-4 w-4 animate-spin motion-reduce:animate-none"
+              aria-hidden="true"
+            />
           )}
           {joining ? labels.joining : labels.join}
         </Button>
-      </div>
+      </form>
     </div>
   );
 }

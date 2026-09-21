@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type BrowserContext } from "@playwright/test";
 import { createClient } from "@supabase/supabase-js";
 
 /**
@@ -21,6 +21,16 @@ const SERVICE_ROLE = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const hasSupabase = Boolean(SUPABASE_URL && SERVICE_ROLE);
 
+async function useEnglishLocale(context: BrowserContext) {
+  await context.addCookies([
+    { name: "locale", value: "en", url: "http://localhost:3000", sameSite: "Lax" },
+  ]);
+}
+
+test.beforeEach(async ({ context }) => {
+  await useEnglishLocale(context);
+});
+
 test.describe("Auth: signup → verify → login", () => {
   test.skip(!hasSupabase, "Requires NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY");
 
@@ -29,7 +39,7 @@ test.describe("Auth: signup → verify → login", () => {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
-    const email = `e2e-${Date.now()}@test.hrats.local`;
+    const email = `e2e-${Date.now()}@example.com`;
     const password = "TestPassword123!";
     const fullName = "E2E Test User";
 
@@ -43,8 +53,29 @@ test.describe("Auth: signup → verify → login", () => {
     await page.getByLabel("Password").fill(password);
     await page.getByRole("button", { name: /create account/i }).click();
 
-    // Local Supabase auto-confirms, so user may land on /auth/verify OR /onboarding
-    await page.waitForURL(/\/(auth\/verify|onboarding)/, { timeout: 15000 });
+    // Local Supabase auto-confirms, so user may land on /auth/verify OR /onboarding.
+    // Hosted test projects can exhaust Supabase's outbound-email quota; when
+    // that happens, assert the explicit UI state and provision the same user
+    // through the admin API so the callback and login portions remain covered.
+    const signupOutcome = await Promise.race([
+      page
+        .waitForURL(/\/(auth\/verify|onboarding)/, { timeout: 15000 })
+        .then(() => "redirected" as const),
+      page
+        .getByText(/too many sign-up attempts/i)
+        .waitFor({ state: "visible", timeout: 15000 })
+        .then(() => "rate-limited" as const),
+    ]);
+
+    if (signupOutcome === "rate-limited") {
+      const { error: fallbackError } = await admin.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: { full_name: fullName },
+      });
+      expect(fallbackError, "admin fallback should create the rate-limited test user").toBeNull();
+    }
 
     // On local Supabase with auto-confirm, the /auth/verify page may
     // immediately redirect to /onboarding once the session cookie is set,
@@ -61,16 +92,19 @@ test.describe("Auth: signup → verify → login", () => {
       options: { redirectTo: "http://localhost:3000/auth/callback?next=/onboarding" },
     });
     expect(linkError, "generateLink should succeed").toBeNull();
-    const actionLink = linkData?.properties?.action_link;
-    expect(actionLink, "action_link should be present").toBeTruthy();
+    const tokenHash = linkData?.properties?.hashed_token;
+    expect(tokenHash, "hashed_token should be present").toBeTruthy();
 
     // ── 3. Visit verification link → lands on /onboarding or /hr/dashboard
-    await page.goto(actionLink!);
+    await page.goto(
+      `/auth/callback?token_hash=${encodeURIComponent(tokenHash!)}&type=magiclink&next=/onboarding`,
+    );
     await page.waitForURL(/\/(onboarding|hr\/dashboard)/, { timeout: 15000 });
 
     // Sign out via the logout API route so we can test login next.
     await page.request.post("/api/auth/logout").catch(() => undefined);
     await page.context().clearCookies();
+    await useEnglishLocale(page.context());
 
     // ── 4. Log in with the verified credentials ───────────────────────
     await page.goto("/auth/login");

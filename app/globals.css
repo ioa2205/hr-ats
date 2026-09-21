@@ -147,6 +147,61 @@ body {
   color: var(--color-text);
 }
 
+/* Account and onboarding routes use the approved editorial craft direction.
+   The palette is scoped so every other product surface keeps its own theme. */
+.account-shell {
+  --account-paper: #f7f3eb;
+  --color-canvas: #f7f3eb;
+  --color-surface: #fbf8f2;
+  --color-surface-subtle: #efeee7;
+  --color-surface-strong: #e3e5dc;
+  --color-text: #121719;
+  --color-text-strong: #080b0c;
+  --color-text-muted: #5f6672;
+  --color-text-subtle: #747b86;
+  --color-line: #d5d6d0;
+  --color-line-strong: #aeb4b3;
+  --color-primary: #86a987;
+  --color-primary-hover: #739775;
+  --color-primary-container: #dce8da;
+  --color-on-primary: #102113;
+  --color-on-primary-container: #29472e;
+  --color-focus: #496c52;
+  background-color: var(--account-paper);
+  background-image:
+    radial-gradient(circle at 12% 10%, rgb(255 255 255 / 0.58), transparent 27%),
+    repeating-linear-gradient(24deg, rgb(31 42 38 / 0.013) 0 1px, transparent 1px 5px);
+}
+
+.account-header,
+.account-form-rail {
+  background-image:
+    radial-gradient(circle at 82% 8%, rgb(255 255 255 / 0.68), transparent 32%),
+    repeating-linear-gradient(24deg, rgb(31 42 38 / 0.012) 0 1px, transparent 1px 5px);
+}
+
+.account-story-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  text-wrap: balance;
+}
+
+.account-panel button:not([role="option"]),
+.account-panel a[class*="h-12"] {
+  min-height: 52px;
+  border-radius: 14px;
+}
+
+.account-panel input:focus-visible {
+  outline: none;
+}
+
+@media (max-width: 1023px) {
+  .account-story img {
+    object-position: 58% 76%;
+  }
+}
+
 ::selection {
   background: var(--color-primary-container);
   color: var(--color-on-primary-container);

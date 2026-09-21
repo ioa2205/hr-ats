@@ -25,7 +25,7 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
         <div className="flex items-baseline justify-between gap-3">
           <label
             htmlFor={fieldId}
-            className="text-[13px] font-semibold tracking-[-0.005em] text-[var(--color-text)]"
+            className="text-[13.5px] font-semibold tracking-[-0.01em] text-[var(--color-text)]"
           >
             {label}
           </label>
@@ -39,10 +39,10 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
           aria-describedby={describedBy}
           {...rest}
           className={cn(
-            "flex h-11 w-full items-center rounded-[var(--radius-md)] border bg-[var(--color-surface)] px-3.5 text-[14.5px] text-[var(--color-text)] outline-none transition-colors",
+            "field-focus-ring flex h-[52px] w-full items-center rounded-[12px] border bg-[var(--color-surface)] px-4 text-[15px] text-[var(--color-text)] transition-colors outline-none",
             "placeholder:text-[var(--color-text-subtle)]",
-            "focus:border-[var(--color-focus)]",
-            rest.readOnly && "cursor-default bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)]",
+            rest.readOnly &&
+              "cursor-default bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)]",
             error
               ? "border-[var(--color-danger)] focus:border-[var(--color-danger)]"
               : "border-[var(--color-line-strong)]",
@@ -50,7 +50,11 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
           )}
         />
         {error ? (
-          <p id={`${fieldId}-error`} className="text-[12.5px] text-[var(--color-danger)]" role="alert">
+          <p
+            id={`${fieldId}-error`}
+            className="text-[12.5px] text-[var(--color-danger)]"
+            role="alert"
+          >
             {error}
           </p>
         ) : helper ? (

@@ -26,6 +26,8 @@ export default async function LoginPage({
 }) {
   const sp = await searchParams;
   const nextPath = safeNextPath(sp.next);
+  const callbackError = typeof sp.error === "string" ? sp.error : undefined;
+  const notice = typeof sp.notice === "string" ? sp.notice : undefined;
   const supabase = await createClient();
   const {
     data: { user },
@@ -62,9 +64,9 @@ export default async function LoginPage({
         title={t("auth.sign_in", locale)}
         subtitle={t("auth.login_sub", locale)}
       >
-        <OAuthButtons />
+        <OAuthButtons nextPath={nextPath ?? undefined} />
         <AuthDivider label={t("auth.or", locale)} />
-        <LoginForm nextPath={nextPath ?? undefined} />
+        <LoginForm nextPath={nextPath ?? undefined} callbackError={callbackError} notice={notice} />
       </AuthPanel>
 
       <p className="text-center text-[13px] text-[var(--color-text-muted)]">

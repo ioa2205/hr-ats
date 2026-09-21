@@ -1,8 +1,9 @@
-import { createHash, randomInt } from "crypto";
+import { createHash, createHmac, randomBytes, randomInt, timingSafeEqual } from "crypto";
 
 const OTP_LENGTH = 6;
 const OTP_EXPIRY_MINUTES = 5;
 const MAX_VERIFY_ATTEMPTS = 5;
+const VERIFICATION_TICKET_TTL_MS = 10 * 60 * 1000;
 
 export function generateOtp(): string {
   const min = Math.pow(10, OTP_LENGTH - 1);
@@ -12,6 +13,48 @@ export function generateOtp(): string {
 
 export function hashOtp(code: string): string {
   return createHash("sha256").update(code).digest("hex");
+}
+
+type VerificationTicketPayload = {
+  phone: string;
+  expiresAt: number;
+  nonce: string;
+};
+
+function ticketSignature(payload: string): string {
+  const secret = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!secret) throw new Error("SUPABASE_SERVICE_ROLE_KEY is required for OTP verification");
+  return createHmac("sha256", secret).update(payload).digest("base64url");
+}
+
+/** Short-lived, signed proof that the caller completed the OTP challenge. */
+export function createPhoneVerificationTicket(phone: string): string {
+  const payload: VerificationTicketPayload = {
+    phone,
+    expiresAt: Date.now() + VERIFICATION_TICKET_TTL_MS,
+    nonce: randomBytes(16).toString("base64url"),
+  };
+  const encoded = Buffer.from(JSON.stringify(payload), "utf8").toString("base64url");
+  return `${encoded}.${ticketSignature(encoded)}`;
+}
+
+export function verifyPhoneVerificationTicket(ticket: string, phone: string): boolean {
+  const [encoded, providedSignature, ...extra] = ticket.split(".");
+  if (!encoded || !providedSignature || extra.length > 0) return false;
+
+  const expectedSignature = ticketSignature(encoded);
+  const provided = Buffer.from(providedSignature);
+  const expected = Buffer.from(expectedSignature);
+  if (provided.length !== expected.length || !timingSafeEqual(provided, expected)) return false;
+
+  try {
+    const payload = JSON.parse(
+      Buffer.from(encoded, "base64url").toString("utf8"),
+    ) as VerificationTicketPayload;
+    return payload.phone === phone && payload.expiresAt > Date.now() && Boolean(payload.nonce);
+  } catch {
+    return false;
+  }
 }
 
 export async function storeOtp(phone: string, code: string): Promise<void> {
