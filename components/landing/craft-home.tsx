@@ -55,11 +55,11 @@ const COPY: Record<Locale, HomeCopy> = {
     demo: "Product preview",
     pathTitle: "One system. One hiring path.",
     path: ["Vacancy", "Apply", "Rank", "Interview"],
-    evidenceKicker: "Evidence, not intuition",
+    evidenceKicker: "Inside the review",
     evidenceTitleA: "Signals,",
     evidenceTitleB: "not guesses.",
     evidenceBody: "See the CV evidence behind every score before you make a decision.",
-    example: "Example profile · demo data",
+    example: "Demo profile",
     role: "Product manager",
     roleFit: "Role fit",
     experience: "Experience",
@@ -67,8 +67,7 @@ const COPY: Record<Locale, HomeCopy> = {
     shortlist: "Move to shortlist",
     workflowKicker: "The hiring route",
     workflowTitle: "From open role to a clear next step.",
-    workflowBody:
-      "TezHR keeps the work in one path: define what matters, share the application link, review structured evidence, and invite the people you choose.",
+    workflowBody: "Set your criteria, share the role, and review applicants in one place.",
     humanTitleA: "AI brings the evidence.",
     humanTitleB: "You make the decision.",
     humanBody:
@@ -102,11 +101,11 @@ const COPY: Record<Locale, HomeCopy> = {
     demo: "Превью продукта",
     pathTitle: "Одна система. Один путь найма.",
     path: ["Вакансия", "Отклик", "Рейтинг", "Интервью"],
-    evidenceKicker: "Факты вместо интуиции",
+    evidenceKicker: "Разбор резюме",
     evidenceTitleA: "Сигналы,",
     evidenceTitleB: "а не догадки.",
     evidenceBody: "До решения вы видите, на каких фрагментах CV основана оценка.",
-    example: "Пример профиля · демоданные",
+    example: "Демопрофиль",
     role: "Продакт-менеджер",
     roleFit: "Соответствие роли",
     experience: "Опыт",
@@ -114,8 +113,7 @@ const COPY: Record<Locale, HomeCopy> = {
     shortlist: "В шорт-лист",
     workflowKicker: "Маршрут найма",
     workflowTitle: "От открытой роли — к понятному следующему шагу.",
-    workflowBody:
-      "TezHR соединяет работу в один путь: задайте критерии, поделитесь ссылкой, изучите структурированные факты и пригласите выбранных людей.",
+    workflowBody: "Задайте критерии, поделитесь вакансией и просматривайте отклики в одном месте.",
     humanTitleA: "AI собирает факты.",
     humanTitleB: "Решение принимаете вы.",
     humanBody:
@@ -150,11 +148,11 @@ const COPY: Record<Locale, HomeCopy> = {
     demo: "Mahsulot namoyishi",
     pathTitle: "Bitta tizim. Bitta yollash yo‘li.",
     path: ["Vakansiya", "Ariza", "Reyting", "Suhbat"],
-    evidenceKicker: "Taxmin emas, dalil",
+    evidenceKicker: "CV tahlili",
     evidenceTitleA: "Aniq signal,",
     evidenceTitleB: "taxmin emas.",
     evidenceBody: "Qaror qilishdan oldin har bir ball ortidagi CV dalillarini ko‘ring.",
-    example: "Namuna profil · demo ma’lumot",
+    example: "Demo profil",
     role: "Mahsulot menejeri",
     roleFit: "Rolga moslik",
     experience: "Tajriba",
@@ -163,7 +161,7 @@ const COPY: Record<Locale, HomeCopy> = {
     workflowKicker: "Yollash yo‘li",
     workflowTitle: "Ochiq roldan aniq keyingi qadamgacha.",
     workflowBody:
-      "TezHR ishni bir yo‘lda birlashtiradi: mezonlarni belgilang, ariza havolasini ulashing, dalillarni ko‘ring va tanlagan nomzodlarni taklif qiling.",
+      "Mezonlarni belgilang, vakansiyani ulashing va arizalarni bir joyda ko‘rib chiqing.",
     humanTitleA: "AI dalillarni beradi.",
     humanTitleB: "Qarorni siz qilasiz.",
     humanBody:
@@ -229,8 +227,12 @@ export async function CraftHome() {
             </div>
           </div>
           <div className="craft-ranking-stack" aria-label={c.demo}>
-            <span className="craft-note craft-note-rotate-left">CV</span>
-            <span className="craft-note craft-note-rotate-right">CV</span>
+            <span className="craft-note craft-note-rotate-left" aria-hidden="true">
+              CV
+            </span>
+            <span className="craft-note craft-note-rotate-right" aria-hidden="true">
+              CV
+            </span>
             <div className="craft-ranking-sheet">
               <div className="craft-ranking-head">
                 <span className="craft-avatar" aria-hidden>
@@ -333,8 +335,8 @@ export async function CraftHome() {
 
       <section id="how" className="craft-workflow craft-paper" aria-labelledby="workflow-title">
         <div className="craft-container">
+          <p className="craft-kicker">{c.workflowKicker}</p>
           <div className="craft-workflow-intro">
-            <p className="craft-kicker">{c.workflowKicker}</p>
             <h2 id="workflow-title" className="craft-heading craft-heading-large">
               {c.workflowTitle}
             </h2>
@@ -357,7 +359,6 @@ export async function CraftHome() {
         <div className="craft-container craft-human-grid">
           <div className="craft-human-portrait" aria-hidden="true">
             <span className="craft-human-face">HR</span>
-            <span className="craft-human-caption">review · compare · decide</span>
           </div>
           <div>
             <h2 className="craft-display craft-display-medium">
@@ -406,7 +407,6 @@ export async function CraftHome() {
           <div className="craft-source-map">
             {c.sources.map((source, index) => (
               <article key={source.title}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
                 {index === 0 ? (
                   <Search aria-hidden />
                 ) : index === 1 ? (

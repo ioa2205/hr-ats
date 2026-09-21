@@ -32,7 +32,7 @@ const COPY: Record<Locale, PricingCopy> = {
   en: {
     title: "Pricing",
     headline: "Start today. Pro when you’re ready.",
-    lede: "Two plans, stated plainly. No card for the trial and no automatic charge when it ends.",
+    lede: "Try TezHR for 14 days. No card. No automatic charges.",
     trial: "Trial",
     trialDuration: "14 days",
     trialPrice: "0 UZS",
@@ -60,8 +60,8 @@ const COPY: Record<Locale, PricingCopy> = {
       ["Active jobs", "Up to 3", "Unlimited"],
       ["AI CV analyses", "50 during trial", "500 / month"],
       ["CV languages", "RU · UZ · EN", "RU · UZ · EN"],
-      ["AI interview-question sets", "10", "Unlimited in the current product"],
-      ["Interview bookings", "3", "Unlimited in the current product"],
+      ["AI interview-question sets", "10", "Unlimited"],
+      ["Interview bookings", "3", "Unlimited"],
       ["Workspace access after plan ends", "Read-only", "Depends on subscription status"],
     ],
     faq: "Frequently asked",
@@ -84,7 +84,7 @@ const COPY: Record<Locale, PricingCopy> = {
       ],
       [
         "How is candidate data protected?",
-        "Company data is separated by tenant, CV files use private storage, and access is controlled by workspace roles. See the Security page for the full product-specific explanation.",
+        "Each company’s data is kept separate. CVs are stored privately, with access controlled by team roles. Learn more on the Security page.",
       ],
     ],
     final: "Try TezHR free",
@@ -92,7 +92,7 @@ const COPY: Record<Locale, PricingCopy> = {
   ru: {
     title: "Тарифы",
     headline: "Начните сегодня. Pro — когда будете готовы.",
-    lede: "Два понятных плана. Для пробного периода не нужна карта, а после него нет автоматического списания.",
+    lede: "Попробуйте TezHR 14 дней. Без карты и автоматических списаний.",
     trial: "Пробный период",
     trialDuration: "14 дней",
     trialPrice: "0 сум",
@@ -120,8 +120,8 @@ const COPY: Record<Locale, PricingCopy> = {
       ["Активные вакансии", "До 3", "Без лимита"],
       ["AI-анализы CV", "50 за пробный период", "500 / месяц"],
       ["Языки CV", "RU · UZ · EN", "RU · UZ · EN"],
-      ["Наборы вопросов для интервью", "10", "Без лимита в текущем продукте"],
-      ["Бронирования интервью", "3", "Без лимита в текущем продукте"],
+      ["Наборы вопросов для интервью", "10", "Без лимита"],
+      ["Бронирования интервью", "3", "Без лимита"],
       ["Доступ после окончания плана", "Только чтение", "Зависит от статуса подписки"],
     ],
     faq: "Частые вопросы",
@@ -144,7 +144,7 @@ const COPY: Record<Locale, PricingCopy> = {
       ],
       [
         "Как защищены данные кандидатов?",
-        "Данные компаний разделены по tenant, CV хранятся приватно, доступ ограничен ролями. Подробности — на странице «Безопасность».",
+        "Данные каждой компании хранятся отдельно. Резюме доступны только участникам с нужными правами. Подробнее — на странице «Безопасность».",
       ],
     ],
     final: "Попробуйте TezHR бесплатно",
@@ -152,7 +152,7 @@ const COPY: Record<Locale, PricingCopy> = {
   uz: {
     title: "Narxlar",
     headline: "Bugun boshlang. Tayyor bo‘lganda Pro.",
-    lede: "Ikki tushunarli reja. Sinov uchun karta kerak emas va tugagach avtomatik yechib olish bo‘lmaydi.",
+    lede: "TezHRni 14 kun sinab ko‘ring. Kartasiz va avtomatik to‘lovlarsiz.",
     trial: "Sinov",
     trialDuration: "14 kun",
     trialPrice: "0 so‘m",
@@ -180,8 +180,8 @@ const COPY: Record<Locale, PricingCopy> = {
       ["Faol vakansiyalar", "3 tagacha", "Cheksiz"],
       ["AI CV tahlillari", "Sinov davomida 50", "Oyiga 500"],
       ["CV tillari", "RU · UZ · EN", "RU · UZ · EN"],
-      ["AI suhbat savollari to‘plami", "10", "Amaldagi mahsulotda cheksiz"],
-      ["Suhbat bronlari", "3", "Amaldagi mahsulotda cheksiz"],
+      ["AI suhbat savollari to‘plami", "10", "Cheksiz"],
+      ["Suhbat bronlari", "3", "Cheksiz"],
       ["Reja tugagandan keyingi kirish", "Faqat o‘qish", "Obuna holatiga bog‘liq"],
     ],
     faq: "Ko‘p so‘raladigan savollar",
@@ -204,7 +204,7 @@ const COPY: Record<Locale, PricingCopy> = {
       ],
       [
         "Nomzod ma’lumotlari qanday himoyalanadi?",
-        "Kompaniya ma’lumotlari tenant bo‘yicha ajratilgan, CVlar yopiq saqlanadi, kirish rollar bilan boshqariladi. Batafsil «Xavfsizlik» sahifasida.",
+        "Har bir kompaniya ma’lumotlari alohida saqlanadi. CVlarni faqat tegishli huquqqa ega jamoa a’zolari ko‘ra oladi. Batafsil «Xavfsizlik» sahifasida.",
       ],
     ],
     final: "TezHRni bepul sinab ko‘ring",
@@ -244,8 +244,8 @@ export async function CraftPricing() {
       <section className="craft-plan-split" aria-label={c.compare}>
         <article className="craft-plan craft-plan-trial craft-paper-sun">
           <div className="craft-plan-inner">
-            <p className="craft-kicker">{c.trial}</p>
-            <h2>{c.trialDuration}</h2>
+            <h2>{c.trial}</h2>
+            <p className="craft-plan-duration">{c.trialDuration}</p>
             <strong>{c.trialPrice}</strong>
             <p>{c.trialNote}</p>
             <ul>
@@ -264,7 +264,6 @@ export async function CraftPricing() {
         </article>
         <article className="craft-plan craft-plan-pro craft-paper-sage">
           <div className="craft-plan-inner">
-            <p className="craft-kicker">{c.pro}</p>
             <h2>{c.pro}</h2>
             <strong>{c.proPrice}</strong>
             <p>{c.proNote}</p>
@@ -276,7 +275,7 @@ export async function CraftPricing() {
                 </li>
               ))}
             </ul>
-            <Link className="craft-button" href={proHref}>
+            <Link className="craft-button craft-button-outline" href={proHref}>
               {c.request}
               <ArrowRight aria-hidden size={17} />
             </Link>

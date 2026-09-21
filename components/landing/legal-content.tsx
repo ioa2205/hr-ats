@@ -80,7 +80,7 @@ export function LegalContent({ kind }: { kind: Kind }) {
           </ol>
         </div>
       </section>
-      <section className="craft-contact-note craft-paper-sun">
+      <section className="craft-legal-note craft-paper-sun">
         <div className="craft-container craft-legal-contact">
           <p>{t(k.contact)}</p>
           <div>

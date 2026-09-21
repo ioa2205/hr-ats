@@ -42,6 +42,8 @@ export function ScrollSpyNav({
   const [section, setSection] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const firstMobileLinkRef = useRef<HTMLAnchorElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (pathname !== "/" || typeof IntersectionObserver === "undefined") return;
@@ -65,8 +67,23 @@ export function ScrollSpyNav({
 
   useEffect(() => {
     if (!menuOpen) return;
+    const menuButton = menuButtonRef.current;
     const closeOnEscape = (event: globalThis.KeyboardEvent) => {
       if (event.key === "Escape") setMenuOpen(false);
+      if (event.key !== "Tab") return;
+      const controls = menuRef.current?.querySelectorAll<HTMLElement>(
+        "a[href], button:not([disabled])",
+      );
+      if (!controls?.length) return;
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -75,6 +92,7 @@ export function ScrollSpyNav({
     return () => {
       document.body.style.overflow = previous;
       document.removeEventListener("keydown", closeOnEscape);
+      menuButton?.focus();
     };
   }, [menuOpen]);
 
@@ -113,6 +131,7 @@ export function ScrollSpyNav({
               {labels.cta}
             </Link>
             <button
+              ref={menuButtonRef}
               type="button"
               className="craft-menu-button"
               onClick={() => setMenuOpen(true)}
@@ -130,6 +149,7 @@ export function ScrollSpyNav({
 
       {menuOpen && (
         <div
+          ref={menuRef}
           id="marketing-mobile-menu"
           className="craft-mobile-menu craft-paper"
           role="dialog"
@@ -151,7 +171,6 @@ export function ScrollSpyNav({
                 onClick={closeMenu}
                 aria-current={isActive(item) ? "page" : undefined}
               >
-                <span>{String(index + 1).padStart(2, "0")}</span>
                 {item.label}
               </Link>
             ))}

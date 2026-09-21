@@ -33,19 +33,16 @@ type ContactCopy = {
   invalid: string;
   rate: string;
   generic: string;
-  fast: string;
   telegram: string;
   telegramBody: string;
   open: string;
-  note: string;
 };
 
 const COPY: Record<Locale, ContactCopy> = {
   en: {
     kicker: "Contact",
-    title: "Say hello. We read every message.",
-    subtitle:
-      "Questions about the product, a Pro request, or a problem with your workspace — send the useful context and the team will reply through the email you provide.",
+    title: "Say hello.",
+    subtitle: "Questions about TezHR or your plan? Send us a message. We’ll reply by email.",
     form: "Leave a message",
     name: "Your name",
     namePh: "Diyora Rakhimova",
@@ -56,7 +53,7 @@ const COPY: Record<Locale, ContactCopy> = {
     companyPh: "Company LLC",
     message: "Message",
     messagePh: "Tell us what you are trying to do and where you are blocked.",
-    hint: "10–2,000 characters. Specific context helps us give a useful answer.",
+    hint: "10–2,000 characters.",
     submit: "Send message",
     sending: "Sending…",
     success: "Message sent.",
@@ -66,18 +63,14 @@ const COPY: Record<Locale, ContactCopy> = {
       "Check the fields: name, a valid email, and a 10–2,000 character message are required.",
     rate: "Too many messages from this connection. Please try later or use Telegram.",
     generic: "The message could not be sent. Try again or use Telegram.",
-    fast: "Direct channel",
-    telegram: "Message us on Telegram",
-    telegramBody:
-      "Use Telegram for account or product questions when that is more convenient than email.",
+    telegram: "Prefer Telegram?",
+    telegramBody: "Talk to the team there, too.",
     open: "Open Telegram",
-    note: "Specific questions get better answers.",
   },
   ru: {
     kicker: "Контакты",
-    title: "Напишите нам. Каждое сообщение прочитают.",
-    subtitle:
-      "Вопрос о продукте, запрос Pro или проблема в рабочем пространстве — добавьте полезный контекст, и команда ответит на указанный email.",
+    title: "Напишите нам.",
+    subtitle: "Вопрос о TezHR или тарифе? Оставьте сообщение — ответим по email.",
     form: "Оставить сообщение",
     name: "Ваше имя",
     namePh: "Диёрa Рахимова",
@@ -88,7 +81,7 @@ const COPY: Record<Locale, ContactCopy> = {
     companyPh: "Компания ООО",
     message: "Сообщение",
     messagePh: "Расскажите, что вы хотите сделать и где возникла проблема.",
-    hint: "От 10 до 2 000 знаков. Конкретный контекст помогает дать полезный ответ.",
+    hint: "От 10 до 2 000 знаков.",
     submit: "Отправить",
     sending: "Отправляем…",
     success: "Сообщение отправлено.",
@@ -97,18 +90,15 @@ const COPY: Record<Locale, ContactCopy> = {
     invalid: "Проверьте поля: нужны имя, корректный email и сообщение длиной 10–2 000 знаков.",
     rate: "Слишком много сообщений с этого подключения. Попробуйте позже или напишите в Telegram.",
     generic: "Не удалось отправить сообщение. Попробуйте ещё раз или используйте Telegram.",
-    fast: "Прямой канал",
-    telegram: "Напишите нам в Telegram",
-    telegramBody:
-      "Используйте Telegram для вопросов об аккаунте или продукте, если так удобнее, чем по email.",
+    telegram: "Удобнее в Telegram?",
+    telegramBody: "Наша команда на связи и там.",
     open: "Открыть Telegram",
-    note: "Конкретные вопросы получают более полезные ответы.",
   },
   uz: {
     kicker: "Aloqa",
-    title: "Bizga yozing. Har bir xabar o‘qiladi.",
+    title: "Bizga yozing.",
     subtitle:
-      "Mahsulot savoli, Pro so‘rovi yoki ish maydonidagi muammo — kerakli kontekstni yuboring, jamoa ko‘rsatgan emailingiz orqali javob beradi.",
+      "TezHR yoki tarif haqida savolingiz bormi? Xabar qoldiring — email orqali javob beramiz.",
     form: "Xabar qoldiring",
     name: "Ismingiz",
     namePh: "Diyora Rahimova",
@@ -119,7 +109,7 @@ const COPY: Record<Locale, ContactCopy> = {
     companyPh: "Kompaniya MChJ",
     message: "Xabar",
     messagePh: "Nima qilmoqchi ekaningizni va qayerda to‘xtab qolganingizni yozing.",
-    hint: "10–2 000 belgi. Aniq kontekst foydali javob berishga yordam beradi.",
+    hint: "10–2 000 belgi.",
     submit: "Xabar yuborish",
     sending: "Yuborilmoqda…",
     success: "Xabar yuborildi.",
@@ -128,12 +118,9 @@ const COPY: Record<Locale, ContactCopy> = {
     invalid: "Maydonlarni tekshiring: ism, to‘g‘ri email va 10–2 000 belgili xabar kerak.",
     rate: "Bu ulanishdan juda ko‘p xabar yuborildi. Keyinroq urinib ko‘ring yoki Telegramdan foydalaning.",
     generic: "Xabar yuborilmadi. Qayta urinib ko‘ring yoki Telegramdan foydalaning.",
-    fast: "To‘g‘ridan-to‘g‘ri kanal",
-    telegram: "Telegram orqali yozing",
-    telegramBody:
-      "Akkaunt yoki mahsulot savollari uchun emaildan ko‘ra qulay bo‘lsa, Telegramdan foydalaning.",
+    telegram: "Telegram qulayroqmi?",
+    telegramBody: "Jamoamizga u yerda ham yozishingiz mumkin.",
     open: "Telegramni ochish",
-    note: "Aniq savollar foydaliroq javob beradi.",
   },
 };
 
@@ -152,7 +139,6 @@ function ContactForm({ copy, onReset }: { copy: ContactCopy; onReset: () => void
   if (state?.ok) {
     return (
       <div className="craft-contact-success" role="status">
-        <p className="craft-kicker">✓ {copy.success}</p>
         <h2>{copy.success}</h2>
         <p>{copy.successBody}</p>
         <button type="button" className="craft-text-link" onClick={onReset}>
@@ -214,8 +200,9 @@ function ContactForm({ copy, onReset }: { copy: ContactCopy; onReset: () => void
           maxLength={2000}
           rows={6}
           placeholder={copy.messagePh}
+          aria-describedby="contact-message-hint"
         />
-        <small>{copy.hint}</small>
+        <small id="contact-message-hint">{copy.hint}</small>
       </label>
       {error && (
         <p className="craft-form-error" role="alert">
@@ -252,8 +239,7 @@ export function ContactContent() {
       <section className="craft-contact-band craft-paper-blue">
         <div className="craft-container craft-contact-grid">
           <ContactForm key={key} copy={c} onReset={() => setKey((value) => value + 1)} />
-          <aside aria-label={c.fast}>
-            <p className="craft-kicker">{c.fast}</p>
+          <aside aria-label={c.telegram}>
             <h2>{c.telegram}</h2>
             <p>{c.telegramBody}</p>
             <a
@@ -266,11 +252,6 @@ export function ContactContent() {
               {c.open}
             </a>
           </aside>
-        </div>
-      </section>
-      <section className="craft-contact-note craft-paper-sun">
-        <div className="craft-container">
-          <p>{c.note}</p>
         </div>
       </section>
     </main>

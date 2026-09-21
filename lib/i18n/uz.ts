@@ -1123,7 +1123,7 @@ export const uz: Translations = {
   "landing.product.ml.sec_2_title": "Biz nimani boshqacha qilamiz",
   "landing.product.ml.sec_2_body":
     "Tahlil har bir CVni tajriba, ko‘nikmalar, tillar, kuchli tomonlar va bo‘shliqlar bo‘yicha tuzilgan bahoga aylantiradi. Qarordan oldin rekruter asl CV va keltirilgan dalillarni tekshirishi mumkin.",
-  "landing.product.ml.sec_3_title": "Yana nima ustida ishlayapmiz",
+  "landing.product.ml.sec_3_title": "Asl CV doim qo‘l ostingizda",
   "landing.product.ml.sec_3_body":
     "Aralash alifbo va transliteratsiya inson tekshiruvini talab qilishi mumkin. Rekruter modelni qora quti sifatida qabul qilmasligi uchun asl fayl doimo ko‘rish uchun qoladi.",
   "landing.product.lm.headline": "Toshkent uchun qurilgan.",
@@ -1140,7 +1140,7 @@ export const uz: Translations = {
     "Qaydlar, nomzodlarni solishtirish, suhbat savollari va rejalashtirish mahalliy kontekstni yollashning keyingi bosqichlarida ham saqlaydi.",
   "landing.product.sec.headline": "Xavfsizlik haqida rostini aytamiz.",
   "landing.product.sec.lede":
-    "Marketing shtamplarsiz. Faqat aniqlik: ma'lumotlar qayerda yashaydi, kim ko'ra oladi, o'chirish qanday sodir bo'ladi.",
+    "Ma’lumotlaringiz qayerda saqlanadi, kim ko‘ra oladi va o‘chirishni qanday so‘rash mumkin.",
   "landing.product.sec.sec_1_title": "Ma'lumotlar qanday saqlanadi",
   "landing.product.sec.sec_1_body":
     "Kompaniya ma’lumotlari qator darajasida ajratilgan, shuning uchun bir ish maydoni boshqasining nomzodlarini o‘qiy olmaydi. CVlar yopiq fayl saqlash joyida turadi va qisqa muddatli imzolangan havolalar orqali ochiladi. Kirish Owner, Admin va Recruiter rollari bilan cheklangan.",

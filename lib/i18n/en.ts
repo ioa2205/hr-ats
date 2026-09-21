@@ -1112,7 +1112,7 @@ export const en: Translations = {
   "landing.product.ml.sec_2_title": "What we do differently",
   "landing.product.ml.sec_2_body":
     "The analysis turns each CV into a structured assessment of experience, skills, languages, strengths, and gaps. Recruiters can inspect the original CV and the cited evidence before acting on the score.",
-  "landing.product.ml.sec_3_title": "What else is in flight",
+  "landing.product.ml.sec_3_title": "Keep the original in view",
   "landing.product.ml.sec_3_body":
     "Mixed alphabets and transliterated names can still need human judgment. TezHR keeps the original file available so recruiters can verify the analysis instead of treating the model as a black box.",
   "landing.product.lm.headline": "Built for Tashkent.",
@@ -1129,7 +1129,7 @@ export const en: Translations = {
     "Use notes, candidate comparison, interview questions, and scheduling to carry the local context through the rest of the hiring process.",
   "landing.product.sec.headline": "Straight talk on security.",
   "landing.product.sec.lede":
-    "No marketing theatre — just specifics. Where the data lives, who can see it, how deletion works.",
+    "Where your data is stored, who can access it, and how to request deletion.",
   "landing.product.sec.sec_1_title": "How data is stored",
   "landing.product.sec.sec_1_body":
     "Company data is separated at the row level so one workspace cannot read another workspace's candidates. CVs live in private file storage and are served through short-lived signed links. Access is gated by the Owner, Admin, and Recruiter roles.",

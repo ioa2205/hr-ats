@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="64" viewBox="0 0 1600 64" preserveAspectRatio="none">
+  <defs>
+    <filter id="edge" x="-2%" y="-25%" width="104%" height="150%">
+      <feTurbulence type="fractalNoise" baseFrequency=".12 .35" numOctaves="3" seed="17" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="8" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <path fill="white" filter="url(#edge)" d="M-16-16H1616V31C1550 36 1518 23 1460 27S1370 45 1310 40 1220 18 1150 25 1065 42 1000 37 915 22 860 26 760 49 700 43 598 18 525 23 425 43 360 38 265 21 205 28 95 43-16 34Z"/>
+</svg>
