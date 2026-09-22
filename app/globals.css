@@ -239,6 +239,37 @@ body {
   font-size: 16px;
 }
 
+/* Quiet filled controls; outlines appear only when they communicate state. */
+.account-panel .field-focus-ring {
+  border-color: transparent;
+  background: #eae7de;
+}
+
+.account-panel .field-focus-ring:focus-within {
+  border-color: var(--color-focus);
+}
+
+.account-panel .field-focus-ring[aria-invalid="true"],
+.account-panel .field-focus-ring:has(input[aria-invalid="true"]) {
+  border-color: var(--color-danger);
+}
+
+.account-panel :is(button, a).border:not(.field-focus-ring) {
+  border-color: transparent;
+  background: #e4e9df;
+}
+
+.account-panel :is(button, a).border:not(.field-focus-ring):hover {
+  background: #dbe3d6;
+}
+
+@media (forced-colors: active) {
+  .account-panel .field-focus-ring,
+  .account-panel :is(button, a).border {
+    border-color: ButtonText;
+  }
+}
+
 .account-panel input[name="code"] {
   font-size: 22px;
 }
@@ -254,6 +285,7 @@ body {
 /* The language menu is portalled outside the shell: keep the account palette. */
 .glass-panel.account-select {
   background: var(--color-surface);
+  border-color: transparent;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   border-radius: 12px;

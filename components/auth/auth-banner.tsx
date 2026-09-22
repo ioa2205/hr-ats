@@ -34,10 +34,6 @@ export function AuthBanner({ tone = "error", children, icon }: AuthBannerProps) 
 
 export function AuthDivider({ label }: { label: string }) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="h-px flex-1 bg-[var(--color-line)]" aria-hidden />
-      <span className="text-[13px] text-[var(--color-text-subtle)]">{label}</span>
-      <span className="h-px flex-1 bg-[var(--color-line)]" aria-hidden />
-    </div>
+    <p className="text-center text-[13px] text-[var(--color-text-subtle)]">{label}</p>
   );
 }
