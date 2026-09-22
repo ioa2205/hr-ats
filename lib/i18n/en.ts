@@ -42,6 +42,8 @@ export const en: Translations = {
   "auth.sign_up": "Sign up",
   "auth.email": "Email",
   "auth.password": "Password",
+  "auth.show_password": "Show password",
+  "auth.hide_password": "Hide password",
   "auth.full_name": "Full name",
   "auth.full_name_placeholder": "Jane Doe",
   "auth.invalid_credentials": "Invalid email or password",

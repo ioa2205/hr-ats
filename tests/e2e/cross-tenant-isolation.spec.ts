@@ -103,7 +103,7 @@ async function signInAs(ctx: BrowserContext, email: string, password: string) {
   const page = await ctx.newPage();
   await page.goto("/auth/login");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: /sign in/i }).click();
   await page.waitForURL(/\/hr\/dashboard|\/onboarding/, { timeout: 10_000 });
   return page;

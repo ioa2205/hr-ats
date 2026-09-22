@@ -8,11 +8,9 @@ interface AuthBannerProps {
 }
 
 const toneClass: Record<NonNullable<AuthBannerProps["tone"]>, string> = {
-  error:
-    "border-[color-mix(in_srgb,var(--color-danger)_35%,transparent)] bg-[var(--color-danger-container)] text-[var(--color-on-danger-container)]",
-  info: "border-[var(--color-line)] bg-[var(--color-surface-subtle)] text-[var(--color-text)]",
-  success:
-    "border-[color-mix(in_srgb,var(--color-success)_35%,transparent)] bg-[var(--color-success-container)] text-[var(--color-on-success-container)]",
+  error: "bg-[var(--color-danger-container)] text-[var(--color-on-danger-container)]",
+  info: "bg-[var(--color-surface-subtle)] text-[var(--color-text)]",
+  success: "bg-[var(--color-success-container)] text-[var(--color-on-success-container)]",
 };
 
 /**
@@ -24,12 +22,12 @@ export function AuthBanner({ tone = "error", children, icon }: AuthBannerProps) 
     <div
       role={tone === "error" ? "alert" : "status"}
       className={cn(
-        "flex items-start gap-2.5 rounded-[var(--radius-sm)] border px-3.5 py-2.5 text-[13px] leading-[1.5]",
+        "flex items-start gap-2.5 rounded-[12px] px-4 py-3 text-[13px] leading-[1.5]",
         toneClass[tone],
       )}
     >
       {icon && <span className="mt-[1px] shrink-0">{icon}</span>}
-      <span className="min-w-0 flex-1 font-medium">{children}</span>
+      <span className="min-w-0 flex-1 font-medium [overflow-wrap:anywhere]">{children}</span>
     </div>
   );
 }
@@ -38,9 +36,7 @@ export function AuthDivider({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-3">
       <span className="h-px flex-1 bg-[var(--color-line)]" aria-hidden />
-      <span className="data-mono text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[var(--color-text-subtle)]">
-        {label}
-      </span>
+      <span className="text-[13px] text-[var(--color-text-subtle)]">{label}</span>
       <span className="h-px flex-1 bg-[var(--color-line)]" aria-hidden />
     </div>
   );

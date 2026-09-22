@@ -59,11 +59,7 @@ export default async function LoginPage({
 
   return (
     <div className="flex flex-col gap-4">
-      <AuthPanel
-        eyebrow={t("landing.nav.signin", locale)}
-        title={t("auth.sign_in", locale)}
-        subtitle={t("auth.login_sub", locale)}
-      >
+      <AuthPanel title={t("auth.sign_in", locale)} subtitle={t("auth.login_sub", locale)}>
         <OAuthButtons nextPath={nextPath ?? undefined} />
         <AuthDivider label={t("auth.or", locale)} />
         <LoginForm nextPath={nextPath ?? undefined} callbackError={callbackError} notice={notice} />

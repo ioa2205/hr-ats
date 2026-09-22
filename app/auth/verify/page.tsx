@@ -20,7 +20,6 @@ export default async function VerifyPage({
 
   return (
     <AuthPanel
-      eyebrow={t("auth.sign_up", locale)}
       title={t("auth.verify_title", locale)}
       subtitle={
         email
@@ -28,14 +27,12 @@ export default async function VerifyPage({
           : t("auth.verify_body_no_email", locale)
       }
     >
-      <div className="flex items-start gap-3 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] px-4 py-3">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface)]">
-          <Mail
-            className="h-4 w-4 text-[var(--color-text-muted)]"
-            strokeWidth={1.75}
-            aria-hidden="true"
-          />
-        </span>
+      <div className="flex items-start gap-3 rounded-[12px] bg-[var(--color-surface-subtle)] px-4 py-4">
+        <Mail
+          className="mt-0.5 h-5 w-5 shrink-0 text-[var(--color-text-muted)]"
+          strokeWidth={1.75}
+          aria-hidden="true"
+        />
         <p className="text-[13px] leading-[1.55] text-[var(--color-text-muted)]">
           {t("auth.verify_help", locale)}
         </p>

@@ -149,7 +149,8 @@ body {
 
 /* Account and onboarding routes use the approved editorial craft direction.
    The palette is scoped so every other product surface keeps its own theme. */
-.account-shell {
+.account-shell,
+.account-select {
   --account-paper: #f7f3eb;
   --color-canvas: #f7f3eb;
   --color-surface: #fbf8f2;
@@ -158,7 +159,7 @@ body {
   --color-text: #121719;
   --color-text-strong: #080b0c;
   --color-text-muted: #5f6672;
-  --color-text-subtle: #747b86;
+  --color-text-subtle: #646c74;
   --color-line: #d5d6d0;
   --color-line-strong: #aeb4b3;
   --color-primary: #86a987;
@@ -167,17 +168,57 @@ body {
   --color-on-primary: #102113;
   --color-on-primary-container: #29472e;
   --color-focus: #496c52;
-  background-color: var(--account-paper);
-  background-image:
-    radial-gradient(circle at 12% 10%, rgb(255 255 255 / 0.58), transparent 27%),
-    repeating-linear-gradient(24deg, rgb(31 42 38 / 0.013) 0 1px, transparent 1px 5px);
+  --color-success: #19713a;
+  --color-success-container: #dcefe1;
+  --color-on-success-container: #0d4322;
+  --color-danger: #b4232c;
+  --color-danger-container: #f6dddf;
+  --color-on-danger-container: #65131a;
+  color-scheme: light;
 }
 
+.account-shell,
 .account-header,
 .account-form-rail {
-  background-image:
-    radial-gradient(circle at 82% 8%, rgb(255 255 255 / 0.68), transparent 32%),
-    repeating-linear-gradient(24deg, rgb(31 42 38 / 0.012) 0 1px, transparent 1px 5px);
+  background-color: var(--account-paper);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+  background-size: 190px 190px;
+}
+
+.account-shell {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-header {
+  flex-shrink: 0;
+}
+
+.account-layout {
+  flex: 1;
+}
+
+.account-wordmark {
+  font:
+    700 31px/1 Georgia,
+    "Times New Roman",
+    serif;
+  letter-spacing: -0.055em;
+}
+
+.account-language button {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  font-family: var(--font-sans);
+  font-size: 12px;
+}
+
+.account-language button[aria-pressed="true"] {
+  background: var(--color-primary-container);
+  color: var(--color-on-primary-container);
 }
 
 .account-story-title {
@@ -186,19 +227,77 @@ body {
   text-wrap: balance;
 }
 
-.account-panel button:not([role="option"]),
+.account-panel button[class*="h-12"],
 .account-panel a[class*="h-12"] {
   min-height: 52px;
+  height: auto;
+  padding-block: 12px;
   border-radius: 14px;
+}
+
+.account-panel input {
+  font-size: 16px;
+}
+
+.account-panel input[name="code"] {
+  font-size: 22px;
 }
 
 .account-panel input:focus-visible {
   outline: none;
 }
 
+.account-panel a:hover {
+  color: var(--color-on-primary-container);
+}
+
+/* The language menu is portalled outside the shell: keep the account palette. */
+.glass-panel.account-select {
+  background: var(--color-surface);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-radius: 12px;
+}
+
+.account-select [role="option"] {
+  min-height: 44px;
+}
+
 @media (max-width: 1023px) {
+  .account-layout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .account-form-rail {
+    flex: 1;
+  }
+
+  .account-form-rail main {
+    flex: none;
+  }
+
+  .account-form-rail footer {
+    margin-top: auto;
+  }
+
+  .account-story,
+  .account-story-content {
+    min-height: 160px;
+  }
+
+  .account-story-content {
+    padding-block: 28px 38px;
+  }
+
+  .account-story-title {
+    max-width: 18ch;
+    font-size: clamp(32px, 5.6vw, 48px);
+    line-height: 1.05;
+  }
+
   .account-story img {
-    object-position: 58% 76%;
+    object-position: center top;
   }
 }
 

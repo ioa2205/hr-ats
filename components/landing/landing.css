@@ -1066,38 +1066,13 @@ body:has(.tezhr-landing main > .craft-paper-blue:first-child) {
   position: relative;
   z-index: 1;
 }
-.craft-plan-split::before {
-  content: "";
-  position: absolute;
-  z-index: 5;
-  inset-block: 0;
-  left: 50%;
-  width: 18px;
-  background: var(--paper);
-  clip-path: polygon(
-    48% 0,
-    72% 7%,
-    38% 14%,
-    65% 21%,
-    34% 28%,
-    70% 36%,
-    41% 44%,
-    67% 52%,
-    32% 61%,
-    64% 69%,
-    39% 77%,
-    70% 85%,
-    44% 93%,
-    58% 100%,
-    0 100%,
-    0 0
-  );
-  transform: translateX(-50%);
-  pointer-events: none;
-}
 .craft-plan {
   min-width: 0;
   padding: 94px max(24px, calc((100vw - 1180px) / 2)) 100px;
+}
+.craft-plan::after {
+  left: 0;
+  right: 0;
 }
 .craft-plan-trial {
   padding-right: clamp(34px, 7vw, 100px);
@@ -1133,10 +1108,6 @@ body:has(.tezhr-landing main > .craft-paper-blue:first-child) {
   margin: 15px 0 0;
   color: var(--ink-2);
   font-size: 17px;
-}
-.craft-plan-inner > .craft-plan-duration {
-  margin-top: 18px;
-  font-size: 20px;
 }
 .craft-plan ul {
   display: grid;
@@ -1735,9 +1706,6 @@ body:has(.tezhr-landing main > .craft-paper-blue:first-child) {
   }
   .craft-plan-split {
     grid-template-columns: 1fr;
-  }
-  .craft-plan-split::before {
-    display: none;
   }
   .craft-plan,
   .craft-plan-trial,

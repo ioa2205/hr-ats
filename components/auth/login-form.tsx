@@ -50,7 +50,7 @@ export function LoginForm({ nextPath, callbackError, notice }: LoginFormProps) {
           {state.error === "email_not_verified" && state.email && (
             <Link
               href={`/auth/verify?${new URLSearchParams({ email: state.email, next: nextPath ?? "/onboarding" }).toString()}`}
-              className="text-[13px] font-semibold text-[var(--color-primary-hover)] underline-offset-2 hover:underline"
+              className="text-[13px] font-semibold text-[var(--color-on-primary-container)] underline-offset-2 hover:underline"
             >
               {t("auth.verify_email_action")}
             </Link>

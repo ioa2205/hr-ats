@@ -6,17 +6,18 @@ import { setLocale } from "@/lib/i18n/actions";
 import type { Locale } from "@/lib/i18n/types";
 import { cn } from "@/lib/utils";
 
-const locales: { value: Locale; label: string }[] = [
-  { value: "ru", label: "RU" },
-  { value: "uz", label: "UZ" },
-  { value: "en", label: "EN" },
+const locales: { value: Locale; label: string; name: string }[] = [
+  { value: "ru", label: "RU", name: "Русский" },
+  { value: "uz", label: "UZ", name: "O‘zbekcha" },
+  { value: "en", label: "EN", name: "English" },
 ];
 
 interface LanguageToggleProps {
   currentLocale?: Locale;
+  variant?: "default" | "account";
 }
 
-export function LanguageToggle({ currentLocale = "ru" }: LanguageToggleProps) {
+export function LanguageToggle({ currentLocale = "ru", variant = "default" }: LanguageToggleProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -30,7 +31,11 @@ export function LanguageToggle({ currentLocale = "ru" }: LanguageToggleProps) {
 
   return (
     <div
-      className="flex gap-0.5 rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface)] p-0.5"
+      className={
+        variant === "account"
+          ? "account-language flex gap-1"
+          : "flex gap-0.5 rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface)] p-0.5"
+      }
       role="group"
       aria-label="Language"
     >
@@ -43,6 +48,9 @@ export function LanguageToggle({ currentLocale = "ru" }: LanguageToggleProps) {
             onClick={() => handleChange(l.value)}
             disabled={isPending}
             aria-pressed={active}
+            aria-label={variant === "account" ? l.name : undefined}
+            lang={l.value}
+            title={l.name}
             className={cn(
               "data-mono inline-flex h-8 min-w-[34px] items-center justify-center rounded-[4px] px-2 text-[11px] font-semibold tracking-[0.04em] transition-colors disabled:cursor-wait",
               active

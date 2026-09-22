@@ -9,9 +9,7 @@ interface AuthPanelProps {
 }
 
 /**
- * TezHR auth card — the calm, low-anxiety surface shared by every /auth and
- * /onboarding screen. Semantic tokens only: a 12px content surface with a
- * mono eyebrow, an `h1` title, and a muted subtitle.
+ * Shared editorial heading and form rhythm for account and onboarding screens.
  */
 export function AuthPanel({ eyebrow, title, subtitle, children, footer }: AuthPanelProps) {
   return (
@@ -23,18 +21,18 @@ export function AuthPanel({ eyebrow, title, subtitle, children, footer }: AuthPa
               {eyebrow}
             </span>
           )}
-          <h1 className="text-[34px] leading-[1.08] font-extrabold tracking-[-0.04em] text-[var(--color-text)] sm:text-[40px]">
+          <h1 className="text-[32px] leading-[1.12] font-extrabold tracking-[-0.04em] [overflow-wrap:anywhere] text-[var(--color-text)] sm:text-[40px]">
             {title}
           </h1>
           {subtitle && (
-            <p className="max-w-[48ch] text-[15px] leading-[1.6] text-[var(--color-text-muted)] sm:text-[16px]">
+            <p className="max-w-[48ch] text-[15px] leading-[1.6] [overflow-wrap:anywhere] text-[var(--color-text-muted)] sm:text-[16px]">
               {subtitle}
             </p>
           )}
         </div>
         {children}
       </div>
-      {footer && <div className="mt-6 border-t border-[var(--color-line)] pt-4">{footer}</div>}
+      {footer && <div className="mt-6">{footer}</div>}
     </section>
   );
 }

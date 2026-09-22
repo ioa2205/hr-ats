@@ -25,6 +25,13 @@ test.describe("Public account shell", () => {
       "href",
       "/auth/reset",
     );
+    const password = page.getByLabel("Password", { exact: true });
+    await password.fill("example-password");
+    await page.getByRole("button", { name: "Show password", exact: true }).click();
+    await expect(password).toHaveAttribute("type", "text");
+    await page.getByRole("button", { name: "Hide password", exact: true }).click();
+    await expect(password).toHaveAttribute("type", "password");
+    await expect(password).toHaveValue("example-password");
 
     await page.goto("/auth/login?error=oauth_failed");
     await expect(page.getByText(/sign-in link is invalid or has expired/i)).toBeVisible();
@@ -97,6 +104,9 @@ test.describe("Public account shell", () => {
     await page.getByRole("button", { name: "Send code" }).click();
 
     const otp = page.getByLabel("Verification code");
+    await expect(
+      page.getByRole("heading", { name: "Verification code", exact: true }),
+    ).toBeVisible();
     await expect(otp).toBeVisible();
     await expect(page.getByText(/resend in/i)).toBeVisible();
     await page.getByRole("button", { name: /change number/i }).click();
@@ -107,6 +117,9 @@ test.describe("Public account shell", () => {
     await page.getByRole("button", { name: "Verify", exact: true }).click();
 
     await expect(page.getByText("Phone verified")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Complete sign-up", exact: true }),
+    ).toBeVisible();
     await expect(page.getByLabel("Email")).toHaveValue("invited@example.com");
     await expect(page.getByLabel("Email")).toHaveAttribute("readonly", "");
     await page.getByLabel("Full name").fill("Invite User");
@@ -157,7 +170,7 @@ test.describe("Onboarding account flow", () => {
 
       await page.goto("/auth/login");
       await page.getByLabel("Email").fill(email);
-      await page.getByLabel("Password").fill(password);
+      await page.getByLabel("Password", { exact: true }).fill(password);
       await page.getByRole("button", { name: "Sign in", exact: true }).click();
       await page.waitForURL(/\/onboarding/, { timeout: 15_000 });
 

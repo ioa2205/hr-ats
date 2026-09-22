@@ -1,7 +1,9 @@
 "use client";
 
-import { forwardRef, type InputHTMLAttributes, type ReactNode } from "react";
+import { forwardRef, useState, type InputHTMLAttributes, type ReactNode } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/lib/i18n/provider";
 
 interface AuthFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   label: string;
@@ -17,12 +19,15 @@ interface AuthFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "si
  * "forgot password" link). Semantic tokens only.
  */
 export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
-  ({ label, helper, error, endSlot, className, id, name, ...rest }, ref) => {
+  ({ label, helper, error, endSlot, className, id, name, type, ...rest }, ref) => {
+    const { t } = useTranslation();
+    const [showPassword, setShowPassword] = useState(false);
+    const isPassword = type === "password";
     const fieldId = id ?? `f-${(name ?? label).toLowerCase().replace(/\s+/g, "-")}`;
     const describedBy = error ? `${fieldId}-error` : helper ? `${fieldId}-helper` : undefined;
     return (
       <div className="flex flex-col gap-1.5">
-        <div className="flex items-baseline justify-between gap-3">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
           <label
             htmlFor={fieldId}
             className="text-[13.5px] font-semibold tracking-[-0.01em] text-[var(--color-text)]"
@@ -31,24 +36,44 @@ export const AuthField = forwardRef<HTMLInputElement, AuthFieldProps>(
           </label>
           {endSlot}
         </div>
-        <input
-          ref={ref}
-          id={fieldId}
-          name={name}
-          aria-invalid={error ? true : undefined}
-          aria-describedby={describedBy}
-          {...rest}
-          className={cn(
-            "field-focus-ring flex h-[52px] w-full items-center rounded-[12px] border bg-[var(--color-surface)] px-4 text-[15px] text-[var(--color-text)] transition-colors outline-none",
-            "placeholder:text-[var(--color-text-subtle)]",
-            rest.readOnly &&
-              "cursor-default bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)]",
-            error
-              ? "border-[var(--color-danger)] focus:border-[var(--color-danger)]"
-              : "border-[var(--color-line-strong)]",
-            className,
+        <div className="relative">
+          <input
+            ref={ref}
+            id={fieldId}
+            name={name}
+            type={isPassword && showPassword ? "text" : type}
+            aria-invalid={error ? true : undefined}
+            aria-describedby={describedBy}
+            {...rest}
+            className={cn(
+              "field-focus-ring flex h-[52px] w-full items-center rounded-[12px] border bg-[var(--color-surface)] px-4 text-[15px] text-[var(--color-text)] transition-colors outline-none",
+              "placeholder:text-[var(--color-text-subtle)]",
+              isPassword && "pr-14",
+              rest.readOnly &&
+                "cursor-default bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)]",
+              error
+                ? "border-[var(--color-danger)] focus:border-[var(--color-danger)]"
+                : "border-[var(--color-line-strong)]",
+              className,
+            )}
+          />
+          {isPassword && (
+            <button
+              type="button"
+              aria-label={showPassword ? t("auth.hide_password") : t("auth.show_password")}
+              aria-controls={fieldId}
+              disabled={rest.disabled}
+              onClick={() => setShowPassword((shown) => !shown)}
+              className="absolute top-1 right-1 flex h-11 w-11 items-center justify-center rounded-[10px] text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+            >
+              {showPassword ? (
+                <EyeOff className="h-[18px] w-[18px]" aria-hidden />
+              ) : (
+                <Eye className="h-[18px] w-[18px]" aria-hidden />
+              )}
+            </button>
           )}
-        />
+        </div>
         {error ? (
           <p
             id={`${fieldId}-error`}

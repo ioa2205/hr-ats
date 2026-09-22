@@ -7,6 +7,7 @@ import { Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui";
 import { AuthField } from "./auth-field";
 import { AuthBanner } from "./auth-banner";
+import { AuthPanel } from "./auth-panel";
 import { useTranslation } from "@/lib/i18n/provider";
 import type { TranslationKey } from "@/lib/i18n/types";
 import { logger } from "@/lib/logger";
@@ -37,7 +38,7 @@ function Spin() {
 }
 
 const linkButtonClass =
-  "rounded-[var(--radius-sm)] font-medium text-[var(--color-text-muted)] underline-offset-2 transition-colors hover:text-[var(--color-text)] hover:underline disabled:opacity-50";
+  "min-h-11 rounded-[var(--radius-sm)] py-2 font-medium text-[var(--color-text-muted)] underline-offset-2 transition-colors hover:text-[var(--color-text)] hover:underline disabled:opacity-50";
 
 interface PhoneOtpFormProps {
   nextPath?: string;
@@ -194,187 +195,191 @@ export function PhoneOtpForm({ nextPath, pinnedEmail }: PhoneOtpFormProps = {}) 
   // ── STEP: phone ─────────────────────────────────────────────────
   if (step === "phone") {
     return (
-      <form onSubmit={handlePhoneSubmit} className="flex flex-col gap-4">
-        {errorNode}
+      <AuthPanel title={t("auth.phone_signup_title")} subtitle={t("auth.phone_signup_desc")}>
+        <form onSubmit={handlePhoneSubmit} className="flex flex-col gap-4">
+          {errorNode}
 
-        <div className="flex flex-col gap-1.5">
-          <label
-            htmlFor="phone-national"
-            className="text-[13.5px] font-semibold tracking-[-0.01em] text-[var(--color-text)]"
-          >
-            {t("auth.phone_number")}
-          </label>
-          <div
-            className={`field-focus-ring flex h-[52px] items-center rounded-[12px] border bg-[var(--color-surface)] ${
-              error === "invalid_phone"
-                ? "border-[var(--color-danger)]"
-                : "border-[var(--color-line-strong)]"
-            }`}
-          >
-            <span className="border-r border-[var(--color-line)] px-4 text-[15px] font-semibold text-[var(--color-text)]">
-              +998
-            </span>
-            <input
-              id="phone-national"
-              name="phone"
-              type="tel"
-              inputMode="numeric"
-              autoComplete="tel-national"
-              required
-              maxLength={13}
-              aria-invalid={error === "invalid_phone" || undefined}
-              aria-describedby="phone-national-helper"
-              placeholder={t("auth.phone_hint").replace("+998", "").trim()}
-              value={phone.replace(/^\+998/, "")}
-              onChange={(e) => {
-                setPhone(toUzbekPhone(e.target.value));
-                setError(null);
-              }}
-              className="h-full min-w-0 flex-1 bg-transparent px-4 text-[15px] text-[var(--color-text)] outline-none placeholder:text-[var(--color-text-subtle)]"
-            />
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="phone-national"
+              className="text-[13.5px] font-semibold tracking-[-0.01em] text-[var(--color-text)]"
+            >
+              {t("auth.phone_number")}
+            </label>
+            <div
+              className={`field-focus-ring flex h-[52px] items-center rounded-[12px] border bg-[var(--color-surface)] ${
+                error === "invalid_phone"
+                  ? "border-[var(--color-danger)]"
+                  : "border-[var(--color-line-strong)]"
+              }`}
+            >
+              <span className="pr-3 pl-4 text-[16px] font-semibold text-[var(--color-text)]">
+                +998
+              </span>
+              <input
+                id="phone-national"
+                name="phone"
+                type="tel"
+                inputMode="numeric"
+                autoComplete="tel-national"
+                required
+                maxLength={13}
+                aria-invalid={error === "invalid_phone" || undefined}
+                aria-describedby="phone-national-helper"
+                placeholder={t("auth.phone_hint").replace("+998", "").trim()}
+                value={phone.replace(/^\+998/, "")}
+                onChange={(e) => {
+                  setPhone(toUzbekPhone(e.target.value));
+                  setError(null);
+                }}
+                className="h-full min-w-0 flex-1 bg-transparent pr-4 pl-1 text-[16px] text-[var(--color-text)] outline-none placeholder:text-[var(--color-text-subtle)]"
+              />
+            </div>
+            <p id="phone-national-helper" className="text-[12.5px] text-[var(--color-text-muted)]">
+              {t("auth.phone_digit_hint")}
+            </p>
           </div>
-          <p id="phone-national-helper" className="text-[12.5px] text-[var(--color-text-muted)]">
-            {t("auth.phone_digit_hint")}
-          </p>
-        </div>
 
-        <Button
-          type="submit"
-          size="lg"
-          fullWidth
-          disabled={loading || phone === "+998"}
-          className="mt-1"
-        >
-          {loading && <Spin />}
-          {loading ? t("auth.sending_code") : t("auth.send_code")}
-        </Button>
-
-        <p className="text-center text-[13px] text-[var(--color-text-muted)]">
-          {t("auth.already_have_account")}
-          <Link
-            href="/auth/login"
-            className="ml-1.5 font-semibold text-[var(--color-text)] underline-offset-2 hover:text-[var(--color-primary)] hover:underline"
+          <Button
+            type="submit"
+            size="lg"
+            fullWidth
+            disabled={loading || phone === "+998"}
+            className="mt-1"
           >
-            {t("auth.sign_in")}
-          </Link>
-        </p>
-      </form>
+            {loading && <Spin />}
+            {loading ? t("auth.sending_code") : t("auth.send_code")}
+          </Button>
+
+          <p className="text-center text-[13px] text-[var(--color-text-muted)]">
+            {t("auth.already_have_account")}
+            <Link
+              href={nextPath ? `/auth/login?next=${encodeURIComponent(nextPath)}` : "/auth/login"}
+              className="ml-1.5 font-semibold text-[var(--color-text)] underline-offset-2 hover:text-[var(--color-primary)] hover:underline"
+            >
+              {t("auth.sign_in")}
+            </Link>
+          </p>
+        </form>
+      </AuthPanel>
     );
   }
 
   // ── STEP: otp ──────────────────────────────────────────────────
   if (step === "otp") {
     return (
-      <form onSubmit={handleOtpSubmit} className="flex flex-col gap-4">
-        {errorNode}
+      <AuthPanel
+        title={t("auth.enter_code")}
+        subtitle={t("auth.enter_code_desc", { phone: formatUzbekPhone(phone) })}
+      >
+        <form onSubmit={handleOtpSubmit} className="flex flex-col gap-4">
+          {errorNode}
 
-        <p className="text-[14px] leading-[1.55] text-[var(--color-text-muted)]">
-          {t("auth.enter_code_desc", { phone: formatUzbekPhone(phone) })}
-        </p>
-
-        <AuthField
-          label={t("auth.enter_code")}
-          name="code"
-          type="text"
-          inputMode="numeric"
-          autoComplete="one-time-code"
-          required
-          maxLength={6}
-          placeholder="000000"
-          value={code}
-          onChange={(e) => {
-            const v = e.target.value.replace(/\D/g, "").slice(0, 6);
-            setCode(v);
-          }}
-          className="text-center text-[18px] tracking-[0.3em]"
-          style={{ fontFamily: "var(--font-mono)" }}
-        />
-
-        <Button
-          type="submit"
-          size="lg"
-          fullWidth
-          disabled={loading || code.length !== 6}
-          className="mt-1"
-        >
-          {loading && <Spin />}
-          {loading ? t("auth.verifying") : t("auth.verify_code")}
-        </Button>
-
-        <div className="flex items-center justify-between text-[13px]">
-          <button
-            type="button"
-            onClick={() => {
-              setStep("phone");
-              setCode("");
-              setError(null);
+          <AuthField
+            label={t("auth.enter_code")}
+            name="code"
+            type="text"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            autoFocus
+            required
+            maxLength={6}
+            placeholder="000000"
+            value={code}
+            onChange={(e) => {
+              const v = e.target.value.replace(/\D/g, "").slice(0, 6);
+              setCode(v);
             }}
-            className={linkButtonClass}
+            className="text-center text-[18px] tracking-[0.3em]"
+            style={{ fontFamily: "var(--font-mono)" }}
+          />
+
+          <Button
+            type="submit"
+            size="lg"
+            fullWidth
+            disabled={loading || code.length !== 6}
+            className="mt-1"
           >
-            {t("auth.phone_change_number")}
-          </button>
-          {resendTimer > 0 ? (
-            <span className="data-mono text-[var(--color-text-subtle)]">
-              {t("auth.resend_in", { seconds: String(resendTimer) })}
-            </span>
-          ) : (
+            {loading && <Spin />}
+            {loading ? t("auth.verifying") : t("auth.verify_code")}
+          </Button>
+
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[13px]">
             <button
               type="button"
-              onClick={handleResend}
               disabled={loading}
+              onClick={() => {
+                setStep("phone");
+                setCode("");
+                setError(null);
+              }}
               className={linkButtonClass}
             >
-              {t("auth.resend_code")}
+              {t("auth.phone_change_number")}
             </button>
-          )}
-        </div>
-      </form>
+            {resendTimer > 0 ? (
+              <span className="data-mono text-[var(--color-text-subtle)]">
+                {t("auth.resend_in", { seconds: String(resendTimer) })}
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={loading}
+                className={linkButtonClass}
+              >
+                {t("auth.resend_code")}
+              </button>
+            )}
+          </div>
+        </form>
+      </AuthPanel>
     );
   }
 
   // ── STEP: details ──────────────────────────────────────────────
   return (
-    <form onSubmit={handleDetailsSubmit} className="flex flex-col gap-4">
-      {errorNode}
+    <AuthPanel title={t("auth.complete_signup")} subtitle={t("auth.complete_signup_desc")}>
+      <form onSubmit={handleDetailsSubmit} className="flex flex-col gap-4">
+        {errorNode}
 
-      <AuthBanner tone="success" icon={<Check className="h-4 w-4" strokeWidth={2.5} />}>
-        {t("auth.phone_verified")}
-      </AuthBanner>
+        <AuthBanner tone="success" icon={<Check className="h-4 w-4" strokeWidth={2.5} />}>
+          {t("auth.phone_verified")}
+        </AuthBanner>
 
-      <p className="text-[14px] leading-[1.55] text-[var(--color-text-muted)]">
-        {t("auth.complete_signup_desc")}
-      </p>
+        <AuthField
+          label={t("auth.full_name")}
+          name="full_name"
+          type="text"
+          autoComplete="name"
+          autoFocus
+          required
+          minLength={2}
+          maxLength={120}
+          value={fullName}
+          onChange={(e) => setFullName(e.target.value)}
+          placeholder={t("auth.full_name_placeholder")}
+        />
 
-      <AuthField
-        label={t("auth.full_name")}
-        name="full_name"
-        type="text"
-        autoComplete="name"
-        required
-        minLength={2}
-        maxLength={120}
-        value={fullName}
-        onChange={(e) => setFullName(e.target.value)}
-        placeholder={t("auth.full_name_placeholder")}
-      />
+        <AuthField
+          label={t("auth.email")}
+          name="email"
+          type="email"
+          autoComplete="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          readOnly={Boolean(pinnedEmail)}
+          helper={pinnedEmail ? t("auth.email_locked") : t("auth.phone_email_hint")}
+          placeholder="you@example.com"
+        />
 
-      <AuthField
-        label={t("auth.email")}
-        name="email"
-        type="email"
-        autoComplete="email"
-        required
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        readOnly={Boolean(pinnedEmail)}
-        helper={pinnedEmail ? t("auth.email_locked") : t("auth.phone_email_hint")}
-        placeholder="you@example.com"
-      />
-
-      <Button type="submit" size="lg" fullWidth disabled={loading} className="mt-1">
-        {loading && <Spin />}
-        {loading ? t("auth.creating_account") : t("auth.complete_signup")}
-      </Button>
-    </form>
+        <Button type="submit" size="lg" fullWidth disabled={loading} className="mt-1">
+          {loading && <Spin />}
+          {loading ? t("auth.creating_account") : t("auth.complete_signup")}
+        </Button>
+      </form>
+    </AuthPanel>
   );
 }

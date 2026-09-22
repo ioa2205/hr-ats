@@ -70,20 +70,17 @@ export function AcceptInviteClient({ token, companyName, role, email }: AcceptIn
   const busy = submitting || accepting;
 
   return (
-    <AuthPanel
-      eyebrow={t("onboarding.welcome_eyebrow")}
-      title={t("invite.join_heading", { name: companyName })}
-    >
+    <AuthPanel title={t("invite.join_heading", { name: companyName })}>
       {/* Company card */}
-      <div className="flex items-center gap-3 rounded-[var(--radius-md)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] px-4 py-3">
+      <div className="flex items-center gap-3 rounded-[12px] bg-[var(--color-surface-subtle)] px-4 py-4">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--color-primary)] text-[14px] font-bold text-[var(--color-on-primary)]">
           {companyName.slice(0, 1).toUpperCase()}
         </span>
         <div className="min-w-0">
-          <p className="truncate text-[14px] font-semibold text-[var(--color-text)]">
+          <p className="text-[14px] font-semibold [overflow-wrap:anywhere] text-[var(--color-text)]">
             {companyName}
           </p>
-          <p className="data-mono mt-0.5 text-[10.5px] font-semibold tracking-[0.12em] text-[var(--color-text-muted)] uppercase">
+          <p className="mt-1 text-[13px] text-[var(--color-text-muted)]">
             <Building2 className="mr-1 inline h-3 w-3 align-[-1px]" aria-hidden="true" />
             {t("invite.invited_as")} · {t(roleKey[role])}
           </p>
@@ -91,8 +88,8 @@ export function AcceptInviteClient({ token, companyName, role, email }: AcceptIn
       </div>
 
       {/* Email line */}
-      <p className="data-mono text-[12px] text-[var(--color-text-muted)]">
-        {t("invite.sent_to")} {email}
+      <p className="text-[14px] [overflow-wrap:anywhere] text-[var(--color-text-muted)]">
+        {t("invite.sent_to", { email })}
       </p>
 
       {error && <AuthBanner tone="error">{error}</AuthBanner>}

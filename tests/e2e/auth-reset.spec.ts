@@ -81,7 +81,7 @@ test.describe("Auth: password reset", () => {
     await page.waitForURL(/\/auth\/reset/, { timeout: 15_000 });
 
     // ── 5. Set new password ───────────────────────────────────────────
-    await page.getByLabel(/password|пароль|parol/i).fill(newPassword);
+    await page.locator('input[name="password"]').fill(newPassword);
     await page
       .getByRole("button", { name: /update password|обновить|yangilash/i })
       .first()
@@ -96,7 +96,7 @@ test.describe("Auth: password reset", () => {
 
     await page.goto("/auth/login");
     await page.getByLabel(/email/i).fill(email);
-    await page.getByLabel(/password|пароль|parol/i).fill(newPassword);
+    await page.locator('input[name="password"]').fill(newPassword);
     await page.getByRole("button", { name: /sign in|войти|kirish/i }).click();
     await page.waitForURL(/\/(hr\/dashboard|onboarding)/, { timeout: 15_000 });
 

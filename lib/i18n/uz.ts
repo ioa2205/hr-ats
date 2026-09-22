@@ -43,6 +43,8 @@ export const uz: Translations = {
   "auth.sign_up": "Ro'yxatdan o'tish",
   "auth.email": "Elektron pochta",
   "auth.password": "Parol",
+  "auth.show_password": "Parolni ko‘rsatish",
+  "auth.hide_password": "Parolni yashirish",
   "auth.full_name": "To'liq ism",
   "auth.full_name_placeholder": "Dilnoza Karimova",
   "auth.invalid_credentials": "Email yoki parol noto'g'ri",

@@ -68,7 +68,7 @@ export function ResendVerificationButton({ email, nextPath }: ResendVerification
       <input type="hidden" name="email" value={email} />
       {nextPath && <input type="hidden" name="next" value={nextPath} />}
       {bannerNode}
-      <Button type="submit" variant="secondary" fullWidth disabled={disabled}>
+      <Button type="submit" size="lg" variant="secondary" fullWidth disabled={disabled}>
         {isPending ? (
           <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
         ) : (

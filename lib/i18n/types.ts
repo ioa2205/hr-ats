@@ -40,6 +40,8 @@ export type TranslationKey =
   | "auth.sign_up"
   | "auth.email"
   | "auth.password"
+  | "auth.show_password"
+  | "auth.hide_password"
   | "auth.full_name"
   | "auth.full_name_placeholder"
   | "auth.invalid_credentials"

@@ -54,11 +54,7 @@ export default async function OnboardingPage({
   };
 
   return (
-    <AuthPanel
-      eyebrow={t("onboarding.welcome_eyebrow", locale)}
-      title={t("onboarding.title", locale)}
-      subtitle={t("onboarding.subtitle", locale)}
-    >
+    <AuthPanel title={t("onboarding.title", locale)} subtitle={t("onboarding.subtitle", locale)}>
       <OnboardingDecision labels={labels} intent={intent} />
     </AuthPanel>
   );

@@ -50,7 +50,7 @@ test.describe("Auth: signup → verify → login", () => {
     });
     await page.getByLabel("Full name").fill(fullName);
     await page.getByLabel("Email").fill(email);
-    await page.getByLabel("Password").fill(password);
+    await page.getByLabel("Password", { exact: true }).fill(password);
     await page.getByRole("button", { name: /create account/i }).click();
 
     // Local Supabase auto-confirms, so user may land on /auth/verify OR /onboarding.
@@ -109,7 +109,7 @@ test.describe("Auth: signup → verify → login", () => {
     // ── 4. Log in with the verified credentials ───────────────────────
     await page.goto("/auth/login");
     await page.getByLabel("Email").fill(email);
-    await page.getByLabel("Password").fill(password);
+    await page.getByLabel("Password", { exact: true }).fill(password);
     await page.getByRole("button", { name: /sign in/i }).click();
     await page.waitForURL(/\/(hr\/dashboard|onboarding)/, { timeout: 15000 });
 

@@ -20,7 +20,6 @@ export default async function ResetPage() {
 
   return (
     <AuthPanel
-      eyebrow={t("auth.sign_in", locale)}
       title={
         hasRecoverySession ? t("auth.reset_set_new_title", locale) : t("auth.reset_title", locale)
       }

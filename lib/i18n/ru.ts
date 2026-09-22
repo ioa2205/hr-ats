@@ -41,6 +41,8 @@ export const ru: Translations = {
   "auth.sign_up": "Регистрация",
   "auth.email": "Электронная почта",
   "auth.password": "Пароль",
+  "auth.show_password": "Показать пароль",
+  "auth.hide_password": "Скрыть пароль",
   "auth.full_name": "Полное имя",
   "auth.full_name_placeholder": "Анна Иванова",
   "auth.invalid_credentials": "Неверный email или пароль",

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, Loader2, UserPlus, ArrowRight } from "lucide-react";
+import { Building2, Loader2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui";
 import { AuthField } from "@/components/auth/auth-field";
 import { AuthBanner, AuthDivider } from "@/components/auth/auth-banner";
@@ -82,16 +82,16 @@ export function OnboardingDecision({ labels, intent }: OnboardingDecisionProps) 
         onClick={() =>
           router.push(intent === "pro" ? "/onboarding/create?intent=pro" : "/onboarding/create")
         }
-        className="group hover:shadow-level-1 flex items-center gap-4 rounded-[16px] border border-[var(--color-primary)] bg-[var(--color-primary-container)] px-5 py-4 text-left transition-all outline-none hover:-translate-y-px focus-visible:border-[var(--color-focus)]"
+        className="group flex items-center gap-4 rounded-[16px] bg-[var(--color-primary-container)] px-5 py-5 text-left transition-colors hover:bg-[var(--color-surface-strong)]"
       >
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--color-primary)] text-[var(--color-on-primary)]">
-          <Building2 className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center text-[var(--color-on-primary-container)]">
+          <Building2 className="h-7 w-7" strokeWidth={1.5} aria-hidden="true" />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-[14px] font-semibold text-[var(--color-text)]">
+          <span className="block text-[17px] font-semibold text-[var(--color-text)]">
             {labels.create_company}
           </span>
-          <span className="mt-0.5 block text-[12.5px] leading-[1.45] text-[var(--color-text-muted)]">
+          <span className="mt-1 block text-[14px] leading-[1.5] text-[var(--color-text-muted)]">
             {labels.create_company_desc}
           </span>
         </span>
@@ -112,14 +112,11 @@ export function OnboardingDecision({ labels, intent }: OnboardingDecisionProps) 
         }}
       >
         <div className="flex items-start gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-line)] bg-[var(--color-surface-subtle)] text-[var(--color-text-muted)]">
-            <UserPlus className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
-          </span>
           <div className="min-w-0 flex-1">
-            <p className="text-[14px] font-semibold text-[var(--color-text)]">
+            <h2 className="text-[17px] font-semibold text-[var(--color-text)]">
               {labels.join_company}
-            </p>
-            <p className="mt-0.5 text-[12.5px] leading-[1.45] text-[var(--color-text-muted)]">
+            </h2>
+            <p className="mt-1 text-[14px] leading-[1.5] text-[var(--color-text-muted)]">
               {labels.join_company_desc}
             </p>
           </div>
@@ -140,7 +137,7 @@ export function OnboardingDecision({ labels, intent }: OnboardingDecisionProps) 
 
         <Button
           type="submit"
-          variant="secondary"
+          variant="tonal"
           size="lg"
           fullWidth
           disabled={joining || !token.trim()}

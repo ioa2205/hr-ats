@@ -245,9 +245,10 @@ export async function CraftPricing() {
         <article className="craft-plan craft-plan-trial craft-paper-sun">
           <div className="craft-plan-inner">
             <h2>{c.trial}</h2>
-            <p className="craft-plan-duration">{c.trialDuration}</p>
             <strong>{c.trialPrice}</strong>
-            <p>{c.trialNote}</p>
+            <p>
+              {c.trialDuration} · {c.trialNote}
+            </p>
             <ul>
               {c.trialFeatures.map((item) => (
                 <li key={item}>

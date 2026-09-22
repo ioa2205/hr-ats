@@ -90,7 +90,8 @@ export function CreateCompanyForm({ labels, intent }: CreateCompanyFormProps) {
         required
         minLength={2}
         maxLength={100}
-        autoFocus
+        name="company_name"
+        autoComplete="organization"
       />
 
       <div className="flex flex-col gap-1.5">
@@ -103,20 +104,26 @@ export function CreateCompanyForm({ labels, intent }: CreateCompanyFormProps) {
         <Select value={defaultLocale} onValueChange={setDefaultLocale}>
           <SelectTrigger
             id="onboarding-default-locale"
-            className="h-[52px] rounded-[12px] text-[15px]"
+            aria-describedby="onboarding-default-locale-hint"
+            className="h-[52px] rounded-[12px] px-4 text-[16px]"
           >
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="account-select">
             <SelectItem value="ru">{labels.locale_ru}</SelectItem>
             <SelectItem value="uz">{labels.locale_uz}</SelectItem>
             <SelectItem value="en">{labels.locale_en}</SelectItem>
           </SelectContent>
         </Select>
-        <p className="text-[12.5px] text-[var(--color-text-muted)]">{labels.default_locale_hint}</p>
+        <p
+          id="onboarding-default-locale-hint"
+          className="text-[12.5px] text-[var(--color-text-muted)]"
+        >
+          {labels.default_locale_hint}
+        </p>
       </div>
 
-      <div className="mt-1 flex items-center gap-2">
+      <div className="mt-1 flex flex-col-reverse items-stretch gap-2 sm:flex-row sm:items-center">
         <Button
           type="button"
           variant="ghost"

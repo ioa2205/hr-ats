@@ -92,7 +92,7 @@ async function teardownOperator(admin: SupabaseClient, o: Operator) {
 async function signIn(page: Page, email: string, password: string) {
   await page.goto("/auth/login");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: /sign in/i }).click();
 }
 

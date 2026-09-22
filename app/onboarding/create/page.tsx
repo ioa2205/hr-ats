@@ -52,7 +52,6 @@ export default async function OnboardingCreatePage({
 
   return (
     <AuthPanel
-      eyebrow={t("onboarding.create_company", locale)}
       title={t("onboarding.create_title", locale)}
       subtitle={t("onboarding.create_subtitle", locale)}
     >

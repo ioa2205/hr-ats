@@ -28,11 +28,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <AuthPanel
-        eyebrow={t("landing.meta.free_trial_badge", locale)}
-        title={t("auth.create_account", locale)}
-        subtitle={t("auth.signup_sub", locale)}
-      >
+      <AuthPanel title={t("auth.create_account", locale)} subtitle={t("auth.signup_sub", locale)}>
         <OAuthButtons nextPath={nextPath} pinnedEmail={rawEmail} />
         <AuthDivider label={t("auth.or", locale)} />
         <SignupForm pinnedEmail={rawEmail} inviteToken={rawInvite} intent={rawIntent} />
